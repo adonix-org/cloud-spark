@@ -26,10 +26,20 @@ export abstract class WorkerBase {
 
     public async fetch(request: Request): Promise<Response> {
         switch (request.method) {
-            case "OPTIONS":
-                return await this.options(request);
             case "GET":
                 return await this.get(request);
+            case "PUT":
+                return await this.put(request);
+            case "POST":
+                return await this.post(request);
+            case "PATCH":
+                return await this.patch(request);
+            case "DELETE":
+                return await this.post(request);
+            case "HEAD":
+                return await this.head(request);
+            case "OPTIONS":
+                return await this.options(request);
             default:
                 return this.getResponse(StatusCodes.BAD_REQUEST, "");
         }
@@ -40,29 +50,45 @@ export abstract class WorkerBase {
         return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
     }
 
-    protected async head(_request: Request): Promise<Response> {
-        return this.get(_request);
+    protected async put(_request: Request): Promise<Response> {
+        return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
+    }
+
+    protected async post(_request: Request): Promise<Response> {
+        return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
+    }
+
+    protected async patch(_request: Request): Promise<Response> {
+        return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
+    }
+
+    protected async delete(_request: Request): Promise<Response> {
+        return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
     }
 
     protected async options(_request: Request): Promise<Response> {
         return this.getResponse(StatusCodes.NO_CONTENT);
     }
 
+    private async head(_request: Request): Promise<Response> {
+        const response = await this.get(_request);
+        return new Response(null, {
+            headers: new Headers(response.headers),
+            status: response.status,
+            statusText: response.statusText,
+        });
+    }
+
     public getResponse(
         code: StatusCodes,
-        body: string | null = null,
+        text: string | null = null,
         contentType: ContentType = "JSON"
-    ) {
-        const headers = new Headers({
-            // TODO: figure out what to do with Cache-Control
-            // "Cache-Control": "public, max-age=86400, immutable",
-            "X-Content-Type-Options": "nosniff",
-        });
+    ): Response {
+        const headers = this.getHeaders();
 
+        const body = code === StatusCodes.NO_CONTENT ? null : text;
         if (body) {
-            const bodyBytes = new TextEncoder().encode(body);
             headers.set("Content-Type", contentType);
-            headers.set("Content-Length", bodyBytes.length.toString());
         }
 
         return new Response(body, {
@@ -82,6 +108,12 @@ export abstract class WorkerBase {
 
     protected getAllowHeaders(): string[] {
         return ["Content-Type"];
+    }
+
+    protected getHeaders(): Headers {
+        return new Headers({
+            "X-Content-Type-Options": "nosniff",
+        });
     }
 
     private addCorsHeaders(headers: Headers): Headers {

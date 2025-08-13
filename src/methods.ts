@@ -16,9 +16,9 @@
 
 export type Method =
     | "GET"
-    | "HEAD"
-    | "OPTIONS"
     | "PUT"
     | "POST"
     | "PATCH"
-    | "DELETE";
+    | "DELETE"
+    | "HEAD"
+    | "OPTIONS";
