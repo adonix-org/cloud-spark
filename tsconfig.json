@@ -5,7 +5,7 @@
         "module": "esnext",
         "moduleResolution": "node",
         "moduleDetection": "auto",
-        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "lib": ["ES2022"],
         "esModuleInterop": true,
         "strict": true,
         "noImplicitAny": true,
