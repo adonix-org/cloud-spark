@@ -1,38 +1,28 @@
-import {
-    env,
-    createExecutionContext,
-    waitOnExecutionContext,
-} from "cloudflare:test";
 import { describe, it, expect } from "vitest";
 import worker from "./index";
+import type { ExecutionContext } from "@cloudflare/workers-types";
 
-// For now, you'll need to do something like this to get a correctly-typed
-// `Request` to pass to `worker.fetch()`.
-const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
+const mockCtx: ExecutionContext = {
+    waitUntil: () => {},
+    passThroughOnException: () => {},
+    props: () => {},
+};
+
+const mockEnv = {
+    MY_KV: {
+        get: async (key: string) => `mock-value-for-${key}`,
+        put: async (_key: string, _value: string) => {},
+    },
+    MY_SECRET: "mock-secret",
+};
 
 describe("Hello World worker", () => {
-    it("responds with Hello World! (unit style)", async () => {
-        const request = new IncomingRequest("http://example.com");
-        // Create an empty context to pass to `worker.fetch()`.
-        const ctx = createExecutionContext();
-        const response = await worker.fetch(request, env, ctx);
-        // Wait for all `Promise`s passed to `ctx.waitUntil()` to settle before running test assertions
-        await waitOnExecutionContext(ctx);
-        expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
-    });
-
-    it("responds with Hello World! (integration style)", async () => {
-        const mockCtx: ExecutionContext = {
-            waitUntil: () => {},
-            passThroughOnException: () => {},
-            props: {},
-        };
-        const mockEnv: Env = {};
+    it("responds with Hello World!", async () => {
         const response = await worker.fetch(
             new Request("https://example.com"),
             mockEnv,
             mockCtx
         );
-        expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+        expect(await response.text()).toBe("Hello World!");
     });
 });
