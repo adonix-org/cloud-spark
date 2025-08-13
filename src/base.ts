@@ -41,9 +41,8 @@ export abstract class WorkerBase {
             case "OPTIONS":
                 return await this.options(request);
             default:
-                return this.getResponse(StatusCodes.BAD_REQUEST, "");
+                return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
         }
-        return new Response();
     }
 
     protected async get(_request: Request): Promise<Response> {
@@ -95,6 +94,13 @@ export abstract class WorkerBase {
             status: code,
             statusText: getReasonPhrase(code),
             headers: this.addCorsHeaders(headers),
+        });
+    }
+
+    protected getError(code: StatusCodes, message?: string): string {
+        return JSON.stringify({
+            code,
+            error: message ?? getReasonPhrase(code),
         });
     }
 
