@@ -73,6 +73,9 @@ export class WorkerResponse {
     }
 }
 
+/**
+ * Takes a GET response and removes the body.
+ */
 export class HeadResponse extends WorkerResponse {
     constructor(cors: CorsProvider, response: Response) {
         super(cors, response.status);
