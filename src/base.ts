@@ -43,9 +43,9 @@ export abstract class WorkerBase {
                 case "DELETE":
                     return await this.delete(request);
                 case "HEAD":
-                    return await this.head(request);
+                    return await this.#head(request);
                 case "OPTIONS":
-                    return await this.options(request);
+                    return await this.#options();
                 default:
                     return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
             }
@@ -77,14 +77,14 @@ export abstract class WorkerBase {
         return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
     }
 
-    protected async options(_request: Request): Promise<Response> {
+    async #options(): Promise<Response> {
         const response = this.getResponse(StatusCodes.NO_CONTENT);
         response.headers.set("Allow", this.getAllowMethods().join(", "));
         return response;
     }
 
-    private async head(_request: Request): Promise<Response> {
-        const response = await this.get(_request);
+    async #head(request: Request): Promise<Response> {
+        const response = await this.get(request);
         return new Response(null, {
             headers: new Headers(response.headers),
             status: response.status,

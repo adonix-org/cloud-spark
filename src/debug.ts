@@ -25,7 +25,7 @@ class Worker extends WorkerBase {
 
 const worker = new Worker({});
 const response = await worker.fetch(
-    new Request("https://www.tybusby.com", { method: "OPTIONS" })
+    new Request("https://www.tybusby.com", { method: "HEAD" })
 );
 const text = await response.text();
 
