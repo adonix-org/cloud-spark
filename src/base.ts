@@ -23,8 +23,7 @@ export abstract class WorkerBase {
         protected readonly ctx?: ExecutionContext
     ) {}
 
-    public async fetch(request: Request): Promise<Response> {
-        // 405 METHOD NOT ALLOWED
+    public readonly fetch = async (request: Request): Promise<Response> => {
         if (!this.isAllowedMethod(request.method)) {
             const response = this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
             response.headers.set("Allow", this.getAllowMethods().join(", "));
@@ -42,7 +41,7 @@ export abstract class WorkerBase {
                 case "PATCH":
                     return await this.patch(request);
                 case "DELETE":
-                    return await this.post(request);
+                    return await this.delete(request);
                 case "HEAD":
                     return await this.head(request);
                 case "OPTIONS":
@@ -56,7 +55,7 @@ export abstract class WorkerBase {
                 this.getError(StatusCodes.INTERNAL_SERVER_ERROR, String(error))
             );
         }
-    }
+    };
 
     protected async get(_request: Request): Promise<Response> {
         return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
