@@ -76,7 +76,9 @@ export abstract class WorkerBase {
     }
 
     protected async options(_request: Request): Promise<Response> {
-        return this.getResponse(StatusCodes.NO_CONTENT);
+        const response = this.getResponse(StatusCodes.NO_CONTENT);
+        response.headers.set("Allow", this.getAllowMethods().join(", "));
+        return response;
     }
 
     private async head(_request: Request): Promise<Response> {
@@ -94,6 +96,9 @@ export abstract class WorkerBase {
         contentType: MimeType = MimeType.JSON
     ): Response {
         const headers = this.getHeaders();
+        if (code === StatusCodes.METHOD_NOT_ALLOWED) {
+            headers.set("Allow", this.getAllowMethods().join(", "));
+        }
 
         const body = code === StatusCodes.NO_CONTENT ? null : init;
         if (body) {
@@ -136,7 +141,7 @@ export abstract class WorkerBase {
         });
     }
 
-    private addCorsHeaders(headers: Headers): Headers {
+    protected addCorsHeaders(headers: Headers): Headers {
         headers.set("Access-Control-Allow-Origin", this.getAllowOrigin());
         headers.set(
             "Access-Control-Allow-Headers",
