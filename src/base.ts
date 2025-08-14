@@ -24,8 +24,11 @@ export abstract class WorkerBase {
     ) {}
 
     public async fetch(request: Request): Promise<Response> {
+        // 405 METHOD NOT ALLOWED
         if (!this.isAllowedMethod(request.method)) {
-            return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
+            const response = this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
+            response.headers.set("Allow", this.getAllowMethods().join(", "));
+            return response;
         }
 
         try {
@@ -96,9 +99,6 @@ export abstract class WorkerBase {
         contentType: MimeType = MimeType.JSON
     ): Response {
         const headers = this.getHeaders();
-        if (code === StatusCodes.METHOD_NOT_ALLOWED) {
-            headers.set("Allow", this.getAllowMethods().join(", "));
-        }
 
         const body = code === StatusCodes.NO_CONTENT ? null : init;
         if (body) {
