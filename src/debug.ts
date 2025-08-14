@@ -29,9 +29,7 @@ const worker = new Worker({});
 const response = await worker.fetch(
     new Request("https://www.tybusby.com", { method: "OPTIONS" })
 );
-const text = await response.text();
 
-console.log(response.headers);
-console.log(response.status);
-console.log(response.statusText);
-console.log(text);
+const text = await response.text();
+console.log(response);
+console.log("text:", text || "EMPTY");
