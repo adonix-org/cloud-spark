@@ -1,7 +1,7 @@
 {
     "name": "@adonix.org/cf-worker-base",
     "version": "0.0.1",
-    "description": "A lightweight Cloudflare Worker base class for building APIs and handling requests.",
+    "description": "A lightweight Cloudflare Worker base class for handling requests.",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -17,6 +17,9 @@
     ],
     "scripts": {
         "build": "tsup",
+        "dev": "tsup --watch",
+        "prepare-pack": "node -e \"require('fs').mkdirSync('artifacts', { recursive: true })\"",
+        "pack": "npm run prepare-pack && npm pack --pack-destination ./artifacts",
         "test": "vitest",
         "debug": "tsx ./src/debug.ts"
     },
