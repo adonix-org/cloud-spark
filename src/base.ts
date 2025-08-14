@@ -112,10 +112,11 @@ export abstract class WorkerBase {
         });
     }
 
-    protected getError(code: StatusCodes, message?: string): string {
+    protected getError(code: StatusCodes, detail?: string): string {
         return JSON.stringify({
             code,
-            error: message ?? getReasonPhrase(code),
+            error: getReasonPhrase(code),
+            detail: detail,
         });
     }
 
