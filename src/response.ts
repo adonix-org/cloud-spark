@@ -18,25 +18,33 @@ import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { CorsProvider, MimeType } from "./common";
 
 export class WorkerResponse {
-    protected readonly headers: Headers;
+    private _response?: Response;
+    protected headers: Headers;
     protected body: BodyInit | null;
 
     constructor(
         protected readonly cors: CorsProvider,
         protected readonly code: StatusCodes = StatusCodes.OK,
-        protected readonly contentType: MimeType = MimeType.JSON,
-        content: BodyInit | null = null
+        content: BodyInit | null = null,
+        protected readonly contentType: MimeType = MimeType.JSON
     ) {
         this.body = code === StatusCodes.NO_CONTENT ? null : content;
         this.headers = this.getHeaders();
     }
 
-    public get response(): Response {
+    private createResponse(): Response {
         return new Response(this.body, {
             status: this.code,
             statusText: getReasonPhrase(this.code),
             headers: this.headers,
         });
+    }
+
+    public get response(): Response {
+        if (!this._response) {
+            this._response = this.createResponse();
+        }
+        return this._response;
     }
 
     protected getHeaders(): Headers {
@@ -68,7 +76,7 @@ export class WorkerResponse {
 export class HeadResponse extends WorkerResponse {
     constructor(cors: CorsProvider, response: Response) {
         super(cors, response.status);
-        this.headers.set("Allow", this.getAllowMethods());
+        this.headers = new Headers(response.headers);
     }
 }
 

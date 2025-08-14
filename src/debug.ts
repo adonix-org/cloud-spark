@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
+import { StatusCodes } from "http-status-codes";
 import { WorkerBase } from "./base";
 import { WorkerResponse } from "./response";
+import { MimeType } from "./common";
 
 class Worker extends WorkerBase {
     protected override async get(_request: Request): Promise<Response> {
-        return new WorkerResponse(this).response;
+        return new WorkerResponse(
+            this,
+            StatusCodes.OK,
+            "Hello World",
+            MimeType.PLAIN_TEXT
+        ).response;
     }
 }
 
 const worker = new Worker({});
 const response = await worker.fetch(
-    new Request("https://www.tybusby.com/api/v2", { method: "POST" })
+    new Request("https://www.tybusby.com/api/v2", { method: "HEAD" })
 );
 
 const text = await response.text();
