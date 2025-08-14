@@ -17,7 +17,11 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { CorsProvider, MimeType } from "./common";
 
-export class WorkerResponse {
+export interface ResponseProvider {
+    get response(): Response;
+}
+
+export class WorkerResult implements ResponseProvider {
     private _response?: Response;
     protected headers: Headers;
     protected body: BodyInit | null;
@@ -32,7 +36,7 @@ export class WorkerResponse {
         this.headers = this.getHeaders();
     }
 
-    private createResponse(): Response {
+    protected createResponse(): Response {
         return new Response(this.body, {
             status: this.code,
             statusText: getReasonPhrase(this.code),
@@ -76,21 +80,21 @@ export class WorkerResponse {
 /**
  * Takes a GET response and removes the body.
  */
-export class HeadResponse extends WorkerResponse {
+export class Head extends WorkerResult {
     constructor(cors: CorsProvider, response: Response) {
         super(cors, response.status);
         this.headers = new Headers(response.headers);
     }
 }
 
-export class OptionsResponse extends WorkerResponse {
+export class Options extends WorkerResult {
     constructor(cors: CorsProvider) {
         super(cors, StatusCodes.NO_CONTENT);
         this.headers.set("Allow", this.getAllowMethods());
     }
 }
 
-export class ErrorResponse extends WorkerResponse {
+export class ErrorResult extends WorkerResult {
     constructor(
         cors: CorsProvider,
         code: StatusCodes,
@@ -99,29 +103,29 @@ export class ErrorResponse extends WorkerResponse {
         super(cors, code, MimeType.JSON);
     }
 
-    public override get response(): Response {
+    protected override createResponse(): Response {
         this.body = JSON.stringify({
             code: this.code,
             error: getReasonPhrase(this.code),
             detail: this.detail ?? getReasonPhrase(this.code),
         });
-        return super.response;
+        return super.createResponse();
     }
 }
 
-export class NotImplementedResponse extends ErrorResponse {
+export class NotImplemented extends ErrorResult {
     constructor(cors: CorsProvider) {
         super(cors, StatusCodes.NOT_IMPLEMENTED);
     }
 }
 
-export class ServerErrorResponse extends ErrorResponse {
+export class InternalSeverError extends ErrorResult {
     constructor(cors: CorsProvider, detail?: string) {
         super(cors, StatusCodes.INTERNAL_SERVER_ERROR, detail);
     }
 }
 
-export class MethodNotAllowedResponse extends ErrorResponse {
+export class MethodNotAllowed extends ErrorResult {
     constructor(cors: CorsProvider) {
         super(cors, StatusCodes.METHOD_NOT_ALLOWED);
         this.headers.set("Allow", this.getAllowMethods());
