@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export enum Methods {
+export enum Method {
     GET = "GET",
     PUT = "PUT",
     POST = "POST",
@@ -23,10 +23,9 @@ export enum Methods {
     HEAD = "HEAD",
     OPTIONS = "OPTIONS",
 }
-export type Method = keyof typeof Methods;
 
 export function isMethod(value: string): value is Method {
-    return Object.values(Methods).includes(value as Methods);
+    return Object.values(Method).includes(value as Method);
 }
 
 export enum MimeType {

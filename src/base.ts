@@ -119,7 +119,7 @@ export abstract class WorkerBase {
     }
 
     protected getAllowMethods(): Method[] {
-        return ["GET", "OPTIONS", "HEAD"];
+        return [Method.GET, Method.OPTIONS, Method.HEAD];
     }
 
     private isAllowedMethod(method: string): boolean {
