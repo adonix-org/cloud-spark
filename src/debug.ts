@@ -13,3 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { StatusCodes } from "http-status-codes";
+import { WorkerBase } from "./base";
+
+class Worker extends WorkerBase {
+    protected override async get(_request: Request): Promise<Response> {
+        return this.getResponse(StatusCodes.OK, "Success!");
+    }
+}
+
+const worker = new Worker({});
+const response = await worker.fetch(new Request("https://www.tybusby.com"));
+const text = await response.text();
+
+console.log(response.headers);
+console.log(response.status);
+console.log(text);

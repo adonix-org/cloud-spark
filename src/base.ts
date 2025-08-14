@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { ContentType } from "content-types-lite";
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { Method } from "./methods";
+import { Method, MimeType } from "./constants";
 
 export abstract class WorkerBase {
     constructor(
         protected readonly env: Env,
-        protected readonly ctx: ExecutionContext
+        protected readonly ctx?: ExecutionContext
     ) {}
 
     public async fetch(request: Request): Promise<Response> {
@@ -80,12 +79,12 @@ export abstract class WorkerBase {
 
     public getResponse(
         code: StatusCodes,
-        text: string | null = null,
-        contentType: ContentType = "JSON"
+        init?: BodyInit | null,
+        contentType: MimeType = MimeType.JSON
     ): Response {
         const headers = this.getHeaders();
 
-        const body = code === StatusCodes.NO_CONTENT ? null : text;
+        const body = code === StatusCodes.NO_CONTENT ? null : init;
         if (body) {
             headers.set("Content-Type", contentType);
         }
