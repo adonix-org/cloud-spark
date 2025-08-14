@@ -24,7 +24,7 @@ export abstract class WorkerBase {
     ) {}
 
     public async fetch(request: Request): Promise<Response> {
-        if (!this.isMethodAllowed(request.method)) {
+        if (!this.isAllowedMethod(request.method)) {
             return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
         }
         switch (request.method) {
@@ -114,7 +114,7 @@ export abstract class WorkerBase {
         return ["GET", "OPTIONS", "HEAD"];
     }
 
-    private isMethodAllowed(method: string): boolean {
+    private isAllowedMethod(method: string): boolean {
         return isMethod(method) && this.getAllowMethods().includes(method);
     }
 
