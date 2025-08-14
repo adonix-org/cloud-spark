@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-export { StatusCodes } from "http-status-codes";
-
-export * from "./base";
-export * from "./constants";
-export * from "./response";
+export class WorkerResponse extends Response {
+    public addHeader(name: string, value: string): WorkerResponse {
+        this.headers.set(name, value);
+        return this;
+    }
+}

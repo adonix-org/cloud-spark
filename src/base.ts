@@ -16,6 +16,7 @@
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { isMethod, Method, MimeType } from "./constants";
+import { WorkerResponse } from "./response";
 
 export abstract class WorkerBase {
     constructor(
@@ -25,9 +26,10 @@ export abstract class WorkerBase {
 
     public async fetch(request: Request): Promise<Response> {
         if (!this.isAllowedMethod(request.method)) {
-            const response = this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
-            response.headers.set("Allow", this.getAllowMethods().join(", "));
-            return response;
+            return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED).addHeader(
+                "Allow",
+                this.getAllowMethods().join(", ")
+            );
         }
 
         try {
@@ -78,9 +80,10 @@ export abstract class WorkerBase {
     }
 
     protected async options(): Promise<Response> {
-        const response = this.getResponse(StatusCodes.NO_CONTENT);
-        response.headers.set("Allow", this.getAllowMethods().join(", "));
-        return response;
+        return this.getResponse(StatusCodes.NO_CONTENT).addHeader(
+            "Allow",
+            this.getAllowMethods().join(", ")
+        );
     }
 
     protected async head(request: Request): Promise<Response> {
@@ -96,7 +99,7 @@ export abstract class WorkerBase {
         code: StatusCodes,
         init?: BodyInit | null,
         contentType: MimeType = MimeType.JSON
-    ): Response {
+    ): WorkerResponse {
         const headers = this.getHeaders();
 
         const body = code === StatusCodes.NO_CONTENT ? null : init;
@@ -104,7 +107,7 @@ export abstract class WorkerBase {
             headers.set("Content-Type", contentType);
         }
 
-        return new Response(body, {
+        return new WorkerResponse(body, {
             status: code,
             statusText: getReasonPhrase(code),
             headers: this.addCorsHeaders(headers),

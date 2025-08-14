@@ -19,13 +19,15 @@ import { WorkerBase } from "./base";
 
 class Worker extends WorkerBase {
     protected override async get(_request: Request): Promise<Response> {
-        return this.getResponse(StatusCodes.OK, "Success!");
+        return this.getResponse(StatusCodes.OK, "Success!")
+            .addHeader("Inigo", "Montoya")
+            .addHeader("Homer", "Simpson");
     }
 }
 
 const worker = new Worker({});
 const response = await worker.fetch(
-    new Request("https://www.tybusby.com", { method: "HEAD" })
+    new Request("https://www.tybusby.com", { method: "OPTIONS" })
 );
 const text = await response.text();
 
