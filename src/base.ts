@@ -15,7 +15,7 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { Method, MimeType } from "./constants";
+import { isMethod, Method, MimeType } from "./constants";
 
 export abstract class WorkerBase {
     constructor(
@@ -24,6 +24,9 @@ export abstract class WorkerBase {
     ) {}
 
     public async fetch(request: Request): Promise<Response> {
+        if (!this.isMethodAllowed(request.method)) {
+            return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
+        }
         switch (request.method) {
             case "GET":
                 return await this.get(request);
@@ -109,6 +112,10 @@ export abstract class WorkerBase {
 
     protected getAllowMethods(): Method[] {
         return ["GET", "OPTIONS", "HEAD"];
+    }
+
+    private isMethodAllowed(method: string): boolean {
+        return isMethod(method) && this.getAllowMethods().includes(method);
     }
 
     protected getAllowHeaders(): string[] {

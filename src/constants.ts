@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-export type Method =
-    | "GET"
-    | "PUT"
-    | "POST"
-    | "PATCH"
-    | "DELETE"
-    | "HEAD"
-    | "OPTIONS";
+export enum Methods {
+    GET = "GET",
+    PUT = "PUT",
+    POST = "POST",
+    PATCH = "PATCH",
+    DELETE = "DELETE",
+    HEAD = "HEAD",
+    OPTIONS = "OPTIONS",
+}
+export type Method = keyof typeof Methods;
+
+export function isMethod(value: string): value is Method {
+    return Object.values(Methods).includes(value as Methods);
+}
 
 export enum MimeType {
     PLAIN_TEXT = "text/plain",
