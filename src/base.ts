@@ -27,23 +27,31 @@ export abstract class WorkerBase {
         if (!this.isAllowedMethod(request.method)) {
             return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
         }
-        switch (request.method) {
-            case "GET":
-                return await this.get(request);
-            case "PUT":
-                return await this.put(request);
-            case "POST":
-                return await this.post(request);
-            case "PATCH":
-                return await this.patch(request);
-            case "DELETE":
-                return await this.post(request);
-            case "HEAD":
-                return await this.head(request);
-            case "OPTIONS":
-                return await this.options(request);
-            default:
-                return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
+
+        try {
+            switch (request.method) {
+                case "GET":
+                    return await this.get(request);
+                case "PUT":
+                    return await this.put(request);
+                case "POST":
+                    return await this.post(request);
+                case "PATCH":
+                    return await this.patch(request);
+                case "DELETE":
+                    return await this.post(request);
+                case "HEAD":
+                    return await this.head(request);
+                case "OPTIONS":
+                    return await this.options(request);
+                default:
+                    return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
+            }
+        } catch (error) {
+            return this.getResponse(
+                StatusCodes.INTERNAL_SERVER_ERROR,
+                this.getError(StatusCodes.INTERNAL_SERVER_ERROR, String(error))
+            );
         }
     }
 

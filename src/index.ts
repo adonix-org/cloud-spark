@@ -14,5 +14,7 @@
  * limitations under the License.
  */
 
+export { StatusCodes } from "http-status-codes";
+
 export * from "./base";
 export * from "./constants";
