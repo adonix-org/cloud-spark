@@ -14,9 +14,101 @@
  * limitations under the License.
  */
 
-export class WorkerResponse extends Response {
-    public addHeader(name: string, value: string): WorkerResponse {
-        this.headers.set(name, value);
-        return this;
+import { getReasonPhrase, StatusCodes } from "http-status-codes";
+import { CorsProvider, MimeType } from "./common";
+
+export class WorkerResponse {
+    protected readonly headers: Headers;
+    protected readonly body: BodyInit | null;
+
+    constructor(
+        protected readonly cors: CorsProvider,
+        protected readonly code: StatusCodes = StatusCodes.OK,
+        protected readonly contentType: MimeType = MimeType.JSON,
+        content: BodyInit | null = null
+    ) {
+        this.body = code === StatusCodes.NO_CONTENT ? null : content;
+        this.headers = this.getHeaders();
+    }
+
+    public get response(): Response {
+        return new Response(this.body, {
+            status: this.code,
+            statusText: getReasonPhrase(this.code),
+            headers: this.getHeaders(),
+        });
+    }
+
+    protected getHeaders(): Headers {
+        const headers = new Headers({
+            "Access-Control-Allow-Origin": this.getAllowOrigin(),
+            "Access-Control-Allow-Headers": this.getAllowHeaders(),
+            "Access-Control-Allow-Methods": this.getAllowMethods(),
+            "X-Content-Type-Options": "nosniff",
+        });
+        if (this.body) {
+            headers.set("Content-Type", this.contentType);
+        }
+        return headers;
+    }
+
+    protected getAllowMethods(): string {
+        return this.cors.getAllowMethods().join(", ");
+    }
+
+    protected getAllowHeaders(): string {
+        return this.cors.getAllowHeaders().join(", ");
+    }
+
+    protected getAllowOrigin(): string {
+        return this.cors.getAllowOrigin();
+    }
+}
+
+export class HeadResponse extends WorkerResponse {
+    constructor(cors: CorsProvider, response: Response) {
+        super(cors, response.status);
+        this.headers.set("Allow", this.getAllowMethods());
+    }
+}
+
+export class OptionsResponse extends WorkerResponse {
+    constructor(cors: CorsProvider) {
+        super(cors, StatusCodes.NO_CONTENT);
+        this.headers.set("Allow", this.getAllowMethods());
+    }
+}
+
+export class ErrorResponse extends WorkerResponse {
+    constructor(cors: CorsProvider, code: StatusCodes, detail?: string) {
+        super(
+            cors,
+            code,
+            MimeType.JSON,
+            JSON.stringify({
+                code,
+                error: getReasonPhrase(code),
+                detail: detail ?? getReasonPhrase(code),
+            })
+        );
+    }
+}
+
+export class NotImplementedResponse extends ErrorResponse {
+    constructor(cors: CorsProvider) {
+        super(cors, StatusCodes.NOT_IMPLEMENTED);
+    }
+}
+
+export class ServerErrorResponse extends ErrorResponse {
+    constructor(cors: CorsProvider, detail?: string) {
+        super(cors, StatusCodes.INTERNAL_SERVER_ERROR, detail);
+    }
+}
+
+export class MethodNotAllowedResponse extends ErrorResponse {
+    constructor(cors: CorsProvider, detail?: string) {
+        super(cors, StatusCodes.METHOD_NOT_ALLOWED, detail);
+        this.headers.set("Allow", this.getAllowMethods());
     }
 }

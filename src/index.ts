@@ -17,5 +17,5 @@
 export { StatusCodes } from "http-status-codes";
 
 export * from "./base";
-export * from "./constants";
+export * from "./common";
 export * from "./response";

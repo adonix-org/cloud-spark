@@ -15,10 +15,16 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { isMethod, Method, MimeType } from "./constants";
-import { WorkerResponse } from "./response";
+import { CorsProvider, isMethod, Method } from "./common";
+import {
+    HeadResponse,
+    MethodNotAllowedResponse,
+    NotImplementedResponse,
+    OptionsResponse,
+    ServerErrorResponse,
+} from "./response";
 
-export abstract class WorkerBase {
+export abstract class WorkerBase implements CorsProvider {
     constructor(
         protected readonly env: Env,
         protected readonly ctx?: ExecutionContext
@@ -26,10 +32,7 @@ export abstract class WorkerBase {
 
     public async fetch(request: Request): Promise<Response> {
         if (!this.isAllowedMethod(request.method)) {
-            return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED).addHeader(
-                "Allow",
-                this.getAllowMethods().join(", ")
-            );
+            return new MethodNotAllowedResponse(this).response;
         }
 
         try {
@@ -49,69 +52,39 @@ export abstract class WorkerBase {
                 case "OPTIONS":
                     return await this.options();
                 default:
-                    return this.getResponse(StatusCodes.METHOD_NOT_ALLOWED);
+                    return new MethodNotAllowedResponse(this).response;
             }
         } catch (error) {
-            return this.getResponse(
-                StatusCodes.INTERNAL_SERVER_ERROR,
-                this.getError(StatusCodes.INTERNAL_SERVER_ERROR, String(error))
-            );
+            return new ServerErrorResponse(this, String(error)).response;
         }
     }
 
     protected async get(_request: Request): Promise<Response> {
-        return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
+        return new NotImplementedResponse(this).response;
     }
 
     protected async put(_request: Request): Promise<Response> {
-        return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
+        return new NotImplementedResponse(this).response;
     }
 
     protected async post(_request: Request): Promise<Response> {
-        return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
+        return new NotImplementedResponse(this).response;
     }
 
     protected async patch(_request: Request): Promise<Response> {
-        return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
+        return new NotImplementedResponse(this).response;
     }
 
     protected async delete(_request: Request): Promise<Response> {
-        return this.getResponse(StatusCodes.NOT_IMPLEMENTED);
+        return new NotImplementedResponse(this).response;
     }
 
     protected async options(): Promise<Response> {
-        return this.getResponse(StatusCodes.NO_CONTENT).addHeader(
-            "Allow",
-            this.getAllowMethods().join(", ")
-        );
+        return new OptionsResponse(this).response;
     }
 
     protected async head(request: Request): Promise<Response> {
-        const response = await this.get(request);
-        return new Response(null, {
-            headers: new Headers(response.headers),
-            status: response.status,
-            statusText: response.statusText,
-        });
-    }
-
-    public getResponse(
-        code: StatusCodes,
-        init?: BodyInit | null,
-        contentType: MimeType = MimeType.JSON
-    ): WorkerResponse {
-        const headers = this.getHeaders();
-
-        const body = code === StatusCodes.NO_CONTENT ? null : init;
-        if (body) {
-            headers.set("Content-Type", contentType);
-        }
-
-        return new WorkerResponse(body, {
-            status: code,
-            statusText: getReasonPhrase(code),
-            headers: this.addCorsHeaders(headers),
-        });
+        return new HeadResponse(this, await this.get(request)).response;
     }
 
     protected getError(code: StatusCodes, detail?: string): string {
@@ -122,11 +95,11 @@ export abstract class WorkerBase {
         });
     }
 
-    protected getAllowOrigin(): string {
+    public getAllowOrigin(): string {
         return "*";
     }
 
-    protected getAllowMethods(): Method[] {
+    public getAllowMethods(): Method[] {
         return [Method.GET, Method.OPTIONS, Method.HEAD];
     }
 
@@ -134,26 +107,7 @@ export abstract class WorkerBase {
         return isMethod(method) && this.getAllowMethods().includes(method);
     }
 
-    protected getAllowHeaders(): string[] {
+    public getAllowHeaders(): string[] {
         return ["Content-Type"];
-    }
-
-    protected getHeaders(): Headers {
-        return new Headers({
-            "X-Content-Type-Options": "nosniff",
-        });
-    }
-
-    protected addCorsHeaders(headers: Headers): Headers {
-        headers.set("Access-Control-Allow-Origin", this.getAllowOrigin());
-        headers.set(
-            "Access-Control-Allow-Headers",
-            this.getAllowHeaders().join(". ")
-        );
-        headers.set(
-            "Access-Control-Allow-Methods",
-            this.getAllowMethods().join(", ")
-        );
-        return headers;
     }
 }

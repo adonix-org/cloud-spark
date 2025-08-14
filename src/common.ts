@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+export interface CorsProvider {
+    getAllowOrigin(): string;
+    getAllowMethods(): Method[];
+    getAllowHeaders(): string[];
+}
+
 export enum Method {
     GET = "GET",
     PUT = "PUT",
