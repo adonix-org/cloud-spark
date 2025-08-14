@@ -24,8 +24,10 @@ export enum Method {
     OPTIONS = "OPTIONS",
 }
 
+const METHODS_SET: Set<string> = new Set(Object.values(Method));
+
 export function isMethod(value: string): value is Method {
-    return Object.values(Method).includes(value as Method);
+    return METHODS_SET.has(value);
 }
 
 export enum MimeType {
