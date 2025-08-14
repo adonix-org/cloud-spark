@@ -30,9 +30,9 @@ export class WorkerResult implements ResponseProvider {
         protected readonly cors: CorsProvider,
         protected readonly code: StatusCodes = StatusCodes.OK,
         content: BodyInit | null = null,
-        protected readonly contentType: MimeType = MimeType.JSON
+        protected readonly mimeType: MimeType = MimeType.JSON
     ) {
-        this.body = code === StatusCodes.NO_CONTENT ? null : content;
+        this.body = this.code === StatusCodes.NO_CONTENT ? null : content;
         this.headers = this.getHeaders();
     }
 
@@ -59,7 +59,7 @@ export class WorkerResult implements ResponseProvider {
             "X-Content-Type-Options": "nosniff",
         });
         if (this.body) {
-            headers.set("Content-Type", this.contentType);
+            headers.set("Content-Type", this.mimeType);
         }
         return headers;
     }
