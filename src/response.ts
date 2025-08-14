@@ -19,7 +19,7 @@ import { CorsProvider, MimeType } from "./common";
 
 export class WorkerResponse {
     protected readonly headers: Headers;
-    protected readonly body: BodyInit | null;
+    protected body: BodyInit | null;
 
     constructor(
         protected readonly cors: CorsProvider,
@@ -35,7 +35,7 @@ export class WorkerResponse {
         return new Response(this.body, {
             status: this.code,
             statusText: getReasonPhrase(this.code),
-            headers: this.getHeaders(),
+            headers: this.headers,
         });
     }
 
@@ -80,17 +80,21 @@ export class OptionsResponse extends WorkerResponse {
 }
 
 export class ErrorResponse extends WorkerResponse {
-    constructor(cors: CorsProvider, code: StatusCodes, detail?: string) {
-        super(
-            cors,
-            code,
-            MimeType.JSON,
-            JSON.stringify({
-                code,
-                error: getReasonPhrase(code),
-                detail: detail ?? getReasonPhrase(code),
-            })
-        );
+    constructor(
+        cors: CorsProvider,
+        code: StatusCodes,
+        protected detail?: string
+    ) {
+        super(cors, code, MimeType.JSON);
+    }
+
+    public override get response(): Response {
+        this.body = JSON.stringify({
+            code: this.code,
+            error: getReasonPhrase(this.code),
+            detail: this.detail ?? getReasonPhrase(this.code),
+        });
+        return super.response;
     }
 }
 
@@ -107,8 +111,9 @@ export class ServerErrorResponse extends ErrorResponse {
 }
 
 export class MethodNotAllowedResponse extends ErrorResponse {
-    constructor(cors: CorsProvider, detail?: string) {
-        super(cors, StatusCodes.METHOD_NOT_ALLOWED, detail);
+    constructor(cors: CorsProvider) {
+        super(cors, StatusCodes.METHOD_NOT_ALLOWED);
         this.headers.set("Allow", this.getAllowMethods());
+        this.detail = `Allow: ${this.getAllowMethods()}`;
     }
 }
