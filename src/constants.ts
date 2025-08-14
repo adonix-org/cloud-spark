@@ -62,6 +62,8 @@ export enum MimeType {
     XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     POWERPOINT = "application/vnd.ms-powerpoint",
     PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ICO = "image/x-icon",
+    ICO_MS = "image/vnd.microsoft.icon",
     GIF = "image/gif",
     PNG = "image/png",
     JPEG = "image/jpeg",
