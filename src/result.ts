@@ -15,10 +15,16 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { CorsProvider, MimeType } from "./common";
+import { CorsProvider, Method, MimeType } from "./common";
 
 export interface ResponseProvider {
     get response(): Response;
+}
+
+export interface ErrorJson {
+    code: number;
+    error: string;
+    detail: string;
 }
 
 export class WorkerResult implements ResponseProvider {
@@ -37,6 +43,9 @@ export class WorkerResult implements ResponseProvider {
     }
 
     protected createResponse(): Response {
+        if (this.body) {
+            this.headers.set("Content-Type", this.mimeType);
+        }
         return new Response(this.body, {
             status: this.code,
             statusText: getReasonPhrase(this.code),
@@ -58,9 +67,6 @@ export class WorkerResult implements ResponseProvider {
             "Access-Control-Allow-Methods": this.getAllowMethods(),
             "X-Content-Type-Options": "nosniff",
         });
-        if (this.body) {
-            headers.set("Content-Type", this.mimeType);
-        }
         return headers;
     }
 
@@ -74,6 +80,27 @@ export class WorkerResult implements ResponseProvider {
 
     protected getAllowOrigin(): string {
         return this.cors.getAllowOrigin();
+    }
+}
+
+export class JsonResult extends WorkerResult {
+    private readonly _json: object;
+    constructor(
+        cors: CorsProvider,
+        content: object = {},
+        code: StatusCodes = StatusCodes.OK
+    ) {
+        super(cors, null, code, MimeType.JSON);
+        this._json = content;
+    }
+
+    public get json(): object {
+        return this._json;
+    }
+
+    protected override createResponse(): Response {
+        this.body = JSON.stringify(this.json);
+        return super.createResponse();
     }
 }
 
@@ -94,22 +121,21 @@ export class Options extends WorkerResult {
     }
 }
 
-export class ErrorResult extends WorkerResult {
+export class ErrorResult extends JsonResult {
     constructor(
         cors: CorsProvider,
         code: StatusCodes,
         protected detail?: string
     ) {
-        super(cors, null, code);
+        super(cors, {}, code);
     }
 
-    protected override createResponse(): Response {
-        this.body = JSON.stringify({
+    public override get json(): ErrorJson {
+        return {
             code: this.code,
             error: getReasonPhrase(this.code),
             detail: this.detail ?? getReasonPhrase(this.code),
-        });
-        return super.createResponse();
+        };
     }
 }
 
@@ -130,5 +156,12 @@ export class MethodNotAllowed extends ErrorResult {
         super(cors, StatusCodes.METHOD_NOT_ALLOWED);
         this.headers.set("Allow", this.getAllowMethods());
         this.detail = `Allow: ${this.getAllowMethods()}`;
+    }
+
+    public override get json(): ErrorJson & { allowed: Method[] } {
+        return {
+            ...super.json,
+            allowed: this.cors.getAllowMethods(),
+        };
     }
 }
