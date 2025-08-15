@@ -109,7 +109,7 @@ export class WorkerResult implements ResponseProvider {
 }
 
 export class JsonResult extends WorkerResult {
-    private readonly _json: object;
+    private _json: object;
     constructor(
         cors: CorsProvider,
         content: object = {},
@@ -123,6 +123,10 @@ export class JsonResult extends WorkerResult {
         return this._json;
     }
 
+    public set json(json: object) {
+        this._json = json;
+    }
+
     protected override createResponse(): Response {
         this.body = JSON.stringify(this.json);
         return super.createResponse();
@@ -130,7 +134,7 @@ export class JsonResult extends WorkerResult {
 }
 
 /**
- * Takes a GET response and removes the body.
+ * Remove the body from a GET response.
  */
 export class Head extends WorkerResult {
     constructor(cors: CorsProvider, response: Response) {
