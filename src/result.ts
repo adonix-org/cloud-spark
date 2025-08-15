@@ -35,8 +35,8 @@ export interface ErrorJson {
 
 export class WorkerResult implements ResponseProvider {
     private _response?: Response;
-    protected headers: Headers;
-    protected body: BodyInit | null;
+    private _headers: Headers = new Headers();
+    private _body: BodyInit | null;
 
     constructor(
         protected readonly cors: CorsProvider,
@@ -44,15 +44,15 @@ export class WorkerResult implements ResponseProvider {
         protected readonly code: StatusCodes = StatusCodes.OK,
         protected readonly mimeType: MimeType = MimeType.JSON
     ) {
-        this.body = this.code === StatusCodes.NO_CONTENT ? null : content;
-        this.headers = this.getHeaders();
+        this._body = this.code === StatusCodes.NO_CONTENT ? null : content;
     }
 
     protected createResponse(): Response {
+        this.addCorsHeaders();
         if (this.body) {
             this.headers.set("Content-Type", getContentType(this.mimeType));
         }
-        return new Response(this.body, {
+        return new Response(this._body, {
             status: this.code,
             statusText: getReasonPhrase(this.code),
             headers: this.headers,
@@ -66,14 +66,33 @@ export class WorkerResult implements ResponseProvider {
         return this._response;
     }
 
-    protected getHeaders(): Headers {
-        const headers = new Headers({
-            "Access-Control-Allow-Origin": this.getAllowOrigin(),
-            "Access-Control-Allow-Headers": this.getAllowHeaders(),
-            "Access-Control-Allow-Methods": this.getAllowMethods(),
-            "X-Content-Type-Options": "nosniff",
-        });
-        return headers;
+    protected get body() {
+        return this._body;
+    }
+
+    protected set body(body: BodyInit | null) {
+        this._body = body;
+    }
+
+    protected get headers(): Headers {
+        return this._headers;
+    }
+
+    protected set headers(headers: Headers) {
+        this._headers = headers;
+    }
+
+    protected addCorsHeaders(): void {
+        this.headers.set("Access-Control-Allow-Origin", this.getAllowOrigin());
+        this.headers.set(
+            "Access-Control-Allow-Headers",
+            this.getAllowHeaders()
+        );
+        this.headers.set(
+            "Access-Control-Allow-Methods",
+            this.getAllowMethods()
+        );
+        this.headers.set("X-Content-Type-Options", "nosniff");
     }
 
     protected getAllowMethods(): string {
