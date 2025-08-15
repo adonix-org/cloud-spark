@@ -15,7 +15,7 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { CorsProvider, Method, MimeType } from "./common";
+import { CorsProvider, getContentType, Method, MimeType } from "./common";
 
 export interface ResponseProvider {
     get response(): Response;
@@ -44,7 +44,7 @@ export class WorkerResult implements ResponseProvider {
 
     protected createResponse(): Response {
         if (this.body) {
-            this.headers.set("Content-Type", this.mimeType);
+            this.headers.set("Content-Type", getContentType(this.mimeType));
         }
         return new Response(this.body, {
             status: this.code,

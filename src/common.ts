@@ -36,6 +36,13 @@ export function isMethod(value: string): value is Method {
     return METHODS_SET.has(value);
 }
 
+export function getContentType(type: MimeType): string {
+    if (ADD_CHARSET.has(type)) {
+        return `${type}; charset=utf-8`;
+    }
+    return type;
+}
+
 export enum MimeType {
     PLAIN_TEXT = "text/plain",
     HTML = "text/html",
@@ -81,3 +88,18 @@ export enum MimeType {
     TAR = "application/x-tar",
     BZIP2 = "application/x-bzip2",
 }
+
+const ADD_CHARSET: Set<MimeType> = new Set([
+    MimeType.PLAIN_TEXT,
+    MimeType.HTML,
+    MimeType.CSS,
+    MimeType.CSV,
+    MimeType.MARKDOWN,
+    MimeType.XML,
+    MimeType.JSON,
+    MimeType.XML_APP,
+    MimeType.FORM_URLENCODED,
+    MimeType.NDJSON,
+    MimeType.RICH_TEXT,
+    MimeType.SVG,
+]);
