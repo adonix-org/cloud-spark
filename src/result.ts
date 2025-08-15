@@ -30,7 +30,7 @@ export interface ResponseProvider {
 export interface ErrorJson {
     code: number;
     error: string;
-    detail: string;
+    details: string;
 }
 
 export class WorkerResult implements ResponseProvider {
@@ -131,7 +131,7 @@ export class ErrorResult extends JsonResult {
     constructor(
         cors: CorsProvider,
         code: StatusCodes,
-        protected detail?: string
+        protected details?: string
     ) {
         super(cors, {}, code);
     }
@@ -140,7 +140,7 @@ export class ErrorResult extends JsonResult {
         return {
             code: this.code,
             error: getReasonPhrase(this.code),
-            detail: this.detail ?? getReasonPhrase(this.code),
+            details: this.details ?? getReasonPhrase(this.code),
         };
     }
 }
@@ -161,7 +161,7 @@ export class MethodNotAllowed extends ErrorResult {
     constructor(cors: CorsProvider, method: string) {
         super(cors, StatusCodes.METHOD_NOT_ALLOWED);
         this.headers.set("Allow", this.getAllowMethods());
-        this.detail = `${method} method not allowed.`;
+        this.details = `${method} method not allowed.`;
     }
 
     public override get json(): ErrorJson & { allowed: Method[] } {
