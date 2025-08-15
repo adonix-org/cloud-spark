@@ -22,7 +22,7 @@ import {
     NotImplemented,
     Options,
     InternalSeverError as InternalServerError,
-} from "./response";
+} from "./result";
 
 export abstract class WorkerBase implements CorsProvider {
     constructor(

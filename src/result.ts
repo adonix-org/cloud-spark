@@ -28,8 +28,8 @@ export class WorkerResult implements ResponseProvider {
 
     constructor(
         protected readonly cors: CorsProvider,
-        protected readonly code: StatusCodes = StatusCodes.OK,
         content: BodyInit | null = null,
+        protected readonly code: StatusCodes = StatusCodes.OK,
         protected readonly mimeType: MimeType = MimeType.JSON
     ) {
         this.body = this.code === StatusCodes.NO_CONTENT ? null : content;
@@ -82,14 +82,14 @@ export class WorkerResult implements ResponseProvider {
  */
 export class Head extends WorkerResult {
     constructor(cors: CorsProvider, response: Response) {
-        super(cors, response.status);
+        super(cors, null, response.status);
         this.headers = new Headers(response.headers);
     }
 }
 
 export class Options extends WorkerResult {
     constructor(cors: CorsProvider) {
-        super(cors, StatusCodes.NO_CONTENT);
+        super(cors, null, StatusCodes.NO_CONTENT);
         this.headers.set("Allow", this.getAllowMethods());
     }
 }
@@ -100,7 +100,7 @@ export class ErrorResult extends WorkerResult {
         code: StatusCodes,
         protected detail?: string
     ) {
-        super(cors, code, MimeType.JSON);
+        super(cors, null, code);
     }
 
     protected override createResponse(): Response {

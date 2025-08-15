@@ -18,4 +18,4 @@ export { StatusCodes } from "http-status-codes";
 
 export * from "./base";
 export * from "./common";
-export * from "./response";
+export * from "./result";

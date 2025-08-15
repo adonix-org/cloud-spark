@@ -16,15 +16,15 @@
 
 import { StatusCodes } from "http-status-codes";
 import { WorkerBase } from "./base";
-import { WorkerResult } from "./response";
+import { WorkerResult } from "./result";
 import { Method, MimeType } from "./common";
 
 class DebugWorker extends WorkerBase {
     protected override async get(_request: Request): Promise<Response> {
         return new WorkerResult(
             this,
-            StatusCodes.OK,
             "Hello World",
+            StatusCodes.OK,
             MimeType.PLAIN_TEXT
         ).response;
     }
@@ -36,7 +36,7 @@ class DebugWorker extends WorkerBase {
 
 const worker = new DebugWorker({});
 const response = await worker.fetch(
-    new Request("https://www.tybusby.com/api/v2", { method: "GET" })
+    new Request("https://www.tybusby.com/api/v2", { method: "HEAD" })
 );
 
 const text = await response.text();
