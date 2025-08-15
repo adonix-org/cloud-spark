@@ -1,7 +1,7 @@
 {
     "name": "@adonix.org/cf-worker-base",
-    "version": "0.0.17",
-    "description": "A lightweight Cloudflare Worker base class for handling requests.",
+    "version": "0.0.18",
+    "description": "A Cloudflare Worker base class for handling requests.",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
