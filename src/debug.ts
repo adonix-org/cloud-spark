@@ -37,4 +37,4 @@ const response = await worker.fetch(
 
 const text = await response.text();
 console.log(response);
-console.log("text:", text || "EMPTY");
+console.log("body:", text || "EMPTY");
