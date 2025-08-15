@@ -17,7 +17,7 @@
 import { StatusCodes } from "http-status-codes";
 import { WorkerBase } from "./base";
 import { WorkerResult } from "./result";
-import { Method, MimeType } from "./common";
+import { MimeType } from "./common";
 
 class DebugWorker extends WorkerBase {
     protected override async get(_request: Request): Promise<Response> {
@@ -28,15 +28,11 @@ class DebugWorker extends WorkerBase {
             MimeType.PLAIN_TEXT
         ).response;
     }
-
-    public override getAllowMethods(): Method[] {
-        return [Method.GET, Method.HEAD];
-    }
 }
 
 const worker = new DebugWorker({});
 const response = await worker.fetch(
-    new Request("https://www.tybusby.com/api/v2", { method: "POST" })
+    new Request("https://www.tybusby.com/api/v2", { method: "OPTIONS" })
 );
 
 const text = await response.text();
