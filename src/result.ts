@@ -15,7 +15,13 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { CorsProvider, getContentType, Method, MimeType } from "./common";
+import { getContentType, Method, MimeType } from "./common";
+
+export interface CorsProvider {
+    getAllowOrigin(): string;
+    getAllowMethods(): Method[];
+    getAllowHeaders(): string[];
+}
 
 export interface ResponseProvider {
     get response(): Response;
@@ -145,7 +151,7 @@ export class NotImplemented extends ErrorResult {
     }
 }
 
-export class InternalSeverError extends ErrorResult {
+export class InternalServerError extends ErrorResult {
     constructor(cors: CorsProvider, detail?: string) {
         super(cors, StatusCodes.INTERNAL_SERVER_ERROR, detail);
     }

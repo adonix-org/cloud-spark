@@ -15,13 +15,14 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { CorsProvider, isMethod, Method } from "./common";
+import { isMethod, Method } from "./common";
 import {
     Head,
     MethodNotAllowed,
     NotImplemented,
     Options,
-    InternalSeverError as InternalServerError,
+    InternalServerError,
+    CorsProvider,
 } from "./result";
 
 export abstract class WorkerBase implements CorsProvider {

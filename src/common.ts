@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-export interface CorsProvider {
-    getAllowOrigin(): string;
-    getAllowMethods(): Method[];
-    getAllowHeaders(): string[];
-}
-
 export enum Method {
     GET = "GET",
     PUT = "PUT",
@@ -30,10 +24,10 @@ export enum Method {
     OPTIONS = "OPTIONS",
 }
 
-const METHODS_SET: Set<string> = new Set(Object.values(Method));
+const METHOD_SET: Set<string> = new Set(Object.values(Method));
 
 export function isMethod(value: string): value is Method {
-    return METHODS_SET.has(value);
+    return METHOD_SET.has(value);
 }
 
 export function getContentType(type: MimeType): string {
