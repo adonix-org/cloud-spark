@@ -36,11 +36,11 @@ export interface ErrorJson {
 export class WorkerResult implements ResponseProvider {
     private _response?: Response;
     private _headers: Headers = new Headers();
-    private _body: BodyInit | null;
+    private _body: string | null;
 
     constructor(
         protected readonly cors: CorsProvider,
-        content: BodyInit | null = null,
+        content: string | null = null,
         protected readonly code: StatusCodes = StatusCodes.OK,
         protected readonly mimeType: MimeType = MimeType.JSON
     ) {
@@ -52,11 +52,7 @@ export class WorkerResult implements ResponseProvider {
         if (this.body) {
             this.headers.set("Content-Type", getContentType(this.mimeType));
         }
-        return new Response(this._body, {
-            status: this.code,
-            statusText: getReasonPhrase(this.code),
-            headers: this.headers,
-        });
+        return new Response(this.body, this.responseInit);
     }
 
     public get response(): Response {
@@ -66,11 +62,19 @@ export class WorkerResult implements ResponseProvider {
         return this._response;
     }
 
-    protected get body() {
+    public get responseInit(): ResponseInit {
+        return {
+            headers: this.headers,
+            status: this.code,
+            statusText: getReasonPhrase(this.code),
+        };
+    }
+
+    public get body(): string | null {
         return this._body;
     }
 
-    protected set body(body: BodyInit | null) {
+    public set body(body: string | null) {
         this._body = body;
     }
 
