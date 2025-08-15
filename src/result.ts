@@ -152,10 +152,10 @@ export class InternalSeverError extends ErrorResult {
 }
 
 export class MethodNotAllowed extends ErrorResult {
-    constructor(cors: CorsProvider) {
+    constructor(cors: CorsProvider, method: string) {
         super(cors, StatusCodes.METHOD_NOT_ALLOWED);
         this.headers.set("Allow", this.getAllowMethods());
-        this.detail = `Allow: ${this.getAllowMethods()}`;
+        this.detail = `${method} method not allowed.`;
     }
 
     public override get json(): ErrorJson & { allowed: Method[] } {

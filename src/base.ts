@@ -32,27 +32,27 @@ export abstract class WorkerBase implements CorsProvider {
 
     public async fetch(request: Request): Promise<Response> {
         if (!this.isAllowed(request.method)) {
-            return new MethodNotAllowed(this).response;
+            return new MethodNotAllowed(this, request.method).response;
         }
 
         try {
             switch (request.method) {
-                case "GET":
+                case Method.GET:
                     return await this.get(request);
-                case "PUT":
+                case Method.PUT:
                     return await this.put(request);
-                case "POST":
+                case Method.POST:
                     return await this.post(request);
-                case "PATCH":
+                case Method.PATCH:
                     return await this.patch(request);
-                case "DELETE":
+                case Method.DELETE:
                     return await this.delete(request);
-                case "HEAD":
+                case Method.HEAD:
                     return await this.head(request);
-                case "OPTIONS":
+                case Method.OPTIONS:
                     return await this.options();
                 default:
-                    return new MethodNotAllowed(this).response;
+                    return new MethodNotAllowed(this, request.method).response;
             }
         } catch (error) {
             return new InternalServerError(this, String(error)).response;
