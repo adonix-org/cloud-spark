@@ -18,9 +18,11 @@ import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { getContentType, Method, MimeType } from "./common";
 
 export interface CorsProvider {
-    getAllowOrigin(): string;
+    getOrigin(): string | null;
+    getAllowOrigins(): string[];
     getAllowMethods(): Method[];
     getAllowHeaders(): string[];
+    getMaxAgeSeconds(): number;
 }
 
 export interface ErrorJson {
@@ -75,7 +77,14 @@ export class WorkerResponse {
     }
 
     protected addCorsHeaders(): void {
-        this.headers.set("Access-Control-Allow-Origin", this.getAllowOrigin());
+        const origin = this.cors.getOrigin();
+        if (!origin) return; // no Origin header, skip CORS entirely
+
+        if (this.getAllowOrigins().includes("*")) {
+            this.headers.set("Access-Control-Allow-Origin", "*");
+        } else if (this.getAllowOrigins().includes(origin)) {
+            this.headers.set("Access-Control-Allow-Origin", origin);
+        }
         this.headers.set(
             "Access-Control-Allow-Headers",
             this.getAllowHeaders()
@@ -84,6 +93,7 @@ export class WorkerResponse {
             "Access-Control-Allow-Methods",
             this.getAllowMethods()
         );
+        this.headers.set("Access-Control-Max-Age", "0");
         this.headers.set("X-Content-Type-Options", "nosniff");
     }
 
@@ -95,8 +105,8 @@ export class WorkerResponse {
         return this.cors.getAllowHeaders().join(", ");
     }
 
-    protected getAllowOrigin(): string {
-        return this.cors.getAllowOrigin();
+    protected getAllowOrigins(): string[] {
+        return this.cors.getAllowOrigins();
     }
 }
 

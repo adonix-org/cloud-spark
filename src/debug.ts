@@ -18,15 +18,19 @@ import { WorkerBase } from "./base";
 import { HtmlResponse } from "./response";
 
 class DebugWorker extends WorkerBase {
-    protected override async get(_request: Request): Promise<Response> {
+    protected override async get(): Promise<Response> {
         return this.getResponse(HtmlResponse, "Hello World");
     }
 }
 
-const worker = new DebugWorker({});
-const response = await worker.fetch(
-    new Request("https://www.tybusby.com/api/v2", { method: "GET" })
-);
+const request = new Request("https://www.tybusby.com/api/v2", {
+    method: "GET",
+    headers: {
+        Origin: "https://www.adonix.org",
+    },
+});
+const worker = new DebugWorker(request, {});
+const response = await worker.fetch();
 
 const text = await response.text();
 console.log(response);

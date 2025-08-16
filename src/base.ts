@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isMethod, Method } from "./common";
+import { isMethod, Method, Time } from "./common";
 import {
     CorsProvider,
     Head,
@@ -27,56 +27,72 @@ import {
 
 export abstract class WorkerBase implements CorsProvider {
     constructor(
-        protected readonly env: Env,
-        protected readonly ctx?: ExecutionContext
+        private readonly _request: Request,
+        private readonly _env: Env,
+        private readonly _ctx?: ExecutionContext
     ) {}
 
-    public async fetch(request: Request): Promise<Response> {
-        if (!this.isAllowed(request.method)) {
-            return this.getResponse(MethodNotAllowed, request.method);
+    protected get request(): Request {
+        return this._request;
+    }
+
+    protected get env(): Env {
+        return this._env;
+    }
+
+    protected get ctx(): ExecutionContext | undefined {
+        return this._ctx;
+    }
+
+    public async fetch(): Promise<Response> {
+        if (!this.isAllowed(this.request.method)) {
+            return this.getResponse(MethodNotAllowed, this.request.method);
         }
 
         try {
-            switch (request.method) {
+            switch (this.request.method) {
                 case Method.GET:
-                    return await this.get(request);
+                    return await this.get();
                 case Method.PUT:
-                    return await this.put(request);
+                    return await this.put();
                 case Method.POST:
-                    return await this.post(request);
+                    return await this.post();
                 case Method.PATCH:
-                    return await this.patch(request);
+                    return await this.patch();
                 case Method.DELETE:
-                    return await this.delete(request);
+                    return await this.delete();
                 case Method.HEAD:
-                    return await this.head(request);
+                    return await this.head();
                 case Method.OPTIONS:
                     return await this.options();
                 default:
-                    return this.getResponse(MethodNotAllowed, request.method);
+                    return this.getResponse(
+                        MethodNotAllowed,
+                        this.request.method
+                    );
             }
         } catch (error) {
             return this.getResponse(InternalServerError, String(error));
         }
     }
 
-    protected async get(_request: Request): Promise<Response> {
+    protected async get(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected async put(_request: Request): Promise<Response> {
+    protected async put(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected async post(_request: Request): Promise<Response> {
+    protected async post(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected async patch(_request: Request): Promise<Response> {
+    protected async patch(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected async delete(_request: Request): Promise<Response> {
+    protected async delete(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
@@ -84,8 +100,8 @@ export abstract class WorkerBase implements CorsProvider {
         return this.getResponse(Options);
     }
 
-    protected async head(request: Request): Promise<Response> {
-        return this.getResponse(Head, await this.get(request));
+    protected async head(): Promise<Response> {
+        return this.getResponse(Head, await this.get());
     }
 
     protected getResponse<
@@ -100,8 +116,8 @@ export abstract class WorkerBase implements CorsProvider {
         return new ResponseClass(this, ...args).createResponse();
     }
 
-    public getAllowOrigin(): string {
-        return "*";
+    public getAllowOrigins(): string[] {
+        return ["*"];
     }
 
     public getAllowMethods(): Method[] {
@@ -114,5 +130,13 @@ export abstract class WorkerBase implements CorsProvider {
 
     public getAllowHeaders(): string[] {
         return ["Content-Type"];
+    }
+
+    public getMaxAgeSeconds(): number {
+        return Time.Day;
+    }
+
+    public getOrigin(): string | null {
+        return this.request.headers.get("Origin");
     }
 }

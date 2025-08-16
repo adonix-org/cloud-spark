@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+export const Time = {
+    Second: 1,
+    Minute: 60,
+    Hour: 60 * 60,
+    Day: 60 * 60 * 24,
+    Week: 60 * 60 * 24 * 7,
+} as const;
+
 export enum Method {
     GET = "GET",
     PUT = "PUT",
