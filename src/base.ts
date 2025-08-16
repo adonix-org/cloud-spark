@@ -132,7 +132,7 @@ export abstract class WorkerBase implements CorsProvider {
         return ["Content-Type"];
     }
 
-    public getMaxAgeSeconds(): number {
+    public getMaxAge(): number {
         return Time.Day;
     }
 

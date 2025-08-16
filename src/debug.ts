@@ -15,11 +15,20 @@
  */
 
 import { WorkerBase } from "./base";
+import { Time } from "./common";
 import { HtmlResponse } from "./response";
 
 class DebugWorker extends WorkerBase {
     protected override async get(): Promise<Response> {
         return this.getResponse(HtmlResponse, "Hello World");
+    }
+
+    public override getMaxAge(): number {
+        return Time.Week;
+    }
+
+    public override getAllowOrigins(): string[] {
+        return [];
     }
 }
 

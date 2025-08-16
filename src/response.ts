@@ -22,7 +22,7 @@ export interface CorsProvider {
     getAllowOrigins(): string[];
     getAllowMethods(): Method[];
     getAllowHeaders(): string[];
-    getMaxAgeSeconds(): number;
+    getMaxAge(): number;
 }
 
 export interface ErrorJson {
@@ -93,7 +93,7 @@ export class WorkerResponse {
             "Access-Control-Allow-Methods",
             this.getAllowMethods()
         );
-        this.headers.set("Access-Control-Max-Age", "0");
+        this.headers.set("Access-Control-Max-Age", this.getMaxAge());
         this.headers.set("X-Content-Type-Options", "nosniff");
     }
 
@@ -107,6 +107,10 @@ export class WorkerResponse {
 
     protected getAllowOrigins(): string[] {
         return this.cors.getAllowOrigins();
+    }
+
+    protected getMaxAge(): string {
+        return String(this.cors.getMaxAge());
     }
 }
 
