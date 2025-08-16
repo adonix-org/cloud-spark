@@ -28,14 +28,14 @@ class DebugWorker extends WorkerBase {
     }
 
     public override getAllowOrigins(): string[] {
-        return [];
+        return ["https://www.adonix.org", "https://www.tybusby.com"];
     }
 }
 
 const request = new Request("https://www.tybusby.com/api/v2", {
     method: "GET",
     headers: {
-        Origin: "https://www.adonix.org",
+        Origin: "https://www.tybusby.com",
     },
 });
 const worker = new DebugWorker(request, {});
