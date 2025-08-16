@@ -21,6 +21,7 @@ import {
     InternalServerError,
     MethodNotAllowed,
     NotImplemented,
+    Options,
     WorkerResult,
 } from "./result";
 
@@ -80,7 +81,7 @@ export abstract class WorkerBase implements CorsProvider {
     }
 
     protected async options(): Promise<Response> {
-        return this.getResponse(NotImplemented);
+        return this.getResponse(Options);
     }
 
     protected async head(request: Request): Promise<Response> {

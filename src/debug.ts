@@ -32,7 +32,7 @@ class DebugWorker extends WorkerBase {
 
 const worker = new DebugWorker({});
 const response = await worker.fetch(
-    new Request("https://www.tybusby.com/api/v2", { method: "PUT" })
+    new Request("https://www.tybusby.com/api/v2", { method: "OPTIONS" })
 );
 
 const text = await response.text();
