@@ -15,7 +15,7 @@
  */
 
 import { WorkerBase } from "./base";
-import { Time } from "./common";
+import { Method, Time } from "./common";
 import { HtmlResponse } from "./response";
 
 class DebugWorker extends WorkerBase {
@@ -32,8 +32,10 @@ class DebugWorker extends WorkerBase {
     }
 }
 
+const method: Method = Method.POST;
+
 const request = new Request("https://www.tybusby.com/api/v2", {
-    method: "GET",
+    method: method,
     headers: {
         Origin: "https://www.tybusby.com",
     },
