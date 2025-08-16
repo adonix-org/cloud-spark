@@ -23,7 +23,7 @@ import {
     NotImplemented,
     Options,
     WorkerResponse,
-} from "./result";
+} from "./response";
 
 export abstract class WorkerBase implements CorsProvider {
     constructor(

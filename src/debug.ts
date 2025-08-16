@@ -15,7 +15,7 @@
  */
 
 import { WorkerBase } from "./base";
-import { HtmlResponse } from "./result";
+import { HtmlResponse } from "./response";
 
 class DebugWorker extends WorkerBase {
     protected override async get(_request: Request): Promise<Response> {
