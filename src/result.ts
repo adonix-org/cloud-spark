@@ -160,9 +160,45 @@ export class ErrorResult extends JsonResult {
     }
 }
 
-export class NotImplemented extends ErrorResult {
-    constructor(cors: CorsProvider) {
-        super(cors, StatusCodes.NOT_IMPLEMENTED);
+export class BadRequest extends ErrorResult {
+    constructor(cors: CorsProvider, detail?: string) {
+        super(cors, StatusCodes.BAD_REQUEST, detail);
+    }
+}
+
+export class Unauthorized extends ErrorResult {
+    constructor(cors: CorsProvider, detail?: string) {
+        super(cors, StatusCodes.UNAUTHORIZED, detail);
+    }
+}
+
+export class Forbidden extends ErrorResult {
+    constructor(cors: CorsProvider, detail?: string) {
+        super(cors, StatusCodes.FORBIDDEN, detail);
+    }
+}
+
+export class NotFound extends ErrorResult {
+    constructor(cors: CorsProvider, detail?: string) {
+        super(cors, StatusCodes.NOT_FOUND, detail);
+    }
+}
+
+export class MethodNotAllowed extends ErrorResult {
+    constructor(cors: CorsProvider, method: string) {
+        super(
+            cors,
+            StatusCodes.METHOD_NOT_ALLOWED,
+            `${method} method not allowed.`
+        );
+        this.headers.set("Allow", this.getAllowMethods());
+    }
+
+    public override get json(): ErrorJson & { allowed: Method[] } {
+        return {
+            ...super.json,
+            allowed: this.cors.getAllowMethods(),
+        };
     }
 }
 
@@ -172,17 +208,8 @@ export class InternalServerError extends ErrorResult {
     }
 }
 
-export class MethodNotAllowed extends ErrorResult {
-    constructor(cors: CorsProvider, method: string) {
-        super(cors, StatusCodes.METHOD_NOT_ALLOWED);
-        this.headers.set("Allow", this.getAllowMethods());
-        this.details = `${method} method not allowed.`;
-    }
-
-    public override get json(): ErrorJson & { allowed: Method[] } {
-        return {
-            ...super.json,
-            allowed: this.cors.getAllowMethods(),
-        };
+export class NotImplemented extends ErrorResult {
+    constructor(cors: CorsProvider) {
+        super(cors, StatusCodes.NOT_IMPLEMENTED);
     }
 }
