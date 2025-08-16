@@ -29,7 +29,7 @@ export interface ErrorJson {
     details: string;
 }
 
-export class WorkerResult {
+export class WorkerResponse {
     private _headers: Headers = new Headers();
     private _body: string | null;
 
@@ -100,7 +100,7 @@ export class WorkerResult {
     }
 }
 
-export class JsonResult extends WorkerResult {
+export class JsonResponse extends WorkerResponse {
     private _json: object;
     constructor(
         cors: CorsProvider,
@@ -125,24 +125,35 @@ export class JsonResult extends WorkerResult {
     }
 }
 
+export class HtmlResponse extends WorkerResponse {
+    constructor(
+        cors: CorsProvider,
+        content: string,
+        code: StatusCodes = StatusCodes.OK,
+        type: MimeType = MimeType.HTML
+    ) {
+        super(cors, content, code, type);
+    }
+}
+
 /**
  * Remove the body from a GET response.
  */
-export class Head extends WorkerResult {
+export class Head extends WorkerResponse {
     constructor(cors: CorsProvider, response: Response) {
         super(cors, null, response.status);
         this.headers = new Headers(response.headers);
     }
 }
 
-export class Options extends WorkerResult {
+export class Options extends WorkerResponse {
     constructor(cors: CorsProvider) {
         super(cors, null, StatusCodes.NO_CONTENT);
         this.headers.set("Allow", this.getAllowMethods());
     }
 }
 
-export class ErrorResult extends JsonResult {
+export class ErrorResult extends JsonResponse {
     constructor(
         cors: CorsProvider,
         code: StatusCodes,

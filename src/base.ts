@@ -22,7 +22,7 @@ import {
     MethodNotAllowed,
     NotImplemented,
     Options,
-    WorkerResult,
+    WorkerResponse,
 } from "./result";
 
 export abstract class WorkerBase implements CorsProvider {
@@ -89,7 +89,7 @@ export abstract class WorkerBase implements CorsProvider {
     }
 
     protected getResponse<
-        T extends WorkerResult,
+        T extends WorkerResponse,
         Ctor extends new (cors: CorsProvider, ...args: any[]) => T
     >(
         ResultClass: Ctor,
