@@ -92,12 +92,12 @@ export abstract class WorkerBase implements CorsProvider {
         T extends WorkerResponse,
         Ctor extends new (cors: CorsProvider, ...args: any[]) => T
     >(
-        ResultClass: Ctor,
+        ResponseClass: Ctor,
         ...args: ConstructorParameters<Ctor> extends [any, ...infer R]
             ? R
             : never
     ): Response {
-        return new ResultClass(this, ...args).createResponse();
+        return new ResponseClass(this, ...args).createResponse();
     }
 
     public getAllowOrigin(): string {
