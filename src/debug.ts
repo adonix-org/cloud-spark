@@ -21,18 +21,18 @@ import { MimeType } from "./common";
 
 class DebugWorker extends WorkerBase {
     protected override async get(_request: Request): Promise<Response> {
-        return new WorkerResult(
-            this,
+        return this.getResponse(
+            WorkerResult,
             "Hello World",
             StatusCodes.OK,
             MimeType.PLAIN_TEXT
-        ).response;
+        );
     }
 }
 
 const worker = new DebugWorker({});
 const response = await worker.fetch(
-    new Request("https://www.tybusby.com/api/v2", { method: "HEAD" })
+    new Request("https://www.tybusby.com/api/v2", { method: "PUT" })
 );
 
 const text = await response.text();

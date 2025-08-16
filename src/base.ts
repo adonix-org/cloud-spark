@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { isMethod, Method } from "./common";
 import {
+    CorsProvider,
     Head,
+    InternalServerError,
     MethodNotAllowed,
     NotImplemented,
-    Options,
-    InternalServerError,
-    CorsProvider,
+    WorkerResult,
 } from "./result";
 
 export abstract class WorkerBase implements CorsProvider {
@@ -33,7 +32,7 @@ export abstract class WorkerBase implements CorsProvider {
 
     public async fetch(request: Request): Promise<Response> {
         if (!this.isAllowed(request.method)) {
-            return new MethodNotAllowed(this, request.method).response;
+            return this.getResponse(MethodNotAllowed, request.method);
         }
 
         try {
@@ -53,47 +52,51 @@ export abstract class WorkerBase implements CorsProvider {
                 case Method.OPTIONS:
                     return await this.options();
                 default:
-                    return new MethodNotAllowed(this, request.method).response;
+                    return this.getResponse(MethodNotAllowed, request.method);
             }
         } catch (error) {
-            return new InternalServerError(this, String(error)).response;
+            return this.getResponse(InternalServerError, String(error));
         }
     }
 
     protected async get(_request: Request): Promise<Response> {
-        return new NotImplemented(this).response;
+        return this.getResponse(NotImplemented);
     }
 
     protected async put(_request: Request): Promise<Response> {
-        return new NotImplemented(this).response;
+        return this.getResponse(NotImplemented);
     }
 
     protected async post(_request: Request): Promise<Response> {
-        return new NotImplemented(this).response;
+        return this.getResponse(NotImplemented);
     }
 
     protected async patch(_request: Request): Promise<Response> {
-        return new NotImplemented(this).response;
+        return this.getResponse(NotImplemented);
     }
 
     protected async delete(_request: Request): Promise<Response> {
-        return new NotImplemented(this).response;
+        return this.getResponse(NotImplemented);
     }
 
     protected async options(): Promise<Response> {
-        return new Options(this).response;
+        return this.getResponse(NotImplemented);
     }
 
     protected async head(request: Request): Promise<Response> {
-        return new Head(this, await this.get(request)).response;
+        return this.getResponse(Head, await this.get(request));
     }
 
-    protected getError(code: StatusCodes, detail?: string): string {
-        return JSON.stringify({
-            code,
-            error: getReasonPhrase(code),
-            detail: detail,
-        });
+    protected getResponse<
+        T extends WorkerResult,
+        Ctor extends new (cors: CorsProvider, ...args: any[]) => T
+    >(
+        ResultClass: Ctor,
+        ...args: ConstructorParameters<Ctor> extends [any, ...infer R]
+            ? R
+            : never
+    ): Response {
+        return new ResultClass(this, ...args).createResponse();
     }
 
     public getAllowOrigin(): string {
@@ -104,7 +107,7 @@ export abstract class WorkerBase implements CorsProvider {
         return [Method.GET, Method.OPTIONS, Method.HEAD];
     }
 
-    private isAllowed(method: string): boolean {
+    public isAllowed(method: string): boolean {
         return isMethod(method) && this.getAllowMethods().includes(method);
     }
 

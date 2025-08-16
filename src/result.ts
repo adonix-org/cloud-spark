@@ -23,18 +23,13 @@ export interface CorsProvider {
     getAllowHeaders(): string[];
 }
 
-export interface ResponseProvider {
-    get response(): Response;
-}
-
 export interface ErrorJson {
     code: number;
     error: string;
     details: string;
 }
 
-export class WorkerResult implements ResponseProvider {
-    private _response?: Response;
+export class WorkerResult {
     private _headers: Headers = new Headers();
     private _body: string | null;
 
@@ -47,19 +42,12 @@ export class WorkerResult implements ResponseProvider {
         this._body = this.code === StatusCodes.NO_CONTENT ? null : content;
     }
 
-    protected createResponse(): Response {
+    public createResponse(): Response {
         this.addCorsHeaders();
         if (this.body) {
             this.headers.set("Content-Type", getContentType(this.mimeType));
         }
         return new Response(this.body, this.responseInit);
-    }
-
-    public get response(): Response {
-        if (!this._response) {
-            this._response = this.createResponse();
-        }
-        return this._response;
     }
 
     public get responseInit(): ResponseInit {
@@ -70,11 +58,11 @@ export class WorkerResult implements ResponseProvider {
         };
     }
 
-    public get body(): string | null {
+    protected get body(): string | null {
         return this._body;
     }
 
-    public set body(body: string | null) {
+    protected set body(body: string | null) {
         this._body = body;
     }
 
@@ -131,7 +119,7 @@ export class JsonResult extends WorkerResult {
         this._json = json;
     }
 
-    protected override createResponse(): Response {
+    public override createResponse(): Response {
         this.body = JSON.stringify(this.json);
         return super.createResponse();
     }
