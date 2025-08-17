@@ -1,2 +1,2 @@
 # cloud-spark
-A Cloudflare Worker base class for handling requests.
+Ignite Cloudflare projects instantly with a lightweight, developer-friendly library for quick setup and deployment.
