@@ -48,8 +48,6 @@ export abstract class RoutedWorker extends BasicWorker {
         if (!isMethod(method)) {
             throw new Error(`Unknown method ${method}`);
         }
-
-        // Subclass is adding a method that is not allowed.
         if (!this.getAllowMethods().includes(method)) {
             throw new Error(
                 `${method} is not currently allowed. Update or override getAllowedMethods()`
@@ -73,7 +71,6 @@ export abstract class RoutedWorker extends BasicWorker {
         try {
             url = new URL(this.request.url);
         } catch {
-            // Malformed URL — client sent something we can't parse
             return this.getResponse(BadRequest, "Malformed URL");
         }
 
