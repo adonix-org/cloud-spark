@@ -43,8 +43,6 @@ export abstract class RoutedWorker extends BasicWorker {
         callback: () => Response | Promise<Response>,
         method: Method = Method.GET
     ): void {
-        const boundCallback = callback.bind(this);
-
         if (!isMethod(method)) {
             throw new Error(`Unknown method ${method}`);
         }
@@ -53,6 +51,8 @@ export abstract class RoutedWorker extends BasicWorker {
                 `${method} is not currently allowed. Update or override getAllowedMethods()`
             );
         }
+
+        const boundCallback = callback.bind(this);
         const handlers = this.routes.get(method) ?? [];
         handlers.push({ route, callback: boundCallback });
         this.routes.set(method, handlers);
