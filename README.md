@@ -1,2 +1,2 @@
-# cf-worker-base
-A Cloudflare Worker base class for handling requests.
+# cloud-spark
+Ignite your Cloudflare Workers with a type-safe library for rapid development.
