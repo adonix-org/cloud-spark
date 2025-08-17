@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { WorkerBase } from "./base";
+import { BasicWorker } from "./basic-worker";
 import { Method, Time } from "./common";
 import { JsonResponse } from "./response";
 
-class DebugWorker extends WorkerBase {
+class DebugWorker extends BasicWorker {
     protected override async get(): Promise<Response> {
         return this.getResponse(JsonResponse);
     }
