@@ -19,7 +19,6 @@ import { JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
-    private msg = "GET SEASON";
     protected addRoutes(): void {
         this.addRoute(/^\/api\/v1\/seasons\/\d{4}$/, this.getSeason);
         this.addRoute("/api/v1/seasons", (): Response => {
@@ -28,7 +27,6 @@ class DebugWorker extends RoutedWorker {
     }
 
     protected getSeason(): Response {
-        console.log(this.msg);
         return this.getResponse(JsonResponse, { season: 2024 });
     }
 
