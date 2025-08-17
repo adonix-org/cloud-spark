@@ -1,2 +1,2 @@
 # cloud-spark
-Spark your Cloudflare projects with fast, developer-friendly setup.
+Ignite your Cloudflare Workers with a type-safe library for rapid development.
