@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { BasicWorker } from "./basic-worker";
-import { Method, Time } from "./common";
+import { Method } from "./common";
 import { JsonResponse } from "./response";
+import { RoutedWorker } from "./routed-worker";
 
-class DebugWorker extends BasicWorker {
-    protected override async get(): Promise<Response> {
-        return this.getResponse(JsonResponse);
+class DebugWorker extends RoutedWorker {
+    private msg = "GET SEASON";
+    protected addRoutes(): void {
+        this.addRoute(/^\/api\/v1\/seasons\/\d+$/, this.getSeason);
     }
 
-    public override getMaxAge(): number {
-        return Time.Week;
+    protected getSeason(): Response {
+        console.log(this.msg);
+        return this.getResponse(JsonResponse, { season: 2024 });
     }
 
     public override getAllowOrigins(): string[] {
@@ -34,7 +36,7 @@ class DebugWorker extends BasicWorker {
 
 const method: Method = Method.GET;
 
-const request = new Request("https://www.tybusby.com/api/v2", {
+const request = new Request("https://www.tybusby.com/api/v1/seasons/2025", {
     method: method,
     headers: {
         Origin: "https://www.tybusby.com",

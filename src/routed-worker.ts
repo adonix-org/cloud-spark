@@ -25,7 +25,7 @@ import {
 
 interface RouteHandler {
     route: string | RegExp;
-    handler: () => Response;
+    handler: () => Response | Promise<Response>;
 }
 
 export abstract class RoutedWorker extends BasicWorker {
@@ -40,9 +40,11 @@ export abstract class RoutedWorker extends BasicWorker {
 
     protected addRoute(
         route: string | RegExp,
-        handler: () => Response,
+        handler: () => Response | Promise<Response>,
         method: Method = Method.GET
     ): void {
+        const boundHandler = handler.bind(this);
+
         if (!isMethod(method)) {
             throw new Error(`Unknown method ${method}`);
         }
@@ -53,9 +55,8 @@ export abstract class RoutedWorker extends BasicWorker {
                 `${method} is not currently allowed. Update or override getAllowedMethods()`
             );
         }
-
         const handlers = this.routes.get(method) ?? [];
-        handlers.push({ route, handler });
+        handlers.push({ route, handler: boundHandler });
         this.routes.set(method, handlers);
     }
 
@@ -77,15 +78,19 @@ export abstract class RoutedWorker extends BasicWorker {
         }
 
         const handlers = this.routes.get(method) ?? [];
-        try {
-            const match = handlers.find(({ route }) =>
-                route instanceof RegExp
-                    ? route.test(url.pathname)
-                    : route === url.pathname
-            );
-            return match ? match.handler() : this.getResponse(NotFound);
-        } catch (error) {
-            return this.getResponse(InternalServerError, String(error));
+        const match = handlers.find(({ route }) =>
+            route instanceof RegExp
+                ? route.test(url.pathname)
+                : route === url.pathname
+        );
+
+        if (match) {
+            try {
+                return await match.handler();
+            } catch (err) {
+                return this.getResponse(InternalServerError, String(err));
+            }
         }
+        return this.getResponse(NotFound);
     }
 }
