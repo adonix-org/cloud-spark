@@ -150,6 +150,17 @@ export class HtmlResponse extends WorkerResponse {
     }
 }
 
+export class TextResponse extends WorkerResponse {
+    constructor(
+        cors: CorsProvider,
+        content: string,
+        code: StatusCodes = StatusCodes.OK,
+        type: MimeType = MimeType.PLAIN_TEXT
+    ) {
+        super(cors, content, code, type);
+    }
+}
+
 /**
  * Remove the body from a GET response.
  */

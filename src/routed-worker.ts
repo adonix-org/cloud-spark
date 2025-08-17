@@ -25,7 +25,7 @@ import {
 
 interface RouteHandler {
     route: string | RegExp;
-    handler: () => Response | Promise<Response>;
+    callback: () => Response | Promise<Response>;
 }
 
 export abstract class RoutedWorker extends BasicWorker {
@@ -40,10 +40,10 @@ export abstract class RoutedWorker extends BasicWorker {
 
     protected addRoute(
         route: string | RegExp,
-        handler: () => Response | Promise<Response>,
+        callback: () => Response | Promise<Response>,
         method: Method = Method.GET
     ): void {
-        const boundHandler = handler.bind(this);
+        const boundCallback = callback.bind(this);
 
         if (!isMethod(method)) {
             throw new Error(`Unknown method ${method}`);
@@ -56,7 +56,7 @@ export abstract class RoutedWorker extends BasicWorker {
             );
         }
         const handlers = this.routes.get(method) ?? [];
-        handlers.push({ route, handler: boundHandler });
+        handlers.push({ route, callback: boundCallback });
         this.routes.set(method, handlers);
     }
 
@@ -86,7 +86,7 @@ export abstract class RoutedWorker extends BasicWorker {
 
         if (match) {
             try {
-                return await match.handler();
+                return await match.callback();
             } catch (err) {
                 return this.getResponse(InternalServerError, String(err));
             }

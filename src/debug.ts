@@ -15,13 +15,16 @@
  */
 
 import { Method } from "./common";
-import { JsonResponse } from "./response";
+import { JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
     private msg = "GET SEASON";
     protected addRoutes(): void {
-        this.addRoute(/^\/api\/v1\/seasons\/\d+$/, this.getSeason);
+        this.addRoute(/^\/api\/v1\/seasons\/\d{4}$/, this.getSeason);
+        this.addRoute("/api/v1/seasons", (): Response => {
+            return this.getResponse(TextResponse, "Just a test.");
+        });
     }
 
     protected getSeason(): Response {
@@ -36,10 +39,10 @@ class DebugWorker extends RoutedWorker {
 
 const method: Method = Method.GET;
 
-const request = new Request("https://www.tybusby.com/api/v1/seasons/2025", {
+const request = new Request("https://www.adonix.org/api/v1/seasons", {
     method: method,
     headers: {
-        Origin: "https://www.tybusby.com",
+        Origin: "https://www.adonix.org",
     },
 });
 const worker = new DebugWorker(request);
@@ -47,4 +50,4 @@ const response = await worker.fetch();
 
 const text = await response.text();
 console.log(response);
-console.log("body:", JSON.parse(text) || "EMPTY");
+console.log("body:", text || "EMPTY");
