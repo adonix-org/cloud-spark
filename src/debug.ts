@@ -34,18 +34,17 @@ class DebugWorker extends RoutedWorker {
         return ["https://www.adonix.org", "https://www.tybusby.com"];
     }
 
-    public override getAllowMethods(): Method[] {
-        return [...super.getAllowMethods(), Method.POST];
-    }
-
-    protected override post(): Response {
-        return this.getResponse(TextResponse, "POST: got it.");
+    protected override get(): Response {
+        return this.getResponse(
+            TextResponse,
+            "No route matched. Sending default GET."
+        );
     }
 }
 
-const method: Method = Method.POST;
+const method: Method = Method.GET;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/2024", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/ABCD", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",
