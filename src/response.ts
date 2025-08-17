@@ -33,7 +33,7 @@ export interface ErrorJson {
 
 export class WorkerResponse {
     private _headers: Headers = new Headers();
-    private _body: string | null;
+    private _body: BodyInit | null;
 
     constructor(
         protected readonly cors: CorsProvider,
@@ -60,12 +60,8 @@ export class WorkerResponse {
         };
     }
 
-    protected get body(): string | null {
+    protected get body(): BodyInit | null {
         return this._body;
-    }
-
-    protected set body(body: string | null) {
-        this._body = body;
     }
 
     protected get headers(): Headers {
@@ -133,9 +129,8 @@ export class JsonResponse extends WorkerResponse {
         this._json = json;
     }
 
-    public override createResponse(): Response {
-        this.body = JSON.stringify(this.json);
-        return super.createResponse();
+    protected override get body(): string {
+        return JSON.stringify(this.json);
     }
 }
 

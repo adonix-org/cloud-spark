@@ -67,6 +67,15 @@ export abstract class RoutedWorker extends BasicWorker {
             return this.getResponse(MethodNotAllowed, this.request.method);
         }
 
+        const response = await this.search(method);
+        if (response) {
+            return response;
+        }
+
+        return await this.search(method);
+    }
+
+    private async search(method: Method): Promise<Response> {
         let url: URL;
         try {
             url = new URL(this.request.url);
@@ -80,7 +89,6 @@ export abstract class RoutedWorker extends BasicWorker {
                 ? route.test(url.pathname)
                 : route === url.pathname
         );
-
         if (match) {
             try {
                 return await match.callback();
@@ -88,7 +96,12 @@ export abstract class RoutedWorker extends BasicWorker {
                 return this.getResponse(InternalServerError, String(err));
             }
         }
-        return await super.fetch();
+
+        return super.fetch();
+    }
+
+    protected override async head(): Promise<Response> {
+        return this.search(Method.GET);
     }
 
     protected override get(): Response | Promise<Response> {
