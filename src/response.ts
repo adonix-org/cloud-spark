@@ -52,7 +52,7 @@ export class WorkerResponse {
         return new Response(this.body, this.responseInit);
     }
 
-    public get responseInit(): ResponseInit {
+    protected get responseInit(): ResponseInit {
         return {
             headers: this.headers,
             status: this.code,
@@ -78,7 +78,7 @@ export class WorkerResponse {
 
     protected addCorsHeaders(): void {
         const origin = this.cors.getOrigin();
-        if (!origin) return; // no Origin header, skip CORS entirely
+        if (!origin) return; // no Origin, skip CORS
 
         if (this.getAllowOrigins().includes("*")) {
             this.headers.set("Access-Control-Allow-Origin", "*");

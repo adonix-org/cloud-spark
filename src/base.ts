@@ -28,7 +28,7 @@ import {
 export abstract class WorkerBase implements CorsProvider {
     constructor(
         private readonly _request: Request,
-        private readonly _env: Env,
+        private readonly _env: Env = {},
         private readonly _ctx?: ExecutionContext
     ) {}
 

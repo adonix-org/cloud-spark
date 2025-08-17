@@ -16,11 +16,11 @@
 
 import { WorkerBase } from "./base";
 import { Method, Time } from "./common";
-import { HtmlResponse } from "./response";
+import { JsonResponse } from "./response";
 
 class DebugWorker extends WorkerBase {
     protected override async get(): Promise<Response> {
-        return this.getResponse(HtmlResponse, "Hello World");
+        return this.getResponse(JsonResponse);
     }
 
     public override getMaxAge(): number {
@@ -32,7 +32,7 @@ class DebugWorker extends WorkerBase {
     }
 }
 
-const method: Method = Method.POST;
+const method: Method = Method.GET;
 
 const request = new Request("https://www.tybusby.com/api/v2", {
     method: method,
@@ -40,9 +40,9 @@ const request = new Request("https://www.tybusby.com/api/v2", {
         Origin: "https://www.tybusby.com",
     },
 });
-const worker = new DebugWorker(request, {});
+const worker = new DebugWorker(request);
 const response = await worker.fetch();
 
 const text = await response.text();
 console.log(response);
-console.log("body:", text || "EMPTY");
+console.log("body:", JSON.parse(text) || "EMPTY");
