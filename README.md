@@ -1,2 +1,2 @@
-# cf-worker-base
+# cloud-spark
 A Cloudflare Worker base class for handling requests.
