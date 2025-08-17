@@ -100,7 +100,7 @@ export abstract class BasicWorker implements CorsProvider {
         return this.getResponse(Options);
     }
 
-    private async head(): Promise<Response> {
+    protected async head(): Promise<Response> {
         return this.getResponse(Head, await this.get());
     }
 

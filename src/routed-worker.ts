@@ -52,9 +52,9 @@ export abstract class RoutedWorker extends BasicWorker {
             );
         }
 
-        const boundCallback = callback.bind(this);
+        const bound = callback.bind(this);
         const handlers = this.routes.get(method) ?? [];
-        handlers.push({ route, callback: boundCallback });
+        handlers.push({ route, callback: bound });
         this.routes.set(method, handlers);
     }
 
