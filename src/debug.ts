@@ -21,6 +21,7 @@ import { RoutedWorker } from "./routed-worker";
 class DebugWorker extends RoutedWorker {
     protected addRoutes(): void {
         this.addRoute(new RegExp(`^/api/v1/seasons/\\d{4}$`), this.getSeasons);
+        // this.addRoute(new RegExp(`(`), this.getSeasons);
         this.addRoute(`/api/v1/seasons`, (): Response => {
             return this.getResponse(TextResponse, "Just a test.");
         });

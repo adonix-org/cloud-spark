@@ -96,11 +96,11 @@ export abstract class BasicWorker implements CorsProvider {
         return this.getResponse(NotImplemented);
     }
 
-    protected options(): Response | Promise<Response> {
+    private options(): Response | Promise<Response> {
         return this.getResponse(Options);
     }
 
-    protected async head(): Promise<Response> {
+    private async head(): Promise<Response> {
         return this.getResponse(Head, await this.get());
     }
 
