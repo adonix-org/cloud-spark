@@ -20,24 +20,32 @@ import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
     protected addRoutes(): void {
-        this.addRoute(/^\/api\/v1\/seasons\/\d{4}$/, this.getSeason);
+        this.addRoute(new RegExp(`^/api/v1/seasons/\\d{4}$`), this.getSeasons);
         this.addRoute(`/api/v1/seasons`, (): Response => {
             return this.getResponse(TextResponse, "Just a test.");
         });
     }
 
-    protected getSeason(): Response {
+    protected getSeasons(): Response {
         return this.getResponse(JsonResponse, { season: 2024 });
     }
 
     public override getAllowOrigins(): string[] {
         return ["https://www.adonix.org", "https://www.tybusby.com"];
     }
+
+    public override getAllowMethods(): Method[] {
+        return [...super.getAllowMethods(), Method.POST];
+    }
+
+    protected override post(): Response {
+        return this.getResponse(TextResponse, "POST: got it.");
+    }
 }
 
-const method: Method = Method.GET;
+const method: Method = Method.POST;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/2024", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",

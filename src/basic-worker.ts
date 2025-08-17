@@ -76,27 +76,27 @@ export abstract class BasicWorker implements CorsProvider {
         }
     }
 
-    protected async get(): Promise<Response> {
+    protected get(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected async put(): Promise<Response> {
+    protected put(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected async post(): Promise<Response> {
+    protected post(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected async patch(): Promise<Response> {
+    protected patch(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected async delete(): Promise<Response> {
+    protected delete(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected async options(): Promise<Response> {
+    protected options(): Response | Promise<Response> {
         return this.getResponse(Options);
     }
 

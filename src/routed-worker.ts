@@ -31,8 +31,8 @@ interface RouteHandler {
 export abstract class RoutedWorker extends BasicWorker {
     private routes: Map<Method, RouteHandler[]> = new Map();
 
-    constructor(_request: Request, _env: Env = {}, _ctx?: ExecutionContext) {
-        super(_request, _env, _ctx);
+    constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
+        super(request, env, ctx);
         this.addRoutes();
     }
 
@@ -88,6 +88,26 @@ export abstract class RoutedWorker extends BasicWorker {
                 return this.getResponse(InternalServerError, String(err));
             }
         }
+        return await super.fetch();
+    }
+
+    protected override get(): Response | Promise<Response> {
+        return this.getResponse(NotFound);
+    }
+
+    protected override put(): Response | Promise<Response> {
+        return this.getResponse(NotFound);
+    }
+
+    protected override post(): Response | Promise<Response> {
+        return this.getResponse(NotFound);
+    }
+
+    protected override patch(): Response | Promise<Response> {
+        return this.getResponse(NotFound);
+    }
+
+    protected override delete(): Response | Promise<Response> {
         return this.getResponse(NotFound);
     }
 }
