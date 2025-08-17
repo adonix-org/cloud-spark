@@ -47,8 +47,12 @@ export abstract class RoutedWorker extends BasicWorker {
             throw new Error(`Unknown method ${method}`);
         }
 
-        // Maybe do a warning or error if adding a Method route that is not
-        // in getAllowedMethods?
+        // Subclass is adding a method that is not allowed.
+        if (!this.getAllowMethods().includes(method)) {
+            throw new Error(
+                `${method} is not currently allowed. Update or override getAllowedMethods()`
+            );
+        }
 
         const handlers = this.routes.get(method) ?? [];
         handlers.push({ route, handler });
