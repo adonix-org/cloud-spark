@@ -21,7 +21,7 @@ import { RoutedWorker } from "./routed-worker";
 class DebugWorker extends RoutedWorker {
     protected addRoutes(): void {
         this.addRoute(/^\/api\/v1\/seasons\/\d{4}$/, this.getSeason);
-        this.addRoute("/api/v1/seasons", (): Response => {
+        this.addRoute(`/api/v1/seasons`, (): Response => {
             return this.getResponse(TextResponse, "Just a test.");
         });
     }
