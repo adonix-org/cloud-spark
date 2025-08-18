@@ -25,7 +25,7 @@ import {
     WorkerResponse,
 } from "./response";
 
-export class BasicWorker implements CorsProvider {
+export abstract class BasicWorker implements CorsProvider {
     private origin: string | null = null;
 
     constructor(
@@ -43,27 +43,23 @@ export class BasicWorker implements CorsProvider {
 
     protected async dispatch(request: Request): Promise<Response> {
         const method = request.method as Method;
-        try {
-            switch (method) {
-                case Method.GET:
-                    return await this.get(request);
-                case Method.PUT:
-                    return await this.put(request);
-                case Method.POST:
-                    return await this.post(request);
-                case Method.PATCH:
-                    return await this.patch(request);
-                case Method.DELETE:
-                    return await this.delete(request);
-                case Method.HEAD:
-                    return await this.head(request);
-                case Method.OPTIONS:
-                    return await this.options(request);
-                default:
-                    return this.getResponse(MethodNotAllowed, method);
-            }
-        } catch (error) {
-            return this.getResponse(InternalServerError, String(error));
+        switch (method) {
+            case Method.GET:
+                return await this.get(request);
+            case Method.PUT:
+                return await this.put(request);
+            case Method.POST:
+                return await this.post(request);
+            case Method.PATCH:
+                return await this.patch(request);
+            case Method.DELETE:
+                return await this.delete(request);
+            case Method.HEAD:
+                return await this.head(request);
+            case Method.OPTIONS:
+                return await this.options(request);
+            default:
+                return this.getResponse(MethodNotAllowed, method);
         }
     }
 
@@ -74,7 +70,11 @@ export class BasicWorker implements CorsProvider {
 
         this.origin = request.headers.get("Origin");
 
-        return this.dispatch(request);
+        try {
+            return this.dispatch(request);
+        } catch (error) {
+            return this.getResponse(InternalServerError, String(error));
+        }
     }
 
     protected get(_request: Request): Response | Promise<Response> {

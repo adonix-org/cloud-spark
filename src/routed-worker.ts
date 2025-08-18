@@ -16,7 +16,7 @@
 
 import { BasicWorker } from "./basic-worker";
 import { Method } from "./common";
-import { Head, InternalServerError, NotFound } from "./response";
+import { Head, NotFound } from "./response";
 
 interface RouteHandler {
     route: string | RegExp;
@@ -70,15 +70,11 @@ export abstract class RoutedWorker extends BasicWorker {
                 : route === url.pathname
         );
         if (handler) {
-            try {
-                if (handler.route instanceof RegExp) {
-                    const match = url.pathname.match(handler.route);
-                    return await handler.callback(request, ...(match ?? []));
-                } else {
-                    return await handler.callback(request);
-                }
-            } catch (err) {
-                return this.getResponse(InternalServerError, String(err));
+            if (handler.route instanceof RegExp) {
+                const match = url.pathname.match(handler.route);
+                return await handler.callback(request, ...(match ?? []));
+            } else {
+                return await handler.callback(request);
             }
         }
         return undefined;
