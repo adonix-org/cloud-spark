@@ -26,12 +26,15 @@ import {
 } from "./response";
 
 export abstract class BasicWorker implements CorsProvider {
-    private origin: string | null = null;
-
     constructor(
+        private readonly _request: Request,
         private readonly _env: Env = {},
         private readonly _ctx?: ExecutionContext
     ) {}
+
+    protected get request(): Request {
+        return this._request;
+    }
 
     protected get env(): Env {
         return this._env;
@@ -45,64 +48,62 @@ export abstract class BasicWorker implements CorsProvider {
         const method = request.method as Method;
         switch (method) {
             case Method.GET:
-                return await this.get(request);
+                return await this.get();
             case Method.PUT:
-                return await this.put(request);
+                return await this.put();
             case Method.POST:
-                return await this.post(request);
+                return await this.post();
             case Method.PATCH:
-                return await this.patch(request);
+                return await this.patch();
             case Method.DELETE:
-                return await this.delete(request);
+                return await this.delete();
             case Method.HEAD:
-                return await this.head(request);
+                return await this.head();
             case Method.OPTIONS:
-                return await this.options(request);
+                return await this.options();
             default:
                 return this.getResponse(MethodNotAllowed, method);
         }
     }
 
-    public async fetch(request: Request): Promise<Response> {
-        if (!this.isAllowed(request.method)) {
-            return this.getResponse(MethodNotAllowed, request.method);
+    public async fetch(): Promise<Response> {
+        if (!this.isAllowed(this.request.method)) {
+            return this.getResponse(MethodNotAllowed, this.request.method);
         }
 
-        this.origin = request.headers.get("Origin");
-
         try {
-            return this.dispatch(request);
+            return this.dispatch(this.request);
         } catch (error) {
             return this.getResponse(InternalServerError, String(error));
         }
     }
 
-    protected get(_request: Request): Response | Promise<Response> {
+    protected get(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected put(_request: Request): Response | Promise<Response> {
+    protected put(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected post(_request: Request): Response | Promise<Response> {
+    protected post(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected patch(_request: Request): Response | Promise<Response> {
+    protected patch(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected delete(_request: Request): Response | Promise<Response> {
+    protected delete(): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected options(_request: Request): Response | Promise<Response> {
+    protected options(): Response | Promise<Response> {
         return this.getResponse(Options);
     }
 
-    protected async head(request: Request): Promise<Response> {
-        return this.getResponse(Head, await this.get(request));
+    protected async head(): Promise<Response> {
+        return this.getResponse(Head, await this.get());
     }
 
     protected getResponse<
@@ -138,6 +139,6 @@ export abstract class BasicWorker implements CorsProvider {
     }
 
     public getOrigin(): string | null {
-        return this.origin;
+        return this.request.headers.get("Origin");
     }
 }

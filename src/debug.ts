@@ -41,7 +41,7 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.GET;
+const method: Method = Method.PUT;
 
 const request = new Request("https://www.adonix.org/api/v1/seasons/1900", {
     method: method,
@@ -49,8 +49,8 @@ const request = new Request("https://www.adonix.org/api/v1/seasons/1900", {
         Origin: "https://www.adonix.org",
     },
 });
-const worker = new DebugWorker();
-const response = await worker.fetch(request);
+const worker = new DebugWorker(request);
+const response = await worker.fetch();
 
 const text = await response.text();
 console.log(response);

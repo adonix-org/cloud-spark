@@ -29,8 +29,8 @@ interface RouteHandler {
 export abstract class RoutedWorker extends BasicWorker {
     private readonly routes: Map<Method, RouteHandler[]> = new Map();
 
-    constructor(env: Env = {}, ctx?: ExecutionContext) {
-        super(env, ctx);
+    constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
+        super(request, env, ctx);
         this.addRoutes();
     }
 
@@ -80,10 +80,12 @@ export abstract class RoutedWorker extends BasicWorker {
         return undefined;
     }
 
-    protected override async head(request: Request): Promise<Response> {
+    protected override async head(): Promise<Response> {
         return this.getResponse(
             Head,
-            await this.dispatch(new Request(request, { method: Method.GET }))
+            await this.dispatch(
+                new Request(this.request, { method: Method.GET })
+            )
         );
     }
 
