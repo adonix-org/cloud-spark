@@ -15,7 +15,7 @@
  */
 
 import { BasicWorker } from "./basic-worker";
-import { isMethod, Method } from "./common";
+import { Method } from "./common";
 import { Head, InternalServerError, NotFound } from "./response";
 
 interface RouteHandler {
@@ -44,10 +44,7 @@ export abstract class RoutedWorker extends BasicWorker {
         ) => Response | Promise<Response>,
         method: Method = Method.GET
     ): void {
-        if (!isMethod(method)) {
-            throw new Error(`Unknown method ${method}`);
-        }
-        if (!this.getAllowMethods().includes(method)) {
+        if (!this.isAllowed(method)) {
             throw new Error(
                 `${method} is not currently allowed. Update or override getAllowedMethods()`
             );

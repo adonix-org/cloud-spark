@@ -16,7 +16,6 @@
 
 import { isMethod, Method, Time } from "./common";
 import {
-    BadRequest,
     CorsProvider,
     Head,
     InternalServerError,
@@ -69,19 +68,8 @@ export class BasicWorker implements CorsProvider {
     }
 
     public async fetch(request: Request): Promise<Response> {
-        const method = request.method;
-        if (!isMethod(method)) {
-            throw new Error(`Unsupported method ${method}`);
-        }
-
-        if (!this.isAllowed(method)) {
-            return this.getResponse(MethodNotAllowed, method);
-        }
-
-        try {
-            new URL(request.url);
-        } catch {
-            return this.getResponse(BadRequest, "Malformed URL");
+        if (!this.isAllowed(request.method)) {
+            return this.getResponse(MethodNotAllowed, request.method);
         }
 
         this.origin = request.headers.get("Origin");
