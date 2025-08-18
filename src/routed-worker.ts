@@ -27,7 +27,7 @@ interface RouteHandler {
 }
 
 export abstract class RoutedWorker extends BasicWorker {
-    private routes: Map<Method, RouteHandler[]> = new Map();
+    private readonly routes: Map<Method, RouteHandler[]> = new Map();
 
     constructor(env: Env = {}, ctx?: ExecutionContext) {
         super(env, ctx);

@@ -97,7 +97,7 @@ export abstract class BasicWorker implements CorsProvider {
         return this.getResponse(NotImplemented);
     }
 
-    private options(_request: Request): Response | Promise<Response> {
+    protected options(_request: Request): Response | Promise<Response> {
         return this.getResponse(Options);
     }
 
