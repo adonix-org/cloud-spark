@@ -1,6 +1,6 @@
 {
     "name": "@adonix.org/cloud-spark",
-    "version": "0.0.28",
+    "version": "0.0.29",
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
     "type": "module",
     "main": "./dist/index.js",

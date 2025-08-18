@@ -26,7 +26,10 @@ import {
 
 interface RouteHandler {
     route: string | RegExp;
-    callback: (...matches: string[]) => Response | Promise<Response>;
+    callback: (
+        request: Request,
+        ...matches: string[]
+    ) => Response | Promise<Response>;
 }
 
 export class RoutedWorker extends BasicWorker {
@@ -41,7 +44,10 @@ export class RoutedWorker extends BasicWorker {
 
     protected addRoute(
         route: string | RegExp,
-        callback: (...matches: string[]) => Response | Promise<Response>,
+        callback: (
+            request: Request,
+            ...matches: string[]
+        ) => Response | Promise<Response>,
         method: Method = Method.GET
     ): void {
         if (!isMethod(method)) {
@@ -74,10 +80,13 @@ export class RoutedWorker extends BasicWorker {
             return this.getResponse(BadRequest, "Malformed URL");
         }
 
-        return (await this.search(method, url)) ?? super.fetch(request);
+        return (
+            (await this.search(request, method, url)) ?? super.fetch(request)
+        );
     }
 
     private async search(
+        request: Request,
         method: Method,
         url: URL
     ): Promise<Response | undefined> {
@@ -91,9 +100,9 @@ export class RoutedWorker extends BasicWorker {
             try {
                 if (handler.route instanceof RegExp) {
                     const match = url.pathname.match(handler.route);
-                    return await handler.callback(...(match ?? []));
+                    return await handler.callback(request, ...(match ?? []));
                 } else {
-                    return await handler.callback();
+                    return await handler.callback(request);
                 }
             } catch (err) {
                 return this.getResponse(InternalServerError, String(err));
