@@ -36,9 +36,9 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.POST;
+const method: Method = Method.GET;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/2024", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/20245", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",
