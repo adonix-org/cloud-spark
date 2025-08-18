@@ -18,6 +18,7 @@ import { BasicWorker } from "./basic-worker";
 import { isMethod, Method } from "./common";
 import {
     BadRequest,
+    Head,
     InternalServerError,
     MethodNotAllowed,
     NotFound,
@@ -88,6 +89,11 @@ export class RoutedWorker extends BasicWorker {
         }
 
         return super.fetch(request);
+    }
+
+    protected override async head(request: Request): Promise<Response> {
+        const getRequest = new Request(request, { method: Method.GET });
+        return this.getResponse(Head, await this.fetch(getRequest));
     }
 
     protected override get(): Response | Promise<Response> {

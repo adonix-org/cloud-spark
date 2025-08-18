@@ -34,16 +34,9 @@ class DebugWorker extends RoutedWorker {
     public override getAllowOrigins(): string[] {
         return ["https://www.adonix.org", "https://www.tybusby.com"];
     }
-
-    protected override get(): Response {
-        return this.getResponse(
-            TextResponse,
-            "No route matched. Sending default GET."
-        );
-    }
 }
 
-const method: Method = Method.HEAD;
+const method: Method = Method.POST;
 
 const request = new Request("https://www.adonix.org/api/v1/seasons/2024", {
     method: method,
