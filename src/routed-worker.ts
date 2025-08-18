@@ -28,15 +28,15 @@ interface RouteHandler {
     callback: () => Response | Promise<Response>;
 }
 
-export abstract class RoutedWorker extends BasicWorker {
+export class RoutedWorker extends BasicWorker {
     private routes: Map<Method, RouteHandler[]> = new Map();
 
-    constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
-        super(request, env, ctx);
+    constructor(env: Env = {}, ctx?: ExecutionContext) {
+        super(env, ctx);
         this.addRoutes();
     }
 
-    protected abstract addRoutes(): void;
+    protected addRoutes(): void {}
 
     protected addRoute(
         route: string | RegExp,
@@ -58,27 +58,17 @@ export abstract class RoutedWorker extends BasicWorker {
         this.routes.set(method, handlers);
     }
 
-    public override async fetch(): Promise<Response> {
-        const method = this.request.method;
+    public override async fetch(request: Request): Promise<Response> {
+        const method = request.method;
         if (!isMethod(method)) {
             throw new Error(`Unsupported method ${method}`);
         }
-        if (!this.isAllowed(this.request.method)) {
-            return this.getResponse(MethodNotAllowed, this.request.method);
+        if (!this.isAllowed(method)) {
+            return this.getResponse(MethodNotAllowed, method);
         }
-
-        const response = await this.search(method);
-        if (response) {
-            return response;
-        }
-
-        return await this.search(method);
-    }
-
-    private async search(method: Method): Promise<Response> {
         let url: URL;
         try {
-            url = new URL(this.request.url);
+            url = new URL(request.url);
         } catch {
             return this.getResponse(BadRequest, "Malformed URL");
         }
@@ -97,11 +87,7 @@ export abstract class RoutedWorker extends BasicWorker {
             }
         }
 
-        return super.fetch();
-    }
-
-    protected override async head(): Promise<Response> {
-        return this.search(Method.GET);
+        return super.fetch(request);
     }
 
     protected override get(): Response | Promise<Response> {

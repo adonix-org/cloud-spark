@@ -25,16 +25,13 @@ import {
     WorkerResponse,
 } from "./response";
 
-export abstract class BasicWorker implements CorsProvider {
+export class BasicWorker implements CorsProvider {
+    private origin: string | null = null;
+
     constructor(
-        private readonly _request: Request,
         private readonly _env: Env = {},
         private readonly _ctx?: ExecutionContext
     ) {}
-
-    protected get request(): Request {
-        return this._request;
-    }
 
     protected get env(): Env {
         return this._env;
@@ -44,64 +41,63 @@ export abstract class BasicWorker implements CorsProvider {
         return this._ctx;
     }
 
-    public async fetch(): Promise<Response> {
-        if (!this.isAllowed(this.request.method)) {
-            return this.getResponse(MethodNotAllowed, this.request.method);
+    public async fetch(request: Request): Promise<Response> {
+        if (!this.isAllowed(request.method)) {
+            return this.getResponse(MethodNotAllowed, request.method);
         }
 
+        this.origin = request.headers.get("Origin");
+
         try {
-            switch (this.request.method) {
+            switch (request.method) {
                 case Method.GET:
-                    return await this.get();
+                    return await this.get(request);
                 case Method.PUT:
-                    return await this.put();
+                    return await this.put(request);
                 case Method.POST:
-                    return await this.post();
+                    return await this.post(request);
                 case Method.PATCH:
-                    return await this.patch();
+                    return await this.patch(request);
                 case Method.DELETE:
-                    return await this.delete();
+                    return await this.delete(request);
                 case Method.HEAD:
-                    return await this.head();
+                    return await this.head(request);
                 case Method.OPTIONS:
-                    return await this.options();
+                    return await this.options(request);
                 default:
-                    return this.getResponse(
-                        MethodNotAllowed,
-                        this.request.method
-                    );
+                    return this.getResponse(MethodNotAllowed, request.method);
             }
         } catch (error) {
             return this.getResponse(InternalServerError, String(error));
         }
     }
 
-    protected get(): Response | Promise<Response> {
+    protected get(_request: Request): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected put(): Response | Promise<Response> {
+    protected put(_request: Request): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected post(): Response | Promise<Response> {
+    protected post(_request: Request): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected patch(): Response | Promise<Response> {
+    protected patch(_request: Request): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected delete(): Response | Promise<Response> {
+    protected delete(_request: Request): Response | Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    private options(): Response | Promise<Response> {
+    private options(_request: Request): Response | Promise<Response> {
         return this.getResponse(Options);
     }
 
-    protected async head(): Promise<Response> {
-        return this.getResponse(Head, await this.get());
+    protected async head(request: Request): Promise<Response> {
+        return this.getResponse(Head, await this.get(request));
     }
 
     protected getResponse<
@@ -137,6 +133,6 @@ export abstract class BasicWorker implements CorsProvider {
     }
 
     public getOrigin(): string | null {
-        return this.request.headers.get("Origin");
+        return this.origin;
     }
 }
