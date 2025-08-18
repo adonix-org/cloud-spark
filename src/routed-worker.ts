@@ -103,8 +103,10 @@ export class RoutedWorker extends BasicWorker {
     }
 
     protected override async head(request: Request): Promise<Response> {
-        const getRequest = new Request(request, { method: Method.GET });
-        return this.getResponse(Head, await this.fetch(getRequest));
+        return this.getResponse(
+            Head,
+            await this.fetch(new Request(request, { method: Method.GET }))
+        );
     }
 
     protected override get(): Response | Promise<Response> {
