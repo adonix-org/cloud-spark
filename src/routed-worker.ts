@@ -21,7 +21,6 @@ import { Head, NotFound } from "./response";
 interface RouteHandler {
     route: string | RegExp;
     callback: (
-        request: Request,
         ...matches: string[]
     ) => Response | Promise<Response>;
 }
@@ -39,7 +38,6 @@ export abstract class RoutedWorker extends BasicWorker {
     protected addRoute(
         route: string | RegExp,
         callback: (
-            request: Request,
             ...matches: string[]
         ) => Response | Promise<Response>,
         method: Method = Method.GET
@@ -73,9 +71,9 @@ export abstract class RoutedWorker extends BasicWorker {
         if (handler) {
             if (handler.route instanceof RegExp) {
                 const match = url.pathname.match(handler.route);
-                return await handler.callback(request, ...(match ?? []));
+                return await handler.callback(...(match ?? []));
             } else {
-                return await handler.callback(request);
+                return await handler.callback();
             }
         }
         return undefined;

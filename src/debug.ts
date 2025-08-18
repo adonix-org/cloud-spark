@@ -30,8 +30,9 @@ class DebugWorker extends RoutedWorker {
         });
     }
 
-    protected getSeasons(_request: Request, ...matches: string[]): Response {
-        console.log(request);
+    protected getSeasons(...matches: string[]): Response {
+        console.log(this.request);
+        console.log(this.requestUrl);
         console.log(matches[1]);
         return this.getResponse(JsonResponse, { season: matches[1] });
     }

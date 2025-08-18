@@ -26,14 +26,22 @@ import {
 } from "./response";
 
 export abstract class BasicWorker implements CorsProvider {
+    private readonly _requestUrl: URL;
+
     constructor(
         private readonly _request: Request,
         private readonly _env: Env = {},
         private readonly _ctx?: ExecutionContext
-    ) {}
+    ) {
+        this._requestUrl = new URL(this.request.url);
+    }
 
     protected get request(): Request {
         return this._request;
+    }
+
+    protected get requestUrl(): URL {
+        return this._requestUrl;
     }
 
     protected get env(): Env {
