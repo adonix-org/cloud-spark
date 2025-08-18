@@ -52,8 +52,7 @@ export abstract class BasicWorker implements CorsProvider {
         return this._ctx;
     }
 
-    protected async dispatch(request?: Request): Promise<Response> {
-        request ??= this.request;
+    protected async dispatch(request: Request): Promise<Response> {
         const method = request.method as Method;
         switch (method) {
             case Method.GET:
@@ -152,7 +151,7 @@ export abstract class BasicWorker implements CorsProvider {
     }
 
     public getMaxAge(): number {
-        return Time.Day;
+        return Time.Week;
     }
 
     public getOrigin(): string | null {

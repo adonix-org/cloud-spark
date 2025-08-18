@@ -24,7 +24,6 @@ class DebugWorker extends RoutedWorker {
             new RegExp(`^/api/v1/seasons/(\\d{4})$`),
             this.getSeasons
         );
-        // this.addRoute(new RegExp(`(`), this.getSeasons);
         this.addRoute(`/api/v1/seasons`, (): Response => {
             return this.getResponse(TextResponse, "Just a test.");
         });
@@ -45,7 +44,7 @@ class DebugWorker extends RoutedWorker {
 
 const method: Method = Method.HEAD;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/19000", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/1900", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",
