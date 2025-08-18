@@ -113,11 +113,13 @@ export abstract class BasicWorker implements CorsProvider {
 
     protected async head(): Promise<Response> {
         // For HEAD method, we need to create a new GET request and
-        // pass through normal processing. Body is then removed from
-        // the GET response and passed back.
+        // pass that through normal processing. Body is then removed
+        // from the GET response and passed back as the HEAD response.
         return this.getResponse(
             Head,
-            await this.dispatch(new Request(this.request, { method: Method.GET }))
+            await this.dispatch(
+                new Request(this.request, { method: Method.GET })
+            )
         );
     }
 
