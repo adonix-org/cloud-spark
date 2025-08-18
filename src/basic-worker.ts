@@ -53,6 +53,9 @@ export abstract class BasicWorker implements CorsProvider {
     }
 
     protected async dispatch(request: Request): Promise<Response> {
+        // Instead of using this.request, always pass in the request.
+        // This enables creation of special reqeusts, for example for
+        // HEAD requests.
         const method = request.method as Method;
         switch (method) {
             case Method.GET:
