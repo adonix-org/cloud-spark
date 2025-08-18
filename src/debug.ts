@@ -41,7 +41,7 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.PUT;
+const method: Method = Method.HEAD;
 
 const request = new Request("https://www.adonix.org/api/v1/seasons/1900", {
     method: method,

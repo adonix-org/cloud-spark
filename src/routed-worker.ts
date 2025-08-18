@@ -56,7 +56,8 @@ export abstract class RoutedWorker extends BasicWorker {
         this.routes.set(method, handlers);
     }
 
-    protected async dispatch(request: Request): Promise<Response> {
+    protected async dispatch(request?: Request): Promise<Response> {
+        request ??= this.request;
         return (await this.search(request)) ?? super.dispatch(request);
     }
 

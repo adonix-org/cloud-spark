@@ -44,7 +44,8 @@ export abstract class BasicWorker implements CorsProvider {
         return this._ctx;
     }
 
-    protected async dispatch(request: Request): Promise<Response> {
+    protected async dispatch(request?: Request): Promise<Response> {
+        request ??= this.request;
         const method = request.method as Method;
         switch (method) {
             case Method.GET:
