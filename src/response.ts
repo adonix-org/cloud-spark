@@ -80,6 +80,8 @@ export class WorkerResponse {
             this.headers.set("Access-Control-Allow-Origin", "*");
         } else if (this.getAllowOrigins().includes(origin)) {
             this.headers.set("Access-Control-Allow-Origin", origin);
+            this.headers.set("Access-Control-Allow-Credentials", "true");
+            this.headers.set("Vary", "Origin");
         }
         this.headers.set(
             "Access-Control-Allow-Headers",
