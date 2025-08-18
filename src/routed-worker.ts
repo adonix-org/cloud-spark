@@ -16,13 +16,11 @@
 
 import { BasicWorker } from "./basic-worker";
 import { Method } from "./common";
-import { Head, NotFound } from "./response";
+import { NotFound } from "./response";
 
 interface RouteHandler {
     route: string | RegExp;
-    callback: (
-        ...matches: string[]
-    ) => Response | Promise<Response>;
+    callback: (...matches: string[]) => Response | Promise<Response>;
 }
 
 export abstract class RoutedWorker extends BasicWorker {
@@ -37,9 +35,7 @@ export abstract class RoutedWorker extends BasicWorker {
 
     protected addRoute(
         route: string | RegExp,
-        callback: (
-            ...matches: string[]
-        ) => Response | Promise<Response>,
+        callback: (...matches: string[]) => Response | Promise<Response>,
         method: Method = Method.GET
     ): void {
         if (!this.isAllowed(method)) {
@@ -77,15 +73,6 @@ export abstract class RoutedWorker extends BasicWorker {
             }
         }
         return undefined;
-    }
-
-    protected override async head(): Promise<Response> {
-        return this.getResponse(
-            Head,
-            await this.dispatch(
-                new Request(this.request, { method: Method.GET })
-            )
-        );
     }
 
     protected override get(): Response | Promise<Response> {

@@ -15,7 +15,7 @@
  */
 
 import { Method } from "./common";
-import { JsonResponse, TextResponse } from "./response";
+import { Forbidden, JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
@@ -31,20 +31,21 @@ class DebugWorker extends RoutedWorker {
     }
 
     protected getSeasons(...matches: string[]): Response {
-        console.log(this.request);
-        console.log(this.requestUrl);
-        console.log(matches[1]);
         return this.getResponse(JsonResponse, { season: matches[1] });
     }
 
     public override getAllowOrigins(): string[] {
         return ["https://www.adonix.org", "https://www.tybusby.com"];
     }
+
+    protected override get(): Response | Promise<Response> {
+        return this.getResponse(Forbidden, "Message to the people.");
+    }
 }
 
 const method: Method = Method.HEAD;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/1900", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/19000", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",
