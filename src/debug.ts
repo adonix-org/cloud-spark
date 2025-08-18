@@ -15,7 +15,7 @@
  */
 
 import { Method } from "./common";
-import { Forbidden, JsonResponse, TextResponse } from "./response";
+import { JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
@@ -39,7 +39,7 @@ class DebugWorker extends RoutedWorker {
     }
 
     protected override get(): Response | Promise<Response> {
-        return this.getResponse(Forbidden, "Message to the people.");
+        return this.getResponse(TextResponse, "Hello 🌎");
     }
 }
 
