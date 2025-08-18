@@ -59,8 +59,8 @@ export abstract class RoutedWorker extends BasicWorker {
         this.routes.set(method, handlers);
     }
 
-    protected async handleRequest(request: Request): Promise<Response> {
-        return (await this.search(request)) ?? super.handleRequest(request);
+    protected async dispatch(request: Request): Promise<Response> {
+        return (await this.search(request)) ?? super.dispatch(request);
     }
 
     private async search(request: Request): Promise<Response | undefined> {
@@ -90,7 +90,7 @@ export abstract class RoutedWorker extends BasicWorker {
     protected override async head(request: Request): Promise<Response> {
         return this.getResponse(
             Head,
-            await this.fetch(new Request(request, { method: Method.GET }))
+            await this.dispatch(new Request(request, { method: Method.GET }))
         );
     }
 

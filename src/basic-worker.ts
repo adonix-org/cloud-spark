@@ -42,7 +42,7 @@ export class BasicWorker implements CorsProvider {
         return this._ctx;
     }
 
-    protected async handleRequest(request: Request): Promise<Response> {
+    protected async dispatch(request: Request): Promise<Response> {
         const method = request.method as Method;
         try {
             switch (method) {
@@ -86,7 +86,7 @@ export class BasicWorker implements CorsProvider {
 
         this.origin = request.headers.get("Origin");
 
-        return this.handleRequest(request);
+        return this.dispatch(request);
     }
 
     protected get(_request: Request): Response | Promise<Response> {
