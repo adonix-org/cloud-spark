@@ -16,6 +16,7 @@
 
 import { isMethod, Method, Time } from "./common";
 import {
+    BadRequest,
     CorsProvider,
     Head,
     InternalServerError,
@@ -41,15 +42,10 @@ export class BasicWorker implements CorsProvider {
         return this._ctx;
     }
 
-    public async fetch(request: Request): Promise<Response> {
-        if (!this.isAllowed(request.method)) {
-            return this.getResponse(MethodNotAllowed, request.method);
-        }
-
-        this.origin = request.headers.get("Origin");
-
+    protected async handleRequest(request: Request): Promise<Response> {
+        const method = request.method as Method;
         try {
-            switch (request.method) {
+            switch (method) {
                 case Method.GET:
                     return await this.get(request);
                 case Method.PUT:
@@ -65,11 +61,32 @@ export class BasicWorker implements CorsProvider {
                 case Method.OPTIONS:
                     return await this.options(request);
                 default:
-                    return this.getResponse(MethodNotAllowed, request.method);
+                    return this.getResponse(MethodNotAllowed, method);
             }
         } catch (error) {
             return this.getResponse(InternalServerError, String(error));
         }
+    }
+
+    public async fetch(request: Request): Promise<Response> {
+        const method = request.method;
+        if (!isMethod(method)) {
+            throw new Error(`Unsupported method ${method}`);
+        }
+
+        if (!this.isAllowed(method)) {
+            return this.getResponse(MethodNotAllowed, method);
+        }
+
+        try {
+            new URL(request.url);
+        } catch {
+            return this.getResponse(BadRequest, "Malformed URL");
+        }
+
+        this.origin = request.headers.get("Origin");
+
+        return this.handleRequest(request);
     }
 
     protected get(_request: Request): Response | Promise<Response> {

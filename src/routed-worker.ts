@@ -16,13 +16,7 @@
 
 import { BasicWorker } from "./basic-worker";
 import { isMethod, Method } from "./common";
-import {
-    BadRequest,
-    Head,
-    InternalServerError,
-    MethodNotAllowed,
-    NotFound,
-} from "./response";
+import { Head, InternalServerError, NotFound } from "./response";
 
 interface RouteHandler {
     route: string | RegExp;
@@ -65,31 +59,13 @@ export abstract class RoutedWorker extends BasicWorker {
         this.routes.set(method, handlers);
     }
 
-    public override async fetch(request: Request): Promise<Response> {
-        const method = request.method;
-        if (!isMethod(method)) {
-            throw new Error(`Unsupported method ${method}`);
-        }
-        if (!this.isAllowed(method)) {
-            return this.getResponse(MethodNotAllowed, method);
-        }
-        let url: URL;
-        try {
-            url = new URL(request.url);
-        } catch {
-            return this.getResponse(BadRequest, "Malformed URL");
-        }
-
-        return (
-            (await this.search(request, method, url)) ?? super.fetch(request)
-        );
+    protected async handleRequest(request: Request): Promise<Response> {
+        return (await this.search(request)) ?? super.handleRequest(request);
     }
 
-    private async search(
-        request: Request,
-        method: Method,
-        url: URL
-    ): Promise<Response | undefined> {
+    private async search(request: Request): Promise<Response | undefined> {
+        const method = request.method as Method;
+        const url = new URL(request.url);
         const handlers = this.routes.get(method) ?? [];
         const handler = handlers.find(({ route }) =>
             route instanceof RegExp
