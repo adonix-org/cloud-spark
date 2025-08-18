@@ -30,9 +30,10 @@ class DebugWorker extends RoutedWorker {
         });
     }
 
-    protected getSeasons(...matches: string[]): Response {
+    protected getSeasons(_request: Request, ...matches: string[]): Response {
+        console.log(request);
         console.log(matches[1]);
-        return this.getResponse(JsonResponse, { season: 2024 });
+        return this.getResponse(JsonResponse, { season: matches[1] });
     }
 
     public override getAllowOrigins(): string[] {
@@ -40,9 +41,9 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.HEAD;
+const method: Method = Method.GET;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/1900", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",

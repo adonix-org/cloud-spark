@@ -32,7 +32,7 @@ interface RouteHandler {
     ) => Response | Promise<Response>;
 }
 
-export class RoutedWorker extends BasicWorker {
+export abstract class RoutedWorker extends BasicWorker {
     private routes: Map<Method, RouteHandler[]> = new Map();
 
     constructor(env: Env = {}, ctx?: ExecutionContext) {
@@ -40,7 +40,7 @@ export class RoutedWorker extends BasicWorker {
         this.addRoutes();
     }
 
-    protected addRoutes(): void {}
+    protected abstract addRoutes(): void;
 
     protected addRoute(
         route: string | RegExp,
