@@ -83,14 +83,8 @@ export class WorkerResponse {
             this.headers.set("Access-Control-Allow-Credentials", "true");
             this.headers.set("Vary", "Origin");
         }
-        this.headers.set(
-            "Access-Control-Allow-Headers",
-            this.getAllowHeaders()
-        );
-        this.headers.set(
-            "Access-Control-Allow-Methods",
-            this.getAllowMethods()
-        );
+        this.headers.set("Access-Control-Allow-Headers", this.getAllowHeaders());
+        this.headers.set("Access-Control-Allow-Methods", this.getAllowMethods());
         this.headers.set("Access-Control-Max-Age", this.getMaxAge());
         this.headers.set("X-Content-Type-Options", "nosniff");
     }
@@ -114,11 +108,7 @@ export class WorkerResponse {
 
 export class JsonResponse extends WorkerResponse {
     private _json: object;
-    constructor(
-        cors: CorsProvider,
-        content: object = {},
-        code: StatusCodes = StatusCodes.OK
-    ) {
+    constructor(cors: CorsProvider, content: object = {}, code: StatusCodes = StatusCodes.OK) {
         super(cors, null, code, MimeType.JSON);
         this._json = content;
     }
@@ -176,11 +166,7 @@ export class Options extends WorkerResponse {
 }
 
 export class HttpError extends JsonResponse {
-    constructor(
-        cors: CorsProvider,
-        code: StatusCodes,
-        protected details?: string
-    ) {
+    constructor(cors: CorsProvider, code: StatusCodes, protected details?: string) {
         super(cors, {}, code);
     }
 
@@ -219,11 +205,7 @@ export class NotFound extends HttpError {
 
 export class MethodNotAllowed extends HttpError {
     constructor(cors: CorsProvider, method: string) {
-        super(
-            cors,
-            StatusCodes.METHOD_NOT_ALLOWED,
-            `${method} method not allowed.`
-        );
+        super(cors, StatusCodes.METHOD_NOT_ALLOWED, `${method} method not allowed.`);
         this.headers.set("Allow", this.getAllowMethods());
     }
 
@@ -244,5 +226,11 @@ export class InternalServerError extends HttpError {
 export class NotImplemented extends HttpError {
     constructor(cors: CorsProvider) {
         super(cors, StatusCodes.NOT_IMPLEMENTED);
+    }
+}
+
+export class ServiceUnavailable extends HttpError {
+    constructor(cors: CorsProvider, detail?: string) {
+        super(cors, StatusCodes.SERVICE_UNAVAILABLE, detail);
     }
 }
