@@ -19,21 +19,18 @@ import { JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
-    protected addRoutes(): void {
-        this.routes.append({
-            pattern: new RegExp(`^/api/v1/seasons/(\\d{4})$`),
-            callback: this.getSeasons,
-        });
-        this.routes.append({
-            pattern: `/api/v1/seasons`,
-            callback: (): Response => {
-                return this.getResponse(TextResponse, "Just a test.");
-            },
-        });
+    constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
+        super(request, env, ctx);
+        this.addRoute(`^/api/v1/seasons/(\\d{4})$`, this.getPlaylist);
+        this.addRoute(`/api/v1/seasons`, this.getSeasons);
     }
 
-    protected getSeasons(...matches: string[]): Response {
+    protected getPlaylist(...matches: string[]): Response {
         return this.getResponse(JsonResponse, { season: matches[1] });
+    }
+
+    protected getSeasons(): Response {
+        return this.getResponse(JsonResponse, [2001, 20002, 2003, 2004]);
     }
 
     public override getAllowOrigins(): string[] {
@@ -47,13 +44,14 @@ class DebugWorker extends RoutedWorker {
 
 const method: Method = Method.GET;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/2024", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",
     },
 });
 const worker = new DebugWorker(request);
+
 const response = await worker.fetch();
 
 const text = await response.text();

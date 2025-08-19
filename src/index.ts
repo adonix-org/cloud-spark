@@ -20,4 +20,4 @@ export * from "./common";
 export * from "./response";
 export * from "./basic-worker";
 export * from "./routed-worker";
-export * from "./routes";
+export * from "./route";

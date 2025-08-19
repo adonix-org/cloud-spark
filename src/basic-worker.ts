@@ -52,6 +52,18 @@ export abstract class BasicWorker implements CorsProvider {
         return this._ctx;
     }
 
+    public async fetch(): Promise<Response> {
+        if (!this.isAllowed(this.request.method)) {
+            return this.getResponse(MethodNotAllowed, this.request.method);
+        }
+
+        try {
+            return this.dispatch(this.request);
+        } catch (error) {
+            return this.getResponse(InternalServerError, String(error));
+        }
+    }
+
     protected async dispatch(request: Request): Promise<Response> {
         // Instead of using this.request, always pass in the request.
         // This enables creation of special reqeusts, for example for
@@ -74,18 +86,6 @@ export abstract class BasicWorker implements CorsProvider {
                 return await this.options();
             default:
                 return this.getResponse(MethodNotAllowed, method);
-        }
-    }
-
-    public async fetch(): Promise<Response> {
-        if (!this.isAllowed(this.request.method)) {
-            return this.getResponse(MethodNotAllowed, this.request.method);
-        }
-
-        try {
-            return this.dispatch(this.request);
-        } catch (error) {
-            return this.getResponse(InternalServerError, String(error));
         }
     }
 

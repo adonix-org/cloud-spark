@@ -15,33 +15,31 @@
  */
 
 import { BasicWorker } from "./basic-worker";
+import { Method } from "./common";
 import { NotFound } from "./response";
-import { Routes } from "./routes";
+import { Route, RouteCallback, Routes } from "./route";
 
 export abstract class RoutedWorker extends BasicWorker {
-    protected readonly routes: Routes<this> = new Routes(this);
+    private readonly routes: Routes = new Routes(this);
 
     constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
         super(request, env, ctx);
     }
 
-    protected async dispatch(request: Request): Promise<Response> {
-        return (await this.search(request)) ?? super.dispatch(request);
+    protected addRoute(
+        pattern: RegExp | string,
+        callback: RouteCallback,
+        method: Method = Method.GET
+    ) {
+        this.routes.append(new Route(pattern, callback), method);
     }
 
-    private async search(request: Request): Promise<Response | undefined> {
-        const route = this.routes.get(request);
-        if (route) {
-            if (route.pattern instanceof RegExp) {
-                const match = new URL(request.url).pathname.match(
-                    route.pattern
-                );
-                return await route.callback(...(match ?? []));
-            } else {
-                return await route.callback();
-            }
-        }
-        return undefined;
+    protected async dispatch(request: Request): Promise<Response> {
+        const route = this.routes.get(request.method as Method, request.url);
+        if (!route) return await super.dispatch(request);
+
+        const match = this.requestUrl.pathname.match(route.pattern);
+        return await route.callback(...(match ?? []));
     }
 
     protected override get(): Response | Promise<Response> {
