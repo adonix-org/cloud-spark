@@ -26,22 +26,14 @@ import {
 } from "./response";
 
 export abstract class BasicWorker implements CorsProvider {
-    private readonly _requestUrl: URL;
-
     constructor(
         private readonly _request: Request,
         private readonly _env: Env = {},
         private readonly _ctx?: ExecutionContext
-    ) {
-        this._requestUrl = new URL(this.request.url);
-    }
+    ) {}
 
     protected get request(): Request {
         return this._request;
-    }
-
-    protected get requestUrl(): URL {
-        return this._requestUrl;
     }
 
     protected get env(): Env {
@@ -66,7 +58,7 @@ export abstract class BasicWorker implements CorsProvider {
 
     protected async dispatch(request: Request): Promise<Response> {
         // Instead of using this.request, always pass in the request.
-        // This enables creation of special reqeusts, for example for
+        // This enables creation of custom reqeusts, for example for
         // HEAD requests.
         const method = request.method as Method;
         const handler: Record<Method, () => Promise<Response>> = {

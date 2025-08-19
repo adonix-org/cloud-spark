@@ -24,11 +24,11 @@ export abstract class RoutedWorker extends BasicWorker {
 
     protected initialize(routes: RouteInit[]) {
         routes.forEach((route) => {
-            this.addRoute(route[0], route[1], route[2]);
+            this.add(route[0], route[1], route[2]);
         });
     }
 
-    protected addRoute(method: Method, pattern: string, callback: RouteCallback) {
+    protected add(method: Method, pattern: string, callback: RouteCallback) {
         this.routes.add(method, new Route(pattern, callback));
         return this;
     }
@@ -37,7 +37,7 @@ export abstract class RoutedWorker extends BasicWorker {
         const route = this.routes.get(request.method as Method, request.url);
         if (!route) return super.dispatch(request);
 
-        const match = this.requestUrl.pathname.match(route.pattern) ?? [];
+        const match = new URL(request.url).pathname.match(route.pattern) ?? [];
         return route.callback.call(this, ...match);
     }
 

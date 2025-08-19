@@ -22,9 +22,9 @@ class DebugWorker extends RoutedWorker {
     constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
         super(request, env, ctx);
 
-        this.addRoute(Method.GET, "^/api/v1/seasons/(\\d{4})$", this.getPlaylist)
-            .addRoute(Method.GET, "^/api/v1/seasons$", this.getSeasons)
-            .addRoute(
+        this.add(Method.GET, "^/api/v1/seasons/(\\d{4})$", this.getPlaylist)
+            .add(Method.GET, "^/api/v1/seasons$", this.getSeasons)
+            .add(
                 Method.GET,
                 "^/api/v1/seasons/last$",
                 (): Response => this.getResponse(JsonResponse, [2026])
@@ -48,9 +48,9 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.GET;
+const method: Method = Method.HEAD;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/20045", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/2004", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",
