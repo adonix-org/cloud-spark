@@ -50,7 +50,7 @@ class DebugWorker extends RoutedWorker {
 
 const method: Method = Method.GET;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/2004", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/2021", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",

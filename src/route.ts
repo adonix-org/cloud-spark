@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ensure, Method } from "./common";
+import { Method } from "./common";
 
 export type RouteCallback = (...matches: string[]) => Response | Promise<Response>;
 
@@ -32,7 +32,12 @@ export class Routes {
     private readonly map = new Map<Method, Route[]>();
 
     public add(method: Method, route: Route) {
-        ensure(this.map, method, () => []).push(route);
+        const existing = this.map.get(method);
+        if (existing) {
+            existing.push(route);
+        } else {
+            this.map.set(method, [route]);
+        }
         return this;
     }
 
