@@ -175,7 +175,7 @@ export class Options extends WorkerResponse {
     }
 }
 
-export class ErrorResponse extends JsonResponse {
+export class HttpError extends JsonResponse {
     constructor(
         cors: CorsProvider,
         code: StatusCodes,
@@ -193,31 +193,31 @@ export class ErrorResponse extends JsonResponse {
     }
 }
 
-export class BadRequest extends ErrorResponse {
+export class BadRequest extends HttpError {
     constructor(cors: CorsProvider, detail?: string) {
         super(cors, StatusCodes.BAD_REQUEST, detail);
     }
 }
 
-export class Unauthorized extends ErrorResponse {
+export class Unauthorized extends HttpError {
     constructor(cors: CorsProvider, detail?: string) {
         super(cors, StatusCodes.UNAUTHORIZED, detail);
     }
 }
 
-export class Forbidden extends ErrorResponse {
+export class Forbidden extends HttpError {
     constructor(cors: CorsProvider, detail?: string) {
         super(cors, StatusCodes.FORBIDDEN, detail);
     }
 }
 
-export class NotFound extends ErrorResponse {
+export class NotFound extends HttpError {
     constructor(cors: CorsProvider, detail?: string) {
         super(cors, StatusCodes.NOT_FOUND, detail);
     }
 }
 
-export class MethodNotAllowed extends ErrorResponse {
+export class MethodNotAllowed extends HttpError {
     constructor(cors: CorsProvider, method: string) {
         super(
             cors,
@@ -235,13 +235,13 @@ export class MethodNotAllowed extends ErrorResponse {
     }
 }
 
-export class InternalServerError extends ErrorResponse {
+export class InternalServerError extends HttpError {
     constructor(cors: CorsProvider, detail?: string) {
         super(cors, StatusCodes.INTERNAL_SERVER_ERROR, detail);
     }
 }
 
-export class NotImplemented extends ErrorResponse {
+export class NotImplemented extends HttpError {
     constructor(cors: CorsProvider) {
         super(cors, StatusCodes.NOT_IMPLEMENTED);
     }
