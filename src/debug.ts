@@ -20,12 +20,15 @@ import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
     protected addRoutes(): void {
-        this.addRoute(
-            new RegExp(`^/api/v1/seasons/(\\d{4})$`),
-            this.getSeasons
-        );
-        this.addRoute(`/api/v1/seasons`, (): Response => {
-            return this.getResponse(TextResponse, "Just a test.");
+        this.routes.append({
+            pattern: new RegExp(`^/api/v1/seasons/(\\d{4})$`),
+            callback: this.getSeasons,
+        });
+        this.routes.append({
+            pattern: `/api/v1/seasons`,
+            callback: (): Response => {
+                return this.getResponse(TextResponse, "Just a test.");
+            },
         });
     }
 
@@ -37,14 +40,14 @@ class DebugWorker extends RoutedWorker {
         return ["https://www.adonix.org", "https://www.tybusby.com"];
     }
 
-    protected override get(): Response | Promise<Response> {
+    protected override get(): Response {
         return this.getResponse(TextResponse, "Hello 🌎");
     }
 }
 
 const method: Method = Method.GET;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/1900", {
+const request = new Request("https://www.adonix.org/api/v1/seasons", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",

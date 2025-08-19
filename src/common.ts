@@ -38,6 +38,15 @@ export function isMethod(value: string): value is Method {
     return METHOD_SET.has(value);
 }
 
+export function getOrCreate<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
+    let value = map.get(key);
+    if (value === undefined) {
+        value = factory();
+        map.set(key, value);
+    }
+    return value;
+}
+
 export function getContentType(type: MimeType): string {
     if (ADD_CHARSET.has(type)) {
         return `${type}; charset=utf-8`;

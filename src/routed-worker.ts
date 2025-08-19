@@ -15,39 +15,14 @@
  */
 
 import { BasicWorker } from "./basic-worker";
-import { Method } from "./common";
 import { NotFound } from "./response";
-
-interface RouteHandler {
-    route: string | RegExp;
-    callback: (...matches: string[]) => Response | Promise<Response>;
-}
+import { Routes } from "./routes";
 
 export abstract class RoutedWorker extends BasicWorker {
-    private readonly routes: Map<Method, RouteHandler[]> = new Map();
+    protected readonly routes: Routes<this> = new Routes(this);
 
     constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
         super(request, env, ctx);
-        this.addRoutes();
-    }
-
-    protected abstract addRoutes(): void;
-
-    protected addRoute(
-        route: string | RegExp,
-        callback: (...matches: string[]) => Response | Promise<Response>,
-        method: Method = Method.GET
-    ): void {
-        if (!this.isAllowed(method)) {
-            throw new Error(
-                `${method} is not currently allowed. Update or override getAllowedMethods()`
-            );
-        }
-
-        const bound = callback.bind(this);
-        const handlers = this.routes.get(method) ?? [];
-        handlers.push({ route, callback: bound });
-        this.routes.set(method, handlers);
     }
 
     protected async dispatch(request: Request): Promise<Response> {
@@ -55,20 +30,15 @@ export abstract class RoutedWorker extends BasicWorker {
     }
 
     private async search(request: Request): Promise<Response | undefined> {
-        const method = request.method as Method;
-        const url = new URL(request.url);
-        const handlers = this.routes.get(method) ?? [];
-        const handler = handlers.find(({ route }) =>
-            route instanceof RegExp
-                ? route.test(url.pathname)
-                : route === url.pathname
-        );
-        if (handler) {
-            if (handler.route instanceof RegExp) {
-                const match = url.pathname.match(handler.route);
-                return await handler.callback(...(match ?? []));
+        const route = this.routes.get(request);
+        if (route) {
+            if (route.pattern instanceof RegExp) {
+                const match = new URL(request.url).pathname.match(
+                    route.pattern
+                );
+                return await route.callback(...(match ?? []));
             } else {
-                return await handler.callback();
+                return await route.callback();
             }
         }
         return undefined;
