@@ -58,7 +58,7 @@ export abstract class BasicWorker implements CorsProvider {
         }
 
         try {
-            return this.dispatch(this.request);
+            return await this.dispatch(this.request);
         } catch (error) {
             return this.getResponse(InternalServerError, String(error));
         }
@@ -69,24 +69,16 @@ export abstract class BasicWorker implements CorsProvider {
         // This enables creation of special reqeusts, for example for
         // HEAD requests.
         const method = request.method as Method;
-        switch (method) {
-            case Method.GET:
-                return await this.get();
-            case Method.PUT:
-                return await this.put();
-            case Method.POST:
-                return await this.post();
-            case Method.PATCH:
-                return await this.patch();
-            case Method.DELETE:
-                return await this.delete();
-            case Method.HEAD:
-                return await this.head();
-            case Method.OPTIONS:
-                return await this.options();
-            default:
-                return this.getResponse(MethodNotAllowed, method);
-        }
+        const handler: Record<Method, () => Response | Promise<Response>> = {
+            GET: () => this.get(),
+            PUT: () => this.put(),
+            POST: () => this.post(),
+            PATCH: () => this.patch(),
+            DELETE: () => this.delete(),
+            HEAD: () => this.head(),
+            OPTIONS: () => this.options(),
+        };
+        return (handler[method] ?? (() => this.getResponse(MethodNotAllowed, method)))();
     }
 
     protected get(): Response | Promise<Response> {
@@ -119,9 +111,7 @@ export abstract class BasicWorker implements CorsProvider {
         // from the GET response and passed back as the HEAD response.
         return this.getResponse(
             Head,
-            await this.dispatch(
-                new Request(this.request, { method: Method.GET })
-            )
+            await this.dispatch(new Request(this.request, { method: Method.GET }))
         );
     }
 
@@ -130,9 +120,7 @@ export abstract class BasicWorker implements CorsProvider {
         Ctor extends new (cors: CorsProvider, ...args: any[]) => T
     >(
         ResponseClass: Ctor,
-        ...args: ConstructorParameters<Ctor> extends [any, ...infer R]
-            ? R
-            : never
+        ...args: ConstructorParameters<Ctor> extends [any, ...infer R] ? R : never
     ): Response {
         return new ResponseClass(this, ...args).createResponse();
     }

@@ -20,11 +20,7 @@ import { NotFound } from "./response";
 import { Route, Routes, RouteInit, RouteCallback } from "./route";
 
 export abstract class RoutedWorker extends BasicWorker {
-    private readonly routes: Routes = new Routes(this);
-
-    constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
-        super(request, env, ctx);
-    }
+    private readonly routes: Routes = new Routes();
 
     protected initialize(routes: RouteInit[]) {
         routes.forEach((route) => {
@@ -33,16 +29,16 @@ export abstract class RoutedWorker extends BasicWorker {
     }
 
     protected addRoute(method: Method, pattern: string, callback: RouteCallback) {
-        this.routes.append(method, new Route(pattern, callback));
+        this.routes.add(method, new Route(pattern, callback));
         return this;
     }
 
     protected async dispatch(request: Request): Promise<Response> {
         const route = this.routes.get(request.method as Method, request.url);
-        if (!route) return await super.dispatch(request);
+        if (!route) return super.dispatch(request);
 
-        const match = this.requestUrl.pathname.match(route.pattern);
-        return await route.callback(...(match ?? []));
+        const match = this.requestUrl.pathname.match(route.pattern) ?? [];
+        return route.callback.call(this, ...match);
     }
 
     protected override get(): Response | Promise<Response> {

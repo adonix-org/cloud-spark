@@ -15,7 +15,6 @@
  */
 
 import { ensure, Method } from "./common";
-import { RoutedWorker } from "./routed-worker";
 
 export type RouteCallback = (...matches: string[]) => Response | Promise<Response>;
 
@@ -24,21 +23,16 @@ export type RouteInit = [Method, string, RouteCallback];
 export class Route {
     public readonly pattern: RegExp;
 
-    constructor(pattern: RegExp | string, public callback: RouteCallback) {
+    constructor(pattern: RegExp | string, public readonly callback: RouteCallback) {
         this.pattern = new RegExp(pattern);
     }
 }
 
 export class Routes {
-    private routes = new Map<Method, Route[]>();
+    private readonly routes = new Map<Method, Route[]>();
 
-    constructor(private readonly worker: RoutedWorker) {}
-
-    public append(method: Method, route: Route) {
-        const boundRoute = new Route(route.pattern, route.callback.bind(this.worker));
-
-        ensure(this.routes, method, () => []).push(boundRoute);
-
+    public add(method: Method, route: Route) {
+        ensure(this.routes, method, () => []).push(route);
         return this;
     }
 
