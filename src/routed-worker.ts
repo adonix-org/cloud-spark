@@ -23,8 +23,8 @@ export abstract class RoutedWorker extends BasicWorker {
     private readonly routes: Routes = new Routes();
 
     protected initialize(routes: RouteInit[]) {
-        routes.forEach((route) => {
-            this.add(route[0], route[1], route[2]);
+        routes.forEach(([method, pattern, callback]) => {
+            this.add(method, pattern, callback);
         });
     }
 

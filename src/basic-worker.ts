@@ -57,9 +57,6 @@ export abstract class BasicWorker implements CorsProvider {
     }
 
     protected async dispatch(request: Request): Promise<Response> {
-        // Instead of using this.request, always pass in the request.
-        // This enables creation of custom reqeusts, for example for
-        // HEAD requests.
         const method = request.method as Method;
         const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),
@@ -98,9 +95,9 @@ export abstract class BasicWorker implements CorsProvider {
     }
 
     protected async head(): Promise<Response> {
-        // For HEAD method, we need to create a new GET request and
-        // pass that through normal processing. Body is then removed
-        // from the GET response and passed back as the HEAD response.
+        // For the HEAD method, we need to create a new GET request and
+        // pass that through normal processing. The body is then removed
+        // from the GET response and returned as the HEAD response.
         return this.getResponse(
             Head,
             await this.dispatch(new Request(this.request, { method: Method.GET }))
@@ -117,16 +114,16 @@ export abstract class BasicWorker implements CorsProvider {
         return new ResponseClass(this, ...args).createResponse();
     }
 
+    public isAllowed(method: string): boolean {
+        return isMethod(method) && this.getAllowMethods().includes(method);
+    }
+
     public getAllowOrigins(): string[] {
         return ["*"];
     }
 
     public getAllowMethods(): Method[] {
         return [Method.GET, Method.OPTIONS, Method.HEAD];
-    }
-
-    public isAllowed(method: string): boolean {
-        return isMethod(method) && this.getAllowMethods().includes(method);
     }
 
     public getAllowHeaders(): string[] {

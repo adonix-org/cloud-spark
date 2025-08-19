@@ -29,17 +29,17 @@ export class Route {
 }
 
 export class Routes {
-    private readonly routes = new Map<Method, Route[]>();
+    private readonly map = new Map<Method, Route[]>();
 
     public add(method: Method, route: Route) {
-        ensure(this.routes, method, () => []).push(route);
+        ensure(this.map, method, () => []).push(route);
         return this;
     }
 
     public get(method: Method, url: string): Route | undefined {
-        const array = this.routes.get(method);
-        if (!array) return undefined;
+        const routes = this.map.get(method);
+        if (!routes) return undefined;
 
-        return array.find(({ pattern }) => pattern.test(new URL(url).pathname));
+        return routes.find(({ pattern }) => pattern.test(new URL(url).pathname));
     }
 }
