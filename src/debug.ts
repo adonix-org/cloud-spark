@@ -43,14 +43,14 @@ class DebugWorker extends RoutedWorker {
         return ["https://www.adonix.org", "https://www.tybusby.com"];
     }
 
-    protected override get(): Response {
+    protected override async get(): Promise<Response> {
         return this.getResponse(TextResponse, "Hello 🌎");
     }
 }
 
-const method: Method = Method.DELETE;
+const method: Method = Method.GET;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/20045", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",

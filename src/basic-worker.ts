@@ -69,7 +69,7 @@ export abstract class BasicWorker implements CorsProvider {
         // This enables creation of special reqeusts, for example for
         // HEAD requests.
         const method = request.method as Method;
-        const handler: Record<Method, () => Response | Promise<Response>> = {
+        const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),
             PUT: () => this.put(),
             POST: () => this.post(),
@@ -81,27 +81,27 @@ export abstract class BasicWorker implements CorsProvider {
         return (handler[method] ?? (() => this.getResponse(MethodNotAllowed, method)))();
     }
 
-    protected get(): Response | Promise<Response> {
+    protected async get(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected put(): Response | Promise<Response> {
+    protected async put(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected post(): Response | Promise<Response> {
+    protected async post(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected patch(): Response | Promise<Response> {
+    protected async patch(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected delete(): Response | Promise<Response> {
+    protected async delete(): Promise<Response> {
         return this.getResponse(NotImplemented);
     }
 
-    protected options(): Response | Promise<Response> {
+    protected async options(): Promise<Response> {
         return this.getResponse(Options);
     }
 

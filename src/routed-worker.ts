@@ -41,23 +41,23 @@ export abstract class RoutedWorker extends BasicWorker {
         return route.callback.call(this, ...match);
     }
 
-    protected override get(): Response | Promise<Response> {
+    protected override async get(): Promise<Response> {
         return this.getResponse(NotFound);
     }
 
-    protected override put(): Response | Promise<Response> {
+    protected override async put(): Promise<Response> {
         return this.getResponse(NotFound);
     }
 
-    protected override post(): Response | Promise<Response> {
+    protected override async post(): Promise<Response> {
         return this.getResponse(NotFound);
     }
 
-    protected override patch(): Response | Promise<Response> {
+    protected override async patch(): Promise<Response> {
         return this.getResponse(NotFound);
     }
 
-    protected override delete(): Response | Promise<Response> {
+    protected override async delete(): Promise<Response> {
         return this.getResponse(NotFound);
     }
 }
