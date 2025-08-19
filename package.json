@@ -16,12 +16,12 @@
         "dist"
     ],
     "scripts": {
-        "build": "tsup",
-        "dev": "tsup --watch",
-        "prepare-pack": "node -e \"require('fs').mkdirSync('artifacts', { recursive: true })\"",
+        "build": "tsc && tsup",
+        "dev": "tsc && tsup --watch",
+        "prepare-pack": "tsc && node -e \"require('fs').mkdirSync('artifacts', { recursive: true })\"",
         "pack": "npm run prepare-pack && npm pack --pack-destination ./artifacts",
         "test": "vitest",
-        "debug": "tsx ./src/debug.ts"
+        "debug": "tsc && tsx ./src/debug.ts"
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20250813.0",

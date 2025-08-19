@@ -22,13 +22,13 @@ class DebugWorker extends RoutedWorker {
     constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
         super(request, env, ctx);
 
-        this.addRoute([Method.GET, "^/api/v1/seasons/(\\d{4})$", this.getPlaylist])
-            .addRoute([Method.GET, "^/api/v1/seasons$", this.getSeasons])
-            .addRoute([
+        this.addRoute(Method.GET, "^/api/v1/seasons/(\\d{4})$", this.getPlaylist)
+            .addRoute(Method.GET, "^/api/v1/seasons$", this.getSeasons)
+            .addRoute(
                 Method.GET,
                 "^/api/v1/seasons/last$",
-                (): Response => this.getResponse(JsonResponse, [2026]),
-            ]);
+                (): Response => this.getResponse(JsonResponse, [2026])
+            );
     }
 
     protected getPlaylist(...matches: string[]): Response {

@@ -17,7 +17,7 @@
 import { BasicWorker } from "./basic-worker";
 import { Method } from "./common";
 import { NotFound } from "./response";
-import { Route, Routes, RouteInit } from "./route";
+import { Route, Routes, RouteInit, RouteCallback } from "./route";
 
 export abstract class RoutedWorker extends BasicWorker {
     private readonly routes: Routes = new Routes(this);
@@ -28,12 +28,12 @@ export abstract class RoutedWorker extends BasicWorker {
 
     protected initialize(routes: RouteInit[]) {
         routes.forEach((route) => {
-            this.addRoute(route);
+            this.addRoute(route[0], route[1], route[2]);
         });
     }
 
-    protected addRoute(route: RouteInit) {
-        this.routes.append(route[0], new Route(route[1], route[2]));
+    protected addRoute(method: Method, pattern: string, callback: RouteCallback) {
+        this.routes.append(method, new Route(pattern, callback));
         return this;
     }
 
