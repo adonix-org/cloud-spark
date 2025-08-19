@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { getOrCreate, Method } from "./common";
+import { ensure, Method } from "./common";
 import { RoutedWorker } from "./routed-worker";
 
-export type RouteCallback = (
-    ...matches: string[]
-) => Response | Promise<Response>;
+export type RouteCallback = (...matches: string[]) => Response | Promise<Response>;
 
 export type RouteInit = [Method, string, RouteCallback];
 
@@ -36,13 +34,10 @@ export class Routes {
 
     constructor(private readonly worker: RoutedWorker) {}
 
-    public append(method: Method, route: Route): Routes {
-        const boundRoute = new Route(
-            route.pattern,
-            route.callback.bind(this.worker)
-        );
+    public append(method: Method, route: Route) {
+        const boundRoute = new Route(route.pattern, route.callback.bind(this.worker));
 
-        getOrCreate(this.routes, method, () => []).push(boundRoute);
+        ensure(this.routes, method, () => []).push(boundRoute);
 
         return this;
     }

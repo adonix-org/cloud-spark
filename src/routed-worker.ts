@@ -32,7 +32,7 @@ export abstract class RoutedWorker extends BasicWorker {
         });
     }
 
-    protected addRoute(route: RouteInit): RoutedWorker {
+    protected addRoute(route: RouteInit) {
         this.routes.append(route[0], new Route(route[1], route[2]));
         return this;
     }

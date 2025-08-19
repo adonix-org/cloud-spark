@@ -38,7 +38,7 @@ export function isMethod(value: string): value is Method {
     return METHOD_SET.has(value);
 }
 
-export function getOrCreate<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
+export function ensure<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
     let value = map.get(key);
     if (value === undefined) {
         value = factory();
