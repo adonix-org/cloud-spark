@@ -21,10 +21,6 @@ export type RouteCallback = (
     ...matches: string[]
 ) => Response | Promise<Response>;
 
-type RouteTuple = [string | RegExp, RouteCallback, Method];
-
-type RouteInit = RouteTuple[];
-
 export class Route {
     public readonly pattern: RegExp;
 
@@ -36,13 +32,7 @@ export class Route {
 export class Routes {
     private routes = new Map<Method, Route[]>();
 
-    constructor(private readonly worker: RoutedWorker, init?: RouteInit) {
-        if (init) {
-            for (const [pattern, callback, method] of init) {
-                this.append(new Route(pattern, callback), method);
-            }
-        }
-    }
+    constructor(private readonly worker: RoutedWorker) {}
 
     public append(route: Route, method: Method = Method.GET): Routes {
         const boundRoute = new Route(
