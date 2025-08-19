@@ -16,13 +16,25 @@
 
 import { Method } from "./common";
 import { JsonResponse, TextResponse } from "./response";
+import { RouteInit } from "./route";
 import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
+    protected readonly ROUTES: RouteInit[] = [
+        [Method.GET, "^/api/v1/seasons/(\\d{4})$", this.getPlaylist],
+        [Method.GET, "^/api/v1/seasons$", this.getSeasons],
+        [
+            Method.GET,
+            "^/api/v1/seasons/last$",
+            (): Response => {
+                return this.getResponse(JsonResponse, [2026]);
+            },
+        ],
+    ];
+
     constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
         super(request, env, ctx);
-        this.addRoute(`^/api/v1/seasons/(\\d{4})$`, this.getPlaylist);
-        this.addRoute(`/api/v1/seasons`, this.getSeasons);
+        this.initialize(this.ROUTES);
     }
 
     protected getPlaylist(...matches: string[]): Response {
@@ -42,9 +54,9 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.GET;
+const method: Method = Method.HEAD;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/2024", {
+const request = new Request("https://www.adonix.org/api/v1/seasons", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",

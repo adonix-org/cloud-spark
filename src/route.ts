@@ -21,6 +21,8 @@ export type RouteCallback = (
     ...matches: string[]
 ) => Response | Promise<Response>;
 
+export type RouteInit = [Method, string, RouteCallback];
+
 export class Route {
     public readonly pattern: RegExp;
 
@@ -34,7 +36,7 @@ export class Routes {
 
     constructor(private readonly worker: RoutedWorker) {}
 
-    public append(route: Route, method: Method = Method.GET): Routes {
+    public append(method: Method, route: Route): Routes {
         const boundRoute = new Route(
             route.pattern,
             route.callback.bind(this.worker)
