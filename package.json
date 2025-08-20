@@ -2,6 +2,25 @@
     "name": "@adonix.org/cloud-spark",
     "version": "0.0.49",
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
+    "author": {
+        "name": "Ty Busby",
+        "email": "tybusby@adonix.org",
+        "url": "https://www.adonix.org"
+    },
+    "keywords": [
+        "cloudflare",
+        "workers",
+        "typescript"
+    ],
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/adonix-org/cloud-spark"
+    },
+    "bugs": {
+        "email": "support@adonix.org",
+        "url": "https://github.com/adonix-org/cloud-spark/issues"
+    },
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",

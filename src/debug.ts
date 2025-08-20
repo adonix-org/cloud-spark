@@ -19,14 +19,18 @@ import { JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
+    private static PLAYLIST = "^/api/v1/seasons/(\\d{4})$";
+    private static SEASONS = "^/api/v1/seasons$";
+    private static LAST = "^/api/v1/seasons$";
+
     constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
         super(request, env, ctx);
 
-        this.add(Method.GET, "^/api/v1/seasons/(\\d{4})$", this.getPlaylist)
-            .add(Method.GET, "^/api/v1/seasons$", this.getSeasons)
+        this.add(Method.GET, DebugWorker.PLAYLIST, this.getPlaylist)
+            .add(Method.GET, DebugWorker.SEASONS, this.getSeasons)
             .add(
                 Method.GET,
-                "^/api/v1/seasons/last$",
+                DebugWorker.LAST,
                 (): Response => this.getResponse(JsonResponse, [2026])
             );
     }
