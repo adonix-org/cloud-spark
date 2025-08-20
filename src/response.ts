@@ -76,6 +76,7 @@ export class WorkerResponse {
         const origin = this.cors.getOrigin();
         if (!origin) return; // no Origin, skip CORS
 
+        this.headers.delete("Access-Control-Allow-Origin");
         if (this.getAllowOrigins().includes("*")) {
             this.headers.set("Access-Control-Allow-Origin", "*");
         } else if (this.getAllowOrigins().includes(origin)) {
