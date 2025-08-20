@@ -15,13 +15,14 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { getContentType, Method, MimeType } from "./common";
+import { getContentType, mergeHeader, Method, MimeType, setHeader } from "./common";
 
 export interface CorsProvider {
     getOrigin(): string | null;
     getAllowOrigins(): string[];
     getAllowMethods(): Method[];
     getAllowHeaders(): string[];
+    getExposeHeaders(): string[];
     getMaxAge(): number;
 }
 
@@ -31,25 +32,16 @@ export interface ErrorJson {
     details: string;
 }
 
-export class WorkerResponse {
+class BasicResponse {
     private _headers: Headers = new Headers();
     private _body: BodyInit | null;
 
     constructor(
-        protected readonly cors: CorsProvider,
         content: BodyInit | null = null,
         protected readonly code: StatusCodes = StatusCodes.OK,
         protected readonly mimeType: MimeType = MimeType.JSON
     ) {
         this._body = this.code === StatusCodes.NO_CONTENT ? null : content;
-    }
-
-    public createResponse(): Response {
-        this.addCorsHeaders();
-        if (this.body) {
-            this.headers.set("Content-Type", getContentType(this.mimeType));
-        }
-        return new Response(this.body, this.responseInit);
     }
 
     protected get responseInit(): ResponseInit {
@@ -72,38 +64,53 @@ export class WorkerResponse {
         this._headers = headers;
     }
 
+    protected setHeader(key: string, value: string | string[]): void {
+        setHeader(this.headers, key, value);
+    }
+
+    protected mergeHeader(key: string, value: string | string[]): void {
+        mergeHeader(this.headers, key, value);
+    }
+}
+
+class CorsResponse extends BasicResponse {
+    constructor(
+        protected readonly cors: CorsProvider,
+        content: BodyInit | null = null,
+        code: StatusCodes = StatusCodes.OK,
+        mimeType: MimeType = MimeType.JSON
+    ) {
+        super(content, code, mimeType);
+    }
+
     protected addCorsHeaders(): void {
         const origin = this.cors.getOrigin();
         if (!origin) return; // no Origin, skip CORS
 
         this.headers.delete("Access-Control-Allow-Origin");
-        if (this.getAllowOrigins().includes("*")) {
-            this.headers.set("Access-Control-Allow-Origin", "*");
-        } else if (this.getAllowOrigins().includes(origin)) {
-            this.headers.set("Access-Control-Allow-Origin", origin);
-            this.headers.set("Access-Control-Allow-Credentials", "true");
-            this.headers.set("Vary", "Origin");
+        if (this.cors.getAllowOrigins().includes("*")) {
+            this.setHeader("Access-Control-Allow-Origin", "*");
+        } else if (this.cors.getAllowOrigins().includes(origin)) {
+            this.setHeader("Access-Control-Allow-Origin", origin);
+            this.setHeader("Access-Control-Allow-Credentials", "true");
+            this.mergeHeader("Vary", ["Origin", "Origin", "Origin", "     ", "Content-Type"]);
+            this.mergeHeader("Vary", "Origin");
         }
-        this.headers.set("Access-Control-Allow-Headers", this.getAllowHeaders());
-        this.headers.set("Access-Control-Allow-Methods", this.getAllowMethods());
-        this.headers.set("Access-Control-Max-Age", this.getMaxAge());
-        this.headers.set("X-Content-Type-Options", "nosniff");
+        this.mergeHeader("Access-Control-Expose-Headers", this.cors.getExposeHeaders());
+        this.setHeader("Access-Control-Allow-Headers", this.cors.getAllowHeaders());
+        this.setHeader("Access-Control-Allow-Methods", this.cors.getAllowMethods());
+        this.setHeader("Access-Control-Max-Age", String(this.cors.getMaxAge()));
+        this.setHeader("X-Content-Type-Options", "nosniff");
     }
+}
 
-    protected getAllowMethods(): string {
-        return this.cors.getAllowMethods().join(", ");
-    }
-
-    protected getAllowHeaders(): string {
-        return this.cors.getAllowHeaders().join(", ");
-    }
-
-    protected getAllowOrigins(): string[] {
-        return this.cors.getAllowOrigins();
-    }
-
-    protected getMaxAge(): string {
-        return String(this.cors.getMaxAge());
+export class WorkerResponse extends CorsResponse {
+    public createResponse(): Response {
+        this.addCorsHeaders();
+        if (this.body) {
+            this.headers.set("Content-Type", getContentType(this.mimeType));
+        }
+        return new Response(this.body, this.responseInit);
     }
 }
 
@@ -169,7 +176,7 @@ export class Head extends WorkerResponse {
 export class Options extends WorkerResponse {
     constructor(cors: CorsProvider) {
         super(cors, null, StatusCodes.NO_CONTENT);
-        this.headers.set("Allow", this.getAllowMethods());
+        this.setHeader("Allow", this.cors.getAllowMethods());
     }
 }
 
@@ -214,7 +221,7 @@ export class NotFound extends HttpError {
 export class MethodNotAllowed extends HttpError {
     constructor(cors: CorsProvider, method: string) {
         super(cors, StatusCodes.METHOD_NOT_ALLOWED, `${method} method not allowed.`);
-        this.headers.set("Allow", this.getAllowMethods());
+        this.setHeader("Allow", this.cors.getAllowMethods());
     }
 
     public override get json(): ErrorJson & { allowed: Method[] } {

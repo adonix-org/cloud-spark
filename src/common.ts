@@ -31,7 +31,6 @@ export enum Method {
     HEAD = "HEAD",
     OPTIONS = "OPTIONS",
 }
-
 const METHOD_SET: Set<string> = new Set(Object.values(Method));
 
 export function isMethod(value: string): value is Method {
@@ -105,3 +104,29 @@ const ADD_CHARSET: Set<MimeType> = new Set([
     MimeType.RICH_TEXT,
     MimeType.SVG,
 ]);
+
+export function setHeader(headers: Headers, key: string, value: string | string[]): void {
+    const raw = Array.isArray(value) ? value : [value];
+    const values = Array.from(new Set(raw.map((v) => v.trim()))).filter((v) => v.length);
+
+    if (!values.length) {
+        headers.delete(key);
+        return;
+    }
+
+    headers.set(key, values.join(", "));
+}
+
+export function mergeHeader(headers: Headers, key: string, value: string | string[]): void {
+    const values = Array.isArray(value) ? value : [value];
+    if (!values.length) return;
+
+    const existing = headers.get(key);
+    if (existing) {
+        const merged = existing.split(",").map((v) => v.trim());
+        values.forEach((v) => merged.push(v.trim()));
+        setHeader(headers, key, merged);
+    } else {
+        setHeader(headers, key, values);
+    }
+}

@@ -95,7 +95,7 @@ export abstract class BasicWorker implements CorsProvider {
     }
 
     protected async head(): Promise<Response> {
-        // Dispatch a new GET request created from the HEAD request 
+        // Dispatch a new GET request created from the HEAD request
         // and return the GET response with the body removed.
         return this.getResponse(
             Head,
@@ -127,6 +127,10 @@ export abstract class BasicWorker implements CorsProvider {
 
     public getAllowHeaders(): string[] {
         return ["Content-Type"];
+    }
+
+    getExposeHeaders(): string[] {
+        return [];
     }
 
     public getMaxAge(): number {
