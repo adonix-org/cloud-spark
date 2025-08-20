@@ -93,7 +93,6 @@ class CorsResponse extends BasicResponse {
         } else if (this.cors.getAllowOrigins().includes(origin)) {
             this.setHeader("Access-Control-Allow-Origin", origin);
             this.setHeader("Access-Control-Allow-Credentials", "true");
-            this.mergeHeader("Vary", ["Origin", "Origin", "Origin", "     ", "Content-Type"]);
             this.mergeHeader("Vary", "Origin");
         }
         this.mergeHeader("Access-Control-Expose-Headers", this.cors.getExposeHeaders());
