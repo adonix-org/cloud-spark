@@ -88,13 +88,16 @@ class CorsResponse extends BasicResponse {
         if (!origin) return; // no Origin, skip CORS
 
         this.headers.delete("Access-Control-Allow-Origin");
-        if (this.cors.getAllowOrigins().includes("*")) {
+
+        const allowed = this.cors.getAllowOrigins();
+        if (allowed.includes("*")) {
             this.setHeader("Access-Control-Allow-Origin", "*");
-        } else if (this.cors.getAllowOrigins().includes(origin)) {
+        } else if (allowed.includes(origin)) {
             this.setHeader("Access-Control-Allow-Origin", origin);
             this.setHeader("Access-Control-Allow-Credentials", "true");
             this.mergeHeader("Vary", "Origin");
         }
+
         this.mergeHeader("Access-Control-Expose-Headers", this.cors.getExposeHeaders());
         this.setHeader("Access-Control-Allow-Headers", this.cors.getAllowHeaders());
         this.setHeader("Access-Control-Allow-Methods", this.cors.getAllowMethods());
