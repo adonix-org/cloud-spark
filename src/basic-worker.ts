@@ -129,7 +129,7 @@ export abstract class BasicWorker implements CorsProvider {
         return ["Content-Type"];
     }
 
-    getExposeHeaders(): string[] {
+    public getExposeHeaders(): string[] {
         return [];
     }
 
