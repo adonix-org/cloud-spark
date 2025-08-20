@@ -2,6 +2,7 @@
     "name": "@adonix.org/cloud-spark",
     "version": "0.0.53",
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
+    "license": "Apache-2.0",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -25,7 +26,6 @@
         "workers",
         "typescript"
     ],
-    "license": "Apache-2.0",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/adonix-org/cloud-spark"
