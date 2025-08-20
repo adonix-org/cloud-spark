@@ -45,6 +45,7 @@ export class Routes {
         const routes = this.map.get(method);
         if (!routes) return undefined;
 
-        return routes.find(({ pattern }) => pattern.test(new URL(url).pathname));
+        const pathname = new URL(url).pathname;
+        return routes.find(({ pattern }) => pattern.test(pathname));
     }
 }
