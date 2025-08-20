@@ -28,7 +28,7 @@ export abstract class RoutedWorker extends BasicWorker {
         });
     }
 
-    protected add(method: Method, pattern: string, callback: RouteCallback) {
+    protected add(method: Method, pattern: RegExp | string, callback: RouteCallback) {
         this.routes.add(method, new Route(pattern, callback));
         return this;
     }
