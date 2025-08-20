@@ -109,7 +109,7 @@ export class WorkerResponse {
 export class ClonedResponse extends WorkerResponse {
     constructor(cors: CorsProvider, response: Response) {
         super(cors, response.body, response.status);
-        this.headers = response.headers;
+        this.headers = new Headers(response.headers);
     }
 }
 
