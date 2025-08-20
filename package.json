@@ -1,6 +1,6 @@
 {
     "name": "@adonix.org/cloud-spark",
-    "version": "0.0.50",
+    "version": "0.0.51",
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
     "author": {
         "name": "Ty Busby",

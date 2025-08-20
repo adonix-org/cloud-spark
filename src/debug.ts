@@ -15,7 +15,7 @@
  */
 
 import { Method } from "./common";
-import { JsonResponse, TextResponse } from "./response";
+import { ClonedResponse, JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
@@ -63,7 +63,10 @@ const request = new Request("https://www.adonix.org/api/v1/seasons/2021", {
 const worker = new DebugWorker(request);
 
 const response = await worker.fetch();
+const clone = new ClonedResponse(worker, response);
 
-const text = await response.text();
-console.log(response);
-console.log("body:", text || "EMPTY");
+console.log(clone.createResponse());
+
+//const text = await response.text();
+//console.log(response);
+//console.log("body:", text || "EMPTY");

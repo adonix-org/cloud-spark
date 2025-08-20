@@ -106,6 +106,13 @@ export class WorkerResponse {
     }
 }
 
+export class ClonedResponse extends WorkerResponse {
+    constructor(cors: CorsProvider, response: Response) {
+        super(cors, response.body, response.status);
+        this.headers = response.headers;
+    }
+}
+
 export class JsonResponse extends WorkerResponse {
     private _json: object;
     constructor(cors: CorsProvider, content: object = {}, code: StatusCodes = StatusCodes.OK) {
