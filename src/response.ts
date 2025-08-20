@@ -37,7 +37,7 @@ export class WorkerResponse {
 
     constructor(
         protected readonly cors: CorsProvider,
-        content: string | null = null,
+        content: BodyInit | null = null,
         protected readonly code: StatusCodes = StatusCodes.OK,
         protected readonly mimeType: MimeType = MimeType.JSON
     ) {
