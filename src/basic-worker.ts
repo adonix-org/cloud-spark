@@ -46,7 +46,7 @@ export abstract class BasicWorker implements CorsProvider {
         return this._ctx;
     }
 
-    protected get logger(): Logger {
+    protected get log(): Logger {
         return this._logger;
     }
 
