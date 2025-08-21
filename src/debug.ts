@@ -15,7 +15,6 @@
  */
 
 import { Method } from "./common";
-import { ConsoleLogger, Logger } from "./logging";
 import { ClonedResponse, JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
@@ -65,16 +64,4 @@ const worker = new DebugWorker(request);
 
 const response = await worker.fetch();
 const clone = new ClonedResponse(worker, response);
-
 console.log(clone.createResponse());
-
-const logger: Logger = new ConsoleLogger();
-
-logger.info("Hello World", "58001");
-logger.debug("Checking for bugs", worker);
-logger.error("Something went wrong!", new TypeError("Ooops"));
-logger.warn("Look out!");
-
-//const text = await response.text();
-//console.log(response);
-//console.log("body:", text || "EMPTY");
