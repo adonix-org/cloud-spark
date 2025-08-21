@@ -71,9 +71,8 @@ console.log(clone.createResponse());
 const logger: Logger = new ConsoleLogger();
 
 logger.info("Hello World", "58001");
-logger.debug("Checking for bugs");
+logger.debug("Checking for bugs", worker);
 logger.error("Something went wrong!", new TypeError("Ooops"));
-logger.fatal("Oh no!");
 logger.warn("Look out!");
 
 //const text = await response.text();

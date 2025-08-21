@@ -29,27 +29,55 @@ export interface ErrorLogEntry extends BaseLogEntry {
     stack?: string;
 }
 
-export type LogEntry = BaseLogEntry | ErrorLogEntry;
+export interface DebugLogEntry extends BaseLogEntry {
+    level: "debug";
+    object?: object;
+}
+
+export type LogEntry = BaseLogEntry | ErrorLogEntry | DebugLogEntry;
 
 export interface Logger {
-    log(level: LogLevel, message: string, correlationId?: string, err?: Error): void;
+    log(
+        level: LogLevel,
+        message: string,
+        correlationId?: string,
+        err?: Error,
+        object?: object
+    ): void;
     format(level: LogLevel, message: string): string;
     flush(): Promise<void>;
 
-    debug(message: string, correlationId?: string): void;
+    debug(message: string, object?: object, correlationId?: string): void;
     info(message: string, correlationId?: string): void;
     warn(message: string, correlationId?: string): void;
     error(message: string, error?: unknown, correlationId?: string): void;
 }
 
 export class ConsoleLogger implements Logger {
-    public log(level: LogLevel, message: string, correlationId?: string, err?: unknown): void {
+    private _level: LogLevel = "error";
+
+    public set level(level: LogLevel) {
+        this._level = level;
+    }
+
+    public get level(): LogLevel {
+        return this._level;
+    }
+
+    public log(
+        level: LogLevel,
+        message: string,
+        correlationId?: string,
+        err?: unknown,
+        object?: object
+    ): void {
         const error = err instanceof Error ? err.message : err ? String(err) : undefined;
         const stack = err instanceof Error ? err.stack : undefined;
         const entry: LogEntry = {
             timestamp: new Date().toISOString(),
             level,
             message,
+            ...(object ? { object } : {}),
             ...(error ? { error, stack } : {}),
             ...(correlationId ? { correlationId } : {}),
         };
@@ -69,7 +97,6 @@ export class ConsoleLogger implements Logger {
                 break;
             default:
                 console.log(entry);
-                break;
         }
     }
 
@@ -81,8 +108,8 @@ export class ConsoleLogger implements Logger {
         return;
     }
 
-    public debug(message: string, correlationId?: string): void {
-        this.log("debug", message, correlationId);
+    public debug(message: string, object?: object, correlationId?: string): void {
+        this.log("debug", message, correlationId, undefined, object);
     }
 
     public info(message: string, correlationId?: string): void {
