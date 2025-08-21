@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type LogLevel = "debug" | "info" | "warn" | "error" | "fatal";
+export type LogLevel = "debug" | "info" | "warn" | "error";
 
 export interface BaseLogEntry {
     timestamp: string;
@@ -24,7 +24,7 @@ export interface BaseLogEntry {
 }
 
 export interface ErrorLogEntry extends BaseLogEntry {
-    level: "error" | "fatal";
+    level: "error";
     error?: string;
     stack?: string;
 }
@@ -40,7 +40,6 @@ export interface Logger {
     info(message: string, correlationId?: string): void;
     warn(message: string, correlationId?: string): void;
     error(message: string, error?: unknown, correlationId?: string): void;
-    fatal(message: string, error?: unknown, correlationId?: string): void;
 }
 
 export class ConsoleLogger implements Logger {
@@ -66,7 +65,6 @@ export class ConsoleLogger implements Logger {
                 console.warn(entry);
                 break;
             case "error":
-            case "fatal":
                 console.error(entry);
                 break;
             default:
@@ -97,9 +95,5 @@ export class ConsoleLogger implements Logger {
 
     public error(message: string, err?: unknown, correlationId?: string): void {
         this.log("error", message, correlationId, err);
-    }
-
-    public fatal(message: string, err?: unknown, correlationId?: string): void {
-        this.log("fatal", message, correlationId, err);
     }
 }
