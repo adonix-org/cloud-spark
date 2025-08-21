@@ -15,6 +15,7 @@
  */
 
 import { isMethod, Method, Time } from "./common";
+import { ConsoleLogger, Logger } from "./logging";
 import {
     CorsProvider,
     Head,
@@ -29,7 +30,8 @@ export abstract class BasicWorker implements CorsProvider {
     constructor(
         private readonly _request: Request,
         private readonly _env: Env = {},
-        private readonly _ctx?: ExecutionContext
+        private readonly _ctx?: ExecutionContext,
+        private readonly _logger: Logger = new ConsoleLogger()
     ) {}
 
     protected get request(): Request {
@@ -42,6 +44,10 @@ export abstract class BasicWorker implements CorsProvider {
 
     protected get ctx(): ExecutionContext | undefined {
         return this._ctx;
+    }
+
+    protected get logger(): Logger {
+        return this._logger;
     }
 
     public async fetch(): Promise<Response> {
