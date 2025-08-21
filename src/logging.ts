@@ -39,8 +39,8 @@ export interface Logger {
     debug(message: string, correlationId?: string): void;
     info(message: string, correlationId?: string): void;
     warn(message: string, correlationId?: string): void;
-    error(message: string, error?: Error, correlationId?: string): void;
-    fatal(message: string, error?: Error, correlationId?: string): void;
+    error(message: string, error?: unknown, correlationId?: string): void;
+    fatal(message: string, error?: unknown, correlationId?: string): void;
 }
 
 export class ConsoleLogger implements Logger {
@@ -95,11 +95,11 @@ export class ConsoleLogger implements Logger {
         this.log("warn", message, correlationId);
     }
 
-    public error(message: string, err?: Error, correlationId?: string): void {
+    public error(message: string, err?: unknown, correlationId?: string): void {
         this.log("error", message, correlationId, err);
     }
 
-    public fatal(message: string, err?: Error, correlationId?: string): void {
+    public fatal(message: string, err?: unknown, correlationId?: string): void {
         this.log("fatal", message, correlationId, err);
     }
 }
