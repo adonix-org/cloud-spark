@@ -15,7 +15,7 @@
  */
 
 import { Method } from "./common";
-import { ClonedResponse, JsonResponse, TextResponse } from "./response";
+import { JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
 class DebugWorker extends RoutedWorker {
@@ -48,13 +48,13 @@ class DebugWorker extends RoutedWorker {
     }
 
     protected override async get(): Promise<Response> {
-        return this.getResponse(TextResponse, "Hello 🌎");
+        return this.getResponse(TextResponse, "Hello 🌎", { private: true });
     }
 }
 
-const method: Method = Method.GET;
+const method: Method = Method.POST;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/2021", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/20213", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",
@@ -63,5 +63,5 @@ const request = new Request("https://www.adonix.org/api/v1/seasons/2021", {
 const worker = new DebugWorker(request);
 
 const response = await worker.fetch();
-const clone = new ClonedResponse(worker, response);
-console.log(clone.createResponse());
+console.log(response);
+console.log(await response.text());

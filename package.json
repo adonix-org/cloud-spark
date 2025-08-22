@@ -50,6 +50,7 @@
         "vitest": "^3.2.4"
     },
     "dependencies": {
+        "cache-control-parser": "^2.0.6",
         "http-status-codes": "^2.3.0"
     }
 }

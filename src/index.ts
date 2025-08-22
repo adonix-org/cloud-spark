@@ -15,6 +15,7 @@
  */
 
 export { StatusCodes } from "http-status-codes";
+export { CacheControl } from "cache-control-parser";
 
 export * from "./basic-worker";
 export * from "./common";

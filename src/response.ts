@@ -16,6 +16,7 @@
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { getContentType, mergeHeader, Method, MimeType, setHeader } from "./common";
+import CacheControl from "cache-control-parser";
 
 export interface CorsProvider {
     getOrigin(): string | null;
@@ -27,60 +28,43 @@ export interface CorsProvider {
 }
 
 export interface ErrorJson {
-    code: number;
+    status: number;
     error: string;
     details: string;
 }
 
-class BasicResponse {
-    private _headers: Headers = new Headers();
-    private _body: BodyInit | null;
+abstract class BasicResponse {
+    public headers: Headers = new Headers();
+    public body: BodyInit | null;
+    public status: StatusCodes = StatusCodes.OK;
+    public statusText?: string;
+    public mimeType?: MimeType;
+    public cache?: CacheControl.CacheControl;
 
-    constructor(
-        content: BodyInit | null = null,
-        protected readonly code: StatusCodes = StatusCodes.OK,
-        protected readonly mimeType: MimeType = MimeType.JSON
-    ) {
-        this._body = this.code === StatusCodes.NO_CONTENT ? null : content;
+    constructor(content: BodyInit | null = null) {
+        this.body = this.status === StatusCodes.NO_CONTENT ? null : content;
     }
 
     protected get responseInit(): ResponseInit {
         return {
             headers: this.headers,
-            status: this.code,
-            statusText: getReasonPhrase(this.code),
+            status: this.status,
+            statusText: this.statusText ?? getReasonPhrase(this.status),
         };
     }
 
-    protected get body(): BodyInit | null {
-        return this._body;
-    }
-
-    protected get headers(): Headers {
-        return this._headers;
-    }
-
-    protected set headers(headers: Headers) {
-        this._headers = headers;
-    }
-
-    protected setHeader(key: string, value: string | string[]): void {
+    public setHeader(key: string, value: string | string[]): void {
         setHeader(this.headers, key, value);
     }
 
-    protected mergeHeader(key: string, value: string | string[]): void {
+    public mergeHeader(key: string, value: string | string[]): void {
         mergeHeader(this.headers, key, value);
     }
 }
 
-class CorsResponse extends BasicResponse {
-    constructor(
-        protected readonly cors: CorsProvider,
-        content: BodyInit | null = null,
-        code: StatusCodes = StatusCodes.OK,
-        mimeType: MimeType = MimeType.JSON
-    ) {
-        super(content, code, mimeType);
+abstract class CorsResponse extends BasicResponse {
+    constructor(public readonly cors: CorsProvider, content: BodyInit | null = null) {
+        super(content);
     }
 
     protected addCorsHeaders(): void {
@@ -106,62 +90,64 @@ class CorsResponse extends BasicResponse {
     }
 }
 
-export class WorkerResponse extends CorsResponse {
+export abstract class WorkerResponse extends CorsResponse {
+    constructor(
+        cors: CorsProvider,
+        content: BodyInit | null = null,
+        cache?: CacheControl.CacheControl
+    ) {
+        super(cors, content);
+        this.cache = cache;
+    }
+
     public createResponse(): Response {
         this.addCorsHeaders();
-        if (this.body) {
+        if (this.body && this.mimeType) {
             this.headers.set("Content-Type", getContentType(this.mimeType));
+        }
+        if (this.cache) {
+            this.headers.set("Cache-Control", CacheControl.stringify(this.cache));
         }
         return new Response(this.body, this.responseInit);
     }
 }
 
 export class ClonedResponse extends WorkerResponse {
-    constructor(cors: CorsProvider, response: Response) {
-        super(cors, response.body, response.status);
+    constructor(cors: CorsProvider, response: Response, cache?: CacheControl.CacheControl) {
+        super(cors, response.body);
         this.headers = new Headers(response.headers);
+        this.status = response.status;
+        this.cache = cache;
     }
 }
 
 export class JsonResponse extends WorkerResponse {
-    private _json: object;
-    constructor(cors: CorsProvider, content: object = {}, code: StatusCodes = StatusCodes.OK) {
-        super(cors, null, code, MimeType.JSON);
-        this._json = content;
-    }
-
-    public get json(): object {
-        return this._json;
-    }
-
-    public set json(json: object) {
-        this._json = json;
-    }
-
-    protected override get body(): string {
-        return JSON.stringify(this.json);
+    constructor(
+        cors: CorsProvider,
+        json: object = {},
+        status: StatusCodes = StatusCodes.OK,
+        cache?: CacheControl.CacheControl
+    ) {
+        super(cors), JSON.stringify(json);
+        this.status = status;
+        this.mimeType = MimeType.JSON;
+        this.cache = cache;
     }
 }
 
 export class HtmlResponse extends WorkerResponse {
-    constructor(
-        cors: CorsProvider,
-        content: string,
-        code: StatusCodes = StatusCodes.OK,
-        type: MimeType = MimeType.HTML
-    ) {
-        super(cors, content, code, type);
+    constructor(cors: CorsProvider, content: string, cache?: CacheControl.CacheControl) {
+        super(cors, content);
+        this.mimeType = MimeType.HTML;
+        this.cache = cache;
     }
 }
 
 export class TextResponse extends WorkerResponse {
-    constructor(
-        cors: CorsProvider,
-        content: string,
-        code: StatusCodes = StatusCodes.OK,
-        type: MimeType = MimeType.PLAIN_TEXT
-    ) {
-        super(cors, content, code, type);
+    constructor(cors: CorsProvider, content: string, cache?: CacheControl.CacheControl) {
+        super(cors, content);
+        this.mimeType = MimeType.PLAIN_TEXT;
+        this.cache = cache;
     }
 }
 
@@ -170,29 +156,40 @@ export class TextResponse extends WorkerResponse {
  */
 export class Head extends WorkerResponse {
     constructor(cors: CorsProvider, response: Response) {
-        super(cors, null, response.status);
+        super(cors, null);
         this.headers = new Headers(response.headers);
     }
 }
 
 export class Options extends WorkerResponse {
     constructor(cors: CorsProvider) {
-        super(cors, null, StatusCodes.NO_CONTENT);
+        super(cors, null);
+        this.status = StatusCodes.NO_CONTENT;
         this.setHeader("Allow", this.cors.getAllowMethods());
     }
 }
 
 export class HttpError extends JsonResponse {
-    constructor(cors: CorsProvider, code: StatusCodes, protected details?: string) {
-        super(cors, {}, code);
+    constructor(cors: CorsProvider, status: StatusCodes, protected readonly details?: string) {
+        super(cors, {}, status);
+        this.cache = {
+            "no-store": true,
+            "no-cache": true,
+            "must-revalidate": true,
+        };
     }
 
-    public override get json(): ErrorJson {
+    public get json(): ErrorJson {
         return {
-            code: this.code,
-            error: getReasonPhrase(this.code),
-            details: this.details ?? getReasonPhrase(this.code),
+            status: this.status,
+            error: getReasonPhrase(this.status),
+            details: this.details ?? getReasonPhrase(this.status),
         };
+    }
+
+    public override createResponse(): Response {
+        this.body = JSON.stringify(this.json);
+        return super.createResponse();
     }
 }
 
