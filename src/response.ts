@@ -16,7 +16,7 @@
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { getContentType, mergeHeader, Method, MimeType, setHeader } from "./common";
-import { Cache, CacheHeader } from "./cache";
+import { Cache, CacheControl } from "./cache";
 
 export interface CorsProvider {
     getOrigin(): string | null;
@@ -39,7 +39,7 @@ abstract class BasicResponse {
     public status: StatusCodes = StatusCodes.OK;
     public statusText?: string;
     public mimeType?: MimeType;
-    public cache?: CacheHeader;
+    public cache?: CacheControl;
 
     constructor(content: BodyInit | null = null) {
         this.body = this.status === StatusCodes.NO_CONTENT ? null : content;
@@ -103,7 +103,7 @@ abstract class CorsResponse extends BasicResponse {
 }
 
 export abstract class WorkerResponse extends CorsResponse {
-    constructor(cors: CorsProvider, body: BodyInit | null = null, cache?: CacheHeader) {
+    constructor(cors: CorsProvider, body: BodyInit | null = null, cache?: CacheControl) {
         super(cors, body);
         this.cache = cache;
     }
@@ -118,7 +118,7 @@ export abstract class WorkerResponse extends CorsResponse {
 }
 
 export class ClonedResponse extends WorkerResponse {
-    constructor(cors: CorsProvider, response: Response, cache?: CacheHeader) {
+    constructor(cors: CorsProvider, response: Response, cache?: CacheControl) {
         const clone = response.clone();
         super(cors, clone.body);
         this.headers = new Headers(clone.headers);
@@ -132,7 +132,7 @@ export class SuccessResponse extends WorkerResponse {
     constructor(
         cors: CorsProvider,
         body: BodyInit | null = null,
-        cache?: CacheHeader,
+        cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
         super(cors, body);
@@ -145,7 +145,7 @@ export class JsonResponse extends SuccessResponse {
     constructor(
         cors: CorsProvider,
         json: object = {},
-        cache?: CacheHeader,
+        cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
         super(cors, JSON.stringify(json), cache, status);
@@ -157,7 +157,7 @@ export class HtmlResponse extends SuccessResponse {
     constructor(
         cors: CorsProvider,
         body: string,
-        cache?: CacheHeader,
+        cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
         super(cors, body, cache, status);
@@ -169,7 +169,7 @@ export class TextResponse extends SuccessResponse {
     constructor(
         cors: CorsProvider,
         content: string,
-        cache?: CacheHeader,
+        cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
         super(cors, content, cache, status);
@@ -196,7 +196,7 @@ export class Options extends SuccessResponse {
 
 export class HttpError extends JsonResponse {
     constructor(cors: CorsProvider, status: StatusCodes, protected readonly details?: string) {
-        const cache: CacheHeader = {
+        const cache: CacheControl = {
             "no-cache": true,
             "no-store": true,
             "must-revalidate": true,

@@ -19,12 +19,8 @@
  */
 import CacheLib from "cache-control-parser";
 
-export type CacheHeader = CacheLib.CacheControl;
+export type CacheControl = CacheLib.CacheControl;
 export const Cache = {
-    parse(header: string): CacheHeader {
-        return CacheLib.parse(header);
-    },
-    stringify(cache: CacheHeader): string {
-        return CacheLib.stringify(cache);
-    },
+    parse: CacheLib.parse,
+    stringify: CacheLib.stringify,
 };
