@@ -20,6 +20,7 @@ export const Time = {
     Hour: 60 * 60,
     Day: 60 * 60 * 24,
     Week: 60 * 60 * 24 * 7,
+    Year: 60 * 60 * 24 * 365,
 } as const;
 
 export enum Method {
