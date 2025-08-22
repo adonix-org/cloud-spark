@@ -15,10 +15,10 @@
  */
 
 export { StatusCodes } from "http-status-codes";
-export { CacheControl } from "cache-control-parser";
 
 export * from "./basic-worker";
+export * from "./cache";
 export * from "./common";
 export * from "./response";
-export * from "./routes";
 export * from "./routed-worker";
+export * from "./routes";
