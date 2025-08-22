@@ -60,6 +60,18 @@ abstract class BasicResponse {
     public mergeHeader(key: string, value: string | string[]): void {
         mergeHeader(this.headers, key, value);
     }
+
+    public addContentHeader() {
+        if (this.mimeType) {
+            this.headers.set("Content-Type", getContentType(this.mimeType));
+        }
+    }
+
+    public addCacheHeader() {
+        if (this.cache) {
+            this.headers.set("Cache-Control", CacheControl.stringify(this.cache));
+        }
+    }
 }
 
 abstract class CorsResponse extends BasicResponse {
@@ -93,61 +105,79 @@ abstract class CorsResponse extends BasicResponse {
 export abstract class WorkerResponse extends CorsResponse {
     constructor(
         cors: CorsProvider,
-        content: BodyInit | null = null,
+        body: BodyInit | null = null,
         cache?: CacheControl.CacheControl
     ) {
-        super(cors, content);
+        super(cors, body);
         this.cache = cache;
     }
 
     public createResponse(): Response {
         this.addCorsHeaders();
-        if (this.body && this.mimeType) {
-            this.headers.set("Content-Type", getContentType(this.mimeType));
-        }
-        if (this.cache) {
-            this.headers.set("Cache-Control", CacheControl.stringify(this.cache));
-        }
-        return new Response(this.body, this.responseInit);
+        this.addCacheHeader();
+        const body = this.status === StatusCodes.NO_CONTENT ? null : this.body;
+        if (body) this.addContentHeader();
+        return new Response(body, this.responseInit);
     }
 }
 
 export class ClonedResponse extends WorkerResponse {
     constructor(cors: CorsProvider, response: Response, cache?: CacheControl.CacheControl) {
-        super(cors, response.body);
-        this.headers = new Headers(response.headers);
-        this.status = response.status;
+        const clone = response.clone();
+        super(cors, clone.body);
+        this.headers = new Headers(clone.headers);
+        this.status = clone.status;
+        this.statusText = clone.statusText;
         this.cache = cache;
     }
 }
 
-export class JsonResponse extends WorkerResponse {
+export class SuccessResponse extends WorkerResponse {
+    constructor(
+        cors: CorsProvider,
+        body: BodyInit | null = null,
+        cache?: CacheControl.CacheControl,
+        status: StatusCodes = StatusCodes.OK
+    ) {
+        super(cors, body);
+        this.cache = cache;
+        this.status = status;
+    }
+}
+
+export class JsonResponse extends SuccessResponse {
     constructor(
         cors: CorsProvider,
         json: object = {},
-        status: StatusCodes = StatusCodes.OK,
-        cache?: CacheControl.CacheControl
+        cache?: CacheControl.CacheControl,
+        status: StatusCodes = StatusCodes.OK
     ) {
-        super(cors), JSON.stringify(json);
-        this.status = status;
+        super(cors, JSON.stringify(json), cache, status);
         this.mimeType = MimeType.JSON;
-        this.cache = cache;
     }
 }
 
-export class HtmlResponse extends WorkerResponse {
-    constructor(cors: CorsProvider, content: string, cache?: CacheControl.CacheControl) {
-        super(cors, content);
+export class HtmlResponse extends SuccessResponse {
+    constructor(
+        cors: CorsProvider,
+        body: string,
+        cache?: CacheControl.CacheControl,
+        status: StatusCodes = StatusCodes.OK
+    ) {
+        super(cors, body, cache, status);
         this.mimeType = MimeType.HTML;
-        this.cache = cache;
     }
 }
 
-export class TextResponse extends WorkerResponse {
-    constructor(cors: CorsProvider, content: string, cache?: CacheControl.CacheControl) {
-        super(cors, content);
+export class TextResponse extends SuccessResponse {
+    constructor(
+        cors: CorsProvider,
+        content: string,
+        cache?: CacheControl.CacheControl,
+        status: StatusCodes = StatusCodes.OK
+    ) {
+        super(cors, content, cache, status);
         this.mimeType = MimeType.PLAIN_TEXT;
-        this.cache = cache;
     }
 }
 
@@ -155,28 +185,27 @@ export class TextResponse extends WorkerResponse {
  * Remove the body from a GET response.
  */
 export class Head extends WorkerResponse {
-    constructor(cors: CorsProvider, response: Response) {
+    constructor(cors: CorsProvider, get: Response) {
         super(cors, null);
-        this.headers = new Headers(response.headers);
+        this.headers = new Headers(get.headers);
     }
 }
 
-export class Options extends WorkerResponse {
+export class Options extends SuccessResponse {
     constructor(cors: CorsProvider) {
-        super(cors, null);
-        this.status = StatusCodes.NO_CONTENT;
+        super(cors, null, undefined, StatusCodes.NO_CONTENT);
         this.setHeader("Allow", this.cors.getAllowMethods());
     }
 }
 
 export class HttpError extends JsonResponse {
     constructor(cors: CorsProvider, status: StatusCodes, protected readonly details?: string) {
-        super(cors, {}, status);
-        this.cache = {
-            "no-store": true,
+        const cache: CacheControl.CacheControl = {
             "no-cache": true,
+            "no-store": true,
             "must-revalidate": true,
         };
+        super(cors, undefined, cache, status);
     }
 
     public get json(): ErrorJson {
@@ -194,26 +223,26 @@ export class HttpError extends JsonResponse {
 }
 
 export class BadRequest extends HttpError {
-    constructor(cors: CorsProvider, detail?: string) {
-        super(cors, StatusCodes.BAD_REQUEST, detail);
+    constructor(cors: CorsProvider, details?: string) {
+        super(cors, StatusCodes.BAD_REQUEST, details);
     }
 }
 
 export class Unauthorized extends HttpError {
-    constructor(cors: CorsProvider, detail?: string) {
-        super(cors, StatusCodes.UNAUTHORIZED, detail);
+    constructor(cors: CorsProvider, details?: string) {
+        super(cors, StatusCodes.UNAUTHORIZED, details);
     }
 }
 
 export class Forbidden extends HttpError {
-    constructor(cors: CorsProvider, detail?: string) {
-        super(cors, StatusCodes.FORBIDDEN, detail);
+    constructor(cors: CorsProvider, details?: string) {
+        super(cors, StatusCodes.FORBIDDEN, details);
     }
 }
 
 export class NotFound extends HttpError {
-    constructor(cors: CorsProvider, detail?: string) {
-        super(cors, StatusCodes.NOT_FOUND, detail);
+    constructor(cors: CorsProvider, details?: string) {
+        super(cors, StatusCodes.NOT_FOUND, details);
     }
 }
 
@@ -232,8 +261,8 @@ export class MethodNotAllowed extends HttpError {
 }
 
 export class InternalServerError extends HttpError {
-    constructor(cors: CorsProvider, detail?: string) {
-        super(cors, StatusCodes.INTERNAL_SERVER_ERROR, detail);
+    constructor(cors: CorsProvider, details?: string) {
+        super(cors, StatusCodes.INTERNAL_SERVER_ERROR, details);
     }
 }
 
@@ -244,7 +273,7 @@ export class NotImplemented extends HttpError {
 }
 
 export class ServiceUnavailable extends HttpError {
-    constructor(cors: CorsProvider, detail?: string) {
-        super(cors, StatusCodes.SERVICE_UNAVAILABLE, detail);
+    constructor(cors: CorsProvider, details?: string) {
+        super(cors, StatusCodes.SERVICE_UNAVAILABLE, details);
     }
 }
