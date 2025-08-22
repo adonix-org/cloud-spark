@@ -61,13 +61,13 @@ abstract class BasicResponse {
         mergeHeader(this.headers, key, value);
     }
 
-    public addContentHeader() {
+    public addContentType() {
         if (this.mimeType) {
             this.headers.set("Content-Type", getContentType(this.mimeType));
         }
     }
 
-    public addCacheHeader() {
+    public addCacheControl() {
         if (this.cache) {
             this.headers.set("Cache-Control", Cache.stringify(this.cache));
         }
@@ -91,14 +91,15 @@ abstract class CorsResponse extends BasicResponse {
         } else if (allowed.includes(origin)) {
             this.setHeader("Access-Control-Allow-Origin", origin);
             this.setHeader("Access-Control-Allow-Credentials", "true");
-            this.mergeHeader("Vary", "Origin");
         }
 
         this.mergeHeader("Access-Control-Expose-Headers", this.cors.getExposeHeaders());
         this.setHeader("Access-Control-Allow-Headers", this.cors.getAllowHeaders());
         this.setHeader("Access-Control-Allow-Methods", this.cors.getAllowMethods());
         this.setHeader("Access-Control-Max-Age", String(this.cors.getMaxAge()));
+
         this.setHeader("X-Content-Type-Options", "nosniff");
+        this.mergeHeader("Vary", "Origin");
     }
 }
 
@@ -110,9 +111,10 @@ export abstract class WorkerResponse extends CorsResponse {
 
     public createResponse(): Response {
         this.addCorsHeaders();
-        this.addCacheHeader();
+        this.addCacheControl();
+
         const body = this.status === StatusCodes.NO_CONTENT ? null : this.body;
-        if (body) this.addContentHeader();
+        if (body) this.addContentType();
         return new Response(body, this.responseInit);
     }
 }
@@ -120,11 +122,10 @@ export abstract class WorkerResponse extends CorsResponse {
 export class ClonedResponse extends WorkerResponse {
     constructor(cors: CorsProvider, response: Response, cache?: CacheControl) {
         const clone = response.clone();
-        super(cors, clone.body);
+        super(cors, clone.body, cache);
         this.headers = new Headers(clone.headers);
         this.status = clone.status;
         this.statusText = clone.statusText;
-        this.cache = cache;
     }
 }
 
@@ -135,8 +136,7 @@ export class SuccessResponse extends WorkerResponse {
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
-        super(cors, body);
-        this.cache = cache;
+        super(cors, body, cache);
         this.status = status;
     }
 }
@@ -182,7 +182,7 @@ export class TextResponse extends SuccessResponse {
  */
 export class Head extends WorkerResponse {
     constructor(cors: CorsProvider, get: Response) {
-        super(cors, null);
+        super(cors);
         this.headers = new Headers(get.headers);
     }
 }
