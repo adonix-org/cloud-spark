@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-import CacheControl from "cache-control-parser";
-export type CacheHeader = CacheControl.CacheControl;
+/**
+ * https://github.com/etienne-martin/cache-control-parser
+ */
+import CacheLib from "cache-control-parser";
+
+export type CacheHeader = CacheLib.CacheControl;
 export const Cache = {
-    parse: CacheControl.parse,
-    stringify: CacheControl.stringify,
+    parse(header: string): CacheHeader {
+        return CacheLib.parse(header);
+    },
+    stringify(cache: CacheHeader): string {
+        return CacheLib.stringify(cache);
+    },
 };
