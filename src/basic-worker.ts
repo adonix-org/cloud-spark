@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CacheControl } from "./cache";
 import { isMethod, Method, Time } from "./common";
 import {
     CorsProvider,
@@ -110,12 +109,6 @@ export abstract class BasicWorker implements CorsProvider {
 
     protected setCachedResponse(response: Response): void {
         if (!response.ok) return;
-
-        const cacheControl = response.headers.get("cache-control");
-        if (!cacheControl) return;
-
-        const parsed = CacheControl.parse(cacheControl);
-        if (!parsed?.["s-maxage"] || parsed["s-maxage"] <= 0) return;
 
         try {
             this.ctx?.waitUntil(caches.default.put(this.request.url, response.clone()));
