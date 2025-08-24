@@ -16,7 +16,7 @@
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { getContentType, mergeHeader, Method, MimeType, setHeader } from "./common";
-import { Cache, CacheControl } from "./cache";
+import { CacheControl } from "./cache";
 
 export interface CorsProvider {
     getOrigin(): string | null;
@@ -69,7 +69,7 @@ abstract class BasicResponse {
 
     public addCacheControl() {
         if (this.cache) {
-            this.headers.set("Cache-Control", Cache.stringify(this.cache));
+            this.headers.set("Cache-Control", CacheControl.stringify(this.cache));
         }
     }
 }

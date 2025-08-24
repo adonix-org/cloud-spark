@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CacheControl } from "./cache";
 import { isMethod, Method, Time } from "./common";
 import {
     CorsProvider,
@@ -103,29 +104,25 @@ export abstract class BasicWorker implements CorsProvider {
         );
     }
 
-    protected async getCachedResponse<T extends WorkerResponse>(
-        ResponseClass: new (cors: CorsProvider, ...args: any[]) => T,
-        ...args: any[]
-    ): Promise<Response> {
-        // Try to fetch from cache
-        let response = await caches.default.match(this.request.url);
-        if (response) return response;
-
-        // Use getResponse to generate a fresh response
-        response = await this.getResponse(ResponseClass, ...args);
-
-        // Cache it if successful
-        if (response.ok) {
-            try {
-                await caches.default.put(this.request.url, response.clone());
-            } catch (e) {
-                console.warn("Failed to cache response:", e);
-            }
-        }
-
-        return response;
+    protected async getCachedResponse(): Promise<Response | undefined> {
+        return await caches.default.match(this.request.url);
     }
 
+    protected async setCachedResponse(response: Response): Promise<void> {
+        if (!response.ok) return;
+
+        const cacheControl = response.headers.get("cache-control");
+        if (!cacheControl) return;
+
+        const parsed = CacheControl.parse(cacheControl);
+        if (!parsed?.["s-maxage"] || parsed["s-maxage"] <= 0) return;
+
+        try {
+            this.ctx?.waitUntil(caches.default.put(this.request.url, response.clone()));
+        } catch (e) {
+            console.warn("Failed to cache response:", e);
+        }
+    }
     protected async getResponse<T extends WorkerResponse>(
         ResponseClass: new (cors: CorsProvider, ...args: any[]) => T,
         ...args: any[]

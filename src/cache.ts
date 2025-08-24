@@ -20,7 +20,7 @@
 import CacheLib from "cache-control-parser";
 
 export type CacheControl = CacheLib.CacheControl;
-export const Cache = {
+export const CacheControl = {
     parse: CacheLib.parse,
     stringify: CacheLib.stringify,
 };
