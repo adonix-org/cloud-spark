@@ -26,21 +26,24 @@ class DebugWorker extends RoutedWorker {
     constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
         super(request, env, ctx);
 
-        this.add(Method.GET, DebugWorker.PLAYLIST, this.getPlaylist)
+        this.add(Method.GET, DebugWorker.PLAYLIST, this.getSeason)
             .add(Method.GET, DebugWorker.SEASONS, this.getSeasons)
             .add(
                 Method.GET,
                 DebugWorker.LAST,
-                (): Response => this.getResponse(JsonResponse, [2026])
+                async (): Promise<Response> => this.getResponse(JsonResponse, [2026])
             );
     }
 
-    protected getPlaylist(...matches: string[]): Response {
+    protected async getSeason(...matches: string[]): Promise<Response> {
         return this.getResponse(JsonResponse, { season: matches[1] });
     }
 
-    protected getSeasons(): Response {
-        return this.getResponse(JsonResponse, [2001, 20002, 2003, 2004]);
+    protected async getSeasons(): Promise<Response> {
+        return this.getResponse(JsonResponse, [2001, 20002, 2003, 2004], {
+            public: true,
+            "s-maxage": 60000,
+        });
     }
 
     public override getAllowOrigins(): string[] {
@@ -55,7 +58,7 @@ class DebugWorker extends RoutedWorker {
 
 const method: Method = Method.HEAD;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons/20213", {
+const request = new Request("https://www.adonix.org/api/v1/seasons", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",

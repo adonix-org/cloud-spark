@@ -103,13 +103,33 @@ export abstract class BasicWorker implements CorsProvider {
         );
     }
 
-    protected getResponse<
-        T extends WorkerResponse,
-        Ctor extends new (cors: CorsProvider, ...args: any[]) => T
-    >(
-        ResponseClass: Ctor,
-        ...args: ConstructorParameters<Ctor> extends [any, ...infer R] ? R : never
-    ): Response {
+    protected async getCachedResponse<T extends WorkerResponse>(
+        ResponseClass: new (cors: CorsProvider, ...args: any[]) => T,
+        ...args: any[]
+    ): Promise<Response> {
+        // Try to fetch from cache
+        let response = await caches.default.match(this.request.url);
+        if (response) return response;
+
+        // Use getResponse to generate a fresh response
+        response = await this.getResponse(ResponseClass, ...args);
+
+        // Cache it if successful
+        if (response.ok) {
+            try {
+                await caches.default.put(this.request.url, response.clone());
+            } catch (e) {
+                console.warn("Failed to cache response:", e);
+            }
+        }
+
+        return response;
+    }
+
+    protected async getResponse<T extends WorkerResponse>(
+        ResponseClass: new (cors: CorsProvider, ...args: any[]) => T,
+        ...args: any[]
+    ): Promise<Response> {
         return new ResponseClass(this, ...args).createResponse();
     }
 

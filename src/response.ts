@@ -144,7 +144,7 @@ export class SuccessResponse extends WorkerResponse {
 export class JsonResponse extends SuccessResponse {
     constructor(
         cors: CorsProvider,
-        json: object = {},
+        json: unknown = {},
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
@@ -200,6 +200,7 @@ export class HttpError extends JsonResponse {
             "no-cache": true,
             "no-store": true,
             "must-revalidate": true,
+            "max-age": 0,
         };
         super(cors, undefined, cache, status);
     }
