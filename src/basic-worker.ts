@@ -108,7 +108,7 @@ export abstract class BasicWorker implements CorsProvider {
         return await caches.default.match(this.request.url);
     }
 
-    protected async setCachedResponse(response: Response): Promise<void> {
+    protected setCachedResponse(response: Response): void {
         if (!response.ok) return;
 
         const cacheControl = response.headers.get("cache-control");
@@ -123,11 +123,14 @@ export abstract class BasicWorker implements CorsProvider {
             console.warn("Failed to cache response:", e);
         }
     }
+
     protected async getResponse<T extends WorkerResponse>(
         ResponseClass: new (cors: CorsProvider, ...args: any[]) => T,
         ...args: any[]
     ): Promise<Response> {
-        return new ResponseClass(this, ...args).createResponse();
+        const response = new ResponseClass(this, ...args).createResponse();
+        this.setCachedResponse(response);
+        return response;
     }
 
     public isAllowed(method: string): boolean {
