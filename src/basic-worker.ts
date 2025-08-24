@@ -104,11 +104,14 @@ export abstract class BasicWorker implements CorsProvider {
     }
 
     protected async getCachedResponse(): Promise<Response | undefined> {
+        if (this.request.method !== Method.GET) return;
+
         return await caches.default.match(this.request.url);
     }
 
     protected setCachedResponse(response: Response): void {
         if (!response.ok) return;
+        if (this.request.method !== Method.GET) return;
 
         try {
             this.ctx?.waitUntil(caches.default.put(this.request.url, response.clone()));
