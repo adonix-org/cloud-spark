@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * https://github.com/etienne-martin/cache-control-parser
- */
 import CacheLib from "cache-control-parser";
 
 /**
@@ -53,11 +50,11 @@ export namespace HttpHeader {
 export const Time = {
     Second: 1,
     Minute: 60,
-    Hour: 60 * 60,
-    Day: 60 * 60 * 24,
-    Week: 60 * 60 * 24 * 7,
-    Month: 60 * 60 * 24 * 30,
-    Year: 60 * 60 * 24 * 365,
+    Hour: 3600, // 60 * 60
+    Day: 86400, // 60 * 60 * 24
+    Week: 604800, // 60 * 60 * 24 * 7
+    Month: 2592000, // 60 * 60 * 24 * 30
+    Year: 31536000, // 60 * 60 * 24 * 365
 } as const;
 
 /**
