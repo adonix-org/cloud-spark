@@ -182,3 +182,12 @@ export function normalizeUrl(url: string): URL {
 
     return u;
 }
+
+export function toBase64(raw: string): string {
+    const bytes = new TextEncoder().encode(raw);
+    let binary = "";
+    for (const b of bytes) {
+        binary += String.fromCharCode(b);
+    }
+    return btoa(binary);
+}

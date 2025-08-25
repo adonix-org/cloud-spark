@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * https://github.com/etienne-martin/cache-control-parser
- */
-import { Method, normalizeUrl } from "./common";
+import { Method, normalizeUrl, toBase64 } from "./common";
 import { BaseWorker } from "./base-worker";
 
 export abstract class CacheWorker extends BaseWorker {
@@ -29,28 +26,22 @@ export abstract class CacheWorker extends BaseWorker {
                 .map((v) => v!.trim()) // trim whitespace
                 .filter((v) => v.length > 0), // skip empty strings after trim
         ].join("\u0001");
-        const bytes = new TextEncoder().encode(raw);
-        const base64 = btoa(String.fromCharCode(...bytes))
-            .replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/=+$/, "");
+        const base64 = toBase64(raw).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
         return new URL(`http://cache/${base64}`);
     }
 
-    protected async getCachedResponse(): Promise<Response | undefined> {
+    protected async getCachedResponse(cacheName?: string): Promise<Response | undefined> {
         if (this.request.method !== Method.GET) return;
 
-        return await caches.default.match(this.getCacheKey());
+        const cache = cacheName ? await caches.open(cacheName) : caches.default;
+        return cache.match(this.getCacheKey());
     }
 
-    protected setCachedResponse(response: Response): void {
+    protected async setCachedResponse(response: Response, cacheName?: string): Promise<void> {
         if (!response.ok) return;
         if (this.request.method !== Method.GET) return;
 
-        try {
-            this.ctx?.waitUntil(caches.default.put(this.getCacheKey(), response.clone()));
-        } catch (e) {
-            console.warn("Failed to cache response:", e);
-        }
+        const cache = cacheName ? await caches.open(cacheName) : caches.default;
+        this.ctx?.waitUntil(cache.put(this.getCacheKey(), response.clone()));
     }
 }
