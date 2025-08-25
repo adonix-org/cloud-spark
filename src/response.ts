@@ -16,7 +16,7 @@
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { getContentType, mergeHeader, Method, MimeType, setHeader } from "./common";
-import { CacheControl } from "./cache";
+import { CacheControl } from "./cache-worker";
 
 export interface CorsProvider {
     getOrigin(): string | null;

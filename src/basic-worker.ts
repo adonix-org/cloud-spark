@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CacheWorker } from "./cache-worker";
 import { isMethod, Method, Time } from "./common";
 import {
     CorsProvider,
@@ -25,25 +26,7 @@ import {
     WorkerResponse,
 } from "./response";
 
-export abstract class BasicWorker implements CorsProvider {
-    constructor(
-        private readonly _request: Request,
-        private readonly _env: Env = {},
-        private readonly _ctx?: ExecutionContext
-    ) {}
-
-    protected get request(): Request {
-        return this._request;
-    }
-
-    protected get env(): Env {
-        return this._env;
-    }
-
-    protected get ctx(): ExecutionContext | undefined {
-        return this._ctx;
-    }
-
+export abstract class BasicWorker extends CacheWorker implements CorsProvider {
     public async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
             return this.getResponse(MethodNotAllowed, this.request.method);
@@ -101,23 +84,6 @@ export abstract class BasicWorker implements CorsProvider {
             Head,
             await this.dispatch(new Request(this.request, { method: Method.GET }))
         );
-    }
-
-    protected async getCachedResponse(): Promise<Response | undefined> {
-        if (this.request.method !== Method.GET) return;
-
-        return await caches.default.match(this.request.url);
-    }
-
-    protected setCachedResponse(response: Response): void {
-        if (!response.ok) return;
-        if (this.request.method !== Method.GET) return;
-
-        try {
-            this.ctx?.waitUntil(caches.default.put(this.request.url, response.clone()));
-        } catch (e) {
-            console.warn("Failed to cache response:", e);
-        }
     }
 
     protected async getResponse<T extends WorkerResponse>(

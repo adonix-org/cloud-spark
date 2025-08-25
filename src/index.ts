@@ -17,7 +17,7 @@
 export { StatusCodes } from "http-status-codes";
 
 export * from "./basic-worker";
-export * from "./cache";
+export * from "./cache-worker";
 export * from "./common";
 export * from "./response";
 export * from "./routed-worker";
