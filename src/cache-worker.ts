@@ -29,7 +29,11 @@ export abstract class CacheWorker extends BaseWorker {
                 .map((v) => v!.trim()) // trim whitespace
                 .filter((v) => v.length > 0), // skip empty strings after trim
         ].join("\u0001");
-        const base64 = Buffer.from(raw, "utf-8").toString("base64url");
+        const bytes = new TextEncoder().encode(raw);
+        const base64 = btoa(String.fromCharCode(...bytes))
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
         return new URL(`http://cache/${base64}`);
     }
 
