@@ -86,6 +86,13 @@ export abstract class BasicWorker extends CacheWorker implements CorsProvider {
         );
     }
 
+    protected override getCacheKey(): string {
+        if (this.allowAnyOrigin()) return super.getCacheKey();
+        return this.getOrigin()
+            ? `${this.getOrigin()}\u0001${super.getCacheKey()}`
+            : super.getCacheKey();
+    }
+
     protected async getResponse<T extends WorkerResponse>(
         ResponseClass: new (cors: CorsProvider, ...args: any[]) => T,
         ...args: any[]
@@ -101,6 +108,10 @@ export abstract class BasicWorker extends CacheWorker implements CorsProvider {
 
     public getAllowOrigins(): string[] {
         return ["*"];
+    }
+
+    public allowAnyOrigin(): boolean {
+        return this.getAllowOrigins().includes("*");
     }
 
     public getAllowMethods(): Method[] {

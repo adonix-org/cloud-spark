@@ -19,6 +19,7 @@ import { Method } from "./common";
 export interface CorsProvider {
     getOrigin(): string | null;
     getAllowOrigins(): string[];
+    allowAnyOrigin(): boolean;
     getAllowMethods(): Method[];
     getAllowHeaders(): string[];
     getExposeHeaders(): string[];

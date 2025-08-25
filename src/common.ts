@@ -27,7 +27,16 @@ export const CacheControl = {
 
 export namespace HttpHeader {
     export const VARY = "Vary";
-    export const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
+
+    // Security Headers
+    export const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options"; // usually "nosniff"
+    export const X_FRAME_OPTIONS = "X-Frame-Options"; // e.g. "DENY" or "SAMEORIGIN"
+    export const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security"; // e.g. "max-age=63072000; includeSubDomains; preload"
+    export const CONTENT_SECURITY_POLICY = "Content-Security-Policy"; // fine-grained script/style/image restrictions
+    export const REFERRER_POLICY = "Referrer-Policy"; // e.g. "no-referrer", "strict-origin-when-cross-origin"
+    export const PERMISSIONS_POLICY = "Permissions-Policy"; // formerly Feature-Policy, controls APIs like geolocation/camera
+
+    // Values
     export const NOSNIFF = "nosniff";
     export const ORIGIN = "Origin";
 }

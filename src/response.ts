@@ -38,7 +38,6 @@ abstract class BaseResponse {
     public status: StatusCodes = StatusCodes.OK;
     public statusText?: string;
     public mimeType?: MimeType;
-    public cache?: CacheControl;
 
     constructor(content: BodyInit | null = null) {
         this.body = this.status === StatusCodes.NO_CONTENT ? null : content;
@@ -65,12 +64,6 @@ abstract class BaseResponse {
             this.headers.set("Content-Type", getContentType(this.mimeType));
         }
     }
-
-    public addCacheControl() {
-        if (this.cache) {
-            this.headers.set("Cache-Control", CacheControl.stringify(this.cache));
-        }
-    }
 }
 
 abstract class CorsResponse extends BaseResponse {
@@ -85,10 +78,9 @@ abstract class CorsResponse extends BaseResponse {
         this.headers.delete(Cors.ALLOW_ORIGIN);
         this.headers.delete(Cors.ALLOW_CREDENTIALS);
 
-        const allowed = this.cors.getAllowOrigins();
-        if (allowed.includes(Cors.ALLOW_ALL_ORIGINS)) {
+        if (this.cors.allowAnyOrigin()) {
             this.setHeader(Cors.ALLOW_ORIGIN, Cors.ALLOW_ALL_ORIGINS);
-        } else if (allowed.includes(origin)) {
+        } else if (this.cors.getAllowOrigins().includes(origin)) {
             this.setHeader(Cors.ALLOW_ORIGIN, origin);
             this.setHeader(Cors.ALLOW_CREDENTIALS, String(true));
             this.mergeHeader(HttpHeader.VARY, HttpHeader.ORIGIN);
@@ -101,21 +93,34 @@ abstract class CorsResponse extends BaseResponse {
     }
 }
 
-export abstract class WorkerResponse extends CorsResponse {
+abstract class CacheResponse extends CorsResponse {
+    public cache?: CacheControl;
+
     constructor(cors: CorsProvider, body: BodyInit | null = null, cache?: CacheControl) {
         super(cors, body);
         this.cache = cache;
     }
 
+    protected addCacheHeader(): void {
+        if (this.cache) {
+            this.headers.set("Cache-Control", CacheControl.stringify(this.cache));
+        }
+    }
+}
+
+export abstract class WorkerResponse extends CacheResponse {
     public createResponse(): Response {
         this.addCorsHeaders();
-        this.addCacheControl();
-
-        this.setHeader(HttpHeader.X_CONTENT_TYPE_OPTIONS, HttpHeader.NOSNIFF);
+        this.addCacheHeader();
+        this.addSecurityHeaders();
 
         const body = this.status === StatusCodes.NO_CONTENT ? null : this.body;
         if (body) this.addContentType();
         return new Response(body, this.responseInit);
+    }
+
+    protected addSecurityHeaders(): void {
+        this.setHeader(HttpHeader.X_CONTENT_TYPE_OPTIONS, HttpHeader.NOSNIFF);
     }
 }
 
@@ -178,7 +183,7 @@ export class TextResponse extends SuccessResponse {
 }
 
 /**
- * Remove the body from a GET response.
+ * Removes the body from a GET response.
  */
 export class Head extends WorkerResponse {
     constructor(cors: CorsProvider, get: Response) {
