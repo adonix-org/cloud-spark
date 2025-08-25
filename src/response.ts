@@ -32,7 +32,7 @@ export interface ErrorJson {
     details: string;
 }
 
-abstract class BasicResponse {
+abstract class BaseResponse {
     public headers: Headers = new Headers();
     public body: BodyInit | null;
     public status: StatusCodes = StatusCodes.OK;
@@ -73,7 +73,7 @@ abstract class BasicResponse {
     }
 }
 
-abstract class CorsResponse extends BasicResponse {
+abstract class CorsResponse extends BaseResponse {
     constructor(public readonly cors: CorsProvider, content: BodyInit | null = null) {
         super(content);
     }

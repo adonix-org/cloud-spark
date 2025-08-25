@@ -18,6 +18,7 @@ export { StatusCodes } from "http-status-codes";
 
 export * from "./basic-worker";
 export * from "./common";
+export * from "./cors";
 export * from "./response";
 export * from "./routed-worker";
 export * from "./routes";
