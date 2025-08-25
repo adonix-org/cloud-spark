@@ -19,12 +19,18 @@
  */
 import CacheLib from "cache-control-parser";
 
+/**
+ * - See https://github.com/etienne-martin/cache-control-parser
+ */
 export type CacheControl = CacheLib.CacheControl;
 export const CacheControl = {
     parse: CacheLib.parse,
     stringify: CacheLib.stringify,
 };
 
+/**
+ * Standard HTTP header names and common values.
+ */
 export namespace HttpHeader {
     export const VARY = "Vary";
 
@@ -41,15 +47,22 @@ export namespace HttpHeader {
     export const ORIGIN = "Origin";
 }
 
+/**
+ * Time constants in seconds. Month is approximated as 30 days.
+ */
 export const Time = {
     Second: 1,
     Minute: 60,
     Hour: 60 * 60,
     Day: 60 * 60 * 24,
     Week: 60 * 60 * 24 * 7,
+    Month: 60 * 60 * 24 * 30,
     Year: 60 * 60 * 24 * 365,
 } as const;
 
+/**
+ * Standard HTTP request methods.
+ */
 export enum Method {
     GET = "GET",
     PUT = "PUT",
@@ -61,10 +74,23 @@ export enum Method {
 }
 const METHOD_SET: Set<string> = new Set(Object.values(Method));
 
+/**
+ * Type guard that checks if a string is a valid HTTP method.
+ *
+ * @param value - The string to test.
+ * @returns True if `value` is a recognized HTTP method.
+ */
 export function isMethod(value: string): value is Method {
     return METHOD_SET.has(value);
 }
 
+/**
+ * Returns the proper Content-Type string for a given MIME type.
+ * Appends `charset=utf-8` for text-based types that require it.
+ *
+ * @param type - The MIME type.
+ * @returns A string suitable for the `Content-Type` header.
+ */
 export function getContentType(type: MimeType): string {
     if (ADD_CHARSET.has(type)) {
         return `${type}; charset=utf-8`;
@@ -72,6 +98,9 @@ export function getContentType(type: MimeType): string {
     return type;
 }
 
+/**
+ * Common MIME types used for HTTP headers.
+ */
 export enum MimeType {
     PLAIN_TEXT = "text/plain",
     HTML = "text/html",
@@ -118,6 +147,13 @@ export enum MimeType {
     BZIP2 = "application/x-bzip2",
 }
 
+/**
+ * A set of MIME types that require a `charset` parameter when setting
+ * the `Content-Type` header.
+ *
+ * This includes common text-based MIME types such as HTML, CSS, JSON,
+ * XML, CSV, Markdown, and others.
+ */
 const ADD_CHARSET: Set<MimeType> = new Set([
     MimeType.PLAIN_TEXT,
     MimeType.HTML,
@@ -133,6 +169,17 @@ const ADD_CHARSET: Set<MimeType> = new Set([
     MimeType.SVG,
 ]);
 
+/**
+ * Sets a header on the given Headers object.
+ *
+ * - If `value` is an array, duplicates and empty strings are removed.
+ * - If the resulting value array is empty, the header is deleted.
+ * - Otherwise, values are joined with `", "` and set as the header value.
+ *
+ * @param headers - The Headers object to modify.
+ * @param key - The header name to set.
+ * @param value - The header value(s) to set. Can be a string or array of strings.
+ */
 export function setHeader(headers: Headers, key: string, value: string | string[]): void {
     const raw = Array.isArray(value) ? value : [value];
     const values = Array.from(new Set(raw.map((v) => v.trim()))).filter((v) => v.length);
@@ -145,6 +192,17 @@ export function setHeader(headers: Headers, key: string, value: string | string[
     headers.set(key, values.join(", "));
 }
 
+/**
+ * Merges new value(s) into an existing header on the given Headers object.
+ *
+ * - Preserves any existing values and adds new ones.
+ * - Removes duplicates and trims all values.
+ * - If the header does not exist, it is created.
+ *
+ * @param headers - The Headers object to modify.
+ * @param key - The header name to merge into.
+ * @param value - The new header value(s) to add. Can be a string or array of strings.
+ */
 export function mergeHeader(headers: Headers, key: string, value: string | string[]): void {
     const values = Array.isArray(value) ? value : [value];
     if (!values.length) return;
@@ -183,6 +241,14 @@ export function normalizeUrl(url: string): URL {
     return u;
 }
 
+/**
+ * Encodes a given string into Base64 using UTF-8 encoding.
+ *
+ * This function correctly handles any Unicode characters.
+ *
+ * @param raw - The input string to encode.
+ * @returns The Base64-encoded string.
+ */
 export function toBase64(raw: string): string {
     const bytes = new TextEncoder().encode(raw);
     let binary = "";
