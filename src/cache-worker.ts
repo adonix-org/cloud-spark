@@ -19,7 +19,6 @@
  */
 import { Method, normalizeUrl } from "./common";
 import { BaseWorker } from "./base-worker";
-import { createHash } from "crypto";
 
 export abstract class CacheWorker extends BaseWorker {
     protected getCacheKey(...values: Array<string | null | undefined>): URL | RequestInfo {
@@ -30,8 +29,8 @@ export abstract class CacheWorker extends BaseWorker {
                 .map((v) => v!.trim()) // trim whitespace
                 .filter((v) => v.length > 0), // skip empty strings after trim
         ].join("\u0001");
-        const hash = createHash("sha256").update(raw).digest("base64url");
-        return new URL(`http://cache/${hash}`);
+        const base64 = Buffer.from(raw, "utf-8").toString("base64url");
+        return new URL(`http://cache/${base64}`);
     }
 
     protected async getCachedResponse(): Promise<Response | undefined> {
