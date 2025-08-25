@@ -33,7 +33,7 @@ export abstract class RoutedWorker extends BasicWorker {
         return this;
     }
 
-    protected async dispatch(request: Request): Promise<Response> {
+    protected async dispatch(request: Request = this.request): Promise<Response> {
         const route = this.routes.get(request.method as Method, request.url);
         if (!route) return super.dispatch(request);
 

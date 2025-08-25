@@ -33,13 +33,13 @@ export abstract class BasicWorker extends CacheWorker implements CorsProvider {
         }
 
         try {
-            return await this.dispatch(this.request);
+            return await this.dispatch();
         } catch (error) {
             return this.getResponse(InternalServerError, String(error));
         }
     }
 
-    protected async dispatch(request: Request): Promise<Response> {
+    protected async dispatch(request: Request = this.request): Promise<Response> {
         const method = request.method as Method;
         const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),
