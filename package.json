@@ -1,6 +1,6 @@
 {
     "name": "@adonix.org/cloud-spark",
-    "version": "0.0.75",
+    "version": "0.0.76",
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
     "license": "Apache-2.0",
     "type": "module",
@@ -44,6 +44,7 @@
     },
     "devDependencies": {
         "@cloudflare/workers-types": "^4.20250821.0",
+        "@types/node": "^24.3.0",
         "tsup": "^8.5.0",
         "tsx": "^4.20.4",
         "typescript": "^5.9.2",

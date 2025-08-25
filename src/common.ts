@@ -169,7 +169,7 @@ export function mergeHeader(headers: Headers, key: string, value: string | strin
  * @param url The original URL string to normalize.
  * @returns A normalized URL string suitable for hashing or direct cache key use.
  */
-export function normalizeUrl(url: string): string {
+export function normalizeUrl(url: string): URL {
     const u = new URL(url);
 
     const params = [...u.searchParams.entries()];
@@ -180,5 +180,5 @@ export function normalizeUrl(url: string): string {
         .join("&");
     u.hash = "";
 
-    return u.toString();
+    return u;
 }

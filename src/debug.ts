@@ -54,6 +54,10 @@ class DebugWorker extends RoutedWorker {
         //return this.getResponse(InternalServerError, "Goodbye World!");
         return this.getResponse(TextResponse, "Hello 🌎", { public: true, "max-age": 0 });
     }
+
+    public override getCacheKey(): URL | RequestInfo {
+        return super.getCacheKey();
+    }
 }
 
 const method: Method = Method.GET;
@@ -75,11 +79,16 @@ console.log(clone.createResponse());
 console.log(await response.text());
 
 const instances = 100000;
-const start = performance.now();
+let start = performance.now();
 const workers: DebugWorker[] = [];
 for (let i = 0; i < instances; i++) {
     workers.push(new DebugWorker(request));
 }
 
-const end = performance.now();
+let end = performance.now();
 console.log(`\nConstructing ${instances} DebugWorkers took ${(end - start).toFixed(4)} ms`);
+
+start = performance.now();
+const key = worker.getCacheKey();
+end = performance.now();
+console.log(`\n${key} ${(end - start).toFixed(4)} ms`);

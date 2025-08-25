@@ -86,11 +86,8 @@ export abstract class BasicWorker extends CacheWorker implements CorsProvider {
         );
     }
 
-    protected override getCacheKey(): string {
-        if (this.allowAnyOrigin()) return super.getCacheKey();
-        return this.getOrigin()
-            ? `${this.getOrigin()}\u0001${super.getCacheKey()}`
-            : super.getCacheKey();
+    protected override getCacheKey(): URL | RequestInfo {
+        return super.getCacheKey(this.getOrigin());
     }
 
     protected async getResponse<T extends WorkerResponse>(
