@@ -73,3 +73,13 @@ const clone = new ClonedResponse(worker, response, { private: true, "max-age": 9
 console.log(clone.createResponse());
 
 console.log(await response.text());
+
+const instances = 100000;
+const start = performance.now();
+const workers: DebugWorker[] = [];
+for (let i = 0; i < instances; i++) {
+    workers.push(new DebugWorker(request));
+}
+
+const end = performance.now();
+console.log(`\nConstructing ${instances} DebugWorkers took ${(end - start).toFixed(4)} ms`);
