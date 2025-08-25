@@ -50,6 +50,10 @@ class DebugWorker extends RoutedWorker {
         return ["https://www.adonix.org", "https://www.tybusby.com"];
     }
 
+    public override getAllowMethods(): Method[] {
+        return [...super.getAllowMethods(), Method.POST];
+    }
+
     protected override async get(): Promise<Response> {
         //return this.getResponse(InternalServerError, "Goodbye World!");
         return this.getResponse(TextResponse, "Hello 🌎", { public: true, "max-age": 0 });
@@ -60,7 +64,7 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.GET;
+const method: Method = Method.POST;
 
 const request = new Request("https://www.adonix.org/api/v1/seasons", {
     method: method,
@@ -78,7 +82,7 @@ console.log(clone.createResponse());
 
 console.log(await response.text());
 
-const instances = 100000;
+const instances = 10;
 let start = performance.now();
 const workers: DebugWorker[] = [];
 for (let i = 0; i < instances; i++) {
