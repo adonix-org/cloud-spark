@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+/**
+ * https://github.com/etienne-martin/cache-control-parser
+ */
+import CacheLib from "cache-control-parser";
+
+export type CacheControl = CacheLib.CacheControl;
+export const CacheControl = {
+    parse: CacheLib.parse,
+    stringify: CacheLib.stringify,
+};
+
 export const Time = {
     Second: 1,
     Minute: 60,
@@ -130,4 +141,28 @@ export function mergeHeader(headers: Headers, key: string, value: string | strin
     } else {
         setHeader(headers, key, values);
     }
+}
+
+/**
+ * Normalizes a URL string for use as a consistent cache key.
+ *
+ * - Sorts query parameters alphabetically so `?b=2&a=1` and `?a=1&b=2` are treated the same.
+ * - Strips fragment identifiers (`#...`) since they are not sent in HTTP requests.
+ * - Leaves protocol, host, path, and query values intact.
+ *
+ * @param url The original URL string to normalize.
+ * @returns A normalized URL string suitable for hashing or direct cache key use.
+ */
+export function normalizeUrl(url: string): string {
+    const u = new URL(url);
+
+    const params = [...u.searchParams.entries()];
+    params.sort(([a], [b]) => a.localeCompare(b));
+
+    u.search = params
+        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+        .join("&");
+    u.hash = "";
+
+    return u.toString();
 }

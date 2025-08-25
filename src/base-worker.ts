@@ -14,11 +14,26 @@
  * limitations under the License.
  */
 
-export { StatusCodes } from "http-status-codes";
+import { Worker } from "./worker";
 
-export * from "./basic-worker";
-export * from "./common";
-export * from "./response";
-export * from "./routed-worker";
-export * from "./routes";
-export * from "./worker";
+export abstract class BaseWorker implements Worker {
+    constructor(
+        private readonly _request: Request,
+        private readonly _env: Env = {},
+        private readonly _ctx?: ExecutionContext
+    ) {}
+
+    protected get request(): Request {
+        return this._request;
+    }
+
+    protected get env(): Env {
+        return this._env;
+    }
+
+    protected get ctx(): ExecutionContext | undefined {
+        return this._ctx;
+    }
+
+    public abstract fetch(): Promise<Response>;
+}
