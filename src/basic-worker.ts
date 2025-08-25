@@ -16,8 +16,8 @@
 
 import { CacheWorker } from "./cache-worker";
 import { isMethod, Method, Time } from "./common";
+import { CorsProvider } from "./cors";
 import {
-    CorsProvider,
     Head,
     InternalServerError,
     MethodNotAllowed,

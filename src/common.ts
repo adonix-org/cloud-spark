@@ -25,6 +25,13 @@ export const CacheControl = {
     stringify: CacheLib.stringify,
 };
 
+export namespace HttpHeader {
+    export const VARY = "Vary";
+    export const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
+    export const NOSNIFF = "nosniff";
+    export const ORIGIN = "Origin";
+}
+
 export const Time = {
     Second: 1,
     Minute: 60,

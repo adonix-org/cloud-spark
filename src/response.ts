@@ -15,16 +15,16 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { CacheControl, getContentType, mergeHeader, Method, MimeType, setHeader } from "./common";
-
-export interface CorsProvider {
-    getOrigin(): string | null;
-    getAllowOrigins(): string[];
-    getAllowMethods(): Method[];
-    getAllowHeaders(): string[];
-    getExposeHeaders(): string[];
-    getMaxAge(): number;
-}
+import {
+    CacheControl,
+    getContentType,
+    HttpHeader,
+    mergeHeader,
+    Method,
+    MimeType,
+    setHeader,
+} from "./common";
+import { Cors, CorsProvider } from "./cors";
 
 export interface ErrorJson {
     status: number;
@@ -82,23 +82,22 @@ abstract class CorsResponse extends BasicResponse {
         const origin = this.cors.getOrigin();
         if (!origin) return; // no Origin, skip CORS
 
-        this.headers.delete("Access-Control-Allow-Origin");
+        this.headers.delete(Cors.ALLOW_ORIGIN);
+        this.headers.delete(Cors.ALLOW_CREDENTIALS);
 
         const allowed = this.cors.getAllowOrigins();
-        if (allowed.includes("*")) {
-            this.setHeader("Access-Control-Allow-Origin", "*");
+        if (allowed.includes(Cors.ALLOW_ALL_ORIGINS)) {
+            this.setHeader(Cors.ALLOW_ORIGIN, Cors.ALLOW_ALL_ORIGINS);
         } else if (allowed.includes(origin)) {
-            this.setHeader("Access-Control-Allow-Origin", origin);
-            this.setHeader("Access-Control-Allow-Credentials", "true");
+            this.setHeader(Cors.ALLOW_ORIGIN, origin);
+            this.setHeader(Cors.ALLOW_CREDENTIALS, String(true));
+            this.mergeHeader(HttpHeader.VARY, HttpHeader.ORIGIN);
         }
 
-        this.mergeHeader("Access-Control-Expose-Headers", this.cors.getExposeHeaders());
-        this.setHeader("Access-Control-Allow-Headers", this.cors.getAllowHeaders());
-        this.setHeader("Access-Control-Allow-Methods", this.cors.getAllowMethods());
-        this.setHeader("Access-Control-Max-Age", String(this.cors.getMaxAge()));
-
-        this.setHeader("X-Content-Type-Options", "nosniff");
-        this.mergeHeader("Vary", "Origin");
+        this.mergeHeader(Cors.EXPOSE_HEADERS, this.cors.getExposeHeaders());
+        this.setHeader(Cors.ALLOW_HEADERS, this.cors.getAllowHeaders());
+        this.setHeader(Cors.ALLOW_METHODS, this.cors.getAllowMethods());
+        this.setHeader(Cors.MAX_AGE, String(this.cors.getMaxAge()));
     }
 }
 
@@ -111,6 +110,8 @@ export abstract class WorkerResponse extends CorsResponse {
     public createResponse(): Response {
         this.addCorsHeaders();
         this.addCacheControl();
+
+        this.setHeader(HttpHeader.X_CONTENT_TYPE_OPTIONS, HttpHeader.NOSNIFF);
 
         const body = this.status === StatusCodes.NO_CONTENT ? null : this.body;
         if (body) this.addContentType();
