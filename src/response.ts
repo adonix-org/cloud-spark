@@ -61,7 +61,7 @@ abstract class BaseResponse {
 
     public addContentType() {
         if (this.mimeType) {
-            this.headers.set("Content-Type", getContentType(this.mimeType));
+            this.headers.set(HttpHeader.CONTENT_TYPE, getContentType(this.mimeType));
         }
     }
 }
@@ -94,16 +94,14 @@ abstract class CorsResponse extends BaseResponse {
 }
 
 abstract class CacheResponse extends CorsResponse {
-    public cache?: CacheControl;
-
-    constructor(cors: CorsProvider, body: BodyInit | null = null, cache?: CacheControl) {
+    constructor(cors: CorsProvider, body: BodyInit | null = null, public cache?: CacheControl) {
         super(cors, body);
         this.cache = cache;
     }
 
     protected addCacheHeader(): void {
         if (this.cache) {
-            this.headers.set("Cache-Control", CacheControl.stringify(this.cache));
+            this.headers.set(HttpHeader.CACHE_CONTROL, CacheControl.stringify(this.cache));
         }
     }
 }
