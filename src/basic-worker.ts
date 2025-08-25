@@ -90,9 +90,12 @@ export abstract class BasicWorker extends CacheWorker implements CorsProvider {
         return super.getCacheKey(this.getOrigin());
     }
 
-    protected async getResponse<T extends WorkerResponse>(
-        ResponseClass: new (cors: CorsProvider, ...args: any[]) => T,
-        ...args: any[]
+    protected async getResponse<
+        T extends WorkerResponse,
+        Ctor extends new (cors: CorsProvider, ...args: any[]) => T
+    >(
+        ResponseClass: Ctor,
+        ...args: ConstructorParameters<Ctor> extends [any, ...infer R] ? R : never
     ): Promise<Response> {
         const response = new ResponseClass(this, ...args).createResponse();
         this.setCachedResponse(response);
