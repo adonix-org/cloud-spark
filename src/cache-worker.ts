@@ -56,7 +56,7 @@ export abstract class CacheWorker extends CorsWorker {
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
 
         const response = await cache.match(this.getCacheKey());
-        return response ? withCorsHeaders(this, response) : undefined;
+        return response ? withCorsHeaders(this, response.clone()) : undefined;
     }
 
     /**
