@@ -16,16 +16,35 @@
 
 import { HttpHeader, mergeHeader, Method, setHeader } from "./common";
 
+/**
+ * Provides information about the CORS policy for the current request.
+ */
 export interface CorsProvider {
+    /** Returns the origin of the request, or null if none is provided. */
     getOrigin(): string | null;
+
+    /** Returns a list of allowed origins. */
     getAllowOrigins(): string[];
+
+    /** Returns true if any origin is allowed (`*`). */
     allowAnyOrigin(): boolean;
+
+    /** Returns the HTTP methods allowed by CORS. */
     getAllowMethods(): Method[];
+
+    /** Returns the HTTP headers allowed by CORS. */
     getAllowHeaders(): string[];
+
+    /** Returns the HTTP headers that should be exposed to the browser. */
     getExposeHeaders(): string[];
+
+    /** Returns the max age (in seconds) for CORS preflight caching. */
     getMaxAge(): number;
 }
 
+/**
+ * Constants for common CORS headers.
+ */
 export namespace Cors {
     export const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
     export const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
@@ -36,6 +55,19 @@ export namespace Cors {
     export const ALLOW_ALL_ORIGINS = "*";
 }
 
+/**
+ * Adds or updates CORS headers on a Headers object according to the provided policy.
+ *
+ * Behavior:
+ * - Removes any existing CORS headers to avoid stale values.
+ * - If the request has no origin, the function exits early.
+ * - If wildcard `*` is allowed, sets Access-Control-Allow-Origin to `*`.
+ * - If the origin is explicitly allowed, sets the correct headers including credentials and Vary: Origin.
+ * - Optional headers (Expose-Headers, Allow-Headers, Allow-Methods, Max-Age) are always applied.
+ *
+ * @param cors The CorsProvider instance that determines allowed origins and headers
+ * @param headers The Headers object to update
+ */
 export function addCorsHeaders(cors: CorsProvider, headers: Headers): void {
     // Remove stale headers if from cache
     deleteCorsHeaders(headers);
@@ -58,6 +90,12 @@ export function addCorsHeaders(cors: CorsProvider, headers: Headers): void {
     setHeader(headers, Cors.MAX_AGE, String(cors.getMaxAge()));
 }
 
+/**
+ * Deletes all standard CORS headers from the given Headers object.
+ * Useful for cleaning cached responses or resetting headers before reapplying CORS.
+ *
+ * @param headers The Headers object to clean
+ */
 export function deleteCorsHeaders(headers: Headers) {
     headers.delete(Cors.ALLOW_ORIGIN);
     headers.delete(Cors.ALLOW_CREDENTIALS);
@@ -67,8 +105,12 @@ export function deleteCorsHeaders(headers: Headers) {
 }
 
 /**
- * Immutable-friendly helper: returns a new Response with updated CORS headers.
- * Useful if you want to avoid mutating a cached response in place.
+ * Returns a new Response with CORS headers applied according to the policy.
+ * Original response is not mutated.
+ *
+ * @param cors The CorsProvider instance for policy
+ * @param res The original Response object
+ * @returns A new Response with updated CORS headers
  */
 export function withCorsHeaders(cors: CorsProvider, res: Response): Response {
     const headers = new Headers(res.headers);
@@ -80,6 +122,13 @@ export function withCorsHeaders(cors: CorsProvider, res: Response): Response {
     });
 }
 
+/**
+ * Returns a new Response with all standard CORS headers removed.
+ * Useful for storing responses in a cache without per-request CORS headers.
+ *
+ * @param res The original Response object
+ * @returns A new Response without CORS headers
+ */
 export function withoutCorsHeaders(res: Response): Response {
     const headers = new Headers(res.headers);
     deleteCorsHeaders(headers);
