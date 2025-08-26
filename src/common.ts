@@ -25,6 +25,9 @@ export const CacheControl = {
     stringify: CacheLib.stringify,
 };
 
+/**
+ * - See https://github.com/prettymuchbryce/http-status-codes
+ */
 export { StatusCodes } from "http-status-codes";
 
 /**
