@@ -89,7 +89,7 @@ class DebugWorker extends RoutedWorker {
     }
 
     public override getAllowOrigins(): string[] {
-        return ["https://www.tybusby.com"];
+        return ["https://www.adonix.org"];
     }
 
     public override getCacheKey(): URL | RequestInfo {
