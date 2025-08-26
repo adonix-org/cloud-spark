@@ -18,11 +18,38 @@ import { Method, normalizeUrl } from "./common";
 import { withCorsHeaders, withoutCorsHeaders } from "./cors";
 import { CorsWorker } from "./cors-worker";
 
+/**
+ * Abstract base class for Workers that support caching of GET responses.
+ *
+ * Features:
+ * - URL-based caching using `Request.url`.
+ * - Removes per-request CORS headers before storing in cache.
+ * - Dynamically applies correct CORS headers when retrieving cached responses.
+ * - Only caches successful GET requests.
+ */
 export abstract class CacheWorker extends CorsWorker {
+    /**
+     * Returns the cache key for the current request.
+     * By default, this is the normalized request URL.
+     *
+     * @returns A URL or RequestInfo to use as the cache key
+     */
     protected getCacheKey(): URL | RequestInfo {
         return normalizeUrl(this.request.url);
     }
 
+    /**
+     * Retrieves a cached Response for the current request, if one exists.
+     *
+     * Behavior:
+     * - Only GET requests are cached.
+     * - If a cached response is found, CORS headers are applied dynamically
+     *   using `withCorsHeaders` before returning.
+     * - Returns undefined if no cached response is found or if request is not GET.
+     *
+     * @param cacheName Optional name of the cache to use; defaults to `caches.default`.
+     * @returns A Promise resolving to a Response with correct CORS headers, or undefined.
+     */
     protected async getCachedResponse(cacheName?: string): Promise<Response | undefined> {
         if (this.request.method !== Method.GET) return;
 
@@ -32,6 +59,17 @@ export abstract class CacheWorker extends CorsWorker {
         return response ? withCorsHeaders(this, response) : undefined;
     }
 
+    /**
+     * Stores a Response in the cache for the current request.
+     *
+     * Behavior:
+     * - Only caches successful GET responses (`response.ok === true`).
+     * - Removes all CORS headers before storing using `withoutCorsHeaders`.
+     * - Uses `ctx.waitUntil` to store asynchronously without blocking the worker.
+     *
+     * @param response The Response to cache
+     * @param cacheName Optional name of the cache to use; defaults to `caches.default`.
+     */
     protected async setCachedResponse(response: Response, cacheName?: string): Promise<void> {
         if (!response.ok) return;
         if (this.request.method !== Method.GET) return;
