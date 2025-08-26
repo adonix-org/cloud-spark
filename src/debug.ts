@@ -18,6 +18,20 @@ import { Method } from "./common";
 import { JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
+const mockCtx: ExecutionContext = {
+    waitUntil: () => {},
+    passThroughOnException: () => {},
+    props: () => {},
+};
+
+const mockEnv = {
+    MY_KV: {
+        get: async (key: string) => `mock-value-for-${key}`,
+        put: async (_key: string, _value: string) => {},
+    },
+    MY_SECRET: "mock-secret",
+};
+
 // no-op cache for local/testing
 const caches = {
     default: {
@@ -110,9 +124,8 @@ const request = new Request("https://www.adonix.org/api/v1/seasons/last", {
         toppings: ["pepperoni", "sausage", "cheese"],
     }),
 });
-const worker = new DebugWorker(request);
 
-const response = await worker.fetch();
+const response = await DebugWorker.toHandler().fetch(request, mockEnv, mockCtx);
 console.log(response);
 
 // const clone = new ClonedResponse(worker, response, { private: true, "max-age": 9000 });
@@ -129,8 +142,3 @@ for (let i = 0; i < instances; i++) {
 
 let end = performance.now();
 console.log(`\nConstructing ${instances} DebugWorkers took ${(end - start).toFixed(4)} ms`);
-
-start = performance.now();
-const key = worker.getCacheKey();
-end = performance.now();
-console.log(`\n${key} ${(end - start).toFixed(4)} ms`);

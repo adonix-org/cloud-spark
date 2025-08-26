@@ -17,6 +17,26 @@
 import { Worker } from "./worker";
 
 /**
+ * A type-safe Cloudflare Worker handler where `fetch` is required.
+ *
+ * Extends `ExportedHandler` but guarantees that the `fetch` method exists
+ * and has the correct signature for Cloudflare Worker invocation.
+ *
+ * @template E - The type of environment bindings passed to the worker. Defaults to `Env`.
+ */
+interface FetchHandler<E = Env> extends ExportedHandler<E> {
+    /**
+     * Handles an incoming request and produces a response.
+     *
+     * @param request - The incoming `Request` object.
+     * @param env - Environment bindings (e.g., KV namespaces, secrets, Durable Objects).
+     * @param ctx - Optional execution context for background tasks (`waitUntil`).
+     * @returns A `Promise` that resolves to the response.
+     */
+    fetch: (request: Request, env: E, ctx: ExecutionContext) => Promise<Response>;
+}
+
+/**
  * Provides the foundational structure for handling requests, environment bindings,
  * and the worker execution context. Subclasses are expected to implement the
  * `fetch` method to handle the request and return a Response.
@@ -56,4 +76,25 @@ export abstract class BaseWorker implements Worker {
      * @returns A Promise resolving to the Response for the request
      */
     public abstract fetch(): Promise<Response>;
+
+    /**
+     * Converts a concrete BaseWorker subclass into a Cloudflare-compatible handler.
+     *
+     * Returns an object implementing `FetchHandler` with a required `fetch` method.
+     * Each request creates a new instance of the worker with the request, environment, and execution context.
+     *
+     * @template T - The constructor type of the concrete `BaseWorker` subclass.
+     * @returns A `FetchHandler` suitable for `export default` in a Cloudflare Worker.
+     *
+     * @example
+     * ```ts
+     * export default MyWorker.toHandler();
+     * ```
+     */
+    public static toHandler<T extends new (...args: any) => BaseWorker>(this: T): FetchHandler {
+        return {
+            fetch: (req: Request, env: Env, ctx: ExecutionContext) =>
+                new this(req, env, ctx).fetch(),
+        };
+    }
 }
