@@ -25,6 +25,8 @@ export const CacheControl = {
     stringify: CacheLib.stringify,
 };
 
+export { StatusCodes } from "http-status-codes";
+
 /**
  * Standard HTTP header names and common values.
  */

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { StatusCodes } from "http-status-codes";
-
 export * from "./basic-worker";
 export * from "./common";
 export * from "./cors";

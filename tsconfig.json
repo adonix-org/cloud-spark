@@ -18,7 +18,9 @@
         "noFallthroughCasesInSwitch": true,
         "noUncheckedIndexedAccess": true,
         "forceConsistentCasingInFileNames": true,
-        "skipLibCheck": true
+        "declaration": true,
+        "skipLibCheck": true,
+        "types": ["@cloudflare/workers-types"]
     },
-    "include": ["src", "worker-configuration.d.ts"]
+    "include": ["src", "types/worker-configuration.d.ts"]
 }
