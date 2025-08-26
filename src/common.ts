@@ -84,13 +84,13 @@ export function isMethod(value: string): value is Method {
 }
 
 /**
- * Returns the proper Content-Type string for a given MIME type.
+ * Returns the proper Content-Type string for a given media type.
  * Appends `charset=utf-8` for text-based types that require it.
  *
- * @param type - The MIME type.
+ * @param type - The media type.
  * @returns A string suitable for the `Content-Type` header.
  */
-export function getContentType(type: MimeType): string {
+export function getContentType(type: MediaType): string {
     if (ADD_CHARSET.has(type)) {
         return `${type}; charset=utf-8`;
     }
@@ -98,9 +98,9 @@ export function getContentType(type: MimeType): string {
 }
 
 /**
- * Common MIME types used for HTTP headers.
+ * Common media types types used for HTTP headers.
  */
-export enum MimeType {
+export enum MediaType {
     PLAIN_TEXT = "text/plain",
     HTML = "text/html",
     CSS = "text/css",
@@ -147,25 +147,25 @@ export enum MimeType {
 }
 
 /**
- * A set of MIME types that require a `charset` parameter when setting
+ * A set of media types that require a `charset` parameter when setting
  * the `Content-Type` header.
  *
- * This includes common text-based MIME types such as HTML, CSS, JSON,
+ * This includes common text-based media types such as HTML, CSS, JSON,
  * XML, CSV, Markdown, and others.
  */
-const ADD_CHARSET: Set<MimeType> = new Set([
-    MimeType.PLAIN_TEXT,
-    MimeType.HTML,
-    MimeType.CSS,
-    MimeType.CSV,
-    MimeType.MARKDOWN,
-    MimeType.XML,
-    MimeType.JSON,
-    MimeType.XML_APP,
-    MimeType.FORM_URLENCODED,
-    MimeType.NDJSON,
-    MimeType.RICH_TEXT,
-    MimeType.SVG,
+const ADD_CHARSET: Set<MediaType> = new Set([
+    MediaType.PLAIN_TEXT,
+    MediaType.HTML,
+    MediaType.CSS,
+    MediaType.CSV,
+    MediaType.MARKDOWN,
+    MediaType.XML,
+    MediaType.JSON,
+    MediaType.XML_APP,
+    MediaType.FORM_URLENCODED,
+    MediaType.NDJSON,
+    MediaType.RICH_TEXT,
+    MediaType.SVG,
 ]);
 
 /**

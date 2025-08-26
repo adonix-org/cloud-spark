@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { CacheWorker } from "./cache-worker";
-import { isMethod, Method, Time } from "./common";
+import { isMethod, Method } from "./common";
 import { CorsProvider } from "./cors";
+import { CorsWorker } from "./cors-worker";
 import {
     Head,
     InternalServerError,
@@ -26,7 +26,7 @@ import {
     WorkerResponse,
 } from "./response";
 
-export abstract class BasicWorker extends CacheWorker implements CorsProvider {
+export abstract class BasicWorker extends CorsWorker {
     public async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
             return this.getResponse(MethodNotAllowed, this.request.method);
@@ -95,7 +95,7 @@ export abstract class BasicWorker extends CacheWorker implements CorsProvider {
         Ctor extends new (cors: CorsProvider, ...args: any[]) => T
     >(
         ResponseClass: Ctor,
-        ...args: ConstructorParameters<Ctor> extends [any, ...infer R] ? R : never
+        ...args: ConstructorParameters<Ctor> extends [CorsProvider, ...infer R] ? R : never
     ): Promise<Response> {
         const response = new ResponseClass(this, ...args).createResponse();
         this.setCachedResponse(response);
@@ -104,33 +104,5 @@ export abstract class BasicWorker extends CacheWorker implements CorsProvider {
 
     public isAllowed(method: string): boolean {
         return isMethod(method) && this.getAllowMethods().includes(method);
-    }
-
-    public getAllowOrigins(): string[] {
-        return ["*"];
-    }
-
-    public allowAnyOrigin(): boolean {
-        return this.getAllowOrigins().includes("*");
-    }
-
-    public getAllowMethods(): Method[] {
-        return [Method.GET, Method.OPTIONS, Method.HEAD];
-    }
-
-    public getAllowHeaders(): string[] {
-        return ["Content-Type"];
-    }
-
-    public getExposeHeaders(): string[] {
-        return [];
-    }
-
-    public getMaxAge(): number {
-        return Time.Week;
-    }
-
-    public getOrigin(): string | null {
-        return this.request.headers.get("Origin");
     }
 }

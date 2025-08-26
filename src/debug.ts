@@ -18,10 +18,30 @@ import { Method } from "./common";
 import { ClonedResponse, JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
+// no-op cache for local/testing
+const caches = {
+    default: {
+        async match(_request: RequestInfo, _options?: any): Promise<Response | undefined> {
+            return undefined;
+        },
+        async matchAll(_request?: RequestInfo, _options?: any): Promise<Response[]> {
+            return [];
+        },
+        async put(_request: RequestInfo, _response: Response): Promise<void> {
+            // no-op
+        },
+        async delete(_request: RequestInfo, _options?: any): Promise<boolean> {
+            return false;
+        },
+    },
+} as const;
+
+(globalThis as any).caches = caches;
+
 class DebugWorker extends RoutedWorker {
     private static PLAYLIST = "^/api/v1/seasons/(\\d{4})$";
     private static SEASONS = "^/api/v1/seasons$";
-    private static LAST = "^/api/v1/seasons$";
+    private static LAST = "^/api/v1/seasons/last$";
 
     constructor(request: Request, env: Env = {}, ctx?: ExecutionContext) {
         super(request, env, ctx);
@@ -47,7 +67,8 @@ class DebugWorker extends RoutedWorker {
     }
 
     public override getAllowOrigins(): string[] {
-        return ["https://www.adonix.org", "https://www.tybusby.com"];
+        return super.getAllowOrigins();
+        //return ["https://www.adonix.org", "https://www.tybusby.com"];
     }
 
     public override getAllowMethods(): Method[] {
@@ -64,9 +85,9 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.POST;
+const method: Method = Method.GET;
 
-const request = new Request("https://www.adonix.org/api/v1/seasons", {
+const request = new Request("https://www.adonix.org/api/v1/seasons/last", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",

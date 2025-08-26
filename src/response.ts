@@ -21,7 +21,7 @@ import {
     HttpHeader,
     mergeHeader,
     Method,
-    MimeType,
+    MediaType,
     setHeader,
 } from "./common";
 import { Cors, CorsProvider } from "./cors";
@@ -37,7 +37,7 @@ abstract class BaseResponse {
     public body: BodyInit | null;
     public status: StatusCodes = StatusCodes.OK;
     public statusText?: string;
-    public mimeType?: MimeType;
+    public mediaType?: MediaType;
 
     constructor(content: BodyInit | null = null) {
         this.body = this.status === StatusCodes.NO_CONTENT ? null : content;
@@ -60,8 +60,8 @@ abstract class BaseResponse {
     }
 
     public addContentType() {
-        if (this.mimeType) {
-            this.headers.set(HttpHeader.CONTENT_TYPE, getContentType(this.mimeType));
+        if (this.mediaType) {
+            this.headers.set(HttpHeader.CONTENT_TYPE, getContentType(this.mediaType));
         }
     }
 }
@@ -73,7 +73,7 @@ abstract class CorsResponse extends BaseResponse {
 
     protected addCorsHeaders(): void {
         const origin = this.cors.getOrigin();
-        if (!origin) return; // no Origin, skip CORS
+        if (!origin) return;
 
         this.headers.delete(Cors.ALLOW_ORIGIN);
         this.headers.delete(Cors.ALLOW_CREDENTIALS);
@@ -96,7 +96,6 @@ abstract class CorsResponse extends BaseResponse {
 abstract class CacheResponse extends CorsResponse {
     constructor(cors: CorsProvider, body: BodyInit | null = null, public cache?: CacheControl) {
         super(cors, body);
-        this.cache = cache;
     }
 
     protected addCacheHeader(): void {
@@ -152,7 +151,7 @@ export class JsonResponse extends SuccessResponse {
         status: StatusCodes = StatusCodes.OK
     ) {
         super(cors, JSON.stringify(json), cache, status);
-        this.mimeType = MimeType.JSON;
+        this.mediaType = MediaType.JSON;
     }
 }
 
@@ -164,7 +163,7 @@ export class HtmlResponse extends SuccessResponse {
         status: StatusCodes = StatusCodes.OK
     ) {
         super(cors, body, cache, status);
-        this.mimeType = MimeType.HTML;
+        this.mediaType = MediaType.HTML;
     }
 }
 
@@ -176,7 +175,7 @@ export class TextResponse extends SuccessResponse {
         status: StatusCodes = StatusCodes.OK
     ) {
         super(cors, content, cache, status);
-        this.mimeType = MimeType.PLAIN_TEXT;
+        this.mediaType = MediaType.PLAIN_TEXT;
     }
 }
 
