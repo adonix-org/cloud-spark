@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+/**
+ * Minimal interface representing a Worker.
+ *
+ * Any class implementing this interface must provide a `fetch` method
+ * that handles a request and returns a Response (or a Promise resolving to a Response).
+ */
 export interface Worker {
+    /**
+     * Processes a request and returns a Response.
+     *
+     * @returns A Promise resolving to the Response
+     */
     fetch(): Promise<Response>;
 }
