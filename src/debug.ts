@@ -23,6 +23,7 @@ const mockCtx: ExecutionContext = {
     passThroughOnException: () => {},
     props: () => {},
 };
+mockCtx;
 
 const mockEnv = {
     MY_KV: {
@@ -31,6 +32,7 @@ const mockEnv = {
     },
     MY_SECRET: "mock-secret",
 };
+mockEnv;
 
 // no-op cache for local/testing
 const caches = {
@@ -125,12 +127,15 @@ const request = new Request("https://www.adonix.org/api/v1/seasons/last", {
     }),
 });
 
-const response = await DebugWorker.ignite().fetch(request, mockEnv, mockCtx);
-console.log(response);
+const worker = new DebugWorker(request);
+const response = await worker.fetch();
+
+// const response = await DebugWorker.ignite().fetch(request, mockEnv, mockCtx);
 
 // const clone = new ClonedResponse(worker, response, { private: true, "max-age": 9000 });
 // console.log(clone.createResponse());
 
+console.log(response);
 console.log(await response.text());
 
 const instances = 10;
