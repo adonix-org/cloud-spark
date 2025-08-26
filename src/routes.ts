@@ -16,22 +16,52 @@
 
 import { Method } from "./common";
 
+/**
+ * A callback function for a route.
+ *
+ * @param matches - Captured groups from the route RegExp, or the full match at index 0
+ * @returns A Response object or a Promise that resolves to a Response
+ */
 export type RouteCallback = (...matches: string[]) => Response | Promise<Response>;
 
-export type RouteInit = [Method, string, RouteCallback];
+/**
+ * Tuple used to initialize a route.
+ *
+ * [HTTP method, path pattern (string or RegExp), callback function]
+ */
+export type RouteInit = [Method, RegExp | string, RouteCallback];
 
+/**
+ * Represents a single route with a pattern and a callback.
+ */
 export class Route {
     public readonly pattern: RegExp;
 
+    /**
+     * @param pattern - A RegExp or string used to match the request path
+     * @param callback - Function to handle requests matching the pattern
+     */
     constructor(pattern: RegExp | string, public readonly callback: RouteCallback) {
         this.pattern = new RegExp(pattern);
     }
 }
 
+/**
+ * A collection of routes grouped by HTTP method.
+ *
+ * Supports adding routes and retrieving the first matching route for a given method and URL.
+ */
 export class Routes {
     private readonly map = new Map<Method, Route[]>();
 
-    public add(method: Method, route: Route) {
+    /**
+     * Adds a route to the collection under the given HTTP method.
+     *
+     * @param method - HTTP method (GET, POST, etc.)
+     * @param route - Route instance to add
+     * @returns The Routes instance (for chaining)
+     */
+    public add(method: Method, route: Route): this {
         const existing = this.map.get(method);
         if (existing) {
             existing.push(route);
@@ -41,6 +71,13 @@ export class Routes {
         return this;
     }
 
+    /**
+     * Finds the first route that matches the given method and URL.
+     *
+     * @param method - HTTP method of the request
+     * @param url - Full URL string of the request
+     * @returns The first matching Route, or undefined if none match
+     */
     public get(method: Method, url: string): Route | undefined {
         const routes = this.map.get(method);
         if (!routes) return undefined;
