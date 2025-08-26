@@ -125,7 +125,7 @@ const request = new Request("https://www.adonix.org/api/v1/seasons/last", {
     }),
 });
 
-const response = await DebugWorker.toHandler().fetch(request, mockEnv, mockCtx);
+const response = await DebugWorker.ignite().fetch(request, mockEnv, mockCtx);
 console.log(response);
 
 // const clone = new ClonedResponse(worker, response, { private: true, "max-age": 9000 });
