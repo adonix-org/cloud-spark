@@ -84,7 +84,7 @@ export abstract class BaseWorker implements Worker {
      *
      * @example
      * ```ts
-     * export default MyWorker.toHandler();
+     * export default MyWorker.ignite();
      * ```
      */
     public static ignite<T extends new (...args: any) => BaseWorker>(this: T): FetchHandler {
