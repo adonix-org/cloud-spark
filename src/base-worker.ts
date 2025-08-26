@@ -78,13 +78,9 @@ export abstract class BaseWorker implements Worker {
     public abstract fetch(): Promise<Response>;
 
     /**
-     * Converts a concrete BaseWorker subclass into a Cloudflare-compatible handler.
+     * Ignite your `Worker` implementation into a Cloudflare-compatible handler.
      *
-     * Returns an object implementing `FetchHandler` with a required `fetch` method.
-     * Each request creates a new instance of the worker with the request, environment, and execution context.
-     *
-     * @template T - The constructor type of the concrete `BaseWorker` subclass.
-     * @returns A `FetchHandler` suitable for `export default` in a Cloudflare Worker.
+     * @returns A `FetchHandler` that launches a new worker instance for each request.
      *
      * @example
      * ```ts
