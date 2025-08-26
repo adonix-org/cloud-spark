@@ -16,6 +16,17 @@
 
 import { Worker } from "./worker";
 
+/**
+ * Provides the foundational structure for handling requests, environment bindings,
+ * and the worker execution context. Subclasses are expected to implement the
+ * `fetch` method to handle the request and return a Response.
+ *
+ * Features:
+ * - Holds the current `Request` object (`request` getter).
+ * - Provides access to environment bindings (`env` getter).
+ * - Provides access to the worker execution context (`ctx` getter), if available.
+ * - Subclasses must implement `fetch()` to process the request.
+ */
 export abstract class BaseWorker implements Worker {
     constructor(
         private readonly _request: Request,
@@ -23,17 +34,26 @@ export abstract class BaseWorker implements Worker {
         private readonly _ctx?: ExecutionContext
     ) {}
 
+    /** The Request object associated with this worker invocation */
     protected get request(): Request {
         return this._request;
     }
 
+    /** Environment bindings (e.g., KV, secrets, or other globals) */
     protected get env(): Env {
         return this._env;
     }
 
+    /** Optional execution context for background tasks or `waitUntil` */
     protected get ctx(): ExecutionContext | undefined {
         return this._ctx;
     }
 
+    /**
+     * Process the request and produce a Response.
+     * Subclasses must implement this method.
+     *
+     * @returns A Promise resolving to the Response for the request
+     */
     public abstract fetch(): Promise<Response>;
 }

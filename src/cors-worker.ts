@@ -18,6 +18,18 @@ import { BaseWorker } from "./base-worker";
 import { Method, Time } from "./common";
 import { CorsProvider } from "./cors";
 
+/**
+ * Abstract base class for Workers to provide a default CORS policy.
+ *
+ * Implements the `CorsProvider` interface and provides a standard policy:
+ * - Allows all origins (`*`) by default.
+ * - Allows GET, OPTIONS, and HEAD methods.
+ * - Allows the `Content-Type` header.
+ * - Exposes no additional headers.
+ * - Sets CORS preflight max-age to one week.
+ *
+ * Subclasses can override any of the methods to customize the CORS behavior.
+ */
 export abstract class CorsWorker extends BaseWorker implements CorsProvider {
     public getAllowOrigins(): string[] {
         return ["*"];
