@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { CacheWorker } from "./cache-worker";
 import { isMethod, Method } from "./common";
 import { CorsProvider } from "./cors";
-import { CorsWorker } from "./cors-worker";
 import {
     Head,
     InternalServerError,
@@ -26,7 +26,7 @@ import {
     WorkerResponse,
 } from "./response";
 
-export abstract class BasicWorker extends CorsWorker {
+export abstract class BasicWorker extends CacheWorker {
     public async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
             return this.getResponse(MethodNotAllowed, this.request.method);
@@ -84,10 +84,6 @@ export abstract class BasicWorker extends CorsWorker {
             Head,
             await this.dispatch(new Request(this.request, { method: Method.GET }))
         );
-    }
-
-    protected override getCacheKey(): URL | RequestInfo {
-        return super.getCacheKey(this.getOrigin());
     }
 
     protected async getResponse<

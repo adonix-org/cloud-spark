@@ -24,7 +24,7 @@ import {
     MediaType,
     setHeader,
 } from "./common";
-import { Cors, CorsProvider } from "./cors";
+import { addCorsHeaders, CorsProvider } from "./cors";
 
 export interface ErrorJson {
     status: number;
@@ -72,24 +72,7 @@ abstract class CorsResponse extends BaseResponse {
     }
 
     protected addCorsHeaders(): void {
-        const origin = this.cors.getOrigin();
-        if (!origin) return;
-
-        this.headers.delete(Cors.ALLOW_ORIGIN);
-        this.headers.delete(Cors.ALLOW_CREDENTIALS);
-
-        if (this.cors.allowAnyOrigin()) {
-            this.setHeader(Cors.ALLOW_ORIGIN, Cors.ALLOW_ALL_ORIGINS);
-        } else if (this.cors.getAllowOrigins().includes(origin)) {
-            this.setHeader(Cors.ALLOW_ORIGIN, origin);
-            this.setHeader(Cors.ALLOW_CREDENTIALS, String(true));
-            this.mergeHeader(HttpHeader.VARY, HttpHeader.ORIGIN);
-        }
-
-        this.mergeHeader(Cors.EXPOSE_HEADERS, this.cors.getExposeHeaders());
-        this.setHeader(Cors.ALLOW_HEADERS, this.cors.getAllowHeaders());
-        this.setHeader(Cors.ALLOW_METHODS, this.cors.getAllowMethods());
-        this.setHeader(Cors.MAX_AGE, String(this.cors.getMaxAge()));
+        addCorsHeaders(this.cors, this.headers);
     }
 }
 

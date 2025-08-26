@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-import { Method, normalizeUrl, toBase64 } from "./common";
-import { BaseWorker } from "./base-worker";
+import { Method, normalizeUrl } from "./common";
+import { withCorsHeaders, withoutCorsHeaders } from "./cors";
+import { CorsWorker } from "./cors-worker";
 
-export abstract class CacheWorker extends BaseWorker {
-    protected getCacheKey(...values: Array<string | null | undefined>): URL | RequestInfo {
-        const raw = [
-            normalizeUrl(this.request.url),
-            ...values
-                .filter((v) => v != null) // remove null/undefined
-                .map((v) => v!.trim()) // trim whitespace
-                .filter((v) => v.length > 0), // skip empty strings after trim
-        ].join("\u0001");
-        const base64 = toBase64(raw).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-        return new URL(`http://cache/${base64}`);
+export abstract class CacheWorker extends CorsWorker {
+    protected getCacheKey(): URL | RequestInfo {
+        return normalizeUrl(this.request.url);
     }
 
     protected async getCachedResponse(cacheName?: string): Promise<Response | undefined> {
         if (this.request.method !== Method.GET) return;
 
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
-        return cache.match(this.getCacheKey());
+
+        const response = await cache.match(this.getCacheKey());
+        return response ? withCorsHeaders(this, response) : undefined;
     }
 
     protected async setCachedResponse(response: Response, cacheName?: string): Promise<void> {
@@ -42,6 +37,6 @@ export abstract class CacheWorker extends BaseWorker {
         if (this.request.method !== Method.GET) return;
 
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
-        this.ctx?.waitUntil(cache.put(this.getCacheKey(), response.clone()));
+        this.ctx?.waitUntil(cache.put(this.getCacheKey(), withoutCorsHeaders(response)));
     }
 }

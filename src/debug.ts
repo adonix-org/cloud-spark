@@ -15,7 +15,7 @@
  */
 
 import { Method } from "./common";
-import { ClonedResponse, JsonResponse, TextResponse } from "./response";
+import { JsonResponse, TextResponse } from "./response";
 import { RoutedWorker } from "./routed-worker";
 
 // no-op cache for local/testing
@@ -37,6 +37,13 @@ const caches = {
 } as const;
 
 (globalThis as any).caches = caches;
+
+type Toppings = "pepperoni" | "sausage" | "cheese" | "olives" | "xtra cheese" | "ham" | "pineapple";
+interface Pizza {
+    size: "small" | "medium" | "large" | "x-large" | "sheet";
+    style: "New York" | "Chicago" | "Detroit";
+    toppings: Toppings[];
+}
 
 class DebugWorker extends RoutedWorker {
     private static PLAYLIST = "^/api/v1/seasons/(\\d{4})$";
@@ -66,18 +73,23 @@ class DebugWorker extends RoutedWorker {
         });
     }
 
-    public override getAllowOrigins(): string[] {
-        return super.getAllowOrigins();
-        //return ["https://www.adonix.org", "https://www.tybusby.com"];
-    }
-
     public override getAllowMethods(): Method[] {
         return [...super.getAllowMethods(), Method.POST];
     }
 
     protected override async get(): Promise<Response> {
+        console.info("request text = ", await this.request.text());
         //return this.getResponse(InternalServerError, "Goodbye World!");
         return this.getResponse(TextResponse, "Hello 🌎", { public: true, "max-age": 0 });
+    }
+
+    protected override async post(): Promise<Response> {
+        const pizza = (await this.request.json()) as Pizza;
+        return this.getResponse(JsonResponse, pizza, { "no-store": true });
+    }
+
+    public override getAllowOrigins(): string[] {
+        return ["https://www.tybusby.com"];
     }
 
     public override getCacheKey(): URL | RequestInfo {
@@ -85,21 +97,26 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.GET;
+const method: Method = Method.POST;
 
 const request = new Request("https://www.adonix.org/api/v1/seasons/last", {
     method: method,
     headers: {
         Origin: "https://www.adonix.org",
     },
+    body: JSON.stringify({
+        size: "large",
+        style: "New York",
+        toppings: ["pepperoni", "sausage", "cheese"],
+    }),
 });
 const worker = new DebugWorker(request);
 
 const response = await worker.fetch();
 console.log(response);
 
-const clone = new ClonedResponse(worker, response, { private: true, "max-age": 9000 });
-console.log(clone.createResponse());
+// const clone = new ClonedResponse(worker, response, { private: true, "max-age": 9000 });
+// console.log(clone.createResponse());
 
 console.log(await response.text());
 

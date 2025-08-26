@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { CacheWorker } from "./cache-worker";
+import { BaseWorker } from "./base-worker";
 import { Method, Time } from "./common";
 import { CorsProvider } from "./cors";
 
-export abstract class CorsWorker extends CacheWorker implements CorsProvider {
+export abstract class CorsWorker extends BaseWorker implements CorsProvider {
     public getAllowOrigins(): string[] {
         return ["*"];
     }

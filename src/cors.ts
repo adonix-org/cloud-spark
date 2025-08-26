@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method } from "./common";
+import { HttpHeader, mergeHeader, Method, setHeader } from "./common";
 
 export interface CorsProvider {
     getOrigin(): string | null;
@@ -34,4 +34,58 @@ export namespace Cors {
     export const ALLOW_METHODS = "Access-Control-Allow-Methods";
     export const MAX_AGE = "Access-Control-Max-Age";
     export const ALLOW_ALL_ORIGINS = "*";
+}
+
+export function addCorsHeaders(cors: CorsProvider, headers: Headers): void {
+    // Remove stale headers if from cache
+    deleteCorsHeaders(headers);
+
+    const origin = cors.getOrigin();
+    if (!origin) return;
+
+    if (cors.allowAnyOrigin()) {
+        setHeader(headers, Cors.ALLOW_ORIGIN, Cors.ALLOW_ALL_ORIGINS);
+    } else if (cors.getAllowOrigins().includes(origin)) {
+        setHeader(headers, Cors.ALLOW_ORIGIN, origin);
+        setHeader(headers, Cors.ALLOW_CREDENTIALS, "true");
+        mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
+    }
+
+    // Optional headers always applied
+    mergeHeader(headers, Cors.EXPOSE_HEADERS, cors.getExposeHeaders());
+    setHeader(headers, Cors.ALLOW_HEADERS, cors.getAllowHeaders());
+    setHeader(headers, Cors.ALLOW_METHODS, cors.getAllowMethods());
+    setHeader(headers, Cors.MAX_AGE, String(cors.getMaxAge()));
+}
+
+export function deleteCorsHeaders(headers: Headers) {
+    headers.delete(Cors.ALLOW_ORIGIN);
+    headers.delete(Cors.ALLOW_CREDENTIALS);
+    headers.delete(Cors.EXPOSE_HEADERS);
+    headers.delete(Cors.ALLOW_METHODS);
+    headers.delete(Cors.MAX_AGE);
+}
+
+/**
+ * Immutable-friendly helper: returns a new Response with updated CORS headers.
+ * Useful if you want to avoid mutating a cached response in place.
+ */
+export function withCorsHeaders(cors: CorsProvider, res: Response): Response {
+    const headers = new Headers(res.headers);
+    addCorsHeaders(cors, headers);
+    return new Response(res.body, {
+        status: res.status,
+        statusText: res.statusText,
+        headers,
+    });
+}
+
+export function withoutCorsHeaders(res: Response): Response {
+    const headers = new Headers(res.headers);
+    deleteCorsHeaders(headers);
+    return new Response(res.body, {
+        status: res.status,
+        statusText: res.statusText,
+        headers,
+    });
 }
