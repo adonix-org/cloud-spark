@@ -17,7 +17,7 @@
 import { Worker, WorkerConstructor } from "./worker";
 
 /**
- * A type-safe Cloudflare Worker handler where `fetch` is required.
+ * A type-safe Cloudflare Worker handler.
  *
  * Extends `ExportedHandler` but guarantees that the `fetch` method exists
  * and has the correct signature for Cloudflare Worker invocation.
@@ -71,7 +71,7 @@ export abstract class BaseWorker implements Worker {
     /**
      * Creates a new instance of the current Worker subclass.
      *
-     * @param request - The request to pass to the new worker instance.
+     * @param request - The {@link Request} to pass to the new worker instance.
      * @returns A new worker instance of the same subclass as `this`.
      */
     protected createWorker(request: Request): this {
@@ -80,7 +80,7 @@ export abstract class BaseWorker implements Worker {
     }
 
     /**
-     * Process the request and produce a Response.
+     * Process the {@link Request} and produce a {@link Response}.
      *
      * @returns A {@link Response} promise for the {@link Request}.
      */
