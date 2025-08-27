@@ -53,6 +53,10 @@ export abstract class BasicWorker extends CacheWorker {
         return (handler[method] ?? (() => this.getResponse(MethodNotAllowed)))();
     }
 
+    public isAllowed(method: string): boolean {
+        return isMethod(method) && this.getAllowMethods().includes(method);
+    }
+
     protected async get(): Promise<Response> {
         return this.getResponse(MethodNotImplemented);
     }
@@ -92,9 +96,5 @@ export abstract class BasicWorker extends CacheWorker {
         const response = new ResponseClass(this, ...args).createResponse();
         this.setCachedResponse(response);
         return response;
-    }
-
-    public isAllowed(method: string): boolean {
-        return isMethod(method) && this.getAllowMethods().includes(method);
     }
 }
