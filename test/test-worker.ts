@@ -19,7 +19,6 @@ import { TextResponse } from "../src/response";
 
 export class TestWorker extends BasicWorker {
     protected override async get(): Promise<Response> {
-        console.log(this.ctx);
         return this.getResponse(TextResponse, "Hello World!");
     }
 
