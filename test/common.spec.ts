@@ -55,7 +55,7 @@ describe("get content type function", () => {
         expect(getContentType(MediaType.HTML)).toBe("text/html; charset=utf-8");
     });
 
-    it("leaves binary types alone", () => {
+    it("no charset for binary type", () => {
         expect(getContentType(MediaType.OCTET_STREAM)).toBe("application/octet-stream");
     });
 });
