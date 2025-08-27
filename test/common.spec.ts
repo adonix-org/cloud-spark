@@ -16,9 +16,10 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { env, ctx } from "./mock";
-import { GET_REQUEST, TestCorsWorker, VALID_ORIGIN } from "./constants";
+import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, TestCorsWorker, VALID_ORIGIN } from "./constants";
 import {
     getContentType,
+    getOrigin,
     isMethod,
     MediaType,
     mergeHeader,
@@ -284,5 +285,15 @@ describe("normalize url", () => {
     it("unsorted duplicate search parametes", () => {
         const url = `${BASE}?&b=2&a=4&c=3&a=1`;
         expect(normalizeUrl(url).toString()).toBe(`${BASE}?a=4&a=1&b=2&c=3`);
+    });
+});
+
+describe("get origin", () => {
+    it("no origin", () => {
+        expect(getOrigin(GET_REQUEST)).toBe(null);
+    });
+
+    it("with origin", () => {
+        expect(getOrigin(GET_REQUEST_WITH_ORIGIN)).toBe(VALID_ORIGIN);
     });
 });
