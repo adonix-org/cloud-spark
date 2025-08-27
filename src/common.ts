@@ -194,7 +194,9 @@ const ADD_CHARSET: Set<MediaType> = new Set([
  */
 export function setHeader(headers: Headers, key: string, value: string | string[]): void {
     const raw = Array.isArray(value) ? value : [value];
-    const values = Array.from(new Set(raw.map((v) => v.trim()))).filter((v) => v.length);
+    const values = Array.from(new Set(raw.map((v) => v.trim())))
+        .filter((v) => v.length)
+        .sort();
 
     if (!values.length) {
         headers.delete(key);

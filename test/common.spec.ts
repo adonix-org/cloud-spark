@@ -17,7 +17,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { env, ctx } from "./mock";
 import { GET_REQUEST, TestCorsWorker } from "./constants";
-import { getContentType, isMethod, MediaType, Method, Time } from "../src/common";
+import { getContentType, isMethod, MediaType, Method, setHeader, Time } from "../src/common";
 
 describe("is method function", () => {
     it("is method", () => {
@@ -57,5 +57,67 @@ describe("get content type function", () => {
 
     it("no charset for binary type", () => {
         expect(getContentType(MediaType.OCTET_STREAM)).toBe("application/octet-stream");
+    });
+});
+
+describe("set new headers", () => {
+    let headers: Headers;
+
+    beforeEach(() => {
+        headers = new Headers();
+    });
+
+    it("add string", () => {
+        setHeader(headers, "test-key", "1");
+        expect([...headers.entries()]).toStrictEqual([["test-key", "1"]]);
+    });
+
+    it("add empty string", () => {
+        setHeader(headers, "test-key", "");
+        expect([...headers.entries()]).toStrictEqual([]);
+    });
+
+    it("add array", () => {
+        setHeader(headers, "test-key", ["1", "2", "3"]);
+        expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3"]]);
+    });
+
+    it("add array with duplicates", () => {
+        setHeader(headers, "test-key", ["3", "2", "1", "4", "1", "2", "3"]);
+        expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3, 4"]]);
+    });
+
+    it("add array including white space", () => {
+        setHeader(headers, "test-key", ["   ", "3", "2", "1", "4", "3", " "]);
+        expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3, 4"]]);
+    });
+
+    it("add array only white space", () => {
+        setHeader(headers, "test-key", [" ", "  ", "   "]);
+        expect([...headers.entries()]).toStrictEqual([]);
+    });
+});
+
+describe("set exising headers", () => {
+    let headers: Headers;
+
+    beforeEach(() => {
+        headers = new Headers([
+            ["test-key", "1"],
+            ["safe-key", "2"],
+        ]);
+    });
+
+    it("add string", () => {
+        setHeader(headers, "test-key", "2");
+        expect([...headers.entries()]).toStrictEqual([
+            ["safe-key", "2"],
+            ["test-key", "2"],
+        ]);
+    });
+
+    it("add empty string", () => {
+        setHeader(headers, "test-key", "");
+        expect([...headers.entries()]).toStrictEqual([["safe-key", "2"]]);
     });
 });

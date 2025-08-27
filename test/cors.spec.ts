@@ -55,7 +55,7 @@ describe("cors headers allow any origin", () => {
         addCorsHeaders(getOrigin(worker.request), worker, headers);
         expect([...headers.entries()]).toStrictEqual([
             ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, OPTIONS, HEAD"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "*"],
             ["access-control-max-age", "604800"],
         ]);
@@ -65,7 +65,7 @@ describe("cors headers allow any origin", () => {
         headers = new Headers([
             ["access-control-allow-credentials", "true"],
             ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, OPTIONS, HEAD"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "https://localhost"],
             ["access-control-max-age", "604800"],
             ["vary", "Origin"],
@@ -89,7 +89,7 @@ describe("cors headers allow specific origin", () => {
         expect([...headers.entries()]).toStrictEqual([
             ["access-control-allow-credentials", "true"],
             ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, OPTIONS, HEAD"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "https://localhost"],
             ["access-control-max-age", "604800"],
             ["vary", "Origin"],
@@ -100,7 +100,7 @@ describe("cors headers allow specific origin", () => {
         addCorsHeaders(INVALID_ORIGIN, worker, headers);
         expect([...headers.entries()]).toStrictEqual([
             ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, OPTIONS, HEAD"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-max-age", "604800"],
         ]);
     });
