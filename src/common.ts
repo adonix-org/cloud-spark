@@ -77,12 +77,12 @@ export const Time = {
  */
 export enum Method {
     GET = "GET",
-    PUT = "PUT",
-    POST = "POST",
-    PATCH = "PATCH",
-    DELETE = "DELETE",
     HEAD = "HEAD",
     OPTIONS = "OPTIONS",
+    DELETE = "DELETE",
+    PATCH = "PATCH",
+    POST = "POST",
+    PUT = "PUT",
 }
 const METHOD_SET: Set<string> = new Set(Object.values(Method));
 
