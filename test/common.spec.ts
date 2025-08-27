@@ -16,13 +16,14 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { env, ctx } from "./mock";
-import { GET_REQUEST, TestCorsWorker } from "./constants";
+import { GET_REQUEST, TestCorsWorker, VALID_ORIGIN } from "./constants";
 import {
     getContentType,
     isMethod,
     MediaType,
     mergeHeader,
     Method,
+    normalizeUrl,
     setHeader,
     Time,
 } from "../src/common";
@@ -255,5 +256,33 @@ describe("merge exising headers", () => {
             ["safe-key", "2"],
             ["test-key", "1, 2, 3, 4"],
         ]);
+    });
+});
+
+describe("normalize url", () => {
+    const BASE = "https://localhost/";
+
+    it("no search parameters", () => {
+        expect(normalizeUrl(BASE).toString()).toBe(BASE);
+    });
+
+    it("single search parameter", () => {
+        const url = `${BASE}?a=1`;
+        expect(normalizeUrl(url).toString()).toBe(url);
+    });
+
+    it("pre-sorted search parametes", () => {
+        const url = `${BASE}?a=1&b=2&c=3`;
+        expect(normalizeUrl(url).toString()).toBe(url);
+    });
+
+    it("unsorted search parametes", () => {
+        const url = `${BASE}?&b=2&c=3&a=1`;
+        expect(normalizeUrl(url).toString()).toBe(`${BASE}?a=1&b=2&c=3`);
+    });
+
+    it("unsorted duplicate search parametes", () => {
+        const url = `${BASE}?&b=2&a=4&c=3&a=1`;
+        expect(normalizeUrl(url).toString()).toBe(`${BASE}?a=4&a=1&b=2&c=3`);
     });
 });
