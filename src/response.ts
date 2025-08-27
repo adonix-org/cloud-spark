@@ -189,7 +189,7 @@ export class Head extends WorkerResponse {
 export class Options extends SuccessResponse {
     constructor(worker: CorsWorker) {
         super(worker, null, undefined, StatusCodes.NO_CONTENT);
-        this.setHeader("Allow", this.worker.getAllowMethods());
+        this.setHeader(HttpHeader.ALLOW, this.worker.getAllowMethods());
     }
 }
 
@@ -243,7 +243,7 @@ export class MethodNotAllowed extends HttpError {
             StatusCodes.METHOD_NOT_ALLOWED,
             `${worker.request.method} method not allowed.`
         );
-        this.setHeader("Allow", this.worker.getAllowMethods());
+        this.setHeader(HttpHeader.ALLOW, this.worker.getAllowMethods());
     }
 
     public override get json(): ErrorJson & { allowed: Method[] } {

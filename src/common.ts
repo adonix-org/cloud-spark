@@ -45,6 +45,7 @@ export namespace HttpHeader {
     export const VARY = "Vary";
     export const CONTENT_TYPE = "Content-Type";
     export const CACHE_CONTROL = "Cache-Control";
+    export const ALLOW = "Allow";
 
     // Security Headers
     export const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options"; // usually "nosniff"
