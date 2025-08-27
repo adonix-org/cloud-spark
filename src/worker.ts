@@ -30,16 +30,33 @@ export type WorkerConstructor<T extends Worker = Worker> = new (
 ) => T;
 
 /**
- * Minimal interface representing a Worker.
+ * Defines the contract for a Cloudflare-compatible Worker.
  *
- * Any class implementing this interface must provide a `fetch` method
- * that handles a request and returns a Response (or a Promise resolving to a Response).
+ * Implementations are responsible for handling incoming requests,
+ * providing access to the request, environment bindings, and
+ * execution context.
  */
 export interface Worker {
     /**
-     * Processes a request and returns a Response.
+     * Processes the incoming {@link Request} and produces a {@link Response}.
      *
-     * @returns A Promise resolving to the Response
+     * @returns A Promise that resolves to the HTTP {@link Response}.
      */
     fetch(): Promise<Response>;
+
+    /**
+     * The original {@link Request} being processed by this worker instance.
+     */
+    get request(): Request;
+
+    /**
+     * The environment bindings provided at runtime (e.g., KV, R2, secrets).
+     */
+    get env(): Env;
+
+    /**
+     * The {@link ExecutionContext} associated with the current request,
+     * used to manage background tasks and request lifecycle.
+     */
+    get ctx(): ExecutionContext;
 }

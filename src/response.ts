@@ -25,12 +25,21 @@ import {
     setHeader,
 } from "./common";
 import { addCorsHeaders, CorsProvider } from "./cors";
+import { Worker } from "./worker";
 
 export interface ErrorJson {
     status: number;
     error: string;
     details: string;
 }
+
+/**
+ * A {@link Worker} that also implements {@link CorsProvider}.
+ *
+ * Used by response builders that require both Worker
+ * and CORS functionality.
+ */
+export type CorsWorker = Worker & CorsProvider;
 
 abstract class BaseResponse {
     public headers: Headers = new Headers();
@@ -39,7 +48,7 @@ abstract class BaseResponse {
     public statusText?: string;
     public mediaType?: MediaType;
 
-    constructor(content: BodyInit | null = null) {
+    constructor(public readonly worker: CorsWorker, content: BodyInit | null = null) {
         this.body = this.status === StatusCodes.NO_CONTENT ? null : content;
     }
 
@@ -67,18 +76,18 @@ abstract class BaseResponse {
 }
 
 abstract class CorsResponse extends BaseResponse {
-    constructor(public readonly cors: CorsProvider, content: BodyInit | null = null) {
-        super(content);
+    constructor(worker: CorsWorker, content: BodyInit | null = null) {
+        super(worker, content);
     }
 
     protected addCorsHeaders(): void {
-        addCorsHeaders(this.cors, this.headers);
+        addCorsHeaders(this.worker, this.headers);
     }
 }
 
 abstract class CacheResponse extends CorsResponse {
-    constructor(cors: CorsProvider, body: BodyInit | null = null, public cache?: CacheControl) {
-        super(cors, body);
+    constructor(worker: CorsWorker, body: BodyInit | null = null, public cache?: CacheControl) {
+        super(worker, body);
     }
 
     protected addCacheHeaders(): void {
@@ -105,9 +114,9 @@ export abstract class WorkerResponse extends CacheResponse {
 }
 
 export class ClonedResponse extends WorkerResponse {
-    constructor(cors: CorsProvider, response: Response, cache?: CacheControl) {
+    constructor(worker: CorsWorker, response: Response, cache?: CacheControl) {
         const clone = response.clone();
-        super(cors, clone.body, cache);
+        super(worker, clone.body, cache);
         this.headers = new Headers(clone.headers);
         this.status = clone.status;
         this.statusText = clone.statusText;
@@ -116,48 +125,48 @@ export class ClonedResponse extends WorkerResponse {
 
 export class SuccessResponse extends WorkerResponse {
     constructor(
-        cors: CorsProvider,
+        worker: CorsWorker,
         body: BodyInit | null = null,
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
-        super(cors, body, cache);
+        super(worker, body, cache);
         this.status = status;
     }
 }
 
 export class JsonResponse extends SuccessResponse {
     constructor(
-        cors: CorsProvider,
+        worker: CorsWorker,
         json: unknown = {},
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
-        super(cors, JSON.stringify(json), cache, status);
+        super(worker, JSON.stringify(json), cache, status);
         this.mediaType = MediaType.JSON;
     }
 }
 
 export class HtmlResponse extends SuccessResponse {
     constructor(
-        cors: CorsProvider,
+        worker: CorsWorker,
         body: string,
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
-        super(cors, body, cache, status);
+        super(worker, body, cache, status);
         this.mediaType = MediaType.HTML;
     }
 }
 
 export class TextResponse extends SuccessResponse {
     constructor(
-        cors: CorsProvider,
+        worker: CorsWorker,
         content: string,
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
     ) {
-        super(cors, content, cache, status);
+        super(worker, content, cache, status);
         this.mediaType = MediaType.PLAIN_TEXT;
     }
 }
@@ -166,28 +175,28 @@ export class TextResponse extends SuccessResponse {
  * Removes the body from a GET response.
  */
 export class Head extends WorkerResponse {
-    constructor(cors: CorsProvider, get: Response) {
-        super(cors);
+    constructor(worker: CorsWorker, get: Response) {
+        super(worker);
         this.headers = new Headers(get.headers);
     }
 }
 
 export class Options extends SuccessResponse {
-    constructor(cors: CorsProvider) {
-        super(cors, null, undefined, StatusCodes.NO_CONTENT);
-        this.setHeader("Allow", this.cors.getAllowMethods());
+    constructor(worker: CorsWorker) {
+        super(worker, null, undefined, StatusCodes.NO_CONTENT);
+        this.setHeader("Allow", this.worker.getAllowMethods());
     }
 }
 
 export class HttpError extends JsonResponse {
-    constructor(cors: CorsProvider, status: StatusCodes, protected readonly details?: string) {
+    constructor(worker: CorsWorker, status: StatusCodes, protected readonly details?: string) {
         const cache: CacheControl = {
             "no-cache": true,
             "no-store": true,
             "must-revalidate": true,
             "max-age": 0,
         };
-        super(cors, undefined, cache, status);
+        super(worker, undefined, cache, status);
     }
 
     public get json(): ErrorJson {
@@ -205,63 +214,63 @@ export class HttpError extends JsonResponse {
 }
 
 export class BadRequest extends HttpError {
-    constructor(cors: CorsProvider, details?: string) {
-        super(cors, StatusCodes.BAD_REQUEST, details);
+    constructor(worker: CorsWorker, details?: string) {
+        super(worker, StatusCodes.BAD_REQUEST, details);
     }
 }
 
 export class Unauthorized extends HttpError {
-    constructor(cors: CorsProvider, details?: string) {
-        super(cors, StatusCodes.UNAUTHORIZED, details);
+    constructor(worker: CorsWorker, details?: string) {
+        super(worker, StatusCodes.UNAUTHORIZED, details);
     }
 }
 
 export class Forbidden extends HttpError {
-    constructor(cors: CorsProvider, details?: string) {
-        super(cors, StatusCodes.FORBIDDEN, details);
+    constructor(worker: CorsWorker, details?: string) {
+        super(worker, StatusCodes.FORBIDDEN, details);
     }
 }
 
 export class NotFound extends HttpError {
-    constructor(cors: CorsProvider, details?: string) {
-        super(cors, StatusCodes.NOT_FOUND, details);
+    constructor(worker: CorsWorker, details?: string) {
+        super(worker, StatusCodes.NOT_FOUND, details);
     }
 }
 
 export class MethodNotAllowed extends HttpError {
-    constructor(cors: CorsProvider, method: string) {
-        super(cors, StatusCodes.METHOD_NOT_ALLOWED, `${method} method not allowed.`);
-        this.setHeader("Allow", this.cors.getAllowMethods());
+    constructor(worker: CorsWorker, method: string) {
+        super(worker, StatusCodes.METHOD_NOT_ALLOWED, `${method} method not allowed.`);
+        this.setHeader("Allow", this.worker.getAllowMethods());
     }
 
     public override get json(): ErrorJson & { allowed: Method[] } {
         return {
             ...super.json,
-            allowed: this.cors.getAllowMethods(),
+            allowed: this.worker.getAllowMethods(),
         };
     }
 }
 
 export class InternalServerError extends HttpError {
-    constructor(cors: CorsProvider, details?: string) {
-        super(cors, StatusCodes.INTERNAL_SERVER_ERROR, details);
+    constructor(worker: CorsWorker, details?: string) {
+        super(worker, StatusCodes.INTERNAL_SERVER_ERROR, details);
     }
 }
 
 export class NotImplemented extends HttpError {
-    constructor(cors: CorsProvider, details?: string) {
-        super(cors, StatusCodes.NOT_IMPLEMENTED, details);
+    constructor(worker: CorsWorker, details?: string) {
+        super(worker, StatusCodes.NOT_IMPLEMENTED, details);
     }
 }
 
 export class MethodNotImplemented extends NotImplemented {
-    constructor(cors: CorsProvider, method: Method) {
-        super(cors, `${method} method not implemented.`);
+    constructor(worker: CorsWorker, method: Method) {
+        super(worker, `${method} method not implemented.`);
     }
 }
 
 export class ServiceUnavailable extends HttpError {
-    constructor(cors: CorsProvider, details?: string) {
-        super(cors, StatusCodes.SERVICE_UNAVAILABLE, details);
+    constructor(worker: CorsWorker, details?: string) {
+        super(worker, StatusCodes.SERVICE_UNAVAILABLE, details);
     }
 }

@@ -16,8 +16,8 @@
 
 import { CacheWorker } from "./cache-worker";
 import { isMethod, Method } from "./common";
-import { CorsProvider } from "./cors";
 import {
+    CorsWorker,
     Head,
     InternalServerError,
     MethodNotAllowed,
@@ -84,10 +84,10 @@ export abstract class BasicWorker extends CacheWorker {
 
     protected async getResponse<
         T extends WorkerResponse,
-        Ctor extends new (cors: CorsProvider, ...args: any[]) => T
+        Ctor extends new (worker: CorsWorker, ...args: any[]) => T
     >(
         ResponseClass: Ctor,
-        ...args: ConstructorParameters<Ctor> extends [CorsProvider, ...infer R] ? R : never
+        ...args: ConstructorParameters<Ctor> extends [CorsWorker, ...infer R] ? R : never
     ): Promise<Response> {
         const response = new ResponseClass(this, ...args).createResponse();
         this.setCachedResponse(response);

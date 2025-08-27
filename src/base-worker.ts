@@ -55,17 +55,17 @@ export abstract class BaseWorker implements Worker {
     ) {}
 
     /** The Request object associated with this worker invocation */
-    protected get request(): Request {
+    public get request(): Request {
         return this._request;
     }
 
     /** Environment bindings (e.g., KV, secrets, or other globals) */
-    protected get env(): Env {
+    public get env(): Env {
         return this._env;
     }
 
     /** Optional execution context for background tasks or `waitUntil` */
-    protected get ctx(): ExecutionContext {
+    public get ctx(): ExecutionContext {
         return this._ctx;
     }
 
