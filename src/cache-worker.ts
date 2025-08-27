@@ -14,25 +14,32 @@
  * limitations under the License.
  */
 
-import { HttpHeader, Method, normalizeUrl } from "./common";
+import { Method, normalizeUrl } from "./common";
 import { addCorsHeaders, Cors } from "./cors";
 import { CorsWorker } from "./cors-worker";
 
 /**
- * Abstract base class for Workers that support caching of GET responses.
+ * Abstract worker class that adds caching support for GET requests.
  *
- * Features:
- * - URL-based caching using `Request.url`.
- * - Removes per-request CORS headers before storing in cache.
- * - Dynamically applies correct CORS headers when retrieving cached responses.
- * - Only caches successful GET requests.
+ * Behavior:
+ * - Caches successful GET responses (`response.ok === true`) in the selected cache.
+ * - Strips CORS headers from cached responses; all other origin headers are preserved.
+ * - Dynamically adds CORS headers to cached responses when returned to the client.
+ *
+ * Subclasses should override `getCacheKey()` to customize cache key generation if needed.
  */
 export abstract class CacheWorker extends CorsWorker {
     /**
      * Returns the cache key for the current request.
-     * By default, this is the normalized request URL.
      *
-     * @returns A URL or RequestInfo to use as the cache key
+     * Behavior:
+     * - By default, returns the normalized request URL.
+     * - Query parameters are normalized so that the order does not affect the cache key.
+     *   For example, `?a=1&b=2` and `?b=2&a=1` produce the same cache key.
+     *
+     * Subclasses may override this method to implement custom cache key strategies.
+     *
+     * @returns {URL | RequestInfo} The URL or RequestInfo used as the cache key.
      */
     protected getCacheKey(): URL | RequestInfo {
         return normalizeUrl(this.request.url);
@@ -42,22 +49,21 @@ export abstract class CacheWorker extends CorsWorker {
      * Retrieves a cached Response for the current request, if one exists.
      *
      * Behavior:
-     * - Only GET requests are cached.
-     * - If a cached response is found, CORS headers are applied dynamically
-     *   using `withCorsHeaders` before returning.
-     * - Returns undefined if no cached response is found or if request is not GET.
+     * - Only GET requests are considered.
+     * - Returns a new Response with dynamic CORS headers applied via `addCacheHeaders`.
+     * - Returns `undefined` if no cached response is found.
+     * - Cloudflare dynamic headers (`CF-Cache-Status`, `Age`, `Connection`, etc.) will
+     *   always be present on the returned response, even though they are not stored in the cache.
      *
-     * @param cacheName Optional name of the cache to use; defaults to `caches.default`.
-     * @returns A Promise resolving to a Response with correct CORS headers, or undefined.
-     *
-     * @see {@link getCacheKey}
+     * @param {string} [cacheName] Optional named cache; defaults to `caches.default`.
+     * @returns {Promise<Response | undefined>} A Response with CORS headers, or undefined.
      * @see {@link setCachedResponse}
+     * @see {@link getCacheKey}
      */
     protected async getCachedResponse(cacheName?: string): Promise<Response | undefined> {
         if (this.request.method !== Method.GET) return;
 
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
-
         const response = await cache.match(this.getCacheKey());
         return response ? this.addCacheHeaders(response) : undefined;
     }
@@ -67,14 +73,14 @@ export abstract class CacheWorker extends CorsWorker {
      *
      * Behavior:
      * - Only caches successful GET responses (`response.ok === true`).
-     * - Removes all CORS headers before storing using `withoutCorsHeaders`.
-     * - Uses `ctx.waitUntil` to store asynchronously without blocking the worker.
+     * - Strips headers via `removeCacheHeaders` before storing.
+     * - Uses `ctx.waitUntil` to perform caching asynchronously without blocking the response.
+     * - All other origin headers (e.g., Cache-Control, Expires) are preserved.
      *
-     * @param response The Response to cache
-     * @param cacheName Optional name of the cache to use; defaults to `caches.default`.
-     *
-     * @see {@link getCacheKey}
+     * @param {Response} response The Response to cache.
+     * @param {string} [cacheName] Optional named cache; defaults to `caches.default`.
      * @see {@link getCachedResponse}
+     * @see {@link getCacheKey}
      */
     protected async setCachedResponse(response: Response, cacheName?: string): Promise<void> {
         if (!response.ok) return;
@@ -86,10 +92,16 @@ export abstract class CacheWorker extends CorsWorker {
         );
     }
 
-    protected addCacheHeaders(cached: Response): Response {
+    /**
+     * Adds headers to a cached response.
+     *
+     * @param {Response} cached The cached Response.
+     * @returns {Response} A new Response with dynamic CORS headers applied.
+     * @see {@link removeCacheHeaders}
+     */
+    private addCacheHeaders(cached: Response): Response {
         const headers = new Headers(cached.headers);
         addCorsHeaders(this, headers);
-        headers.set(HttpHeader.X_CACHE_STATUS, HttpHeader.CACHE_HIT);
 
         return new Response(cached.body, {
             status: cached.status,
@@ -98,7 +110,14 @@ export abstract class CacheWorker extends CorsWorker {
         });
     }
 
-    protected removeCacheHeaders(response: Response): Response {
+    /**
+     * Removes headers that should not be stored in the cache (currently only CORS headers).
+     *
+     * @param {Response} response The Response to clean before caching.
+     * @returns {Response} A new Response with excluded headers removed.
+     * @see {@link addCacheHeaders}
+     */
+    private removeCacheHeaders(response: Response): Response {
         const excludeSet = new Set(this.excludeCacheHeaders().map((h) => h.toLowerCase()));
         const headers = new Headers();
 
@@ -115,6 +134,13 @@ export abstract class CacheWorker extends CorsWorker {
         });
     }
 
+    /**
+     * Returns the list of headers to exclude from the cached response.
+     * By default, excludes only dynamic CORS headers.
+     *
+     * @returns {string[]} Array of header names to exclude.
+     * @see {@link removeCacheHeaders}
+     */
     protected excludeCacheHeaders(): string[] {
         return [
             Cors.ALLOW_ORIGIN,
@@ -122,12 +148,6 @@ export abstract class CacheWorker extends CorsWorker {
             Cors.EXPOSE_HEADERS,
             Cors.ALLOW_METHODS,
             Cors.MAX_AGE,
-            HttpHeader.AGE,
-            HttpHeader.DATE,
-            HttpHeader.EXPIRES,
-            HttpHeader.CONNECTION,
-            HttpHeader.TRANSFER_ENCODING,
-            HttpHeader.CF_CACHE_STATUS,
         ];
     }
 }

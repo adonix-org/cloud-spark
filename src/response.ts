@@ -82,7 +82,6 @@ abstract class CacheResponse extends CorsResponse {
     }
 
     protected addCacheHeaders(): void {
-        this.headers.set(HttpHeader.X_CACHE_STATUS, HttpHeader.CACHE_MISS);
         if (this.cache) {
             this.headers.set(HttpHeader.CACHE_CONTROL, CacheControl.stringify(this.cache));
         }
