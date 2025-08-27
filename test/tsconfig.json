@@ -1,16 +1,3 @@
 {
-    "compilerOptions": {
-        "target": "es2021",
-        "lib": ["es2021", "webworker"],
-        "module": "es2022",
-        "moduleResolution": "bundler",
-        "strict": true,
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "noEmit": true,
-        "skipLibCheck": true,
-        "types": ["@cloudflare/workers-types"]
-    },
-    "include": ["./**/*.ts", "../worker-configuration.d.ts"],
-    "exclude": ["node_modules"]
+    "extends": "../tsconfig.json",
 }

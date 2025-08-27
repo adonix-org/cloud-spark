@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-export default {
-    async fetch(
-        _request: Request,
-        _env: Env,
-        _ctx: ExecutionContext
-    ): Promise<Response> {
-        return new Response("Hello World!");
+import type { ExecutionContext } from "@cloudflare/workers-types";
+
+export const env = {
+    MY_KV: {
+        get: async (key: string) => `mock-value-for-${key}`,
+        put: async (_key: string, _value: string) => {},
     },
+    MY_SECRET: "mock-secret",
+};
+
+export const ctx: ExecutionContext = {
+    waitUntil: () => {},
+    passThroughOnException: () => {},
+    props: () => {},
 };
