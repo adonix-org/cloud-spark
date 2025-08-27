@@ -60,6 +60,19 @@ describe("cors headers allow any origin", () => {
             ["access-control-max-age", "604800"],
         ]);
     });
+
+    it("cors delete headers", () => {
+        headers = new Headers([
+            ["access-control-allow-credentials", "true"],
+            ["access-control-allow-headers", "Content-Type"],
+            ["access-control-allow-methods", "GET, OPTIONS, HEAD"],
+            ["access-control-allow-origin", "https://localhost"],
+            ["access-control-max-age", "604800"],
+            ["vary", "Origin"],
+        ]);
+        addCorsHeaders(null, worker, headers);
+        expect([...headers.entries()]).toStrictEqual([["vary", "Origin"]]);
+    });
 });
 
 describe("cors headers allow specific origin", () => {

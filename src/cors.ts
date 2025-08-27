@@ -96,6 +96,7 @@ function deleteCorsHeaders(headers: Headers) {
     headers.delete(Cors.ALLOW_ORIGIN);
     headers.delete(Cors.ALLOW_CREDENTIALS);
     headers.delete(Cors.EXPOSE_HEADERS);
+    headers.delete(Cors.ALLOW_HEADERS);
     headers.delete(Cors.ALLOW_METHODS);
     headers.delete(Cors.MAX_AGE);
 }
