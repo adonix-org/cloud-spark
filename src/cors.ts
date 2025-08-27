@@ -43,12 +43,12 @@ export interface CorsProvider {
  * Constants for common CORS headers.
  */
 export namespace Cors {
+    export const MAX_AGE = "Access-Control-Max-Age";
     export const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    export const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-    export const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
     export const ALLOW_HEADERS = "Access-Control-Allow-Headers";
     export const ALLOW_METHODS = "Access-Control-Allow-Methods";
-    export const MAX_AGE = "Access-Control-Max-Age";
+    export const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+    export const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
     export const ALLOW_ALL_ORIGINS = "*";
 }
 
@@ -80,10 +80,10 @@ export function addCorsHeaders(origin: string | null, cors: CorsProvider, header
     }
 
     // Optional headers always applied if CORS.
-    mergeHeader(headers, Cors.EXPOSE_HEADERS, cors.getExposeHeaders());
-    setHeader(headers, Cors.ALLOW_HEADERS, cors.getAllowHeaders());
-    setHeader(headers, Cors.ALLOW_METHODS, cors.getAllowMethods());
     setHeader(headers, Cors.MAX_AGE, String(cors.getMaxAge()));
+    setHeader(headers, Cors.ALLOW_METHODS, cors.getAllowMethods());
+    setHeader(headers, Cors.ALLOW_HEADERS, cors.getAllowHeaders());
+    mergeHeader(headers, Cors.EXPOSE_HEADERS, cors.getExposeHeaders());
 }
 
 /**
@@ -93,10 +93,10 @@ export function addCorsHeaders(origin: string | null, cors: CorsProvider, header
  * @param headers The Headers object to clean
  */
 function deleteCorsHeaders(headers: Headers) {
+    headers.delete(Cors.MAX_AGE);
     headers.delete(Cors.ALLOW_ORIGIN);
-    headers.delete(Cors.ALLOW_CREDENTIALS);
-    headers.delete(Cors.EXPOSE_HEADERS);
     headers.delete(Cors.ALLOW_HEADERS);
     headers.delete(Cors.ALLOW_METHODS);
-    headers.delete(Cors.MAX_AGE);
+    headers.delete(Cors.EXPOSE_HEADERS);
+    headers.delete(Cors.ALLOW_CREDENTIALS);
 }

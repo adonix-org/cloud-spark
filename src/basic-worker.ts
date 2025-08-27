@@ -44,10 +44,10 @@ export abstract class BasicWorker extends CacheWorker {
         const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),
             PUT: () => this.put(),
+            HEAD: () => this.head(),
             POST: () => this.post(),
             PATCH: () => this.patch(),
             DELETE: () => this.delete(),
-            HEAD: () => this.head(),
             OPTIONS: () => this.options(),
         };
         return (handler[method] ?? (() => this.getResponse(MethodNotAllowed)))();

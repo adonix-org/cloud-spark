@@ -43,17 +43,17 @@ export { StatusCodes } from "http-status-codes";
  */
 export namespace HttpHeader {
     export const VARY = "Vary";
+    export const ALLOW = "Allow";
     export const CONTENT_TYPE = "Content-Type";
     export const CACHE_CONTROL = "Cache-Control";
-    export const ALLOW = "Allow";
 
     // Security Headers
-    export const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options"; // usually "nosniff"
     export const X_FRAME_OPTIONS = "X-Frame-Options"; // e.g. "DENY" or "SAMEORIGIN"
-    export const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security"; // e.g. "max-age=63072000; includeSubDomains; preload"
-    export const CONTENT_SECURITY_POLICY = "Content-Security-Policy"; // fine-grained script/style/image restrictions
+    export const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options"; // usually "nosniff"
     export const REFERRER_POLICY = "Referrer-Policy"; // e.g. "no-referrer", "strict-origin-when-cross-origin"
     export const PERMISSIONS_POLICY = "Permissions-Policy"; // formerly Feature-Policy, controls APIs like geolocation/camera
+    export const CONTENT_SECURITY_POLICY = "Content-Security-Policy"; // fine-grained script/style/image restrictions
+    export const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security"; // e.g. "max-age=63072000; includeSubDomains; preload"
 
     // Values
     export const NOSNIFF = "nosniff";
@@ -78,12 +78,12 @@ export const Time = {
  */
 export enum Method {
     GET = "GET",
-    HEAD = "HEAD",
-    OPTIONS = "OPTIONS",
-    DELETE = "DELETE",
-    PATCH = "PATCH",
-    POST = "POST",
     PUT = "PUT",
+    HEAD = "HEAD",
+    POST = "POST",
+    PATCH = "PATCH",
+    DELETE = "DELETE",
+    OPTIONS = "OPTIONS",
 }
 const METHOD_SET: Set<string> = new Set(Object.values(Method));
 
@@ -168,18 +168,18 @@ export enum MediaType {
  * XML, CSV, Markdown, and others.
  */
 const ADD_CHARSET: Set<MediaType> = new Set([
-    MediaType.PLAIN_TEXT,
-    MediaType.HTML,
     MediaType.CSS,
     MediaType.CSV,
-    MediaType.MARKDOWN,
     MediaType.XML,
-    MediaType.JSON,
-    MediaType.XML_APP,
-    MediaType.FORM_URLENCODED,
-    MediaType.NDJSON,
-    MediaType.RICH_TEXT,
     MediaType.SVG,
+    MediaType.HTML,
+    MediaType.JSON,
+    MediaType.NDJSON,
+    MediaType.XML_APP,
+    MediaType.MARKDOWN,
+    MediaType.RICH_TEXT,
+    MediaType.PLAIN_TEXT,
+    MediaType.FORM_URLENCODED,
 ]);
 
 /**
