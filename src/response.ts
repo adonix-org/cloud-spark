@@ -195,13 +195,7 @@ export class Options extends SuccessResponse {
 
 export class HttpError extends JsonResponse {
     constructor(worker: CorsWorker, status: StatusCodes, protected readonly details?: string) {
-        const cache: CacheControl = {
-            "no-cache": true,
-            "no-store": true,
-            "must-revalidate": true,
-            "max-age": 0,
-        };
-        super(worker, undefined, cache, status);
+        super(worker, undefined, CacheControl.DISABLE, status);
     }
 
     public get json(): ErrorJson {

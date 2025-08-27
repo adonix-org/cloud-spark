@@ -23,6 +23,14 @@ export type CacheControl = CacheLib.CacheControl;
 export const CacheControl = {
     parse: CacheLib.parse,
     stringify: CacheLib.stringify,
+
+    /** A Cache-Control directive that disables all caching. */
+    DISABLE: Object.freeze({
+        "no-cache": true,
+        "no-store": true,
+        "must-revalidate": true,
+        "max-age": 0,
+    }) satisfies CacheControl,
 };
 
 /**
