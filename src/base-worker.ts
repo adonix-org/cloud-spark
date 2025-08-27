@@ -37,9 +37,8 @@ interface FetchHandler<E = Env> extends ExportedHandler<E> {
 }
 
 /**
- * Provides the foundational structure for handling requests, environment bindings,
- * and the worker execution context. Subclasses are expected to implement the
- * `fetch` method to handle the request and return a Response.
+ * Provides the foundational structure for handling requests,
+ * environment bindings, and the worker execution context.
  *
  * Features:
  * - Holds the current `Request` object (`request` getter).
@@ -82,9 +81,8 @@ export abstract class BaseWorker implements Worker {
 
     /**
      * Process the request and produce a Response.
-     * Subclasses must implement this method.
      *
-     * @returns A Promise resolving to the Response for the request
+     * @returns A {@link Response} promise for the {@link Request}.
      */
     public abstract fetch(): Promise<Response>;
 
