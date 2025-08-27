@@ -15,18 +15,15 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { env, ctx } from "./mock";
-import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, TestCorsWorker, VALID_ORIGIN } from "./constants";
+import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN } from "./constants";
 import {
     getContentType,
     getOrigin,
     isMethod,
     MediaType,
     mergeHeader,
-    Method,
     normalizeUrl,
     setHeader,
-    Time,
 } from "../src/common";
 
 describe("is method function", () => {

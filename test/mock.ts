@@ -15,7 +15,6 @@
  */
 
 import type { ExecutionContext } from "@cloudflare/workers-types";
-import { Method } from "../src/common";
 
 export const env = {
     MY_KV: {
@@ -49,4 +48,3 @@ const caches = {
 } as const;
 
 (globalThis as any).caches = caches;
-
