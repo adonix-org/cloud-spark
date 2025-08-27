@@ -16,8 +16,8 @@
 
 export * from "./cors";
 export * from "./routes";
-export * from "./worker";
 export * from "./common";
+export * from "./worker";
 export * from "./response";
 export * from "./basic-worker";
 export * from "./route-worker";
