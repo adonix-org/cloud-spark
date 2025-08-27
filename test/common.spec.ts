@@ -17,7 +17,15 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { env, ctx } from "./mock";
 import { GET_REQUEST, TestCorsWorker } from "./constants";
-import { getContentType, isMethod, MediaType, Method, setHeader, Time } from "../src/common";
+import {
+    getContentType,
+    isMethod,
+    MediaType,
+    mergeHeader,
+    Method,
+    setHeader,
+    Time,
+} from "../src/common";
 
 describe("is method function", () => {
     it("is method", () => {
@@ -141,6 +149,108 @@ describe("set exising headers", () => {
 
     it("add array existing header duplicates (no-merge)", () => {
         setHeader(headers, "test-key", ["4", "3", "3", "2", "1"]);
+        expect([...headers.entries()]).toStrictEqual([
+            ["safe-key", "2"],
+            ["test-key", "1, 2, 3, 4"],
+        ]);
+    });
+});
+
+describe("merge new headers", () => {
+    let headers: Headers;
+
+    beforeEach(() => {
+        headers = new Headers();
+    });
+
+    it("add string", () => {
+        mergeHeader(headers, "test-key", "1");
+        expect([...headers.entries()]).toStrictEqual([["test-key", "1"]]);
+    });
+
+    it("add empty string", () => {
+        mergeHeader(headers, "test-key", "");
+        expect([...headers.entries()]).toStrictEqual([]);
+    });
+
+    it("add array", () => {
+        mergeHeader(headers, "test-key", ["1", "2", "3"]);
+        expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3"]]);
+    });
+
+    it("add empty array", () => {
+        mergeHeader(headers, "test-key", []);
+        expect([...headers.entries()]).toStrictEqual([]);
+    });
+
+    it("add array with duplicates", () => {
+        mergeHeader(headers, "test-key", ["3", "2", "1", "4", "1", "2", "3"]);
+        expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3, 4"]]);
+    });
+
+    it("add array including white space", () => {
+        mergeHeader(headers, "test-key", ["   ", "3", "2", "1", "4", "3", " "]);
+        expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3, 4"]]);
+    });
+
+    it("add array only white space", () => {
+        mergeHeader(headers, "test-key", [" ", "  ", "   "]);
+        expect([...headers.entries()]).toStrictEqual([]);
+    });
+});
+
+describe("merge exising headers", () => {
+    let headers: Headers;
+
+    beforeEach(() => {
+        headers = new Headers([
+            ["test-key", "1"],
+            ["safe-key", "2"],
+        ]);
+    });
+
+    it("merge string", () => {
+        mergeHeader(headers, "test-key", "2");
+        expect([...headers.entries()]).toStrictEqual([
+            ["safe-key", "2"],
+            ["test-key", "1, 2"],
+        ]);
+    });
+
+    it("merge empty string", () => {
+        mergeHeader(headers, "test-key", "");
+        expect([...headers.entries()]).toStrictEqual([
+            ["safe-key", "2"],
+            ["test-key", "1"],
+        ]);
+    });
+
+    it("merge empty array", () => {
+        mergeHeader(headers, "test-key", []);
+        expect([...headers.entries()]).toStrictEqual([
+            ["safe-key", "2"],
+            ["test-key", "1"],
+        ]);
+    });
+
+    it("merge array existing header", () => {
+        mergeHeader(headers, "test-key", ["2", "3"]);
+        expect([...headers.entries()]).toStrictEqual([
+            ["safe-key", "2"],
+            ["test-key", "1, 2, 3"],
+        ]);
+    });
+
+    it("merge array existing header no duplicates", () => {
+        mergeHeader(headers, "test-key", ["4", "3", "2"]);
+        expect([...headers.entries()]).toStrictEqual([
+            ["safe-key", "2"],
+            ["test-key", "1, 2, 3, 4"],
+        ]);
+    });
+
+    it("merge array existing header duplicates", () => {
+        mergeHeader(headers, "test-key", ["4", "3", "3", "2", "1"]);
         expect([...headers.entries()]).toStrictEqual([
             ["safe-key", "2"],
             ["test-key", "1, 2, 3, 4"],
