@@ -15,6 +15,21 @@
  */
 
 /**
+ * Represents the constructor of a Worker or a subclass of Worker.
+ *
+ * @template T - The specific type of Worker being constructed. Defaults to `Worker`.
+ * @param req - The `Request` object to be handled by the worker instance.
+ * @param env - The environment bindings available to the worker.
+ * @param ctx - The `ExecutionContext` for the worker invocation.
+ * @returns An instance of the worker type `T`.
+ */
+export type WorkerConstructor<T extends Worker = Worker> = new (
+    req: Request,
+    env: Env,
+    ctx: ExecutionContext
+) => T;
+
+/**
  * Minimal interface representing a Worker.
  *
  * Any class implementing this interface must provide a `fetch` method

@@ -35,7 +35,7 @@ export abstract class RoutedWorker extends BasicWorker {
 
     protected async dispatch(request: Request = this.request): Promise<Response> {
         const route = this.routes.get(request.method as Method, request.url);
-        if (!route) return super.dispatch(request);
+        if (!route) return super.dispatch();
 
         const match = new URL(request.url).pathname.match(route.pattern) ?? [];
         return route.callback.call(this, ...match);

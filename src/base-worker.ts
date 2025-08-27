@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Worker } from "./worker";
+import { Worker, WorkerConstructor } from "./worker";
 
 /**
  * A type-safe Cloudflare Worker handler where `fetch` is required.
@@ -50,8 +50,8 @@ interface FetchHandler<E = Env> extends ExportedHandler<E> {
 export abstract class BaseWorker implements Worker {
     constructor(
         private readonly _request: Request,
-        private readonly _env: Env = {},
-        private readonly _ctx?: ExecutionContext
+        private readonly _env: Env,
+        private readonly _ctx: ExecutionContext
     ) {}
 
     /** The Request object associated with this worker invocation */
@@ -65,8 +65,19 @@ export abstract class BaseWorker implements Worker {
     }
 
     /** Optional execution context for background tasks or `waitUntil` */
-    protected get ctx(): ExecutionContext | undefined {
+    protected get ctx(): ExecutionContext {
         return this._ctx;
+    }
+
+    /**
+     * Creates a new instance of the current Worker subclass.
+     *
+     * @param request - The request to pass to the new worker instance.
+     * @returns A new worker instance of the same subclass as `this`.
+     */
+    protected createWorker(request: Request): this {
+        const ctor = this.constructor as WorkerConstructor<this>;
+        return new ctor(request, this.env, this.ctx);
     }
 
     /**
@@ -87,7 +98,7 @@ export abstract class BaseWorker implements Worker {
      * export default MyWorker.ignite();
      * ```
      */
-    public static ignite<T extends new (...args: any) => BaseWorker>(this: T): FetchHandler {
+    public static ignite<T extends WorkerConstructor>(this: T): FetchHandler {
         return {
             fetch: (req: Request, env: Env, ctx: ExecutionContext) =>
                 new this(req, env, ctx).fetch(),

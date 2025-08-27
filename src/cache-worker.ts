@@ -87,7 +87,7 @@ export abstract class CacheWorker extends CorsWorker {
         if (this.request.method !== Method.GET) return;
 
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
-        this.ctx?.waitUntil(
+        this.ctx.waitUntil(
             cache.put(this.getCacheKey(), this.removeCacheHeaders(response.clone()))
         );
     }

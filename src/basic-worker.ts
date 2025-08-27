@@ -39,8 +39,8 @@ export abstract class BasicWorker extends CacheWorker {
         }
     }
 
-    protected async dispatch(request: Request = this.request): Promise<Response> {
-        const method = request.method as Method;
+    protected async dispatch(): Promise<Response> {
+        const method = this.request.method as Method;
         const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),
             PUT: () => this.put(),
@@ -78,12 +78,8 @@ export abstract class BasicWorker extends CacheWorker {
     }
 
     protected async head(): Promise<Response> {
-        // Dispatch a new GET request created from the HEAD request
-        // and return the GET response with the body removed.
-        return this.getResponse(
-            Head,
-            await this.dispatch(new Request(this.request, { method: Method.GET }))
-        );
+        const worker = this.createWorker(new Request(this.request, { method: "GET" }));
+        return this.getResponse(Head, await worker.fetch());
     }
 
     protected async getResponse<
