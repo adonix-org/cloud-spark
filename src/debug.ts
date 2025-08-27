@@ -90,7 +90,7 @@ class DebugWorker extends RoutedWorker {
     }
 
     public override getAllowMethods(): Method[] {
-        return [...super.getAllowMethods(), Method.POST];
+        return [...super.getAllowMethods(), Method.POST, Method.DELETE];
     }
 
     protected override async get(): Promise<Response> {
@@ -113,7 +113,7 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.POST;
+const method: Method = Method.DELETE;
 
 const request = new Request("https://www.adonix.org/api/v1/seasons/last", {
     method: method,

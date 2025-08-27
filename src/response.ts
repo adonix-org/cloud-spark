@@ -254,6 +254,12 @@ export class NotImplemented extends HttpError {
     }
 }
 
+export class MethodNotImplemented extends NotImplemented {
+    constructor(cors: CorsProvider, method: Method) {
+        super(cors, `${method} method not implemented.`);
+    }
+}
+
 export class ServiceUnavailable extends HttpError {
     constructor(cors: CorsProvider, details?: string) {
         super(cors, StatusCodes.SERVICE_UNAVAILABLE, details);

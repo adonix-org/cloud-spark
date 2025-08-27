@@ -21,7 +21,7 @@ import {
     Head,
     InternalServerError,
     MethodNotAllowed,
-    NotImplemented,
+    MethodNotImplemented,
     Options,
     WorkerResponse,
 } from "./response";
@@ -54,23 +54,23 @@ export abstract class BasicWorker extends CacheWorker {
     }
 
     protected async get(): Promise<Response> {
-        return this.getResponse(NotImplemented);
+        return this.getResponse(MethodNotImplemented, Method.GET);
     }
 
     protected async put(): Promise<Response> {
-        return this.getResponse(NotImplemented);
+        return this.getResponse(MethodNotImplemented, Method.PUT);
     }
 
     protected async post(): Promise<Response> {
-        return this.getResponse(NotImplemented);
+        return this.getResponse(MethodNotImplemented, Method.POST);
     }
 
     protected async patch(): Promise<Response> {
-        return this.getResponse(NotImplemented);
+        return this.getResponse(MethodNotImplemented, Method.PATCH);
     }
 
     protected async delete(): Promise<Response> {
-        return this.getResponse(NotImplemented);
+        return this.getResponse(MethodNotImplemented, Method.DELETE);
     }
 
     protected async options(): Promise<Response> {
