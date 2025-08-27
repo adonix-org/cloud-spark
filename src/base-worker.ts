@@ -30,7 +30,7 @@ interface FetchHandler<E = Env> extends ExportedHandler<E> {
      *
      * @param request - The incoming `Request` object.
      * @param env - Environment bindings (e.g., KV namespaces, secrets, Durable Objects).
-     * @param ctx - Optional execution context for background tasks (`waitUntil`).
+     * @param ctx - Execution context for background tasks (`waitUntil`).
      * @returns A `Promise` that resolves to the response.
      */
     fetch: (request: Request, env: E, ctx: ExecutionContext) => Promise<Response>;
@@ -44,7 +44,7 @@ interface FetchHandler<E = Env> extends ExportedHandler<E> {
  * Features:
  * - Holds the current `Request` object (`request` getter).
  * - Provides access to environment bindings (`env` getter).
- * - Provides access to the worker execution context (`ctx` getter), if available.
+ * - Provides access to the worker execution context (`ctx` getter).
  * - Subclasses must implement `fetch()` to process the request.
  */
 export abstract class BaseWorker implements Worker {
@@ -64,7 +64,7 @@ export abstract class BaseWorker implements Worker {
         return this._env;
     }
 
-    /** Optional execution context for background tasks or `waitUntil` */
+    /** Execution context for background tasks or `waitUntil` */
     public get ctx(): ExecutionContext {
         return this._ctx;
     }
