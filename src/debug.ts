@@ -16,7 +16,7 @@
 
 import { Method } from "./common";
 import { JsonResponse, TextResponse } from "./response";
-import { RoutedWorker } from "./routed-worker";
+import { RouteWorker } from "./route-worker";
 
 const mockCtx: ExecutionContext = {
     waitUntil: () => {},
@@ -61,7 +61,7 @@ interface Pizza {
     toppings: Toppings[];
 }
 
-class DebugWorker extends RoutedWorker {
+class DebugWorker extends RouteWorker {
     private static PLAYLIST = "^/api/v1/seasons/(\\d{4})$";
     private static SEASONS = "^/api/v1/seasons$";
     private static LAST = "^/api/v1/seasons/last$";
