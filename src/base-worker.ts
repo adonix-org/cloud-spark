@@ -89,7 +89,7 @@ export abstract class BaseWorker implements Worker {
     public abstract fetch(): Promise<Response>;
 
     /**
-     * Ignite your `Worker` implementation into a Cloudflare-compatible handler.
+     * **Ignite** your `Worker` implementation into a Cloudflare-compatible handler.
      *
      * @returns A `FetchHandler` that launches a new worker instance for each request.
      *
@@ -98,7 +98,7 @@ export abstract class BaseWorker implements Worker {
      * export default MyWorker.ignite();
      * ```
      */
-    public static ignite<T extends WorkerConstructor>(this: T): FetchHandler {
+    public static ignite<W extends Worker>(this: WorkerConstructor<W>): FetchHandler {
         return {
             fetch: (req: Request, env: Env, ctx: ExecutionContext) =>
                 new this(req, env, ctx).fetch(),

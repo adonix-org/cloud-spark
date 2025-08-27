@@ -127,8 +127,9 @@ const request = new Request("https://www.adonix.org/api/v1/seasons/last", {
     }),*/
 });
 
-const worker = new DebugWorker(request, mockEnv, mockCtx);
-const response = await worker.fetch();
+const worker = DebugWorker.ignite();
+// const worker = new DebugWorker(request, mockEnv, mockCtx);
+const response = await worker.fetch(request, mockEnv, mockCtx);
 
 // const response = await DebugWorker.ignite().fetch(request, mockEnv, mockCtx);
 
