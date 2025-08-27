@@ -92,7 +92,6 @@ describe("cors headers allow specific origin", () => {
             ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "https://localhost"],
             ["access-control-max-age", "604800"],
-            ["vary", "Origin"],
         ]);
     });
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HttpHeader, mergeHeader, Method, setHeader } from "./common";
+import { mergeHeader, Method, setHeader } from "./common";
 
 /**
  * Provides information about the CORS policy for the current request.
@@ -76,7 +76,6 @@ export function addCorsHeaders(origin: string | null, cors: CorsProvider, header
     } else if (cors.getAllowOrigins().includes(origin)) {
         setHeader(headers, Cors.ALLOW_ORIGIN, origin);
         setHeader(headers, Cors.ALLOW_CREDENTIALS, "true");
-        mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
     }
 
     // Optional headers always applied if CORS.
