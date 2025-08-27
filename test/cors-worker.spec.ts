@@ -19,7 +19,7 @@ import { env, ctx } from "./mock";
 import { GET_REQUEST, TestCorsWorker } from "./constants";
 import { Method, Time } from "../src/common";
 
-describe("CorsWorker defaults", () => {
+describe("cors worker defaults", () => {
     let worker: TestCorsWorker;
 
     beforeEach(() => {

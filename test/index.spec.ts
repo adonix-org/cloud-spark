@@ -25,7 +25,7 @@ class TestWorker extends BasicWorker {
     }
 }
 
-describe("Hello World worker", () => {
+describe("hello world worker", () => {
     const worker = TestWorker.ignite();
     it("responds with Hello World!", async () => {
         const response = await worker.fetch(GET_REQUEST, env, ctx);

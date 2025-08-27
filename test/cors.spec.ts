@@ -25,7 +25,6 @@ import {
 } from "./constants";
 import { addCorsHeaders } from "../src/cors";
 import { getOrigin } from "../src/common";
-import { BasicWorker } from "../src/basic-worker";
 import { CorsWorker } from "../src/cors-worker";
 
 describe("cors headers allow any origin", () => {
