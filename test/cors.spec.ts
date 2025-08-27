@@ -19,8 +19,8 @@ import { env, ctx } from "./mock";
 import {
     GET_REQUEST_WITH_ORIGIN,
     INVALID_ORIGIN,
-    TestCorsWorker,
-    TestCorsWorkerOrigin,
+    DefaultCorsWorker,
+    AllowOriginWorker,
     VALID_ORIGIN,
 } from "./constants";
 import { addCorsHeaders } from "../src/cors";
@@ -28,11 +28,11 @@ import { getOrigin } from "../src/common";
 import { CorsWorker } from "../src/cors-worker";
 
 describe("cors headers allow any origin", () => {
-    let worker: TestCorsWorker;
+    let worker: DefaultCorsWorker;
     let headers: Headers;
 
     beforeEach(() => {
-        worker = new TestCorsWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
+        worker = new DefaultCorsWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
         headers = new Headers();
     });
 
@@ -80,7 +80,7 @@ describe("cors headers allow specific origin", () => {
     let headers: Headers;
 
     beforeEach(() => {
-        worker = new TestCorsWorkerOrigin(GET_REQUEST_WITH_ORIGIN, env, ctx);
+        worker = new AllowOriginWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
         headers = new Headers();
     });
 

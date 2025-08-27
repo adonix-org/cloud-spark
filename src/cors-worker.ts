@@ -40,7 +40,7 @@ export abstract class CorsWorker extends BaseWorker implements CorsProvider {
     }
 
     public getAllowMethods(): Method[] {
-        return [Method.GET, Method.OPTIONS, Method.HEAD];
+        return [Method.GET, Method.HEAD, Method.OPTIONS];
     }
 
     public getAllowHeaders(): string[] {

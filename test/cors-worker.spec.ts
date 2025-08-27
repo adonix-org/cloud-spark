@@ -16,14 +16,20 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { env, ctx } from "./mock";
-import { GET_REQUEST, TestCorsWorker } from "./constants";
+import {
+    GET_REQUEST,
+    DefaultCorsWorker,
+    AllowOriginWorker,
+    VALID_ORIGIN,
+    EmptyCorsWorker,
+} from "./constants";
 import { Method, Time } from "../src/common";
 
 describe("cors worker defaults", () => {
-    let worker: TestCorsWorker;
+    let worker: DefaultCorsWorker;
 
     beforeEach(() => {
-        worker = new TestCorsWorker(GET_REQUEST, env, ctx);
+        worker = new DefaultCorsWorker(GET_REQUEST, env, ctx);
     });
 
     it("returns ['*'] for allow origins", () => {
@@ -35,7 +41,7 @@ describe("cors worker defaults", () => {
     });
 
     it("returns correct default allowed methods", () => {
-        expect(worker.getAllowMethods()).toStrictEqual([Method.GET, Method.OPTIONS, Method.HEAD]);
+        expect(worker.getAllowMethods()).toStrictEqual([Method.GET, Method.HEAD, Method.OPTIONS]);
     });
 
     it("returns correct default allowed headers", () => {
@@ -48,5 +54,45 @@ describe("cors worker defaults", () => {
 
     it("returns correct default max age", () => {
         expect(worker.getMaxAge()).toBe(Time.Week);
+    });
+});
+
+describe("cors worker valid origin", () => {
+    let worker: AllowOriginWorker;
+
+    beforeEach(() => {
+        worker = new AllowOriginWorker(GET_REQUEST, env, ctx);
+    });
+
+    it("returns [VALID_ORIGIN] for allow origins", () => {
+        expect(worker.getAllowOrigins()).toStrictEqual([VALID_ORIGIN]);
+    });
+
+    it("returns false for allow any origin", () => {
+        expect(worker.allowAnyOrigin()).toBe(false);
+    });
+});
+
+describe("cors worker edge case", () => {
+    let worker: AllowOriginWorker;
+
+    beforeEach(() => {
+        worker = new EmptyCorsWorker(GET_REQUEST, env, ctx);
+    });
+
+    it("returns [] for allow origins", () => {
+        expect(worker.getAllowOrigins()).toStrictEqual([]);
+    });
+
+    it("returns [] for allow headers", () => {
+        expect(worker.getAllowHeaders()).toStrictEqual([]);
+    });
+
+    it("returns [] for allow methods", () => {
+        expect(worker.getAllowMethods()).toStrictEqual([]);
+    });
+
+    it("returns [] for expose headers", () => {
+        expect(worker.getExposeHeaders()).toStrictEqual([]);
     });
 });

@@ -15,14 +15,32 @@ export const GET_REQUEST_WITH_ORIGIN = new Request(VALID_ORIGIN, {
     },
 });
 
-export class TestCorsWorker extends CorsWorker {
+export class DefaultCorsWorker extends CorsWorker {
     public async fetch(): Promise<Response> {
         return new Response("OK");
     }
 }
 
-export class TestCorsWorkerOrigin extends TestCorsWorker {
+export class AllowOriginWorker extends DefaultCorsWorker {
     public override getAllowOrigins(): string[] {
         return [VALID_ORIGIN];
+    }
+}
+
+export class EmptyCorsWorker extends DefaultCorsWorker {
+    public override getAllowOrigins(): string[] {
+        return [];
+    }
+
+    public override getAllowHeaders(): string[] {
+        return [];
+    }
+
+    public override getAllowMethods(): Method[] {
+        return [];
+    }
+
+    public override getExposeHeaders(): string[] {
+        return [];
     }
 }
