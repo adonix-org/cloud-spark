@@ -27,7 +27,7 @@ class TestWorker extends BasicWorker {
 
 describe("hello world worker", () => {
     const worker = TestWorker.ignite();
-    it("responds with Hello World!", async () => {
+    it("responds with `Hello World!`", async () => {
         const response = await worker.fetch(GET_REQUEST, env, ctx);
         expect(await response.text()).toBe("Hello World!");
     });
