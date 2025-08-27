@@ -69,7 +69,7 @@ export function addCorsHeaders(origin: string | null, cors: CorsProvider, header
     deleteCorsHeaders(headers);
 
     // CORS is not required.
-    if (!origin) return;
+    if (!origin || origin.trim() === "") return;
 
     if (cors.allowAnyOrigin()) {
         setHeader(headers, Cors.ALLOW_ORIGIN, Cors.ALLOW_ALL_ORIGINS);

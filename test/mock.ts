@@ -15,6 +15,7 @@
  */
 
 import type { ExecutionContext } from "@cloudflare/workers-types";
+import { Method } from "../src/common";
 
 export const env = {
     MY_KV: {
@@ -29,3 +30,23 @@ export const ctx: ExecutionContext = {
     passThroughOnException: () => {},
     props: () => {},
 };
+
+const caches = {
+    default: {
+        async match(_request: RequestInfo, _options?: any): Promise<Response | undefined> {
+            return undefined;
+        },
+        async matchAll(_request?: RequestInfo, _options?: any): Promise<Response[]> {
+            return [];
+        },
+        async put(_request: RequestInfo, _response: Response): Promise<void> {
+            // no-op
+        },
+        async delete(_request: RequestInfo, _options?: any): Promise<boolean> {
+            return false;
+        },
+    },
+} as const;
+
+(globalThis as any).caches = caches;
+
