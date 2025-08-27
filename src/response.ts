@@ -249,8 +249,8 @@ export class InternalServerError extends HttpError {
 }
 
 export class NotImplemented extends HttpError {
-    constructor(cors: CorsProvider) {
-        super(cors, StatusCodes.NOT_IMPLEMENTED);
+    constructor(cors: CorsProvider, details?: string) {
+        super(cors, StatusCodes.NOT_IMPLEMENTED, details);
     }
 }
 

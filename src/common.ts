@@ -17,7 +17,7 @@
 import CacheLib from "cache-control-parser";
 
 /**
- * - See https://github.com/etienne-martin/cache-control-parser
+ * @see {@link https://github.com/etienne-martin/cache-control-parser | cache-control-parser}
  */
 export type CacheControl = CacheLib.CacheControl;
 export const CacheControl = {
@@ -26,7 +26,7 @@ export const CacheControl = {
 };
 
 /**
- * - See https://github.com/prettymuchbryce/http-status-codes
+ * https://github.com/prettymuchbryce/http-status-codes
  */
 export { StatusCodes } from "http-status-codes";
 

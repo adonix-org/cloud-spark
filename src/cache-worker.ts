@@ -49,6 +49,9 @@ export abstract class CacheWorker extends CorsWorker {
      *
      * @param cacheName Optional name of the cache to use; defaults to `caches.default`.
      * @returns A Promise resolving to a Response with correct CORS headers, or undefined.
+     *
+     * @see {@link getCacheKey}
+     * @see {@link setCachedResponse}
      */
     protected async getCachedResponse(cacheName?: string): Promise<Response | undefined> {
         if (this.request.method !== Method.GET) return;
@@ -69,6 +72,9 @@ export abstract class CacheWorker extends CorsWorker {
      *
      * @param response The Response to cache
      * @param cacheName Optional name of the cache to use; defaults to `caches.default`.
+     *
+     * @see {@link getCacheKey}
+     * @see {@link getCachedResponse}
      */
     protected async setCachedResponse(response: Response, cacheName?: string): Promise<void> {
         if (!response.ok) return;
