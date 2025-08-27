@@ -54,8 +54,4 @@ export abstract class CorsWorker extends BaseWorker implements CorsProvider {
     public getMaxAge(): number {
         return Time.Week;
     }
-
-    public getOrigin(): string | null {
-        return this.request.headers.get("Origin");
-    }
 }

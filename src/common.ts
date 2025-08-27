@@ -244,3 +244,16 @@ export function normalizeUrl(url: string): URL {
 
     return u;
 }
+
+/**
+ * Extracts the `Origin` header value from a request.
+ *
+ * The `Origin` header identifies the origin (scheme, host, and port)
+ * of the request initiator. It is commonly used for CORS checks.
+ *
+ * @param request - The incoming {@link Request} object.
+ * @returns The origin string if present, otherwise `null`.
+ */
+export function getOrigin(request: Request): string | null {
+    return request.headers.get(HttpHeader.ORIGIN);
+}

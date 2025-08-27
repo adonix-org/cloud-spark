@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method, normalizeUrl } from "./common";
+import { getOrigin, Method, normalizeUrl } from "./common";
 import { addCorsHeaders, Cors } from "./cors";
 import { CorsWorker } from "./cors-worker";
 
@@ -101,7 +101,7 @@ export abstract class CacheWorker extends CorsWorker {
      */
     private addCacheHeaders(cached: Response): Response {
         const headers = new Headers(cached.headers);
-        addCorsHeaders(this, headers);
+        addCorsHeaders(getOrigin(this.request), this, headers);
 
         return new Response(cached.body, {
             status: cached.status,

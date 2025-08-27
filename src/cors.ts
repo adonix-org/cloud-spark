@@ -20,9 +20,6 @@ import { HttpHeader, mergeHeader, Method, setHeader } from "./common";
  * Provides information about the CORS policy for the current request.
  */
 export interface CorsProvider {
-    /** Returns the origin of the request, or null if none is provided. */
-    getOrigin(): string | null;
-
     /** Returns a list of allowed origins. */
     getAllowOrigins(): string[];
 
@@ -68,10 +65,10 @@ export namespace Cors {
  * @param cors The CorsProvider instance that determines allowed origins and headers
  * @param headers The Headers object to update
  */
-export function addCorsHeaders(cors: CorsProvider, headers: Headers): void {
+export function addCorsHeaders(origin: string | null, cors: CorsProvider, headers: Headers): void {
     deleteCorsHeaders(headers);
 
-    const origin = cors.getOrigin();
+    // CORS is not required.
     if (!origin) return;
 
     if (cors.allowAnyOrigin()) {
@@ -82,7 +79,7 @@ export function addCorsHeaders(cors: CorsProvider, headers: Headers): void {
         mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
     }
 
-    // Optional headers always applied
+    // Optional headers always applied if CORS.
     mergeHeader(headers, Cors.EXPOSE_HEADERS, cors.getExposeHeaders());
     setHeader(headers, Cors.ALLOW_HEADERS, cors.getAllowHeaders());
     setHeader(headers, Cors.ALLOW_METHODS, cors.getAllowMethods());

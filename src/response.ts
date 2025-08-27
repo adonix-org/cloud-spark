@@ -23,6 +23,7 @@ import {
     Method,
     MediaType,
     setHeader,
+    getOrigin,
 } from "./common";
 import { addCorsHeaders, CorsProvider } from "./cors";
 import { Worker } from "./worker";
@@ -81,7 +82,11 @@ abstract class CorsResponse extends BaseResponse {
     }
 
     protected addCorsHeaders(): void {
-        addCorsHeaders(this.worker, this.headers);
+        addCorsHeaders(this.getOrigin(), this.worker, this.headers);
+    }
+
+    protected getOrigin() {
+        return getOrigin(this.worker.request);
     }
 }
 
