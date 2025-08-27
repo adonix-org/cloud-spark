@@ -46,9 +46,22 @@ export namespace HttpHeader {
     export const REFERRER_POLICY = "Referrer-Policy"; // e.g. "no-referrer", "strict-origin-when-cross-origin"
     export const PERMISSIONS_POLICY = "Permissions-Policy"; // formerly Feature-Policy, controls APIs like geolocation/camera
 
+    // Cache Status
+    export const X_CACHE_STATUS = "X-Cache-Status";
+
+    // No Cache
+    export const AGE = "Age";
+    export const DATE = "Date";
+    export const EXPIRES = "Expires";
+    export const CONNECTION = "Connection";
+    export const TRANSFER_ENCODING = "Transfer-Encoding";
+    export const CF_CACHE_STATUS = "Cf-Cache-Status";
+
     // Values
     export const NOSNIFF = "nosniff";
     export const ORIGIN = "Origin";
+    export const CACHE_HIT = "HIT";
+    export const CACHE_MISS = "MISS";
 }
 
 /**

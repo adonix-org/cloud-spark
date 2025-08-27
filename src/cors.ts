@@ -69,7 +69,6 @@ export namespace Cors {
  * @param headers The Headers object to update
  */
 export function addCorsHeaders(cors: CorsProvider, headers: Headers): void {
-    // Remove stale headers if from cache
     deleteCorsHeaders(headers);
 
     const origin = cors.getOrigin();
@@ -96,45 +95,10 @@ export function addCorsHeaders(cors: CorsProvider, headers: Headers): void {
  *
  * @param headers The Headers object to clean
  */
-export function deleteCorsHeaders(headers: Headers) {
+function deleteCorsHeaders(headers: Headers) {
     headers.delete(Cors.ALLOW_ORIGIN);
     headers.delete(Cors.ALLOW_CREDENTIALS);
     headers.delete(Cors.EXPOSE_HEADERS);
     headers.delete(Cors.ALLOW_METHODS);
     headers.delete(Cors.MAX_AGE);
-}
-
-/**
- * Returns a new Response with CORS headers applied according to the policy.
- * Original response is not mutated.
- *
- * @param cors The CorsProvider instance for policy
- * @param res The original Response object
- * @returns A new Response with updated CORS headers
- */
-export function withCorsHeaders(cors: CorsProvider, res: Response): Response {
-    const headers = new Headers(res.headers);
-    addCorsHeaders(cors, headers);
-    return new Response(res.body, {
-        status: res.status,
-        statusText: res.statusText,
-        headers,
-    });
-}
-
-/**
- * Returns a new Response with all standard CORS headers removed.
- * Useful for storing responses in a cache without per-request CORS headers.
- *
- * @param res The original Response object
- * @returns A new Response without CORS headers
- */
-export function withoutCorsHeaders(res: Response): Response {
-    const headers = new Headers(res.headers);
-    deleteCorsHeaders(headers);
-    return new Response(res.body, {
-        status: res.status,
-        statusText: res.statusText,
-        headers,
-    });
 }

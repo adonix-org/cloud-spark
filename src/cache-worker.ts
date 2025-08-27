@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Method, normalizeUrl } from "./common";
-import { withCorsHeaders, withoutCorsHeaders } from "./cors";
+import { HttpHeader, Method, normalizeUrl } from "./common";
+import { addCorsHeaders, Cors } from "./cors";
 import { CorsWorker } from "./cors-worker";
 
 /**
@@ -59,7 +59,7 @@ export abstract class CacheWorker extends CorsWorker {
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
 
         const response = await cache.match(this.getCacheKey());
-        return response ? withCorsHeaders(this, response) : undefined;
+        return response ? this.addCacheHeaders(response) : undefined;
     }
 
     /**
@@ -81,6 +81,53 @@ export abstract class CacheWorker extends CorsWorker {
         if (this.request.method !== Method.GET) return;
 
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
-        this.ctx?.waitUntil(cache.put(this.getCacheKey(), withoutCorsHeaders(response.clone())));
+        this.ctx?.waitUntil(
+            cache.put(this.getCacheKey(), this.removeCacheHeaders(response.clone()))
+        );
+    }
+
+    protected addCacheHeaders(cached: Response): Response {
+        const headers = new Headers(cached.headers);
+        addCorsHeaders(this, headers);
+        headers.set(HttpHeader.X_CACHE_STATUS, HttpHeader.CACHE_HIT);
+
+        return new Response(cached.body, {
+            status: cached.status,
+            statusText: cached.statusText,
+            headers,
+        });
+    }
+
+    protected removeCacheHeaders(response: Response): Response {
+        const excludeSet = new Set(this.excludeCacheHeaders().map((h) => h.toLowerCase()));
+        const headers = new Headers();
+
+        for (const [key, value] of response.headers) {
+            if (!excludeSet.has(key)) {
+                headers.set(key, value);
+            }
+        }
+
+        return new Response(response.body, {
+            status: response.status,
+            statusText: response.statusText,
+            headers,
+        });
+    }
+
+    protected excludeCacheHeaders(): string[] {
+        return [
+            Cors.ALLOW_ORIGIN,
+            Cors.ALLOW_CREDENTIALS,
+            Cors.EXPOSE_HEADERS,
+            Cors.ALLOW_METHODS,
+            Cors.MAX_AGE,
+            HttpHeader.AGE,
+            HttpHeader.DATE,
+            HttpHeader.EXPIRES,
+            HttpHeader.CONNECTION,
+            HttpHeader.TRANSFER_ENCODING,
+            HttpHeader.CF_CACHE_STATUS,
+        ];
     }
 }

@@ -113,7 +113,7 @@ class DebugWorker extends RoutedWorker {
     }
 }
 
-const method: Method = Method.DELETE;
+const method: Method = Method.POST;
 
 const request = new Request("https://www.adonix.org/api/v1/seasons/last", {
     method: method,
