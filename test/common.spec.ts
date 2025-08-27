@@ -82,6 +82,11 @@ describe("set new headers", () => {
         expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3"]]);
     });
 
+    it("add empty array", () => {
+        setHeader(headers, "test-key", []);
+        expect([...headers.entries()]).toStrictEqual([]);
+    });
+
     it("add array with duplicates", () => {
         setHeader(headers, "test-key", ["3", "2", "1", "4", "1", "2", "3"]);
         expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3, 4"]]);
@@ -119,5 +124,26 @@ describe("set exising headers", () => {
     it("add empty string", () => {
         setHeader(headers, "test-key", "");
         expect([...headers.entries()]).toStrictEqual([["safe-key", "2"]]);
+    });
+
+    it("add empty array", () => {
+        setHeader(headers, "test-key", []);
+        expect([...headers.entries()]).toStrictEqual([["safe-key", "2"]]);
+    });
+
+    it("add array existing header (no-merge)", () => {
+        setHeader(headers, "test-key", ["2", "3"]);
+        expect([...headers.entries()]).toStrictEqual([
+            ["safe-key", "2"],
+            ["test-key", "2, 3"],
+        ]);
+    });
+
+    it("add array existing header duplicates (no-merge)", () => {
+        setHeader(headers, "test-key", ["4", "3", "3", "2", "1"]);
+        expect([...headers.entries()]).toStrictEqual([
+            ["safe-key", "2"],
+            ["test-key", "1, 2, 3, 4"],
+        ]);
     });
 });
