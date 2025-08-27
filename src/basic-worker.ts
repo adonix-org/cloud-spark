@@ -29,7 +29,7 @@ import {
 export abstract class BasicWorker extends CacheWorker {
     public async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
-            return this.getResponse(MethodNotAllowed, this.request.method);
+            return this.getResponse(MethodNotAllowed);
         }
 
         try {
@@ -50,27 +50,27 @@ export abstract class BasicWorker extends CacheWorker {
             HEAD: () => this.head(),
             OPTIONS: () => this.options(),
         };
-        return (handler[method] ?? (() => this.getResponse(MethodNotAllowed, method)))();
+        return (handler[method] ?? (() => this.getResponse(MethodNotAllowed)))();
     }
 
     protected async get(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, Method.GET);
+        return this.getResponse(MethodNotImplemented);
     }
 
     protected async put(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, Method.PUT);
+        return this.getResponse(MethodNotImplemented);
     }
 
     protected async post(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, Method.POST);
+        return this.getResponse(MethodNotImplemented);
     }
 
     protected async patch(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, Method.PATCH);
+        return this.getResponse(MethodNotImplemented);
     }
 
     protected async delete(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, Method.DELETE);
+        return this.getResponse(MethodNotImplemented);
     }
 
     protected async options(): Promise<Response> {
@@ -78,7 +78,7 @@ export abstract class BasicWorker extends CacheWorker {
     }
 
     protected async head(): Promise<Response> {
-        const worker = this.createWorker(new Request(this.request, { method: "GET" }));
+        const worker = this.createWorker(new Request(this.request, { method: Method.GET }));
         return this.getResponse(Head, await worker.fetch());
     }
 

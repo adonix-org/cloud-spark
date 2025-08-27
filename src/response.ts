@@ -237,8 +237,12 @@ export class NotFound extends HttpError {
 }
 
 export class MethodNotAllowed extends HttpError {
-    constructor(worker: CorsWorker, method: string) {
-        super(worker, StatusCodes.METHOD_NOT_ALLOWED, `${method} method not allowed.`);
+    constructor(worker: CorsWorker) {
+        super(
+            worker,
+            StatusCodes.METHOD_NOT_ALLOWED,
+            `${worker.request.method} method not allowed.`
+        );
         this.setHeader("Allow", this.worker.getAllowMethods());
     }
 
@@ -263,8 +267,8 @@ export class NotImplemented extends HttpError {
 }
 
 export class MethodNotImplemented extends NotImplemented {
-    constructor(worker: CorsWorker, method: Method) {
-        super(worker, `${method} method not implemented.`);
+    constructor(worker: CorsWorker) {
+        super(worker, `${worker.request.method} method not implemented.`);
     }
 }
 
