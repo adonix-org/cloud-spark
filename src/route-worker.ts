@@ -17,15 +17,13 @@
 import { BasicWorker } from "./basic-worker";
 import { Method } from "./common";
 import { NotFound } from "./errors";
-import { Route, Routes, RouteInit, RouteCallback } from "./routes";
+import { Route, Routes, RouteTable, RouteCallback } from "./routes";
 
 export abstract class RouteWorker extends BasicWorker {
     private readonly routes: Routes = new Routes();
 
-    protected initialize(routes: RouteInit[]) {
-        routes.forEach(([method, pattern, callback]) => {
-            this.add(method, pattern, callback);
-        });
+    protected initialize(table: RouteTable) {
+        this.routes.initialize(table);
     }
 
     protected add(method: Method, pattern: RegExp | string, callback: RouteCallback) {

@@ -25,11 +25,21 @@ import { Method } from "./common";
 export type RouteCallback = (...matches: string[]) => Response | Promise<Response>;
 
 /**
- * Tuple used to initialize a route.
+ * A single route definition.
  *
- * [HTTP method, path pattern (string or RegExp), callback function]
+ * Tuple of:
+ * - HTTP method
+ * - Path pattern (string or RegExp)
+ * - Callback function
  */
-export type RouteInit = [Method, RegExp | string, RouteCallback];
+export type RouteTuple = [Method, RegExp | string, RouteCallback];
+
+/**
+ * A collection of route definitions.
+ *
+ * Used to initialize the router with multiple routes.
+ */
+export type RouteTable = RouteTuple[];
 
 /**
  * Represents a single route with a pattern and a callback.
@@ -53,6 +63,19 @@ export class Route {
  */
 export class Routes {
     private readonly map = new Map<Method, Route[]>();
+
+    /**
+     * Reset all routes and register the given ones.
+     *
+     * @param {RouteInit} table - Tuples of [method, pattern, callback].
+     */
+    public initialize(table: RouteTable): void {
+        this.map.clear();
+
+        table.forEach(([method, pattern, callback]) => {
+            this.add(method, new Route(pattern, callback));
+        });
+    }
 
     /**
      * Adds a route to the collection under the given HTTP method.
