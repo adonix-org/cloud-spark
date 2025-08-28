@@ -16,7 +16,7 @@
 
 import { BasicWorker } from "./basic-worker";
 import { Method } from "./common";
-import { NotFound } from "./response";
+import { NotFound } from "./errors";
 import { Route, Routes, RouteInit, RouteCallback } from "./routes";
 
 export abstract class RouteWorker extends BasicWorker {
