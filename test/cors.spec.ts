@@ -115,12 +115,12 @@ describe("cors empty provider", () => {
         headers = new Headers();
     });
 
-    it("empty cors headers includes valid origin", () => {
+    it("handle empty cors provider includes valid origin", () => {
         addCorsHeaders(VALID_ORIGIN, worker, headers);
         expect([...headers.entries()]).toStrictEqual([["access-control-max-age", "0"]]);
     });
 
-    it("empty cors headers invalid origin", () => {
+    it("handle empty cors provider invalid origin", () => {
         addCorsHeaders(INVALID_ORIGIN, worker, headers);
         expect([...headers.entries()]).toStrictEqual([["access-control-max-age", "0"]]);
     });
