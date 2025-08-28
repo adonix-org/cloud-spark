@@ -20,20 +20,24 @@ import { CorsWorker } from "../src/cors-worker";
 export const VALID_ORIGIN = "https://localhost";
 export const INVALID_ORIGIN = "https://localhost.invalid";
 
-export const GET_REQUEST = new Request(VALID_ORIGIN, {
+export const VALID_URL = `${VALID_ORIGIN}/`;
+
+export const GET_REQUEST = new Request(VALID_URL, {
     method: Method.GET,
 });
 
-export const GET_REQUEST_WITH_ORIGIN = new Request(VALID_ORIGIN, {
+export const GET_REQUEST_WITH_ORIGIN = new Request(VALID_URL, {
     method: Method.GET,
     headers: {
         Origin: VALID_ORIGIN,
     },
 });
 
+export const BODY_INIT: BodyInit = "OK";
+
 export class DefaultCorsWorker extends CorsWorker {
     public async fetch(): Promise<Response> {
-        return new Response("OK");
+        return new Response(BODY_INIT);
     }
 }
 

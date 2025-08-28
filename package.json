@@ -40,6 +40,7 @@
         "prepare-pack": "node -e \"require('fs').mkdirSync('artifacts', { recursive: true })\"",
         "pack": "npm run prepare-pack && npm pack --pack-destination ./artifacts",
         "test": "vitest",
+        "coverage": "vitest run --coverage",
         "debug": "tsc && tsx ./src/debug.ts"
     },
     "devDependencies": {

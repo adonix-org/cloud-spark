@@ -22,13 +22,13 @@ export const env = {
         put: async (_key: string, _value: string) => {},
     },
     MY_SECRET: "mock-secret",
-};
+} as const;
 
 export const ctx: ExecutionContext = {
     waitUntil: () => {},
     passThroughOnException: () => {},
     props: () => {},
-};
+} as const;
 
 const caches = {
     default: {
