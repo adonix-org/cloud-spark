@@ -98,8 +98,8 @@ export abstract class BaseWorker implements Worker {
      */
     public static ignite<W extends Worker>(this: WorkerConstructor<W>): FetchHandler {
         return {
-            fetch: (req: Request, env: Env, ctx: ExecutionContext) =>
-                new this(req, env, ctx).fetch(),
+            fetch: (request: Request, env: Env, ctx: ExecutionContext) =>
+                new this(request, env, ctx).fetch(),
         };
     }
 }

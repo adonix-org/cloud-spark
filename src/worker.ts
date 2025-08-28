@@ -24,7 +24,7 @@
  * @returns An instance of the worker type `T`.
  */
 export type WorkerConstructor<T extends Worker = Worker> = new (
-    req: Request,
+    request: Request,
     env: Env,
     ctx: ExecutionContext
 ) => T;
