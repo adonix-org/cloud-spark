@@ -17,7 +17,7 @@
 import { BasicWorker } from "./basic-worker";
 import { Method } from "./common";
 import { NotFound } from "./errors";
-import { Route, Routes, RouteTable, RouteCallback } from "./routes";
+import { Routes, RouteTable, RouteCallback } from "./routes";
 
 export abstract class RouteWorker extends BasicWorker {
     private readonly routes: Routes = new Routes();
@@ -27,7 +27,7 @@ export abstract class RouteWorker extends BasicWorker {
     }
 
     protected add(method: Method, pattern: RegExp | string, callback: RouteCallback) {
-        this.routes.add(method, new Route(pattern, callback));
+        this.routes.add(method, pattern, callback);
         return this;
     }
 

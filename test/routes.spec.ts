@@ -15,25 +15,13 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { VALID_URL } from "./constants";
+import { TestRoutes, VALID_URL } from "./constants";
 import { Method } from "../src/common";
 import { Route, RouteCallback, Routes, RouteTable } from "../src/routes";
 
-const one: RouteCallback = async () => {
-    return new Response("one");
-};
-
-const two: RouteCallback = async () => {
-    return new Response("two");
-};
-
-const three: RouteCallback = async () => {
-    return new Response("three");
-};
-
 const init: RouteTable = [
-    [Method.GET, "^/one$", one],
-    [Method.GET, new RegExp("^/two$"), two],
+    [Method.GET, "^/one$", TestRoutes.one],
+    [Method.GET, new RegExp("^/two$"), TestRoutes.two],
 ];
 
 /**
@@ -59,7 +47,7 @@ describe("routes unit tests", () => {
         const url = new URL("one", VALID_URL);
         const route = routes.match(Method.GET, url.toString());
         expect(route).toBeDefined();
-        expect(route?.callback).toBe(one);
+        expect(route?.callback).toBe(TestRoutes.one);
         await expectResponseBody(route!.callback, "one");
     });
 
@@ -67,7 +55,7 @@ describe("routes unit tests", () => {
         const url = new URL("two", VALID_URL);
         const route = routes.match(Method.GET, url.toString());
         expect(route).toBeDefined();
-        expect(route?.callback).toBe(two);
+        expect(route?.callback).toBe(TestRoutes.two);
         await expectResponseBody(route!.callback, "two");
     });
 
@@ -88,12 +76,12 @@ describe("routes unit tests", () => {
         const url = new URL("three", VALID_URL);
         const pattern = new RegExp("^/three$");
 
-        routes.add(method, new Route(pattern, three));
+        routes.add(method, pattern, TestRoutes.three);
         const route = routes.match(method, url.toString());
 
         expect(route).toBeDefined();
         expect(route?.pattern).toStrictEqual(pattern);
-        expect(route?.callback).toBe(three);
+        expect(route?.callback).toBe(TestRoutes.three);
         await expectResponseBody(route!.callback, "three");
     });
 });

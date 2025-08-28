@@ -16,6 +16,7 @@
 
 import { Method } from "../src/common";
 import { CorsWorker } from "../src/cors-worker";
+import { RouteCallback, RouteTable } from "../src/routes";
 
 export const VALID_ORIGIN = "https://localhost";
 export const INVALID_ORIGIN = "https://localhost.invalid";
@@ -27,6 +28,31 @@ export const SPECIAL_METHODS: Method[] = [Method.HEAD, Method.OPTIONS];
 export const BASIC_METHODS: Method[] = ALL_METHODS.filter(
     (method) => !SPECIAL_METHODS.includes(method)
 );
+
+export namespace TestRoutes {
+    export const one: RouteCallback = async () => {
+        return new Response("one");
+    };
+
+    export const two: RouteCallback = async () => {
+        return new Response("two");
+    };
+
+    export const three: RouteCallback = async () => {
+        return new Response("three");
+    };
+
+    export const four: RouteCallback = async () => {
+        return new Response("four");
+    };
+
+    export const table: RouteTable = [
+        [Method.GET, "^/one$", one],
+        [Method.GET, "^/two$", two],
+        [Method.GET, "^/three$", three],
+        [Method.GET, "^/four$", four],
+    ];
+}
 
 export const GET_REQUEST = new Request(VALID_URL, {
     method: Method.GET,

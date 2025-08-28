@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { VALID_URL } from "./constants";
+import { ALL_METHODS, BASIC_METHODS, GET_REQUEST, TestRoutes, VALID_URL } from "./constants";
 import { Method } from "../src/common";
 import { Route, RouteCallback, Routes, RouteTable } from "../src/routes";
 import { RouteWorker } from "../src/route-worker";
@@ -25,12 +25,38 @@ class TestWorker extends RouteWorker {
     constructor(request: Request) {
         super(request, env, ctx);
     }
+
+    public override getAllowMethods(): Method[] {
+        return ALL_METHODS;
+    }
 }
 
 describe("route worker unit tests", () => {
-    let routes: Routes;
+    it.each(BASIC_METHODS)("returns %s response", async (method) => {
+        const request = new Request(VALID_URL, { method });
+        const worker = new TestWorker(request);
 
-    beforeEach(() => {});
+        const response = await worker.fetch();
+        expect(response).toBeInstanceOf(Response);
 
-    it("", async () => {});
+        const expectedJson = (method: Method) => ({
+            status: 404,
+            error: "Not Found",
+            details: `Not Found`,
+        });
+
+        const json = await response.json();
+        expect(json).toStrictEqual(expectedJson(method));
+    });
+
+    it("is initialized from a route table", () => {
+        class InitTestWorker extends TestWorker {
+            constructor(request: Request) {
+                super(request);
+                this.initialize(TestRoutes.table);
+            }
+        }
+        const worker = new InitTestWorker(GET_REQUEST);
+        
+    });
 });
