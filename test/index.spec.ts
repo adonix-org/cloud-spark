@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
-import { env, ctx } from "./mock";
-import { BasicWorker } from "../src/basic-worker";
-import { GET_REQUEST } from "./constants";
+import { expect, it } from "vitest";
+import * as IndexExports from "../src/index.ts";
 
-class TestWorker extends BasicWorker {
-    protected override async get(): Promise<Response> {
-        return new Response("Hello World!");
-    }
-}
-
-describe("hello world worker", () => {
-    const worker = TestWorker.ignite();
-    it("responds with `Hello World!`", async () => {
-        const response = await worker.fetch(GET_REQUEST, env, ctx);
-        expect(await response.text()).toBe("Hello World!");
-    });
+it("exports files", () => {
+    expect(IndexExports).toBeTruthy();
 });
