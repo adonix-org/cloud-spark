@@ -22,7 +22,7 @@ import { Method } from "./common";
  * @param matches - Captured groups from the route RegExp, or the full match at index 0
  * @returns A Response object or a Promise that resolves to a Response
  */
-export type RouteCallback = (...matches: string[]) => Response | Promise<Response>;
+export type RouteCallback = (...matches: string[]) => Promise<Response>;
 
 /**
  * A single route definition.
