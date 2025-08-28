@@ -16,21 +16,17 @@
 import { describe, it, expect } from "vitest";
 import { env, ctx } from "./mock";
 import { BasicWorker } from "../src/basic-worker";
-import { GET_REQUEST, VALID_URL } from "./constants";
+import { ALL_METHODS, BASIC_METHODS, GET_REQUEST, VALID_URL } from "./constants";
 import { Method } from "../src/common";
-
-const METHODS: Method[] = Object.values(Method);
-const SPECIAL: Method[] = [Method.HEAD, Method.OPTIONS];
-const BASIC: Method[] = METHODS.filter((method) => !SPECIAL.includes(method));
 
 class TestWorker extends BasicWorker {
     public override getAllowMethods(): Method[] {
-        return METHODS;
+        return ALL_METHODS;
     }
 }
 
 describe("basic worker unit tests", () => {
-    it.each(BASIC)("returns %s response", async (method) => {
+    it.each(BASIC_METHODS)("returns %s response", async (method) => {
         const request = new Request(VALID_URL, { method });
         const worker = new TestWorker(request, env, ctx);
 

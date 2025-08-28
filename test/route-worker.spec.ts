@@ -18,11 +18,19 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { VALID_URL } from "./constants";
 import { Method } from "../src/common";
 import { Route, RouteCallback, Routes, RouteTable } from "../src/routes";
+import { RouteWorker } from "../src/route-worker";
+import { ctx, env } from "./mock";
 
-describe("routes unit tests", () => {
+class TestWorker extends RouteWorker {
+    constructor(request: Request) {
+        super(request, env, ctx);
+    }
+}
+
+describe("route worker unit tests", () => {
     let routes: Routes;
 
     beforeEach(() => {});
 
-    it("returns the route initialized with string", async () => {});
+    it("", async () => {});
 });
