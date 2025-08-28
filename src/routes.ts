@@ -78,7 +78,7 @@ export class Routes {
      * @param url - Full URL string of the request
      * @returns The first matching Route, or undefined if none match
      */
-    public get(method: Method, url: string): Route | undefined {
+    public match(method: Method, url: string): Route | undefined {
         const routes = this.map.get(method);
         if (!routes) return undefined;
 
