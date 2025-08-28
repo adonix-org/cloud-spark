@@ -74,13 +74,13 @@ describe("routes unit tests", () => {
     it("returns undefined when the pattern is not found", () => {
         const url = new URL("four", VALID_URL);
         const route = routes.match(Method.GET, url.toString());
-        expect(route).toBe(undefined);
+        expect(route).toBeUndefined();
     });
 
     it("returns undefined when the method is not found", () => {
         const url = new URL("one", VALID_URL);
         const route = routes.match(Method.PUT, url.toString());
-        expect(route).toBe(undefined);
+        expect(route).toBeUndefined();
     });
 
     it("returns a route added after initialization", async () => {
