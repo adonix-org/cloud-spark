@@ -198,7 +198,7 @@ describe("merge header function on empty headers", () => {
     });
 });
 
-describe("merge header function on exising headers", () => {
+describe("merge header function on existing headers", () => {
     let headers: Headers;
 
     beforeEach(() => {
@@ -267,7 +267,7 @@ describe("merge header function on exising headers", () => {
     });
 
     it("creates a new header from an array and removes duplicates and white space", () => {
-        mergeHeader(headers, "new-key", ["2", "3", "1", "2", "3", " 1 ", " " ]);
+        mergeHeader(headers, "new-key", ["2", "3", "1", "2", "3", " 1 ", " "]);
         expect([...headers.entries()]).toStrictEqual([
             ["new-key", "1, 2, 3"],
             ["safe-key", "2"],
@@ -276,40 +276,44 @@ describe("merge header function on exising headers", () => {
     });
 });
 
-describe("normalize url", () => {
+describe("normalize url function", () => {
     const BASE = "https://localhost/";
 
-    it("no search parameters", () => {
+    it("does not modify a url with no search parameters", () => {
         expect(normalizeUrl(BASE).toString()).toBe(BASE);
     });
 
-    it("single search parameter", () => {
+    it("retains the single search parameter in a url", () => {
         const url = `${BASE}?a=1`;
         expect(normalizeUrl(url).toString()).toBe(url);
     });
 
-    it("pre-sorted search parametes", () => {
+    it("does not modify pre-sorted search parameters", () => {
         const url = `${BASE}?a=1&b=2&c=3`;
         expect(normalizeUrl(url).toString()).toBe(url);
     });
 
-    it("unsorted search parametes", () => {
+    it("sorts the url search parameters", () => {
         const url = `${BASE}?&b=2&c=3&a=1`;
         expect(normalizeUrl(url).toString()).toBe(`${BASE}?a=1&b=2&c=3`);
     });
 
-    it("unsorted duplicate search parametes", () => {
+    it("sorts and retains search parameters containing duplicate keys", () => {
         const url = `${BASE}?&b=2&a=4&c=3&a=1`;
+
+        // normalizeUrl sorts keys alphabetically, but preserves the order of duplicate keys.
+        // So here we expect both 'a' parameters in the original order (4 then 1) to be retained,
+        // even though 'a' comes before 'b' and 'c' after sorting.
         expect(normalizeUrl(url).toString()).toBe(`${BASE}?a=4&a=1&b=2&c=3`);
     });
 });
 
-describe("get origin", () => {
-    it("no origin", () => {
+describe("get origin function", () => {
+    it("returns null for no origin header in the request", () => {
         expect(getOrigin(GET_REQUEST)).toBe(null);
     });
 
-    it("with origin", () => {
+    it("returns the origin from the origin header in the request", () => {
         expect(getOrigin(GET_REQUEST_WITH_ORIGIN)).toBe(VALID_ORIGIN);
     });
 });

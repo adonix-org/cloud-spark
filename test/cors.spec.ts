@@ -37,17 +37,17 @@ describe("cors headers allow any origin", () => {
         headers = new Headers();
     });
 
-    it("no cors headers null origin", () => {
+    it("does not add cors headers for null origin", () => {
         addCorsHeaders(null, worker, headers);
         expect([...headers.entries()]).toStrictEqual([]);
     });
 
-    it("no cors headers empty origin", () => {
+    it("does not add cors headers for empty origin", () => {
         addCorsHeaders("", worker, headers);
         expect([...headers.entries()]).toStrictEqual([]);
     });
 
-    it("no cors headers whitespce origin", () => {
+    it("does not add cors headers for white space origin", () => {
         addCorsHeaders(" ", worker, headers);
         expect([...headers.entries()]).toStrictEqual([]);
     });
