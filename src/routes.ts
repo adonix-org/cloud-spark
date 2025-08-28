@@ -66,7 +66,7 @@ export class Routes implements Iterable<Route> {
      *
      * @param table - Tuples of [method, pattern, callback].
      */
-    public initialize(table: RouteTuple[]): void {
+    public initialize(table: RouteTable): void {
         this.routes.length = 0;
         table.forEach(([method, pattern, callback]) => this.add(method, pattern, callback));
     }
