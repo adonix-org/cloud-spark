@@ -63,7 +63,7 @@ describe("routes unit tests", () => {
         await expectResponseBody(route!.callback, "one");
     });
 
-    it("returns the route initialized with regexp", async () => {
+    it("returns the route initialized with regex", async () => {
         const url = new URL("two", VALID_URL);
         const route = routes.match(Method.GET, url.toString());
         expect(route).toBeDefined();
@@ -83,7 +83,7 @@ describe("routes unit tests", () => {
         expect(route).toBe(undefined);
     });
 
-    it("returns the route added after initialization", async () => {
+    it("returns a route added after initialization", async () => {
         const method = Method.POST;
         const url = new URL("three", VALID_URL);
         const pattern = new RegExp("^/three$");
@@ -95,13 +95,5 @@ describe("routes unit tests", () => {
         expect(route?.pattern).toStrictEqual(pattern);
         expect(route?.callback).toBe(three);
         await expectResponseBody(route!.callback, "three");
-    });
-
-    it("returns an executable callback", async () => {
-        const url = new URL("one", VALID_URL);
-        const route = routes.match(Method.GET, url.toString());
-        expect(route).toBeDefined();
-        expect(route?.callback).toBe(one);
-        await expectResponseBody(route!.callback, "one");
     });
 });
