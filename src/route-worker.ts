@@ -33,11 +33,11 @@ export abstract class RouteWorker extends BasicWorker {
         return this;
     }
 
-    protected async dispatch(request: Request = this.request): Promise<Response> {
-        const route = this.routes.match(request.method as Method, request.url);
+    protected async dispatch(): Promise<Response> {
+        const route = this.routes.match(this.request.method as Method, this.request.url);
         if (!route) return super.dispatch();
 
-        const match = new URL(request.url).pathname.match(route.pattern) ?? [];
+        const match = new URL(this.request.url).pathname.match(route.pattern) ?? [];
         return route.callback.call(this, ...match);
     }
 
