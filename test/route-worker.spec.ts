@@ -26,6 +26,10 @@ class TestWorker extends RouteWorker {
         super(request, env, ctx);
     }
 
+    public override add(method: Method, pattern: string | RegExp, callback: RouteCallback): this {
+        return super.add(method, pattern, callback);
+    }
+
     public override getAllowMethods(): Method[] {
         return ALL_METHODS;
     }
@@ -37,26 +41,52 @@ describe("route worker unit tests", () => {
         const worker = new TestWorker(request);
 
         const response = await worker.fetch();
-        expect(response).toBeInstanceOf(Response);
+        const json = await response.json();
 
-        const expectedJson = (method: Method) => ({
+        expect(json).toStrictEqual({
             status: 404,
             error: "Not Found",
-            details: `Not Found`,
+            details: "Not Found",
         });
-
-        const json = await response.json();
-        expect(json).toStrictEqual(expectedJson(method));
     });
 
-    it("is initialized from a route table", () => {
+    it("handles initialization from a route table", async () => {
         class InitTestWorker extends TestWorker {
             constructor(request: Request) {
                 super(request);
-                this.initialize(TestRoutes.table);
+                this.initialize(TestRoutes.table); // allowed here
             }
         }
-        const worker = new InitTestWorker(GET_REQUEST);
-        
+
+        const request = new Request(new URL("one", VALID_URL));
+        const worker = new InitTestWorker(request);
+
+        const response = await worker.fetch();
+        expect(await response.text()).toBe("one");
+    });
+
+    it("handles a route added with add()", async () => {
+        const request = new Request(new URL("two", VALID_URL));
+        const worker = new TestWorker(request);
+
+        worker.add(Method.GET, /^\/two$/, TestRoutes.two);
+
+        const response = await worker.fetch();
+        expect(await response.text()).toBe("two");
+    });
+
+    it("returns matches to the callback function", async () => {
+        const request = new Request(new URL("/matches/7834", VALID_URL));
+        const worker = new TestWorker(request);
+
+        // Use a regex literal for clarity
+        worker.add(Method.GET, /^\/matches\/(\d{4})$/, async (digits): Promise<Response> => {
+            return new Response(digits); // capture group 1
+        });
+
+        const response = await worker.fetch();
+
+        expect(response).toBeInstanceOf(Response);
+        expect(await response.text()).toBe("7834");
     });
 });

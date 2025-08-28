@@ -20,7 +20,7 @@ import { NotFound } from "./errors";
 import { Routes, RouteTable, RouteCallback } from "./routes";
 
 export abstract class RouteWorker extends BasicWorker {
-    private readonly routes: Routes = new Routes();
+    protected readonly routes: Routes = new Routes();
 
     protected initialize(table: RouteTable) {
         this.routes.initialize(table);
@@ -32,11 +32,10 @@ export abstract class RouteWorker extends BasicWorker {
     }
 
     protected async dispatch(): Promise<Response> {
-        const route = this.routes.match(this.request.method as Method, this.request.url);
-        if (!route) return super.dispatch();
+        const found = this.routes.match(this.request.method as Method, this.request.url);
+        if (!found) return super.dispatch();
 
-        const match = new URL(this.request.url).pathname.match(route.pattern) ?? [];
-        return route.callback.call(this, ...match);
+        return found.route.callback.call(this, ...found.match);
     }
 
     protected override async get(): Promise<Response> {

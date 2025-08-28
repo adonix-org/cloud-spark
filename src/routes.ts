@@ -41,10 +41,30 @@ export type RouteTuple = [Method, RegExp | string, RouteCallback];
  */
 export type RouteTable = RouteTuple[];
 
+/**
+ * Represents the result of matching a request to a route.
+ *
+ * Contains the route that was matched and the corresponding
+ * capture groups from the match.
+ */
+interface MatchedRoute {
+    route: Route;
+    match: string[];
+}
+
+/**
+ * Represents a route in the application.
+ *
+ * A route defines an HTTP method, a pattern to match request paths,
+ * and a callback to handle requests that match the pattern.
+ */
 export class Route {
     /**
-     * @param pattern  A RegExp or string used to match the request path
-     * @param callback  Function to handle requests matching the pattern
+     * Creates a new Route instance.
+     *
+     * @param method   The HTTP method (GET, POST, etc.) this route responds to.
+     * @param pattern  A RegExp used to match the request path.
+     * @param callback The function to execute when a request matches this route.
      */
     constructor(
         public readonly method: Method,
@@ -91,9 +111,18 @@ export class Routes implements Iterable<Route> {
      * @param url - Full URL string of the request
      * @returns The first matching Route, or undefined if none match
      */
-    public match(method: Method, url: string): Route | undefined {
+    public match(method: Method, url: string): MatchedRoute | undefined {
         const pathname = new URL(url).pathname;
-        return this.routes.find((route) => route.method === method && route.pattern.test(pathname));
+
+        for (const route of this) {
+            if (route.method !== method) continue;
+
+            const matches = route.pattern.exec(pathname);
+            if (matches) {
+                return { route, match: matches.slice(1) };
+            }
+        }
+        return undefined;
     }
 
     /** Allow iteration over all routes */

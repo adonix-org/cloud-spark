@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { expect } from "vitest";
 import { Method } from "../src/common";
 import { CorsWorker } from "../src/cors-worker";
 import { RouteCallback, RouteTable } from "../src/routes";
@@ -52,6 +52,17 @@ export namespace TestRoutes {
         [Method.GET, "^/three$", three],
         [Method.GET, "^/four$", four],
     ];
+
+    /**
+     * Execute a route callback and assert its Response body.
+     * @param callback The RouteCallback to invoke
+     * @param expected The expected response text
+     */
+    export async function expectResponseBody(callback: RouteCallback, expected: string) {
+        const response = await callback();
+        const text = await response.text();
+        expect(text).toBe(expected);
+    }
 }
 
 export const GET_REQUEST = new Request(VALID_URL, {
