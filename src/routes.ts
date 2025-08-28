@@ -19,10 +19,10 @@ import { Method } from "./common";
 /**
  * A callback function for a route.
  *
- * @param matches - Captured groups from the route RegExp, or the full match at index 0
+ * @param match - Captured groups from the route RegExp, or the full match at index 0
  * @returns A Response object or a Promise that resolves to a Response
  */
-export type RouteCallback = (...matches: string[]) => Promise<Response>;
+export type RouteCallback = (match: RegExpExecArray) => Promise<Response>;
 
 /**
  * A single route definition.
@@ -49,7 +49,7 @@ export type RouteTable = RouteTuple[];
  */
 interface MatchedRoute {
     route: Route;
-    match: string[];
+    match: RegExpExecArray;
 }
 
 /**
@@ -117,9 +117,9 @@ export class Routes implements Iterable<Route> {
         for (const route of this) {
             if (route.method !== method) continue;
 
-            const matches = route.pattern.exec(pathname);
-            if (matches) {
-                return { route, match: matches.slice(1) };
+            const match = route.pattern.exec(pathname);
+            if (match) {
+                return { route, match };
             }
         }
         return undefined;

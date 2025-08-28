@@ -81,7 +81,7 @@ describe("route worker unit tests", () => {
 
         // Use a regex literal for clarity
         worker.add(Method.GET, /^\/matches\/(\d{4})$/, async (digits): Promise<Response> => {
-            return new Response(digits); // capture group 1
+            return new Response(digits[1]); // capture group 1
         });
 
         const response = await worker.fetch();

@@ -35,7 +35,7 @@ export abstract class RouteWorker extends BasicWorker {
         const found = this.routes.match(this.request.method as Method, this.request.url);
         if (!found) return super.dispatch();
 
-        return found.route.callback.call(this, ...found.match);
+        return found.route.callback.call(this, found.match);
     }
 
     protected override async get(): Promise<Response> {
