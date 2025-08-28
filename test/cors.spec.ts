@@ -52,7 +52,7 @@ describe("cors headers allow any origin", () => {
         expect([...headers.entries()]).toStrictEqual([]);
     });
 
-    it("cors headers allow any origin", () => {
+    it("adds cors headers for any origin", () => {
         addCorsHeaders(getOrigin(worker.request), worker, headers);
         expect([...headers.entries()]).toStrictEqual([
             ["access-control-allow-headers", "Content-Type"],
@@ -62,7 +62,7 @@ describe("cors headers allow any origin", () => {
         ]);
     });
 
-    it("cors delete headers", () => {
+    it("deletes only cors headers", () => {
         headers = new Headers([
             ["access-control-allow-credentials", "true"],
             ["access-control-allow-headers", "Content-Type"],
@@ -85,7 +85,7 @@ describe("cors headers allow specific origin", () => {
         headers = new Headers();
     });
 
-    it("cors headers includes valid origin", () => {
+    it("adds cors headers for a specific and valid origin", () => {
         addCorsHeaders(VALID_ORIGIN, worker, headers);
         expect([...headers.entries()]).toStrictEqual([
             ["access-control-allow-credentials", "true"],
@@ -96,7 +96,7 @@ describe("cors headers allow specific origin", () => {
         ]);
     });
 
-    it("cors headers invalid origin", () => {
+    it("adds informational cors headers only to invalid origin", () => {
         addCorsHeaders(INVALID_ORIGIN, worker, headers);
         expect([...headers.entries()]).toStrictEqual([
             ["access-control-allow-headers", "Content-Type"],

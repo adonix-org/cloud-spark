@@ -31,7 +31,7 @@ class TestWorker extends BaseWorker {
     }
 }
 
-describe("base worker unit testing", () => {
+describe("base worker unit tests", () => {
     let worker: TestWorker;
     let headers: Headers;
 
