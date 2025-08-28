@@ -59,4 +59,8 @@ export class EmptyCorsWorker extends DefaultCorsWorker {
     public override getExposeHeaders(): string[] {
         return [];
     }
+
+    public override getMaxAge(): number {
+        return 0;
+    }
 }

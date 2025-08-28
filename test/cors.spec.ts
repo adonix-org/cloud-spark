@@ -22,13 +22,14 @@ import {
     DefaultCorsWorker,
     AllowOriginWorker,
     VALID_ORIGIN,
+    EmptyCorsWorker,
 } from "./constants";
 import { addCorsHeaders } from "../src/cors";
 import { getOrigin } from "../src/common";
 import { CorsWorker } from "../src/cors-worker";
 
 describe("cors headers allow any origin", () => {
-    let worker: DefaultCorsWorker;
+    let worker: CorsWorker;
     let headers: Headers;
 
     beforeEach(() => {
@@ -102,5 +103,25 @@ describe("cors headers allow specific origin", () => {
             ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-max-age", "604800"],
         ]);
+    });
+});
+
+describe("cors empty provider", () => {
+    let worker: CorsWorker;
+    let headers: Headers;
+
+    beforeEach(() => {
+        worker = new EmptyCorsWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
+        headers = new Headers();
+    });
+
+    it("empty cors headers includes valid origin", () => {
+        addCorsHeaders(VALID_ORIGIN, worker, headers);
+        expect([...headers.entries()]).toStrictEqual([["access-control-max-age", "0"]]);
+    });
+
+    it("empty cors headers invalid origin", () => {
+        addCorsHeaders(INVALID_ORIGIN, worker, headers);
+        expect([...headers.entries()]).toStrictEqual([["access-control-max-age", "0"]]);
     });
 });
