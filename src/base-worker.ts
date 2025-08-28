@@ -87,7 +87,7 @@ export abstract class BaseWorker implements Worker {
     public abstract fetch(): Promise<Response>;
 
     /**
-     * **Ignite** your `Worker` implementation into a Cloudflare-compatible handler.
+     * **Ignite** your `Worker` implementation into a Cloudflare handler.
      *
      * @returns A `FetchHandler` that launches a new worker instance for each request.
      *
