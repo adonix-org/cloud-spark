@@ -95,4 +95,8 @@ describe("cors worker edge case", () => {
     it("returns [] for expose headers", () => {
         expect(worker.getExposeHeaders()).toStrictEqual([]);
     });
+
+    it("returns false for allow any origin", () => {
+        expect(worker.allowAnyOrigin()).toBe(false);
+    });
 });
