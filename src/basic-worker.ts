@@ -75,7 +75,7 @@ export abstract class BasicWorker extends CacheWorker {
     }
 
     protected async head(): Promise<Response> {
-        const worker = this.createWorker(new Request(this.request, { method: Method.GET }));
+        const worker = this.create(new Request(this.request, { method: Method.GET }));
         return this.getResponse(Head, await worker.fetch());
     }
 

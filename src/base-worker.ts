@@ -74,7 +74,7 @@ export abstract class BaseWorker implements Worker {
      * @param request - The {@link Request} to pass to the new worker instance.
      * @returns A new worker instance of the same subclass as `this`.
      */
-    protected createWorker(request: Request): this {
+    protected create(request: Request): this {
         const ctor = this.constructor as WorkerConstructor<this>;
         return new ctor(request, this.env, this.ctx);
     }

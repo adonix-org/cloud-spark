@@ -26,8 +26,8 @@ class TestWorker extends BaseWorker {
     }
 
     // This method is protected in base worker.
-    public override createWorker(request: Request): this {
-        return super.createWorker(request);
+    public override create(request: Request): this {
+        return super.create(request);
     }
 }
 
@@ -47,23 +47,23 @@ describe("base worker unit tests", () => {
     });
 
     it("creates a worker that is same type", () => {
-        const newWorker = worker.createWorker(GET_REQUEST);
+        const newWorker = worker.create(GET_REQUEST);
         expect(newWorker).toBeInstanceOf(TestWorker);
     });
 
     it("creates a worker that returns a new instance", () => {
-        const newWorker = worker.createWorker(GET_REQUEST);
+        const newWorker = worker.create(GET_REQUEST);
         expect(newWorker).not.toBe(worker);
     });
 
     it("creates a worker that retains env and ctx", () => {
-        const newWorker = worker.createWorker(GET_REQUEST);
+        const newWorker = worker.create(GET_REQUEST);
         expect(newWorker.env).toBe(env);
         expect(newWorker.ctx).toBe(ctx);
     });
 
     it("creates a worker with the provided request", () => {
-        const newWorker = worker.createWorker(new Request(GET_REQUEST, { method: Method.HEAD }));
+        const newWorker = worker.create(new Request(GET_REQUEST, { method: Method.HEAD }));
         expect(newWorker.request).not.toBe(GET_REQUEST);
         expect(newWorker.request.method).toBe(Method.HEAD);
         expect(newWorker.request.url).toBe(VALID_URL);
