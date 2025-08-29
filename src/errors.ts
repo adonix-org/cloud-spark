@@ -15,7 +15,7 @@
  */
 
 import { getReasonPhrase } from "http-status-codes";
-import { CacheControl, HttpHeader, Method, StatusCodes } from "./common";
+import { CacheControl, HttpHeader, StatusCodes } from "./common";
 import { CorsWorker, JsonResponse } from "./response";
 
 export interface ErrorJson {
@@ -26,20 +26,12 @@ export interface ErrorJson {
 
 export class HttpError extends JsonResponse {
     constructor(worker: CorsWorker, status: StatusCodes, protected readonly details?: string) {
-        super(worker, undefined, CacheControl.DISABLE, status);
-    }
-
-    public get json(): ErrorJson {
-        return {
-            status: this.status,
-            error: getReasonPhrase(this.status),
-            details: this.details ?? getReasonPhrase(this.status),
+        const json: ErrorJson = {
+            status,
+            error: getReasonPhrase(status),
+            details: details ?? getReasonPhrase(status),
         };
-    }
-
-    public override createResponse(): Response {
-        this.body = JSON.stringify(this.json);
-        return super.createResponse();
+        super(worker, json, CacheControl.DISABLE, status);
     }
 }
 
@@ -75,13 +67,6 @@ export class MethodNotAllowed extends HttpError {
             `${worker.request.method} method not allowed.`
         );
         this.setHeader(HttpHeader.ALLOW, this.worker.getAllowMethods());
-    }
-
-    public override get json(): ErrorJson & { allowed: Method[] } {
-        return {
-            ...super.json,
-            allowed: this.worker.getAllowMethods(),
-        };
     }
 }
 

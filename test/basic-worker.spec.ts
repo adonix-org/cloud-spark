@@ -73,7 +73,6 @@ describe("basic worker unit tests", () => {
             status: 405,
             error: "Method Not Allowed",
             details: "POST method not allowed.",
-            allowed: ["GET", "HEAD", "OPTIONS"],
         };
 
         expect(await response.json()).toStrictEqual(expectedJson);
@@ -95,7 +94,6 @@ describe("basic worker unit tests", () => {
             status: 405,
             error: "Method Not Allowed",
             details: "BAD method not allowed.",
-            allowed: ["GET", "HEAD", "OPTIONS"],
         };
 
         expect(await response.json()).toStrictEqual(expectedJson);
