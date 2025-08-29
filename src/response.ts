@@ -73,7 +73,7 @@ abstract class CorsResponse extends BaseResponse {
         addCorsHeaders(this.getOrigin(), this.worker, this.headers);
 
         if (!this.worker.allowAnyOrigin()) {
-            mergeHeader(this.headers, HttpHeader.VARY, HttpHeader.ORIGIN);
+            this.mergeHeader(HttpHeader.VARY, HttpHeader.ORIGIN);
         }
     }
 
