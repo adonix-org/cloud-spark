@@ -87,7 +87,7 @@ abstract class CacheResponse extends CorsResponse {
         super(worker);
     }
 
-    protected addCacheHeaders(): void {
+    protected addCacheHeader(): void {
         if (this.cache) {
             this.headers.set(HttpHeader.CACHE_CONTROL, CacheControl.stringify(this.cache));
         }
@@ -101,16 +101,17 @@ export abstract class WorkerResponse extends CacheResponse {
         cache?: CacheControl
     ) {
         super(worker, cache);
-        this.body = this.status === StatusCodes.NO_CONTENT ? null : body;
     }
 
     public createResponse(): Response {
         this.addCorsHeaders();
-        this.addCacheHeaders();
+        this.addCacheHeader();
         this.addSecurityHeaders();
 
-        if (this.body) this.addContentType();
-        return new Response(this.body, this.responseInit);
+        const body = this.status === StatusCodes.NO_CONTENT ? null : this.body;
+
+        if (body) this.addContentType();
+        return new Response(body, this.responseInit);
     }
 
     protected addSecurityHeaders(): void {
