@@ -113,13 +113,10 @@ export class Routes implements Iterable<Route> {
      */
     public match(method: Method, url: string): MatchedRoute | undefined {
         const pathname = new URL(url).pathname;
-
         for (const route of this) {
-            if (route.method !== method) continue;
-
-            const match = route.pattern.exec(pathname);
-            if (match) {
-                return { route, match };
+            if (route.method === method) {
+                const match = route.pattern.exec(pathname);
+                if (match) return { route, match };
             }
         }
         return undefined;
