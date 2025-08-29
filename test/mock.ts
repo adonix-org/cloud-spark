@@ -30,21 +30,46 @@ export const ctx: ExecutionContext = {
     props: () => {},
 } as const;
 
+type CacheEntry = { request: string; response: Response };
+
+class InMemoryCache {
+    private store: Record<string, Response> = {};
+
+    async match(request: RequestInfo): Promise<Response | undefined> {
+        const key = typeof request === "string" ? request : request.url;
+        return this.store[key];
+    }
+
+    async matchAll(request?: RequestInfo): Promise<Response[]> {
+        if (!request) return Object.values(this.store);
+        const key = typeof request === "string" ? request : request.url;
+        const resp = this.store[key];
+        return resp ? [resp] : [];
+    }
+
+    async put(request: RequestInfo, response: Response): Promise<void> {
+        const key = typeof request === "string" ? request : request.url;
+        // store a clone so the original Response can still be read
+        this.store[key] = response.clone();
+    }
+
+    async delete(request: RequestInfo): Promise<boolean> {
+        const key = typeof request === "string" ? request : request.url;
+        const existed = key in this.store;
+        delete this.store[key];
+        return existed;
+    }
+
+    clear(): void {
+        this.store = {};
+    }
+}
+
+const defaultCache = new InMemoryCache();
+
 const caches = {
-    default: {
-        async match(_request: RequestInfo, _options?: any): Promise<Response | undefined> {
-            return undefined;
-        },
-        async matchAll(_request?: RequestInfo, _options?: any): Promise<Response[]> {
-            return [];
-        },
-        async put(_request: RequestInfo, _response: Response): Promise<void> {
-            // no-op
-        },
-        async delete(_request: RequestInfo, _options?: any): Promise<boolean> {
-            return false;
-        },
-    },
-} as const;
+    default: defaultCache,
+    open: async (_name: string) => defaultCache,
+};
 
 (globalThis as any).caches = caches;

@@ -99,7 +99,7 @@ export abstract class CacheWorker extends CorsWorker {
      * @returns {Response} A new Response with dynamic CORS headers applied.
      * @see {@link removeCacheHeaders}
      */
-    private addCacheHeaders(cached: Response): Response {
+    protected addCacheHeaders(cached: Response): Response {
         const headers = new Headers(cached.headers);
         addCorsHeaders(getOrigin(this.request), this, headers);
 
