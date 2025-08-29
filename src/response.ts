@@ -37,14 +37,9 @@ export type CorsWorker = Worker & CorsProvider;
 
 abstract class BaseResponse {
     public headers: Headers = new Headers();
-    public body: BodyInit | null;
     public status: StatusCodes = StatusCodes.OK;
     public statusText?: string;
     public mediaType?: MediaType;
-
-    constructor(public readonly worker: CorsWorker, content: BodyInit | null = null) {
-        this.body = this.status === StatusCodes.NO_CONTENT ? null : content;
-    }
 
     protected get responseInit(): ResponseInit {
         return {
@@ -70,8 +65,8 @@ abstract class BaseResponse {
 }
 
 abstract class CorsResponse extends BaseResponse {
-    constructor(worker: CorsWorker, content: BodyInit | null = null) {
-        super(worker, content);
+    constructor(public readonly worker: CorsWorker) {
+        super();
     }
 
     protected addCorsHeaders(): void {
@@ -88,8 +83,8 @@ abstract class CorsResponse extends BaseResponse {
 }
 
 abstract class CacheResponse extends CorsResponse {
-    constructor(worker: CorsWorker, body: BodyInit | null = null, public cache?: CacheControl) {
-        super(worker, body);
+    constructor(worker: CorsWorker, public cache?: CacheControl) {
+        super(worker);
     }
 
     protected addCacheHeaders(): void {
@@ -100,14 +95,22 @@ abstract class CacheResponse extends CorsResponse {
 }
 
 export abstract class WorkerResponse extends CacheResponse {
+    constructor(
+        worker: CorsWorker,
+        private readonly body: BodyInit | null = null,
+        cache?: CacheControl
+    ) {
+        super(worker, cache);
+        this.body = this.status === StatusCodes.NO_CONTENT ? null : body;
+    }
+
     public createResponse(): Response {
         this.addCorsHeaders();
         this.addCacheHeaders();
         this.addSecurityHeaders();
 
-        const body = this.status === StatusCodes.NO_CONTENT ? null : this.body;
-        if (body) this.addContentType();
-        return new Response(body, this.responseInit);
+        if (this.body) this.addContentType();
+        return new Response(this.body, this.responseInit);
     }
 
     protected addSecurityHeaders(): void {
