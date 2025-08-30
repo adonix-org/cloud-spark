@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import {
     BadRequest,
@@ -31,7 +31,7 @@ import {
 
 const worker = {
     request: { method: "POST" },
-    getAllowMethods: () => "GET, HEAD, OPTIONS",
+    getAllowMethods: vi.fn(() => "GET, HEAD, OPTIONS"),
 } as any;
 
 describe("http error unit tests", () => {

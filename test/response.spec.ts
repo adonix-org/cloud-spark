@@ -28,22 +28,21 @@ import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader } from "../src/common";
 import { VALID_URL } from "./constants";
 
-// Mock CorsWorker
 const mockWorker = {
     request: new Request(VALID_URL),
     allowAnyOrigin: vi.fn(() => false),
     getAllowMethods: vi.fn(() => "GET, HEAD, OPTIONS"),
 } as any;
 
-describe("WorkerResponse and subclasses", () => {
-    it("SuccessResponse sets status and body", () => {
+describe("response unit tests", () => {
+    it("sets status and body in success response", () => {
         const resp = new SuccessResponse(mockWorker, "Hello", undefined, StatusCodes.CREATED);
         const r = resp.createResponse();
         expect(r.status).toBe(StatusCodes.CREATED);
         expect(r.statusText).toBe(getReasonPhrase(StatusCodes.CREATED));
     });
 
-    it("JsonResponse sets JSON body and Content-Type", async () => {
+    it("sets json body and content-type in json response", async () => {
         const resp = new JsonResponse(mockWorker, { foo: "bar" });
         const r = resp.createResponse();
         expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("application/json; charset=utf-8");
@@ -51,7 +50,7 @@ describe("WorkerResponse and subclasses", () => {
         expect(json).toEqual({ foo: "bar" });
     });
 
-    it("HtmlResponse sets Content-Type to text/html", async () => {
+    it("sets content type to text/html in html response", async () => {
         const resp = new HtmlResponse(mockWorker, "<p>Hello</p>");
         const r = resp.createResponse();
         expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("text/html; charset=utf-8");
@@ -59,7 +58,7 @@ describe("WorkerResponse and subclasses", () => {
         expect(text).toBe("<p>Hello</p>");
     });
 
-    it("TextResponse sets Content-Type to text/plain", async () => {
+    it("sets content type to text/plain in text response", async () => {
         const resp = new TextResponse(mockWorker, "Hello");
         const r = resp.createResponse();
         expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("text/plain; charset=utf-8");
@@ -67,7 +66,7 @@ describe("WorkerResponse and subclasses", () => {
         expect(text).toBe("Hello");
     });
 
-    it("ClonedResponse clones headers and body", async () => {
+    it("clones response headers and body in cloned response", async () => {
         const original = new Response("Test", {
             headers: { "X-Test": "ok" },
             status: StatusCodes.ACCEPTED,
@@ -79,28 +78,28 @@ describe("WorkerResponse and subclasses", () => {
         expect(await r.text()).toBe("Test");
     });
 
-    it("Head copies headers but has no body", async () => {
+    it("reurns headers but empty body in head response", async () => {
         const original = new Response("Hello", { headers: { "X-Test": "ok" } });
         const resp = new Head(mockWorker, original);
         const r = resp.createResponse();
         expect(r.headers.get("X-Test")).toBe("ok");
-        expect(await r.text()).toBe(""); // no body
+        expect(await r.text()).toBe("");
     });
 
-    it("Options sets status NO_CONTENT and Allow header", () => {
+    it("sets no-content and adds 'allow' header in options response", () => {
         const resp = new Options(mockWorker);
         const r = resp.createResponse();
         expect(r.status).toBe(StatusCodes.NO_CONTENT);
         expect(r.headers.get(HttpHeader.ALLOW)).toBe("GET, HEAD, OPTIONS");
     });
 
-    it("WorkerResponse adds security header X-Content-Type-Options", () => {
+    it("adds security header x-content-type-options", () => {
         const resp = new SuccessResponse(mockWorker);
         const r = resp.createResponse();
         expect(r.headers.get(HttpHeader.X_CONTENT_TYPE_OPTIONS)).toBe(HttpHeader.NOSNIFF);
     });
 
-    it("Cache headers are set if provided", () => {
+    it("sets cache header if defined", () => {
         const cache: CacheControl = { "max-age": 65 };
         const resp = new JsonResponse(mockWorker, { foo: "bar" }, cache);
         const r = resp.createResponse();
