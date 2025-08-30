@@ -24,16 +24,8 @@ import {
     setHeader,
     getOrigin,
 } from "./common";
-import { addCorsHeaders, CorsProvider } from "./cors";
-import { Worker } from "./worker";
-
-/**
- * A {@link Worker} that also implements {@link CorsProvider}.
- *
- * Used by response builders that require both Worker
- * and CORS functionality.
- */
-export type CorsWorker = Worker & CorsProvider;
+import { addCorsHeaders } from "./cors";
+import { CorsWorker } from "./cors-worker";
 
 abstract class BaseResponse {
     public headers: Headers = new Headers();

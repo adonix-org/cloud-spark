@@ -30,8 +30,6 @@ export const ctx: ExecutionContext = {
     props: () => {},
 } as const;
 
-type CacheEntry = { request: string; response: Response };
-
 class InMemoryCache {
     private store: Record<string, Response> = {};
 
@@ -49,7 +47,6 @@ class InMemoryCache {
 
     async put(request: RequestInfo, response: Response): Promise<void> {
         const key = typeof request === "string" ? request : request.url;
-        // store a clone so the original Response can still be read
         this.store[key] = response.clone();
     }
 
@@ -65,11 +62,11 @@ class InMemoryCache {
     }
 }
 
-const defaultCache = new InMemoryCache();
+export const mockCache = new InMemoryCache();
 
 const caches = {
-    default: defaultCache,
-    open: async (_name: string) => defaultCache,
+    default: mockCache,
+    open: async (_name: string) => mockCache,
 };
 
 (globalThis as any).caches = caches;
