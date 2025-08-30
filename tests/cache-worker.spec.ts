@@ -109,7 +109,7 @@ describe("cache worker unit tests", () => {
 
     it("adds cors headers before returning cached response", async () => {
         const response = new Response("+CORS");
-        expect([...response!.headers.entries()]).toStrictEqual([
+        expect([...response.headers.entries()]).toStrictEqual([
             ["content-type", "text/plain;charset=UTF-8"],
         ]);
 
