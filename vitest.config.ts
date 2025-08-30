@@ -6,7 +6,7 @@ export default defineConfig({
         testTimeout: 30000,
         watch: false,
         coverage: {
-            reporter: ["text", "lcov", "json"],
+            reporter: ["text", "lcov"],
         },
     },
 });
