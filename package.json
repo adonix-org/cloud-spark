@@ -44,7 +44,7 @@
         "coverage": "vitest run --coverage"
     },
     "devDependencies": {
-        "@cloudflare/vitest-pool-workers": "^0.8.67",
+        "@cloudflare/vitest-pool-workers": "^0.8.68",
         "@vitest/coverage-v8": "^3.2.4",
         "tsup": "^8.5.0",
         "typescript": "^5.9.2",
