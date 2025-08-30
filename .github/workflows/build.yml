@@ -1,4 +1,4 @@
-name: Build, Test and Analyze
+name: Build
 
 on:
     workflow_dispatch:
@@ -9,7 +9,7 @@ on:
                 default: "main"
 
 jobs:
-    build-and-publish:
+    build-and-analyze:
         name: Build, Test, and Analyze
         runs-on: ubuntu-latest
 
