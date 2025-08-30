@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import { ALL_METHODS, BASIC_METHODS, GET_REQUEST, TestRoutes, VALID_URL } from "./constants";
+import { describe, it, expect } from "vitest";
+import { ALL_METHODS, BASIC_METHODS, TestRoutes, VALID_URL } from "./constants";
 import { Method } from "../src/common";
-import { Route, RouteCallback, Routes, RouteTable } from "../src/routes";
+import { RouteCallback } from "../src/routes";
 import { RouteWorker } from "../src/route-worker";
 import { ctx, env } from "./mock";
 

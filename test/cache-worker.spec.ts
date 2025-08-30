@@ -17,7 +17,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { CacheWorker } from "../src/cache-worker";
 import { env, ctx, defaultCache, namedCache } from "./mock";
-import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "./constants";
+import { GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "./constants";
 import { Method } from "../src/common";
 import { addCorsHeaders } from "../src/cors";
 
