@@ -197,8 +197,7 @@ export function setHeader(headers: Headers, key: string, value: string | string[
     const raw = Array.isArray(value) ? value : [value];
     const values = Array.from(new Set(raw.map((v) => v.trim())))
         .filter((v) => v.length)
-        // Headers are ASCII-only per RFC 9110; locale-aware sorting is irrelevant.
-        .sort(); // NOSONAR
+        .sort(httpTokenCompare);
 
     if (!values.length) {
         headers.delete(key);
@@ -247,7 +246,7 @@ export function normalizeUrl(url: string): URL {
     const u = new URL(url);
 
     const params = [...u.searchParams.entries()];
-    params.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
+    params.sort(([a], [b]) => httpTokenCompare(a, b));
 
     u.search = params
         .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
@@ -255,6 +254,20 @@ export function normalizeUrl(url: string): URL {
     u.hash = "";
 
     return u;
+}
+
+/**
+ * Deterministic ASCII comparison of HTTP token strings.
+ *
+ * Use this for header names, header values, or query parameter keys
+ * that are restricted to ASCII per the HTTP spec (RFC 9110 / RFC 3986).
+ *
+ * Note: This comparator is NOT for natural language strings.
+ */
+export function httpTokenCompare(a: string, b: string): number {
+    if (a < b) return -1;
+    if (a > b) return 1;
+    return 0;
 }
 
 /**
