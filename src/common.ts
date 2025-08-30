@@ -197,7 +197,8 @@ export function setHeader(headers: Headers, key: string, value: string | string[
     const raw = Array.isArray(value) ? value : [value];
     const values = Array.from(new Set(raw.map((v) => v.trim())))
         .filter((v) => v.length)
-        .sort();
+        // Headers are ASCII-only per RFC 9110; locale-aware sorting is irrelevant.
+        .sort(); // NOSONAR
 
     if (!values.length) {
         headers.delete(key);
@@ -246,7 +247,7 @@ export function normalizeUrl(url: string): URL {
     const u = new URL(url);
 
     const params = [...u.searchParams.entries()];
-    params.sort(([a], [b]) => a.localeCompare(b));
+    params.sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
 
     u.search = params
         .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
