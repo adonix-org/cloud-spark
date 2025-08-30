@@ -147,6 +147,7 @@ export abstract class CacheWorker extends CorsWorker {
             Cors.ALLOW_CREDENTIALS,
             Cors.EXPOSE_HEADERS,
             Cors.ALLOW_METHODS,
+            Cors.ALLOW_HEADERS,
             Cors.MAX_AGE,
         ];
     }

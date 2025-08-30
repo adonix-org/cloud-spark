@@ -31,27 +31,31 @@ export const ctx: ExecutionContext = {
 } as const;
 
 class InMemoryCache {
-    private store: Record<string, Response> = {};
+    public store: Record<string, Response> = {};
 
-    async match(request: RequestInfo): Promise<Response | undefined> {
-        const key = typeof request === "string" ? request : request.url;
+    get size(): number {
+        return Object.keys(this.store).length;
+    }
+
+    get isEmpty(): boolean {
+        return this.size === 0;
+    }
+
+    match(key: string): Response | undefined {
         return this.store[key];
     }
 
-    async matchAll(request?: RequestInfo): Promise<Response[]> {
-        if (!request) return Object.values(this.store);
-        const key = typeof request === "string" ? request : request.url;
+    matchAll(key?: string): Response[] {
+        if (!key) return Object.values(this.store);
         const resp = this.store[key];
         return resp ? [resp] : [];
     }
 
-    async put(request: RequestInfo, response: Response): Promise<void> {
-        const key = typeof request === "string" ? request : request.url;
+    put(key: string, response: Response): void {
         this.store[key] = response.clone();
     }
 
-    async delete(request: RequestInfo): Promise<boolean> {
-        const key = typeof request === "string" ? request : request.url;
+    delete(key: string): boolean {
         const existed = key in this.store;
         delete this.store[key];
         return existed;
@@ -62,11 +66,12 @@ class InMemoryCache {
     }
 }
 
-export const mockCache = new InMemoryCache();
+export const defaultCache = new InMemoryCache();
+export const namedCache = new InMemoryCache();
 
 const caches = {
-    default: mockCache,
-    open: async (_name: string) => mockCache,
+    default: defaultCache,
+    open: async (_name: string) => namedCache,
 };
 
 (globalThis as any).caches = caches;
