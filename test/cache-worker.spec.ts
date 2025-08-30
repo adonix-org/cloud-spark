@@ -72,14 +72,14 @@ describe("cache worker unit tests", () => {
         expect(await namedCache.match(VALID_URL)?.text()).toBe("NAMED CACHE");
     });
 
-    it("returns repsonse from default cache on hit", async () => {
+    it("returns response from default cache on hit", async () => {
         defaultCache.put(VALID_URL, new Response("DEFAULT HIT"));
 
         const response = await worker.getCachedResponse();
         expect(await response?.text()).toBe("DEFAULT HIT");
     });
 
-    it("returns repsonse from named cache on hit", async () => {
+    it("returns response from named cache on hit", async () => {
         defaultCache.put(VALID_URL, new Response("NAMED HIT"));
 
         const response = await worker.getCachedResponse();

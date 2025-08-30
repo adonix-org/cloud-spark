@@ -78,7 +78,7 @@ describe("response unit tests", () => {
         expect(await r.text()).toBe("Test");
     });
 
-    it("reurns headers but empty body in head response", async () => {
+    it("returns headers but empty body in head response", async () => {
         const original = new Response("Hello", { headers: { "X-Test": "ok" } });
         const resp = new Head(mockWorker, original);
         const r = resp.createResponse();

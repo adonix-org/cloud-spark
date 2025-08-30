@@ -5,5 +5,8 @@ export default defineConfig({
         reporters: "verbose",
         testTimeout: 30000,
         watch: false,
+        coverage: {
+            reporter: ["text", "lcov", "json"],
+        },
     },
 });
