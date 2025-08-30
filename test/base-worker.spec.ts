@@ -33,11 +33,9 @@ class TestWorker extends BaseWorker {
 
 describe("base worker unit tests", () => {
     let worker: TestWorker;
-    let headers: Headers;
 
     beforeEach(() => {
         worker = new TestWorker(GET_REQUEST, env, ctx);
-        headers = new Headers();
     });
 
     it("returns constructor parameters via getters", () => {
