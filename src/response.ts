@@ -97,7 +97,7 @@ export abstract class WorkerResponse extends CacheResponse {
         super(worker, cache);
     }
 
-    public createResponse(): Response {
+    public getResponse(): Response {
         this.addCorsHeaders();
         this.addCacheHeader();
         this.addSecurityHeaders();

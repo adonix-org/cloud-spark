@@ -86,7 +86,7 @@ export abstract class BasicWorker extends CacheWorker {
         ResponseClass: Ctor,
         ...args: ConstructorParameters<Ctor> extends [CorsWorker, ...infer R] ? R : never
     ): Promise<Response> {
-        const response = new ResponseClass(this, ...args).createResponse();
+        const response = new ResponseClass(this, ...args).getResponse();
         this.setCachedResponse(response);
         return response;
     }
