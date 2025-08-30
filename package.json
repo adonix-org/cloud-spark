@@ -40,18 +40,13 @@
     "scripts": {
         "build": "tsup",
         "dev": "tsup --watch",
-        "prepare-pack": "node -e \"require('fs').mkdirSync('artifacts', { recursive: true })\"",
-        "pack": "npm run prepare-pack && npm pack --pack-destination ./",
         "test": "vitest",
-        "coverage": "vitest run --coverage",
-        "debug": "tsc && tsx ./src/debug.ts"
+        "coverage": "vitest run --coverage"
     },
     "devDependencies": {
         "@cloudflare/vitest-pool-workers": "^0.8.67",
-        "@cloudflare/workers-types": "^4.20250821.0",
         "@vitest/coverage-v8": "^3.2.4",
         "tsup": "^8.5.0",
-        "tsx": "^4.20.4",
         "typescript": "^5.9.2",
         "vitest": "^3.2.4"
     },
