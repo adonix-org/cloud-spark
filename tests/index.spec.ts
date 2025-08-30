@@ -15,7 +15,7 @@
  */
 
 import { expect, it } from "vitest";
-import * as IndexExports from "../src/index.ts";
+import * as IndexExports from "../src/index";
 
 it("exports library symbols", () => {
     expect(IndexExports).toBeTruthy();
