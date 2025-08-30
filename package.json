@@ -4,8 +4,6 @@
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
     "license": "Apache-2.0",
     "type": "module",
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
@@ -16,6 +14,7 @@
     "files": [
         "dist"
     ],
+    "sideEffects": false,
     "author": {
         "name": "Ty Busby",
         "email": "tybusby@adonix.org",
@@ -42,7 +41,7 @@
         "build": "tsup",
         "dev": "tsup --watch",
         "prepare-pack": "node -e \"require('fs').mkdirSync('artifacts', { recursive: true })\"",
-        "pack": "npm run prepare-pack && npm pack --pack-destination ./artifacts",
+        "pack": "npm run prepare-pack && npm pack --pack-destination ./",
         "test": "vitest",
         "coverage": "vitest run --coverage",
         "debug": "tsc && tsx ./src/debug.ts"
