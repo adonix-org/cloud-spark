@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { ExecutionContext } from "@cloudflare/workers-types";
-
 export const env = {
     MY_KV: {
         get: async (key: string) => `mock-value-for-${key}`,

@@ -47,7 +47,7 @@ export type RouteTable = RouteTuple[];
  * Contains the route that was matched and the corresponding
  * capture groups from the match.
  */
-interface MatchedRoute {
+export interface MatchedRoute {
     route: Route;
     match: RegExpExecArray;
 }

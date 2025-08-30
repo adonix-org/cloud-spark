@@ -16,7 +16,7 @@
 import { expect } from "vitest";
 import { Method } from "../src/common";
 import { BaseCorsWorker } from "../src/base-cors-worker";
-import { RouteCallback, RouteTable } from "../src/routes";
+import { MatchedRoute, RouteCallback, RouteTable } from "../src/routes";
 
 export const VALID_ORIGIN = "https://localhost";
 export const INVALID_ORIGIN = "https://localhost.invalid";
@@ -58,8 +58,8 @@ export namespace TestRoutes {
      * @param callback The RouteCallback to invoke
      * @param expected The expected response text
      */
-    export async function expectResponseBody(callback: RouteCallback, expected: string) {
-        const response = await callback();
+    export async function expectResponseBody(found: MatchedRoute, expected: string) {
+        const response = await found.route.callback(found.match);
         const text = await response.text();
         expect(text).toBe(expected);
     }
