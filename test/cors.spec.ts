@@ -26,102 +26,104 @@ import {
 } from "./constants";
 import { addCorsHeaders } from "../src/cors";
 import { getOrigin } from "../src/common";
-import { CorsWorker } from "../src/cors-worker";
+import { CorsWorker } from "../src/response";
 
-describe("cors headers allow any origin", () => {
-    let worker: CorsWorker;
-    let headers: Headers;
+describe("cors unit tests", () => {
+    describe("cors headers allow any origin", () => {
+        let worker: CorsWorker;
+        let headers: Headers;
 
-    beforeEach(() => {
-        worker = new DefaultCorsWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
-        headers = new Headers();
+        beforeEach(() => {
+            worker = new DefaultCorsWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
+            headers = new Headers();
+        });
+
+        it("does not add cors headers for null origin", () => {
+            addCorsHeaders(null, worker, headers);
+            expect([...headers.entries()]).toStrictEqual([]);
+        });
+
+        it("does not add cors headers for empty origin", () => {
+            addCorsHeaders("", worker, headers);
+            expect([...headers.entries()]).toStrictEqual([]);
+        });
+
+        it("does not add cors headers for white space origin", () => {
+            addCorsHeaders(" ", worker, headers);
+            expect([...headers.entries()]).toStrictEqual([]);
+        });
+
+        it("adds cors headers for any origin", () => {
+            addCorsHeaders(getOrigin(worker.request), worker, headers);
+            expect([...headers.entries()]).toStrictEqual([
+                ["access-control-allow-headers", "Content-Type"],
+                ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
+                ["access-control-allow-origin", "*"],
+                ["access-control-max-age", "604800"],
+            ]);
+        });
+
+        it("deletes only cors headers", () => {
+            headers = new Headers([
+                ["access-control-allow-credentials", "true"],
+                ["access-control-allow-headers", "Content-Type"],
+                ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
+                ["access-control-allow-origin", "https://localhost"],
+                ["access-control-max-age", "604800"],
+                ["vary", "Origin"],
+            ]);
+            addCorsHeaders(null, worker, headers);
+            expect([...headers.entries()]).toStrictEqual([["vary", "Origin"]]);
+        });
     });
 
-    it("does not add cors headers for null origin", () => {
-        addCorsHeaders(null, worker, headers);
-        expect([...headers.entries()]).toStrictEqual([]);
+    describe("cors headers allow specific origin", () => {
+        let worker: CorsWorker;
+        let headers: Headers;
+
+        beforeEach(() => {
+            worker = new AllowOriginWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
+            headers = new Headers();
+        });
+
+        it("adds cors headers for a specific and valid origin", () => {
+            addCorsHeaders(VALID_ORIGIN, worker, headers);
+            expect([...headers.entries()]).toStrictEqual([
+                ["access-control-allow-credentials", "true"],
+                ["access-control-allow-headers", "Content-Type"],
+                ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
+                ["access-control-allow-origin", "https://localhost"],
+                ["access-control-max-age", "604800"],
+            ]);
+        });
+
+        it("adds informational cors headers only to invalid origin", () => {
+            addCorsHeaders(INVALID_ORIGIN, worker, headers);
+            expect([...headers.entries()]).toStrictEqual([
+                ["access-control-allow-headers", "Content-Type"],
+                ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
+                ["access-control-max-age", "604800"],
+            ]);
+        });
     });
 
-    it("does not add cors headers for empty origin", () => {
-        addCorsHeaders("", worker, headers);
-        expect([...headers.entries()]).toStrictEqual([]);
-    });
+    describe("cors empty provider", () => {
+        let worker: CorsWorker;
+        let headers: Headers;
 
-    it("does not add cors headers for white space origin", () => {
-        addCorsHeaders(" ", worker, headers);
-        expect([...headers.entries()]).toStrictEqual([]);
-    });
+        beforeEach(() => {
+            worker = new EmptyCorsWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
+            headers = new Headers();
+        });
 
-    it("adds cors headers for any origin", () => {
-        addCorsHeaders(getOrigin(worker.request), worker, headers);
-        expect([...headers.entries()]).toStrictEqual([
-            ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
-            ["access-control-allow-origin", "*"],
-            ["access-control-max-age", "604800"],
-        ]);
-    });
+        it("handle empty cors provider includes valid origin", () => {
+            addCorsHeaders(VALID_ORIGIN, worker, headers);
+            expect([...headers.entries()]).toStrictEqual([["access-control-max-age", "0"]]);
+        });
 
-    it("deletes only cors headers", () => {
-        headers = new Headers([
-            ["access-control-allow-credentials", "true"],
-            ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
-            ["access-control-allow-origin", "https://localhost"],
-            ["access-control-max-age", "604800"],
-            ["vary", "Origin"],
-        ]);
-        addCorsHeaders(null, worker, headers);
-        expect([...headers.entries()]).toStrictEqual([["vary", "Origin"]]);
-    });
-});
-
-describe("cors headers allow specific origin", () => {
-    let worker: CorsWorker;
-    let headers: Headers;
-
-    beforeEach(() => {
-        worker = new AllowOriginWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
-        headers = new Headers();
-    });
-
-    it("adds cors headers for a specific and valid origin", () => {
-        addCorsHeaders(VALID_ORIGIN, worker, headers);
-        expect([...headers.entries()]).toStrictEqual([
-            ["access-control-allow-credentials", "true"],
-            ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
-            ["access-control-allow-origin", "https://localhost"],
-            ["access-control-max-age", "604800"],
-        ]);
-    });
-
-    it("adds informational cors headers only to invalid origin", () => {
-        addCorsHeaders(INVALID_ORIGIN, worker, headers);
-        expect([...headers.entries()]).toStrictEqual([
-            ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
-            ["access-control-max-age", "604800"],
-        ]);
-    });
-});
-
-describe("cors empty provider", () => {
-    let worker: CorsWorker;
-    let headers: Headers;
-
-    beforeEach(() => {
-        worker = new EmptyCorsWorker(GET_REQUEST_WITH_ORIGIN, env, ctx);
-        headers = new Headers();
-    });
-
-    it("handle empty cors provider includes valid origin", () => {
-        addCorsHeaders(VALID_ORIGIN, worker, headers);
-        expect([...headers.entries()]).toStrictEqual([["access-control-max-age", "0"]]);
-    });
-
-    it("handle empty cors provider invalid origin", () => {
-        addCorsHeaders(INVALID_ORIGIN, worker, headers);
-        expect([...headers.entries()]).toStrictEqual([["access-control-max-age", "0"]]);
+        it("handle empty cors provider invalid origin", () => {
+            addCorsHeaders(INVALID_ORIGIN, worker, headers);
+            expect([...headers.entries()]).toStrictEqual([["access-control-max-age", "0"]]);
+        });
     });
 });

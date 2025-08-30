@@ -25,78 +25,84 @@ import {
 } from "./constants";
 import { Method, Time } from "../src/common";
 
-describe("cors worker defaults", () => {
-    let worker: DefaultCorsWorker;
+describe("cors worker unit tests", () => {
+    describe("cors worker defaults", () => {
+        let worker: DefaultCorsWorker;
 
-    beforeEach(() => {
-        worker = new DefaultCorsWorker(GET_REQUEST, env, ctx);
+        beforeEach(() => {
+            worker = new DefaultCorsWorker(GET_REQUEST, env, ctx);
+        });
+
+        it("returns ['*'] for allow origins", () => {
+            expect(worker.getAllowOrigins()).toStrictEqual(["*"]);
+        });
+
+        it("allows any origin", () => {
+            expect(worker.allowAnyOrigin()).toBe(true);
+        });
+
+        it("returns correct default allowed methods", () => {
+            expect(worker.getAllowMethods()).toStrictEqual([
+                Method.GET,
+                Method.HEAD,
+                Method.OPTIONS,
+            ]);
+        });
+
+        it("returns correct default allowed headers", () => {
+            expect(worker.getAllowHeaders()).toStrictEqual(["Content-Type"]);
+        });
+
+        it("returns empty array for exposed headers", () => {
+            expect(worker.getExposeHeaders()).toStrictEqual([]);
+        });
+
+        it("returns correct default max age", () => {
+            expect(worker.getMaxAge()).toBe(Time.Week);
+        });
     });
 
-    it("returns ['*'] for allow origins", () => {
-        expect(worker.getAllowOrigins()).toStrictEqual(["*"]);
+    describe("cors worker valid origin", () => {
+        let worker: AllowOriginWorker;
+
+        beforeEach(() => {
+            worker = new AllowOriginWorker(GET_REQUEST, env, ctx);
+        });
+
+        it("returns [VALID_ORIGIN] for allow origins", () => {
+            expect(worker.getAllowOrigins()).toStrictEqual([VALID_ORIGIN]);
+        });
+
+        it("returns false for allow any origin", () => {
+            expect(worker.allowAnyOrigin()).toBe(false);
+        });
     });
 
-    it("allows any origin", () => {
-        expect(worker.allowAnyOrigin()).toBe(true);
-    });
+    describe("cors worker edge case", () => {
+        let worker: AllowOriginWorker;
 
-    it("returns correct default allowed methods", () => {
-        expect(worker.getAllowMethods()).toStrictEqual([Method.GET, Method.HEAD, Method.OPTIONS]);
-    });
+        beforeEach(() => {
+            worker = new EmptyCorsWorker(GET_REQUEST, env, ctx);
+        });
 
-    it("returns correct default allowed headers", () => {
-        expect(worker.getAllowHeaders()).toStrictEqual(["Content-Type"]);
-    });
+        it("returns [] for allow origins", () => {
+            expect(worker.getAllowOrigins()).toStrictEqual([]);
+        });
 
-    it("returns empty array for exposed headers", () => {
-        expect(worker.getExposeHeaders()).toStrictEqual([]);
-    });
+        it("returns [] for allow headers", () => {
+            expect(worker.getAllowHeaders()).toStrictEqual([]);
+        });
 
-    it("returns correct default max age", () => {
-        expect(worker.getMaxAge()).toBe(Time.Week);
-    });
-});
+        it("returns [] for allow methods", () => {
+            expect(worker.getAllowMethods()).toStrictEqual([]);
+        });
 
-describe("cors worker valid origin", () => {
-    let worker: AllowOriginWorker;
+        it("returns [] for expose headers", () => {
+            expect(worker.getExposeHeaders()).toStrictEqual([]);
+        });
 
-    beforeEach(() => {
-        worker = new AllowOriginWorker(GET_REQUEST, env, ctx);
-    });
-
-    it("returns [VALID_ORIGIN] for allow origins", () => {
-        expect(worker.getAllowOrigins()).toStrictEqual([VALID_ORIGIN]);
-    });
-
-    it("returns false for allow any origin", () => {
-        expect(worker.allowAnyOrigin()).toBe(false);
-    });
-});
-
-describe("cors worker edge case", () => {
-    let worker: AllowOriginWorker;
-
-    beforeEach(() => {
-        worker = new EmptyCorsWorker(GET_REQUEST, env, ctx);
-    });
-
-    it("returns [] for allow origins", () => {
-        expect(worker.getAllowOrigins()).toStrictEqual([]);
-    });
-
-    it("returns [] for allow headers", () => {
-        expect(worker.getAllowHeaders()).toStrictEqual([]);
-    });
-
-    it("returns [] for allow methods", () => {
-        expect(worker.getAllowMethods()).toStrictEqual([]);
-    });
-
-    it("returns [] for expose headers", () => {
-        expect(worker.getExposeHeaders()).toStrictEqual([]);
-    });
-
-    it("returns false for allow any origin", () => {
-        expect(worker.allowAnyOrigin()).toBe(false);
+        it("returns false for allow any origin", () => {
+            expect(worker.allowAnyOrigin()).toBe(false);
+        });
     });
 });
