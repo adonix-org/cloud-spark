@@ -22,7 +22,7 @@ export const env = {
     MY_SECRET: "mock-secret",
 } as const;
 
-export const ctx: ExecutionContext = {
+export const ctx = {
     waitUntil: () => {},
     passThroughOnException: () => {},
     props: () => {},
