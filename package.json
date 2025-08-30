@@ -4,6 +4,7 @@
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
     "license": "Apache-2.0",
     "type": "module",
+    "sideEffects": false,
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
@@ -14,7 +15,6 @@
     "files": [
         "dist"
     ],
-    "sideEffects": false,
     "author": {
         "name": "Ty Busby",
         "email": "tybusby@adonix.org",
