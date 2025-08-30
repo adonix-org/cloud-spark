@@ -21,7 +21,7 @@ import { Routes, RouteTable } from "../src/routes";
 
 const init: RouteTable = [
     [Method.GET, "^/one$", TestRoutes.one],
-    [Method.GET, new RegExp("^/two$"), TestRoutes.two],
+    [Method.GET, /^\/two$/, TestRoutes.two],
 ];
 
 describe("routes unit tests", () => {
@@ -63,7 +63,7 @@ describe("routes unit tests", () => {
     it("returns a route added after initialization", async () => {
         const method = Method.POST;
         const url = new URL("three", VALID_URL);
-        const pattern = new RegExp("^/three$");
+        const pattern = /^\/three$/;
 
         routes.add(method, pattern, TestRoutes.three);
         const route = routes.match(method, url.toString())?.route;
@@ -77,7 +77,7 @@ describe("routes unit tests", () => {
     it("matches the root url", async () => {
         const method = Method.POST;
         const url = new URL(VALID_URL);
-        const pattern = new RegExp("^/$");
+        const pattern = /^\/$/;
 
         routes.add(method, pattern, TestRoutes.four);
         const route = routes.match(method, url.toString())?.route;
