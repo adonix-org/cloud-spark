@@ -17,7 +17,7 @@
 import { mergeHeader, Method, setHeader } from "./common";
 
 /**
- * Provides information about the CORS policy for the current request.
+ * Implementations will provide a specific CORS policy.
  */
 export interface CorsProvider {
     /** Returns a list of allowed origins. */

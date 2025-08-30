@@ -16,9 +16,8 @@
 
 import { CacheWorker } from "./cache-worker";
 import { isMethod, Method } from "./common";
-import { CorsWorker } from "./cors-worker";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "./errors";
-import { Head, Options, WorkerResponse } from "./response";
+import { CorsWorker, Head, Options, WorkerResponse } from "./response";
 
 export abstract class BasicWorker extends CacheWorker {
     public async fetch(): Promise<Response> {

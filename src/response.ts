@@ -24,8 +24,10 @@ import {
     setHeader,
     getOrigin,
 } from "./common";
-import { addCorsHeaders } from "./cors";
-import { CorsWorker } from "./cors-worker";
+import { addCorsHeaders, CorsProvider } from "./cors";
+import { Worker } from "./worker";
+
+export type CorsWorker = Worker & CorsProvider;
 
 abstract class BaseResponse {
     public headers: Headers = new Headers();
