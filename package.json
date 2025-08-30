@@ -24,7 +24,11 @@
     "keywords": [
         "cloudflare",
         "workers",
-        "typescript"
+        "typescript",
+        "javascript",
+        "quickstart",
+        "routes",
+        "cors"
     ],
     "repository": {
         "type": "git",
