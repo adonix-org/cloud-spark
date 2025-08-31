@@ -66,7 +66,7 @@ export class MethodNotAllowed extends HttpError {
             StatusCodes.METHOD_NOT_ALLOWED,
             `${worker.request.method} method not allowed.`
         );
-        this.setHeader(HttpHeader.ALLOW, this.worker.getAllowMethods());
+        this.setHeader(HttpHeader.ALLOW, this.worker.getAllowedMethods());
     }
 }
 

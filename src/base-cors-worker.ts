@@ -15,7 +15,7 @@
  */
 
 import { BaseWorker } from "./base-worker";
-import { Method, Time } from "./common";
+import { Time } from "./common";
 import { CorsProvider } from "./cors";
 
 /**
@@ -31,23 +31,19 @@ import { CorsProvider } from "./cors";
  * Subclasses can override any of the methods to customize the CORS behavior.
  */
 export abstract class BaseCorsWorker extends BaseWorker implements CorsProvider {
-    public getAllowOrigins(): string[] {
+    public getAllowedOrigins(): string[] {
         return ["*"];
     }
 
     public allowAnyOrigin(): boolean {
-        return this.getAllowOrigins().includes("*");
+        return this.getAllowedOrigins().includes("*");
     }
 
-    public getAllowMethods(): Method[] {
-        return [Method.GET, Method.HEAD, Method.OPTIONS];
-    }
-
-    public getAllowHeaders(): string[] {
+    public getAllowedHeaders(): string[] {
         return ["Content-Type"];
     }
 
-    public getExposeHeaders(): string[] {
+    public getExposedHeaders(): string[] {
         return [];
     }
 

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Method } from "./common";
+
 /**
  * Represents the constructor of a Worker or a subclass of Worker.
  *
@@ -59,4 +61,9 @@ export interface Worker {
      * used to manage background tasks and request lifecycle.
      */
     get ctx(): ExecutionContext;
+
+    /**
+     * The HTTP methods supported by this worker.
+     */
+    getAllowedMethods(): Method[];
 }

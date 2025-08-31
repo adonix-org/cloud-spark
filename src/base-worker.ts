@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Method } from "./common";
 import { Worker, WorkerConstructor } from "./worker";
 
 /**
@@ -66,6 +67,13 @@ export abstract class BaseWorker implements Worker {
     /** Execution context for background tasks or `waitUntil` */
     public get ctx(): ExecutionContext {
         return this._ctx;
+    }
+
+    /**
+     * The DEFAULT allowed HTTP methods for subclasses.
+     */
+    public getAllowedMethods(): Method[] {
+        return [Method.GET, Method.HEAD, Method.OPTIONS];
     }
 
     /**

@@ -85,25 +85,25 @@ export class DefaultCorsWorker extends BaseCorsWorker {
 }
 
 export class AllowOriginWorker extends DefaultCorsWorker {
-    public override getAllowOrigins(): string[] {
+    public override getAllowedOrigins(): string[] {
         return [VALID_ORIGIN];
     }
 }
 
 export class EmptyCorsWorker extends DefaultCorsWorker {
-    public override getAllowOrigins(): string[] {
+    public override getAllowedOrigins(): string[] {
         return [];
     }
 
-    public override getAllowHeaders(): string[] {
+    public override getAllowedHeaders(): string[] {
         return [];
     }
 
-    public override getAllowMethods(): Method[] {
+    public override getAllowedMethods(): Method[] {
         return [];
     }
 
-    public override getExposeHeaders(): string[] {
+    public override getExposedHeaders(): string[] {
         return [];
     }
 

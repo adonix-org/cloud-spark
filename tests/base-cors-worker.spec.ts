@@ -34,7 +34,7 @@ describe("cors worker unit tests", () => {
         });
 
         it("returns ['*'] for allow origins", () => {
-            expect(worker.getAllowOrigins()).toStrictEqual(["*"]);
+            expect(worker.getAllowedOrigins()).toStrictEqual(["*"]);
         });
 
         it("allows any origin", () => {
@@ -42,7 +42,7 @@ describe("cors worker unit tests", () => {
         });
 
         it("returns correct default allowed methods", () => {
-            expect(worker.getAllowMethods()).toStrictEqual([
+            expect(worker.getAllowedMethods()).toStrictEqual([
                 Method.GET,
                 Method.HEAD,
                 Method.OPTIONS,
@@ -50,11 +50,11 @@ describe("cors worker unit tests", () => {
         });
 
         it("returns correct default allowed headers", () => {
-            expect(worker.getAllowHeaders()).toStrictEqual(["Content-Type"]);
+            expect(worker.getAllowedHeaders()).toStrictEqual(["Content-Type"]);
         });
 
         it("returns empty array for exposed headers", () => {
-            expect(worker.getExposeHeaders()).toStrictEqual([]);
+            expect(worker.getExposedHeaders()).toStrictEqual([]);
         });
 
         it("returns correct default max age", () => {
@@ -70,7 +70,7 @@ describe("cors worker unit tests", () => {
         });
 
         it("returns [VALID_ORIGIN] for allow origins", () => {
-            expect(worker.getAllowOrigins()).toStrictEqual([VALID_ORIGIN]);
+            expect(worker.getAllowedOrigins()).toStrictEqual([VALID_ORIGIN]);
         });
 
         it("returns false for allow any origin", () => {
@@ -86,19 +86,19 @@ describe("cors worker unit tests", () => {
         });
 
         it("returns [] for allow origins", () => {
-            expect(worker.getAllowOrigins()).toStrictEqual([]);
+            expect(worker.getAllowedOrigins()).toStrictEqual([]);
         });
 
         it("returns [] for allow headers", () => {
-            expect(worker.getAllowHeaders()).toStrictEqual([]);
+            expect(worker.getAllowedHeaders()).toStrictEqual([]);
         });
 
         it("returns [] for allow methods", () => {
-            expect(worker.getAllowMethods()).toStrictEqual([]);
+            expect(worker.getAllowedMethods()).toStrictEqual([]);
         });
 
         it("returns [] for expose headers", () => {
-            expect(worker.getExposeHeaders()).toStrictEqual([]);
+            expect(worker.getExposedHeaders()).toStrictEqual([]);
         });
 
         it("returns false for allow any origin", () => {

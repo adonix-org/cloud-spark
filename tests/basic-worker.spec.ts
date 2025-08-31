@@ -20,7 +20,7 @@ import { ALL_METHODS, BASIC_METHODS, GET_REQUEST, VALID_URL } from "./constants"
 import { Method } from "../src/common";
 
 class TestWorker extends BasicWorker {
-    public override getAllowMethods(): Method[] {
+    public override getAllowedMethods(): Method[] {
         return ALL_METHODS;
     }
 }

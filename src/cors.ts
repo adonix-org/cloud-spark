@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-import { mergeHeader, Method, setHeader } from "./common";
+import { mergeHeader, setHeader } from "./common";
+import { CorsWorker } from "./response";
 
 /**
  * Implementations will provide a specific CORS policy.
  */
 export interface CorsProvider {
     /** Returns a list of allowed origins. */
-    getAllowOrigins(): string[];
+    getAllowedOrigins(): string[];
 
     /** Returns true if any origin is allowed (`*`). */
     allowAnyOrigin(): boolean;
 
-    /** Returns the HTTP methods allowed by CORS. */
-    getAllowMethods(): Method[];
-
     /** Returns the HTTP headers allowed by CORS. */
-    getAllowHeaders(): string[];
+    getAllowedHeaders(): string[];
 
     /** Returns the HTTP headers that should be exposed to the browser. */
-    getExposeHeaders(): string[];
+    getExposedHeaders(): string[];
 
     /** Returns the max age (in seconds) for CORS preflight caching. */
     getMaxAge(): number;
@@ -65,7 +63,7 @@ export namespace Cors {
  * @param cors The CorsProvider instance that determines allowed origins and headers
  * @param headers The Headers object to update
  */
-export function addCorsHeaders(origin: string | null, cors: CorsProvider, headers: Headers): void {
+export function addCorsHeaders(origin: string | null, cors: CorsWorker, headers: Headers): void {
     deleteCorsHeaders(headers);
 
     // CORS is not required.
@@ -73,16 +71,16 @@ export function addCorsHeaders(origin: string | null, cors: CorsProvider, header
 
     if (cors.allowAnyOrigin()) {
         setHeader(headers, Cors.ALLOW_ORIGIN, Cors.ALLOW_ALL_ORIGINS);
-    } else if (cors.getAllowOrigins().includes(origin)) {
+    } else if (cors.getAllowedOrigins().includes(origin)) {
         setHeader(headers, Cors.ALLOW_ORIGIN, origin);
         setHeader(headers, Cors.ALLOW_CREDENTIALS, "true");
     }
 
     // Optional headers always applied if CORS.
     setHeader(headers, Cors.MAX_AGE, String(cors.getMaxAge()));
-    setHeader(headers, Cors.ALLOW_METHODS, cors.getAllowMethods());
-    setHeader(headers, Cors.ALLOW_HEADERS, cors.getAllowHeaders());
-    mergeHeader(headers, Cors.EXPOSE_HEADERS, cors.getExposeHeaders());
+    setHeader(headers, Cors.ALLOW_METHODS, cors.getAllowedMethods());
+    setHeader(headers, Cors.ALLOW_HEADERS, cors.getAllowedHeaders());
+    mergeHeader(headers, Cors.EXPOSE_HEADERS, cors.getExposedHeaders());
 }
 
 /**

@@ -31,7 +31,7 @@ import {
 
 const worker = {
     request: { method: "POST" },
-    getAllowMethods: vi.fn(() => "GET, HEAD, OPTIONS"),
+    getAllowedMethods: vi.fn(() => "GET, HEAD, OPTIONS"),
 } as any;
 
 describe("http error unit tests", () => {

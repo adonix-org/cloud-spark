@@ -184,6 +184,6 @@ export class Head extends WorkerResponse {
 export class Options extends SuccessResponse {
     constructor(worker: CorsWorker) {
         super(worker, null, undefined, StatusCodes.NO_CONTENT);
-        this.setHeader(HttpHeader.ALLOW, this.worker.getAllowMethods());
+        this.setHeader(HttpHeader.ALLOW, this.worker.getAllowedMethods());
     }
 }

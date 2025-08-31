@@ -31,7 +31,7 @@ import { VALID_URL } from "./constants";
 const mockWorker = {
     request: new Request(VALID_URL),
     allowAnyOrigin: vi.fn(() => false),
-    getAllowMethods: vi.fn(() => "GET, HEAD, OPTIONS"),
+    getAllowedMethods: vi.fn(() => "GET, HEAD, OPTIONS"),
 } as any;
 
 describe("response unit tests", () => {

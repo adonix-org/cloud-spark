@@ -47,7 +47,7 @@ export abstract class BasicWorker extends CacheWorker {
     }
 
     public isAllowed(method: string): boolean {
-        return isMethod(method) && this.getAllowMethods().includes(method);
+        return isMethod(method) && this.getAllowedMethods().includes(method);
     }
 
     protected async get(): Promise<Response> {

@@ -30,7 +30,7 @@ class TestWorker extends RouteWorker {
         return super.add(method, pattern, callback);
     }
 
-    public override getAllowMethods(): Method[] {
+    public override getAllowedMethods(): Method[] {
         return ALL_METHODS;
     }
 }
