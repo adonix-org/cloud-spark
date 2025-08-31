@@ -1,8 +1,4 @@
 {
-    "compilerOptions": {
-        "lib": ["ES2020", "DOM"],
-        "types": ["../types/env.d.ts"]
-    },
     "extends": "../tsconfig.json",
-    "include": ["**/*"]
+    "include": ["**/*", "../types"]
 }
