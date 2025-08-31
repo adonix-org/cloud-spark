@@ -15,7 +15,6 @@
  */
 
 import { Method } from "./common";
-import { Env } from "./env";
 
 /**
  * Represents the constructor of a Worker or a subclass of Worker.

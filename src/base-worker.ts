@@ -15,7 +15,6 @@
  */
 
 import { Method } from "./common";
-import { Env } from "./env";
 import { Worker, WorkerConstructor } from "./worker";
 
 /**
