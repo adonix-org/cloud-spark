@@ -96,7 +96,8 @@ describe("cache worker unit tests", () => {
             ["access-control-max-age", "604800"],
             ["content-type", "text/plain;charset=UTF-8"],
         ]);
-        worker.setCachedResponse(response);
+
+        await worker.setCachedResponse(response);
 
         const cached = defaultCache.match(VALID_URL);
         expect(await cached!.text()).toBe("-CORS");
@@ -126,7 +127,7 @@ describe("cache worker unit tests", () => {
 
     it("only caches responses from GET method", async () => {
         const postWorker = new TestWorker(new Request(VALID_URL, { method: Method.POST }));
-        postWorker.setCachedResponse(new Response("POST"));
+        await postWorker.setCachedResponse(new Response("POST"));
         expect(defaultCache.match(VALID_URL)).toBeUndefined();
         expect(defaultCache.size).toBe(0);
     });

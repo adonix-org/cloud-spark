@@ -61,7 +61,7 @@ export abstract class CacheWorker extends CorsDefaults {
      * @see {@link getCacheKey}
      */
     protected async getCachedResponse(cacheName?: string): Promise<Response | undefined> {
-        if (!this.getCacheEnabled() || this.request.method !== Method.GET) return undefined;
+        if (!(await this.isCacheEnabled()) || this.request.method !== Method.GET) return undefined;
 
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
         const response = await cache.match(this.getCacheKey());
@@ -83,7 +83,8 @@ export abstract class CacheWorker extends CorsDefaults {
      * @see {@link getCacheKey}
      */
     protected async setCachedResponse(response: Response, cacheName?: string): Promise<void> {
-        if (!this.getCacheEnabled() || this.request.method !== Method.GET || !response.ok) return;
+        if (!(await this.isCacheEnabled()) || this.request.method !== Method.GET || !response.ok)
+            return;
 
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
         this.ctx.waitUntil(
@@ -107,7 +108,7 @@ export abstract class CacheWorker extends CorsDefaults {
      * @returns {boolean} `true` if the library should use its default caching,
      *                    `false` to bypass the library cache.
      */
-    protected getCacheEnabled(): boolean {
+    protected isCacheEnabled(): boolean | Promise<boolean> {
         return true;
     }
 
