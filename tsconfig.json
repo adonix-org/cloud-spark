@@ -20,7 +20,7 @@
         "forceConsistentCasingInFileNames": true,
         "declaration": true,
         "skipLibCheck": true,
-        "types": ["./types/worker-configuration.d.ts"]
+        "types": ["@cloudflare/workers-types"]
     },
-    "include": ["src/**/*", "types/worker-configuration.d.ts"]
+    "include": ["src/**/*"]
 }

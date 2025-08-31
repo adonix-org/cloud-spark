@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
-import { expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import * as IndexExports from "../src/index";
+import { lexCompare } from "../src/common";
 
-it("exports library symbols", () => {
-    expect(IndexExports).toBeTruthy();
+describe("library export tests", () => {
+    it("does not export internal Env type", () => {
+        const exportedKeys = Object.keys(IndexExports);
+        expect(exportedKeys).not.toContain("Env");
+    });
+
+    it("no exported symbol is undefined", () => {
+        Object.entries(IndexExports).forEach(([_key, value]) => {
+            expect(value).not.toBeUndefined();
+        });
+    });
+
+    it("exported symbols snapshot", () => {
+        const keys = Object.keys(IndexExports).sort(lexCompare);
+        expect(keys).toMatchSnapshot();
+    });
 });

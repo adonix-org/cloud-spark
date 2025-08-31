@@ -197,7 +197,7 @@ export function setHeader(headers: Headers, key: string, value: string | string[
     const raw = Array.isArray(value) ? value : [value];
     const values = Array.from(new Set(raw.map((v) => v.trim())))
         .filter((v) => v.length)
-        .sort(httpTokenCompare);
+        .sort(lexCompare);
 
     if (!values.length) {
         headers.delete(key);
@@ -246,7 +246,7 @@ export function normalizeUrl(url: string): URL {
     const u = new URL(url);
 
     const params = [...u.searchParams.entries()];
-    params.sort(([a], [b]) => httpTokenCompare(a, b));
+    params.sort(([a], [b]) => lexCompare(a, b));
 
     u.search = params
         .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
@@ -257,14 +257,16 @@ export function normalizeUrl(url: string): URL {
 }
 
 /**
- * Deterministic ASCII comparison of HTTP token strings.
+ * Lexicographically compares two strings.
+ * 
+ * This comparator can be used in `Array.prototype.sort()` to produce a
+ * consistent, stable ordering of string arrays.
  *
- * Use this for header names, header values, or query parameter keys
- * that are restricted to ASCII per the HTTP spec (RFC 9110 / RFC 3986).
- *
- * Note: This comparator is NOT for natural language strings.
+ * @param a - The first string to compare.
+ * @param b - The second string to compare.
+ * @returns A number indicating the relative order of `a` and `b`.
  */
-export function httpTokenCompare(a: string, b: string): number {
+export function lexCompare(a: string, b: string): number {
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;

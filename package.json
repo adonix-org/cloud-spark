@@ -1,6 +1,6 @@
 {
     "name": "@adonix.org/cloud-spark",
-    "version": "0.0.100",
+    "version": "0.0.101",
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
     "license": "Apache-2.0",
     "type": "module",
@@ -44,6 +44,7 @@
         "coverage": "vitest run --coverage"
     },
     "devDependencies": {
+        "@cloudflare/workers-types": "^4.20250831.0",
         "@cloudflare/vitest-pool-workers": "^0.8.68",
         "@vitest/coverage-v8": "^3.2.4",
         "tsup": "^8.5.0",

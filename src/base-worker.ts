@@ -15,6 +15,7 @@
  */
 
 import { Method } from "./common";
+import { Env } from "./env";
 import { Worker, WorkerConstructor } from "./worker";
 
 /**
@@ -25,7 +26,7 @@ import { Worker, WorkerConstructor } from "./worker";
  *
  * @template E - The type of environment bindings passed to the worker. Defaults to `Env`.
  */
-interface FetchHandler<E = Env> extends ExportedHandler<E> {
+interface FetchHandler extends ExportedHandler<Env> {
     /**
      * Handles an incoming request and produces a response.
      *
@@ -34,7 +35,7 @@ interface FetchHandler<E = Env> extends ExportedHandler<E> {
      * @param ctx - Execution context for background tasks (`waitUntil`).
      * @returns A `Promise` that resolves to the response.
      */
-    fetch: (request: Request, env: E, ctx: ExecutionContext) => Promise<Response>;
+    fetch: (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
 }
 
 /**
