@@ -92,13 +92,20 @@ export abstract class CacheWorker extends CorsDefaults {
     }
 
     /**
-     * Determines whether caching is enabled for this request.
+     * Controls whether the library's automatic caching is enabled.
      *
-     * By default, caching is enabled (`true`). Subclasses can override this
-     * method to conditionally disable caching, for example in development
-     * environments or for certain request types.
+     * This method only affects the caching behavior provided by the library’s
+     * `getCachedResponse()` and `setCachedResponse()` methods. It does **not**
+     * prevent users from manually reading from or writing to `caches.default`
+     * or any other Cache API. By default, this returns `true`, enabling the
+     * library’s default caching behavior.
      *
-     * @returns {boolean} `true` if caching is enabled, `false` otherwise.
+     * Subclasses can override this method to disable automatic caching in
+     * development environments, for certain pathnames, or based on
+     * environment variables.
+     *
+     * @returns {boolean} `true` if the library should use its default caching,
+     *                    `false` to bypass the library cache.
      */
     protected getCacheEnabled(): boolean {
         return true;
