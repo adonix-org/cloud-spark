@@ -23,14 +23,13 @@ import { CorsProvider } from "./cors";
  *
  * Implements the `CorsProvider` interface and provides a standard policy:
  * - Allows all origins (`*`) by default.
- * - Allows GET, OPTIONS, and HEAD methods.
  * - Allows the `Content-Type` header.
  * - Exposes no additional headers.
  * - Sets CORS preflight max-age to one week.
  *
  * Subclasses can override any of the methods to customize the CORS behavior.
  */
-export abstract class BaseCorsWorker extends BaseWorker implements CorsProvider {
+export abstract class CorsDefaults extends BaseWorker implements CorsProvider {
     public getAllowedOrigins(): string[] {
         return ["*"];
     }

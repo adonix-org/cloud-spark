@@ -16,7 +16,7 @@
 
 import { getOrigin, Method, normalizeUrl } from "./common";
 import { addCorsHeaders, Cors } from "./cors";
-import { BaseCorsWorker } from "./base-cors-worker";
+import { CorsDefaults } from "./cors-defaults";
 
 /**
  * Abstract worker class that adds caching support for GET requests.
@@ -28,7 +28,7 @@ import { BaseCorsWorker } from "./base-cors-worker";
  *
  * Subclasses should override `getCacheKey()` to customize cache key generation if needed.
  */
-export abstract class CacheWorker extends BaseCorsWorker {
+export abstract class CacheWorker extends CorsDefaults {
     /**
      * Returns the cache key for the current request.
      *

@@ -15,7 +15,7 @@
  */
 import { expect } from "vitest";
 import { Method } from "../src/common";
-import { BaseCorsWorker } from "../src/base-cors-worker";
+import { CorsDefaults } from "../src/cors-defaults";
 import { MatchedRoute, RouteCallback, RouteTable } from "../src/routes";
 
 export const VALID_ORIGIN = "https://localhost";
@@ -73,7 +73,7 @@ export const GET_REQUEST_WITH_ORIGIN = new Request(VALID_URL, {
 
 export const BODY_INIT: BodyInit = "OK";
 
-export class DefaultCorsWorker extends BaseCorsWorker {
+export class DefaultCorsWorker extends CorsDefaults {
     public async fetch(): Promise<Response> {
         return new Response(BODY_INIT);
     }
