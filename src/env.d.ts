@@ -17,6 +17,6 @@
 /**
  * @internal
  *
- * Placeholder type representing environment bindings for a Cloudflare Worker.
+ * Placeholder type for a Cloudflare Worker environment bindings.
  */
 export type Env = {};
