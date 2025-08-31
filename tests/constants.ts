@@ -53,11 +53,6 @@ export namespace TestRoutes {
         [Method.GET, "^/four$", four],
     ];
 
-    /**
-     * Execute a route callback and assert its Response body.
-     * @param callback The RouteCallback to invoke
-     * @param expected The expected response text
-     */
     export async function expectResponseBody(found: MatchedRoute, expected: string) {
         const response = await found.route.callback(found.match);
         const text = await response.text();
