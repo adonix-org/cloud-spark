@@ -120,7 +120,7 @@ export abstract class CacheWorker extends CorsDefaults {
      * @returns {Response} A new Response with excluded headers removed.
      * @see {@link addCacheHeaders}
      */
-    private removeCacheHeaders(response: Response): Response {
+    protected removeCacheHeaders(response: Response): Response {
         const excludeSet = new Set(this.excludeCacheHeaders().map((h) => h.toLowerCase()));
         const headers = new Headers();
 
