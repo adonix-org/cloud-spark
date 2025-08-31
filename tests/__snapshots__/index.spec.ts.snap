@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`library export tests > matches exported symbols snapshot 1`] = `
+exports[`library export tests > matches the exported symbols snapshot 1`] = `
 [
   "BadRequest",
   "BasicWorker",
