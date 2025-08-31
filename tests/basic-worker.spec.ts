@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { env, ctx } from "./mock";
 import { BasicWorker } from "../src/basic-worker";
 import { ALL_METHODS, BASIC_METHODS, GET_REQUEST, VALID_URL } from "./constants";
 import { Method } from "../src/common";
 
 class TestWorker extends BasicWorker {
+    constructor(request: Request) {
+        super(request, env, ctx);
+    }
+
     public override getAllowedMethods(): Method[] {
         return ALL_METHODS;
     }
@@ -28,7 +32,7 @@ class TestWorker extends BasicWorker {
 describe("basic worker unit tests", () => {
     it.each(BASIC_METHODS)("returns %s response", async (method) => {
         const request = new Request(VALID_URL, { method });
-        const worker = new TestWorker(request, env, ctx);
+        const worker = new TestWorker(request);
 
         const response = await worker.fetch();
         expect(response).toBeInstanceOf(Response);
@@ -45,7 +49,7 @@ describe("basic worker unit tests", () => {
 
     it("returns HEAD response", async () => {
         const request = new Request(VALID_URL, { method: Method.HEAD });
-        const worker = new TestWorker(request, env, ctx);
+        const worker = new TestWorker(request);
 
         const response = await worker.fetch();
         expect(response).toBeInstanceOf(Response);
@@ -54,25 +58,42 @@ describe("basic worker unit tests", () => {
 
     it("returns OPTIONS response", async () => {
         const request = new Request(VALID_URL, { method: Method.OPTIONS });
-        const worker = new TestWorker(request, env, ctx);
+        const worker = new TestWorker(request);
 
         const response = await worker.fetch();
         expect(response).toBeInstanceOf(Response);
         expect(await response.text()).toBe("");
     });
 
-    it("returns a 405 method not allowed response from fetch", async () => {
-        class MethodNotAllowedWorker extends BasicWorker {}
+    it("returns the cached response", async () => {
+        class CacheTest extends TestWorker {
+            protected override async dispatch(): Promise<Response> {
+                return new Response("OK", {
+                    headers: { "X-Test-Random": Math.random().toString() },
+                });
+            }
+        }
+        const worker = new CacheTest(GET_REQUEST);
 
-        const request = new Request(VALID_URL, { method: Method.POST });
-        const worker = new MethodNotAllowedWorker(request, env, ctx);
+        const firstResponse = await worker.fetch();
+        const firstHeader = firstResponse.headers.get("X-Test-Random");
+
+        const secondResponse = await worker.fetch();
+        const secondHeader = secondResponse.headers.get("X-Test-Random");
+
+        expect(firstHeader).toBe(secondHeader);
+    });
+
+    it("returns a 405 method not allowed response from fetch", async () => {
+        const request = new Request(VALID_URL, { method: "BAD" as any });
+        const worker = new TestWorker(request);
         const response = await worker.fetch();
         expect(response).toBeInstanceOf(Response);
 
         const expectedJson = {
             status: 405,
             error: "Method Not Allowed",
-            details: "POST method not allowed.",
+            details: "BAD method not allowed.",
         };
 
         expect(await response.json()).toStrictEqual(expectedJson);
@@ -99,23 +120,30 @@ describe("basic worker unit tests", () => {
         expect(await response.json()).toStrictEqual(expectedJson);
     });
 
-    it("returns a 500 internal server error response on error", async () => {
+    it("safely returns and logs a 500 internal server error response", async () => {
+        const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
         class DispatchErrorWorker extends TestWorker {
-            protected override dispatch(): Promise<Response> {
-                throw new Error("Test Error");
+            protected override async dispatch(): Promise<Response> {
+                throw new Error("Log but do not expose in the response");
             }
         }
 
-        const worker = new DispatchErrorWorker(GET_REQUEST, env, ctx);
+        const worker = new DispatchErrorWorker(GET_REQUEST);
         const response = await worker.fetch();
-        expect(response).toBeInstanceOf(Response);
 
+        expect(response).toBeInstanceOf(Response);
         const expectedJson = {
             status: 500,
             error: "Internal Server Error",
-            details: "Error: Test Error",
+            details: "Internal Server Error",
         };
-
         expect(await response.json()).toStrictEqual(expectedJson);
+
+        expect(consoleSpy).toHaveBeenCalled();
+        const loggedError = consoleSpy.mock.calls[0]![0];
+        expect(loggedError).toBeInstanceOf(Error);
+        expect(loggedError.message).toContain("Log but do not expose in the response");
+        consoleSpy.mockRestore();
     });
 });

@@ -26,9 +26,15 @@ export abstract class BasicWorker extends CacheWorker {
         }
 
         try {
-            return await this.dispatch();
+            const cached = await this.getCachedResponse();
+            if (cached) return cached;
+
+            const response = await this.dispatch();
+            this.setCachedResponse(response);
+            return response;
         } catch (error) {
-            return this.getResponse(InternalServerError, String(error));
+            console.error(error);
+            return this.getResponse(InternalServerError);
         }
     }
 
@@ -86,8 +92,6 @@ export abstract class BasicWorker extends CacheWorker {
         ResponseClass: Ctor,
         ...args: ConstructorParameters<Ctor> extends [CorsWorker, ...infer R] ? R : never
     ): Promise<Response> {
-        const response = new ResponseClass(this, ...args).getResponse();
-        this.setCachedResponse(response);
-        return response;
+        return new ResponseClass(this, ...args).getResponse();
     }
 }

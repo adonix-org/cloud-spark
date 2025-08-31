@@ -61,7 +61,7 @@ export abstract class CacheWorker extends CorsDefaults {
      * @see {@link getCacheKey}
      */
     protected async getCachedResponse(cacheName?: string): Promise<Response | undefined> {
-        if (this.request.method !== Method.GET) return;
+        if (!this.getCacheEnabled() || this.request.method !== Method.GET) return undefined;
 
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
         const response = await cache.match(this.getCacheKey());
@@ -83,13 +83,16 @@ export abstract class CacheWorker extends CorsDefaults {
      * @see {@link getCacheKey}
      */
     protected async setCachedResponse(response: Response, cacheName?: string): Promise<void> {
-        if (!response.ok) return;
-        if (this.request.method !== Method.GET) return;
+        if (!this.getCacheEnabled() || this.request.method !== Method.GET || !response.ok) return;
 
         const cache = cacheName ? await caches.open(cacheName) : caches.default;
         this.ctx.waitUntil(
             cache.put(this.getCacheKey(), this.removeCacheHeaders(response.clone()))
         );
+    }
+
+    protected getCacheEnabled(): boolean {
+        return true;
     }
 
     /**

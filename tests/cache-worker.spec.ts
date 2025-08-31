@@ -48,8 +48,6 @@ describe("cache worker unit tests", () => {
 
     beforeEach(() => {
         worker = new TestWorker(GET_REQUEST_WITH_ORIGIN);
-        defaultCache.clear();
-        namedCache.clear();
     });
 
     it("returns undefined from default cache on miss", async () => {
