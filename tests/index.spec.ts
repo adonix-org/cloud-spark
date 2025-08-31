@@ -19,18 +19,18 @@ import * as IndexExports from "../src/index";
 import { lexCompare } from "../src/common";
 
 describe("library export tests", () => {
-    it("does not export internal Env type", () => {
+    it("does not export internal env type", () => {
         const exportedKeys = Object.keys(IndexExports);
         expect(exportedKeys).not.toContain("Env");
     });
 
-    it("no exported symbol is undefined", () => {
+    it("verifies no exported symbol is undefined", () => {
         Object.entries(IndexExports).forEach(([_key, value]) => {
             expect(value).not.toBeUndefined();
         });
     });
 
-    it("exported symbols snapshot", () => {
+    it("matches exported symbols snapshot", () => {
         const keys = Object.keys(IndexExports).sort(lexCompare);
         expect(keys).toMatchSnapshot();
     });
