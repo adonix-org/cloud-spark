@@ -1,47 +1,5 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`library export tests > exported symbols snapshot 1`] = `
-[
-  "BadRequest",
-  "BasicWorker",
-  "CacheControl",
-  "ClonedResponse",
-  "Cors",
-  "Forbidden",
-  "Head",
-  "HtmlResponse",
-  "HttpError",
-  "HttpHeader",
-  "InternalServerError",
-  "JsonResponse",
-  "MediaType",
-  "Method",
-  "MethodNotAllowed",
-  "MethodNotImplemented",
-  "NotFound",
-  "NotImplemented",
-  "Options",
-  "Route",
-  "RouteWorker",
-  "Routes",
-  "ServiceUnavailable",
-  "StatusCodes",
-  "SuccessResponse",
-  "TextResponse",
-  "Time",
-  "Unauthorized",
-  "WorkerResponse",
-  "addCorsHeaders",
-  "getContentType",
-  "getOrigin",
-  "isMethod",
-  "lexCompare",
-  "mergeHeader",
-  "normalizeUrl",
-  "setHeader",
-]
-`;
-
 exports[`library export tests > matches exported symbols snapshot 1`] = `
 [
   "BadRequest",
