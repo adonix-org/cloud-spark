@@ -106,7 +106,7 @@ export abstract class CacheWorker extends CorsDefaults {
      * environment variables.
      *
      * @returns {boolean} `true` if the library should use its default caching,
-     *                    `false` to bypass the library cache.
+     *                    `false` to disable the library cache.
      */
     protected isCacheEnabled(): boolean | Promise<boolean> {
         return true;
