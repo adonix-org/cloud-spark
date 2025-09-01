@@ -1,5 +1,645 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`library export tests > catches any changes to index.d.ts 1`] = `
+"import { StatusCodes } from 'http-status-codes';
+export { StatusCodes } from 'http-status-codes';
+import CacheLib from 'cache-control-parser';
+import { MatchFunction } from 'path-to-regexp';
+
+/**
+ * @see {@link https://github.com/etienne-martin/cache-control-parser | cache-control-parser}
+ */
+type CacheControl = CacheLib.CacheControl;
+declare const CacheControl: {
+    parse: (cacheControlHeader: string) => CacheLib.CacheControl;
+    stringify: (cacheControl: CacheLib.CacheControl) => string;
+    /** A Cache-Control directive that disables all caching. */
+    DISABLE: Readonly<{
+        "no-cache": true;
+        "no-store": true;
+        "must-revalidate": true;
+        "max-age": 0;
+    }>;
+};
+
+/**
+ * Standard HTTP header names and common values.
+ */
+declare namespace HttpHeader {
+    const VARY = "Vary";
+    const ALLOW = "Allow";
+    const CONTENT_TYPE = "Content-Type";
+    const CACHE_CONTROL = "Cache-Control";
+    const X_FRAME_OPTIONS = "X-Frame-Options";
+    const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
+    const REFERRER_POLICY = "Referrer-Policy";
+    const PERMISSIONS_POLICY = "Permissions-Policy";
+    const CONTENT_SECURITY_POLICY = "Content-Security-Policy";
+    const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
+    const NOSNIFF = "nosniff";
+    const ORIGIN = "Origin";
+}
+/**
+ * Time constants in seconds. Month is approximated as 30 days.
+ */
+declare const Time: {
+    readonly Second: 1;
+    readonly Minute: 60;
+    readonly Hour: 3600;
+    readonly Day: 86400;
+    readonly Week: 604800;
+    readonly Month: 2592000;
+    readonly Year: 31536000;
+};
+/**
+ * Standard HTTP request methods.
+ */
+declare enum Method {
+    GET = "GET",
+    PUT = "PUT",
+    HEAD = "HEAD",
+    POST = "POST",
+    PATCH = "PATCH",
+    DELETE = "DELETE",
+    OPTIONS = "OPTIONS"
+}
+/**
+ * Type guard that checks if a string is a valid HTTP method.
+ *
+ * @param value - The string to test.
+ * @returns True if \`value\` is a recognized HTTP method.
+ */
+declare function isMethod(value: string): value is Method;
+/**
+ * Returns the proper Content-Type string for a given media type.
+ * Appends \`charset=utf-8\` for text-based types that require it.
+ *
+ * @param type - The media type.
+ * @returns A string suitable for the \`Content-Type\` header.
+ */
+declare function getContentType(type: MediaType): string;
+/**
+ * Common media types types used for HTTP headers.
+ */
+declare enum MediaType {
+    PLAIN_TEXT = "text/plain",
+    HTML = "text/html",
+    CSS = "text/css",
+    CSV = "text/csv",
+    XML = "text/xml",
+    MARKDOWN = "text/markdown",
+    RICH_TEXT = "text/richtext",
+    JSON = "application/json",
+    XML_APP = "application/xml",
+    YAML = "application/x-yaml",
+    FORM_URLENCODED = "application/x-www-form-urlencoded",
+    NDJSON = "application/x-ndjson",
+    MSGPACK = "application/x-msgpack",
+    PROTOBUF = "application/x-protobuf",
+    MULTIPART_FORM_DATA = "multipart/form-data",
+    MULTIPART_MIXED = "multipart/mixed",
+    MULTIPART_ALTERNATIVE = "multipart/alternative",
+    MULTIPART_DIGEST = "multipart/digest",
+    MULTIPART_RELATED = "multipart/related",
+    MULTIPART_SIGNED = "multipart/signed",
+    MULTIPART_ENCRYPTED = "multipart/encrypted",
+    OCTET_STREAM = "application/octet-stream",
+    PDF = "application/pdf",
+    ZIP = "application/zip",
+    GZIP = "application/gzip",
+    MSWORD = "application/msword",
+    DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    EXCEL = "application/vnd.ms-excel",
+    XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    POWERPOINT = "application/vnd.ms-powerpoint",
+    PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ICO = "image/x-icon",
+    ICO_MS = "image/vnd.microsoft.icon",
+    GIF = "image/gif",
+    PNG = "image/png",
+    JPEG = "image/jpeg",
+    WEBP = "image/webp",
+    SVG = "image/svg+xml",
+    HEIF = "image/heif",
+    AVIF = "image/avif",
+    EVENT_STREAM = "text/event-stream",
+    TAR = "application/x-tar",
+    BZIP2 = "application/x-bzip2"
+}
+/**
+ * Sets a header on the given Headers object.
+ *
+ * - If \`value\` is an array, duplicates and empty strings are removed.
+ * - If the resulting value array is empty, the header is deleted.
+ * - Otherwise, values are joined with \`", "\` and set as the header value.
+ *
+ * @param headers - The Headers object to modify.
+ * @param key - The header name to set.
+ * @param value - The header value(s) to set. Can be a string or array of strings.
+ */
+declare function setHeader(headers: Headers, key: string, value: string | string[]): void;
+/**
+ * Merges new value(s) into an existing header on the given Headers object.
+ *
+ * - Preserves any existing values and adds new ones.
+ * - Removes duplicates and trims all values.
+ * - If the header does not exist, it is created.
+ *
+ * @param headers - The Headers object to modify.
+ * @param key - The header name to merge into.
+ * @param value - The new header value(s) to add. Can be a string or array of strings.
+ */
+declare function mergeHeader(headers: Headers, key: string, value: string | string[]): void;
+/**
+ * Normalizes a URL string for use as a consistent cache key.
+ *
+ * - Sorts query parameters alphabetically so \`?b=2&a=1\` and \`?a=1&b=2\` are treated the same.
+ * - Strips fragment identifiers (\`#...\`) since they are not sent in HTTP requests.
+ * - Leaves protocol, host, path, and query values intact.
+ *
+ * @param url The original URL string to normalize.
+ * @returns A normalized URL string suitable for hashing or direct cache key use.
+ */
+declare function normalizeUrl(url: string): URL;
+/**
+ * Lexicographically compares two strings.
+ *
+ * This comparator can be used in \`Array.prototype.sort()\` to produce a
+ * consistent, stable ordering of string arrays.
+ *
+ * @param a - The first string to compare.
+ * @param b - The second string to compare.
+ * @returns A number indicating the relative order of \`a\` and \`b\`.
+ */
+declare function lexCompare(a: string, b: string): number;
+/**
+ * Extracts the \`Origin\` header value from a request.
+ *
+ * The \`Origin\` header identifies the origin (scheme, host, and port)
+ * of the request initiator. It is commonly used for CORS checks.
+ *
+ * @param request - The incoming {@link Request} object.
+ * @returns The origin string if present, otherwise \`null\`.
+ */
+declare function getOrigin(request: Request): string | null;
+
+/**
+ * Represents the constructor of a Worker or a subclass of Worker.
+ *
+ * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
+ * @param req - The \`Request\` object to be handled by the worker instance.
+ * @param env - The environment bindings available to the worker.
+ * @param ctx - The \`ExecutionContext\` for the worker invocation.
+ * @returns An instance of the worker type \`T\`.
+ */
+type WorkerConstructor<T extends Worker = Worker> = new (request: Request, env: Env, ctx: ExecutionContext) => T;
+/**
+ * Defines the contract for a Cloudflare-compatible Worker.
+ *
+ * Implementations are responsible for handling incoming requests,
+ * providing access to the request, environment bindings, and
+ * execution context.
+ */
+interface Worker {
+    /**
+     * Processes the incoming {@link Request} and produces a {@link Response}.
+     *
+     * @returns A Promise that resolves to the HTTP {@link Response}.
+     */
+    fetch(): Promise<Response>;
+    /**
+     * The original {@link Request} being processed by this worker instance.
+     */
+    get request(): Request;
+    /**
+     * The environment bindings provided at runtime (e.g., KV, R2, secrets).
+     */
+    get env(): Env;
+    /**
+     * The {@link ExecutionContext} associated with the current request,
+     * used to manage background tasks and request lifecycle.
+     */
+    get ctx(): ExecutionContext;
+    /**
+     * The HTTP methods supported by this worker.
+     */
+    getAllowedMethods(): Method[];
+}
+
+type CorsWorker = Worker & CorsProvider;
+declare abstract class BaseResponse {
+    headers: Headers;
+    status: StatusCodes;
+    statusText?: string;
+    mediaType?: MediaType;
+    protected get responseInit(): ResponseInit;
+    setHeader(key: string, value: string | string[]): void;
+    mergeHeader(key: string, value: string | string[]): void;
+    addContentType(): void;
+}
+declare abstract class CorsResponse extends BaseResponse {
+    readonly worker: CorsWorker;
+    constructor(worker: CorsWorker);
+    protected addCorsHeaders(): void;
+    protected getOrigin(): string | null;
+}
+declare abstract class CacheResponse extends CorsResponse {
+    cache?: CacheControl | undefined;
+    constructor(worker: CorsWorker, cache?: CacheControl | undefined);
+    protected addCacheHeader(): void;
+}
+declare abstract class WorkerResponse extends CacheResponse {
+    private readonly body;
+    constructor(worker: CorsWorker, body?: BodyInit | null, cache?: CacheControl);
+    getResponse(): Promise<Response>;
+    protected addSecurityHeaders(): void;
+}
+declare class ClonedResponse extends WorkerResponse {
+    constructor(worker: CorsWorker, response: Response, cache?: CacheControl);
+}
+declare class SuccessResponse extends WorkerResponse {
+    constructor(worker: CorsWorker, body?: BodyInit | null, cache?: CacheControl, status?: StatusCodes);
+}
+declare class JsonResponse extends SuccessResponse {
+    constructor(worker: CorsWorker, json?: unknown, cache?: CacheControl, status?: StatusCodes);
+}
+declare class HtmlResponse extends SuccessResponse {
+    constructor(worker: CorsWorker, body: string, cache?: CacheControl, status?: StatusCodes);
+}
+declare class TextResponse extends SuccessResponse {
+    constructor(worker: CorsWorker, content: string, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * Removes the body from a GET response.
+ */
+declare class Head extends WorkerResponse {
+    constructor(worker: CorsWorker, get: Response);
+}
+declare class Options extends SuccessResponse {
+    constructor(worker: CorsWorker);
+}
+
+/**
+ * Implementations will provide a specific CORS policy.
+ */
+interface CorsProvider {
+    /** Returns a list of allowed origins. */
+    getAllowedOrigins(): string[];
+    /** Returns true if any origin is allowed (\`*\`). */
+    allowAnyOrigin(): boolean;
+    /** Returns the HTTP headers allowed by CORS. */
+    getAllowedHeaders(): string[];
+    /** Returns the HTTP headers that should be exposed to the browser. */
+    getExposedHeaders(): string[];
+    /** Returns the max age (in seconds) for CORS preflight caching. */
+    getMaxAge(): number;
+}
+/**
+ * Constants for common CORS headers.
+ */
+declare namespace Cors {
+    const MAX_AGE = "Access-Control-Max-Age";
+    const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    const ALLOW_HEADERS = "Access-Control-Allow-Headers";
+    const ALLOW_METHODS = "Access-Control-Allow-Methods";
+    const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+    const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+    const ALLOW_ALL_ORIGINS = "*";
+}
+/**
+ * Adds or updates CORS headers on a Headers object according to the provided policy.
+ *
+ * Behavior:
+ * - Removes any existing CORS headers to avoid stale values.
+ * - If the request has no origin, the function exits early.
+ * - If wildcard \`*\` is allowed, sets Access-Control-Allow-Origin to \`*\`.
+ * - If the origin is explicitly allowed, sets the correct headers including credentials and Vary: Origin.
+ * - Optional headers (Expose-Headers, Allow-Headers, Allow-Methods, Max-Age) are always applied.
+ *
+ * @param cors The CorsProvider instance that determines allowed origins and headers
+ * @param headers The Headers object to update
+ */
+declare function addCorsHeaders(origin: string | null, cors: CorsWorker, headers: Headers): void;
+
+interface ErrorJson {
+    status: number;
+    error: string;
+    details: string;
+}
+declare class HttpError extends JsonResponse {
+    protected readonly details?: string | undefined;
+    constructor(worker: CorsWorker, status: StatusCodes, details?: string | undefined);
+}
+declare class BadRequest extends HttpError {
+    constructor(worker: CorsWorker, details?: string);
+}
+declare class Unauthorized extends HttpError {
+    constructor(worker: CorsWorker, details?: string);
+}
+declare class Forbidden extends HttpError {
+    constructor(worker: CorsWorker, details?: string);
+}
+declare class NotFound extends HttpError {
+    constructor(worker: CorsWorker, details?: string);
+}
+declare class MethodNotAllowed extends HttpError {
+    constructor(worker: CorsWorker);
+}
+declare class InternalServerError extends HttpError {
+    constructor(worker: CorsWorker, details?: string);
+}
+declare class NotImplemented extends HttpError {
+    constructor(worker: CorsWorker, details?: string);
+}
+declare class MethodNotImplemented extends NotImplemented {
+    constructor(worker: CorsWorker);
+}
+declare class ServiceUnavailable extends HttpError {
+    constructor(worker: CorsWorker, details?: string);
+}
+
+/** Parameters extracted from a matched route */
+type RouteParams = Record<string, string>;
+/**
+ * Type for a route callback function.
+ * @param params - Named parameters extracted from the URL path.
+ * @returns A Response object or a Promise resolving to a Response.
+ */
+type RouteCallback = (params: RouteParams) => Promise<Response> | Response;
+/**
+ * Represents a single route.
+ */
+interface Route {
+    /** HTTP method for the route */
+    method: Method;
+    /** Path-to-regexp matcher function for this route */
+    matcher: MatchFunction<RouteParams>;
+    /** Callback to execute when the route is matched */
+    callback: RouteCallback;
+}
+/**
+ * Result of a route match.
+ */
+interface MatchedRoute {
+    /** The route that matched */
+    route: Route;
+    /** Parameters extracted from the URL path */
+    params: RouteParams;
+}
+/** Tuple type representing a single route: [method, path, callback] */
+type RouteTuple = [Method, string, RouteCallback];
+/** Array of route tuples, used to initialize Routes */
+type RouteTable = RouteTuple[];
+/**
+ * Container for route definitions and matching logic.
+ * Implements Iterable to allow iteration over all routes.
+ */
+declare class Routes implements Iterable<Route> {
+    /** Internal array of registered routes */
+    private readonly routes;
+    /**
+     * Initialize the route container with a table of routes.
+     * Clears any previously registered routes.
+     * @param table - Array of [method, path, callback] tuples
+     */
+    initialize(table: RouteTable): void;
+    /**
+     * Add a single route to the container.
+     * @param method - HTTP method (GET, POST, etc.)
+     * @param path - URL path pattern (Express-style, e.g., "/users/:id")
+     * @param callback - Function to execute when this route matches
+     */
+    add(method: Method, path: string, callback: RouteCallback): void;
+    /**
+     * Attempt to match a URL against the registered routes.
+     * @param method - HTTP method of the request
+     * @param url - Full URL string to match against
+     * @returns A MatchedRoute object if a route matches, otherwise null
+     */
+    match(method: Method, url: string): MatchedRoute | null;
+    /**
+     * Iterate over all registered routes.
+     */
+    [Symbol.iterator](): Iterator<Route>;
+}
+
+/**
+ * A type-safe Cloudflare Worker handler.
+ *
+ * Extends \`ExportedHandler\` but guarantees that the \`fetch\` method exists
+ * and has the correct signature for Cloudflare Worker invocation.
+ *
+ * @template E - The type of environment bindings passed to the worker. Defaults to \`Env\`.
+ */
+interface FetchHandler extends ExportedHandler<Env> {
+    /**
+     * Handles an incoming request and produces a response.
+     *
+     * @param request - The incoming \`Request\` object.
+     * @param env - Environment bindings (e.g., KV namespaces, secrets, Durable Objects).
+     * @param ctx - Execution context for background tasks (\`waitUntil\`).
+     * @returns A \`Promise\` that resolves to the response.
+     */
+    fetch: (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
+}
+/**
+ * Provides the foundational structure for handling requests,
+ * environment bindings, and the worker execution context.
+ *
+ * Features:
+ * - Holds the current \`Request\` object (\`request\` getter).
+ * - Provides access to environment bindings (\`env\` getter).
+ * - Provides access to the worker execution context (\`ctx\` getter).
+ * - Subclasses must implement \`fetch()\` to process the request.
+ */
+declare abstract class BaseWorker implements Worker {
+    private readonly _request;
+    private readonly _env;
+    private readonly _ctx;
+    constructor(_request: Request, _env: Env, _ctx: ExecutionContext);
+    /** The Request object associated with this worker invocation */
+    get request(): Request;
+    /** Environment bindings (e.g., KV, secrets, or other globals) */
+    get env(): Env;
+    /** Execution context for background tasks or \`waitUntil\` */
+    get ctx(): ExecutionContext;
+    /**
+     * The DEFAULT allowed HTTP methods for subclasses.
+     */
+    getAllowedMethods(): Method[];
+    /**
+     * Creates a new instance of the current Worker subclass.
+     *
+     * @param request - The {@link Request} to pass to the new worker instance.
+     * @returns A new worker instance of the same subclass as \`this\`.
+     */
+    protected create(request: Request): this;
+    /**
+     * Process the {@link Request} and produce a {@link Response}.
+     *
+     * @returns A {@link Response} promise for the {@link Request}.
+     */
+    abstract fetch(): Promise<Response>;
+    /**
+     * **Ignite** your \`Worker\` implementation into a Cloudflare handler.
+     *
+     * @returns A \`FetchHandler\` that launches a new worker instance for each request.
+     *
+     * @example
+     * \`\`\`ts
+     * export default MyWorker.ignite();
+     * \`\`\`
+     */
+    static ignite<W extends Worker>(this: WorkerConstructor<W>): FetchHandler;
+}
+
+/**
+ * Abstract base class for Workers to provide a default CORS policy.
+ *
+ * Implements the \`CorsProvider\` interface and provides a standard policy:
+ * - Allows all origins (\`*\`) by default.
+ * - Allows the \`Content-Type\` header.
+ * - Exposes no additional headers.
+ * - Sets CORS preflight max-age to one week.
+ *
+ * Subclasses can override any of the methods to customize the CORS behavior.
+ */
+declare abstract class CorsDefaults extends BaseWorker implements CorsProvider {
+    getAllowedOrigins(): string[];
+    allowAnyOrigin(): boolean;
+    getAllowedHeaders(): string[];
+    getExposedHeaders(): string[];
+    getMaxAge(): number;
+}
+
+/**
+ * Abstract worker class that adds caching support for GET requests.
+ *
+ * Behavior:
+ * - Caches successful GET responses (\`response.ok === true\`) in the selected cache.
+ * - Strips CORS headers from cached responses; all other origin headers are preserved.
+ * - Dynamically adds CORS headers to cached responses when returned to the client.
+ *
+ * Subclasses should override \`getCacheKey()\` to customize cache key generation if needed.
+ */
+declare abstract class CacheWorker extends CorsDefaults {
+    /**
+     * Returns the cache key for the current request.
+     *
+     * Behavior:
+     * - By default, returns the normalized request URL.
+     * - Query parameters are normalized so that the order does not affect the cache key.
+     *   For example, \`?a=1&b=2\` and \`?b=2&a=1\` produce the same cache key.
+     *
+     * Subclasses may override this method to implement custom cache key strategies.
+     *
+     * @returns {URL | RequestInfo} The URL or RequestInfo used as the cache key.
+     */
+    protected getCacheKey(): URL | RequestInfo;
+    /**
+     * Retrieves a cached Response for the current request, if one exists.
+     *
+     * Behavior:
+     * - Only GET requests are considered.
+     * - Returns a new Response with dynamic CORS headers applied via \`addCacheHeaders\`.
+     * - Returns \`undefined\` if no cached response is found.
+     * - Cloudflare dynamic headers (\`CF-Cache-Status\`, \`Age\`, \`Connection\`, etc.) will
+     *   always be present on the returned response, even though they are not stored in the cache.
+     *
+     * @param {string} [cacheName] Optional named cache; defaults to \`caches.default\`.
+     * @returns {Promise<Response | undefined>} A Response with CORS headers, or undefined.
+     * @see {@link setCachedResponse}
+     * @see {@link getCacheKey}
+     */
+    protected getCachedResponse(cacheName?: string): Promise<Response | undefined>;
+    /**
+     * Stores a Response in the cache for the current request.
+     *
+     * Behavior:
+     * - Only caches successful GET responses (\`response.ok === true\`).
+     * - Strips headers via \`removeCacheHeaders\` before storing.
+     * - Uses \`ctx.waitUntil\` to perform caching asynchronously without blocking the response.
+     * - All other origin headers (e.g., Cache-Control, Expires) are preserved.
+     *
+     * @param {Response} response The Response to cache.
+     * @param {string} [cacheName] Optional named cache; defaults to \`caches.default\`.
+     * @see {@link getCachedResponse}
+     * @see {@link getCacheKey}
+     */
+    protected setCachedResponse(response: Response, cacheName?: string): Promise<void>;
+    /**
+     * Controls whether the library's automatic caching is enabled.
+     *
+     * This method only affects the caching behavior provided by the library’s
+     * \`getCachedResponse()\` and \`setCachedResponse()\` methods. It does **not**
+     * prevent users from manually reading from or writing to \`caches.default\`
+     * or any other Cache API. By default, this returns \`true\`, enabling the
+     * library’s default caching behavior.
+     *
+     * Subclasses can override this method to disable automatic caching in
+     * development environments, for certain pathnames, or based on
+     * environment variables.
+     *
+     * @returns {boolean} \`true\` if the library should use its default caching,
+     *                    \`false\` to disable the library cache.
+     */
+    protected isCacheEnabled(): boolean | Promise<boolean>;
+    /**
+     * Adds headers to a cached response.
+     *
+     * @param {Response} cached The cached Response.
+     * @returns {Response} A new Response with dynamic CORS headers applied.
+     * @see {@link removeCacheHeaders}
+     */
+    protected addCacheHeaders(cached: Response): Response;
+    /**
+     * Removes headers that should not be stored in the cache (currently only CORS headers).
+     *
+     * @param {Response} response The Response to clean before caching.
+     * @returns {Response} A new Response with excluded headers removed.
+     * @see {@link addCacheHeaders}
+     */
+    protected removeCacheHeaders(response: Response): Response;
+    /**
+     * Returns the list of headers to exclude from the cached response.
+     * By default, excludes only dynamic CORS headers.
+     *
+     * @returns {string[]} Array of header names to exclude.
+     * @see {@link removeCacheHeaders}
+     */
+    protected excludeCacheHeaders(): string[];
+}
+
+declare abstract class BasicWorker extends CacheWorker {
+    fetch(): Promise<Response>;
+    protected dispatch(): Promise<Response>;
+    isAllowed(method: string): boolean;
+    protected get(): Promise<Response>;
+    protected put(): Promise<Response>;
+    protected post(): Promise<Response>;
+    protected patch(): Promise<Response>;
+    protected delete(): Promise<Response>;
+    protected options(): Promise<Response>;
+    protected head(): Promise<Response>;
+    protected getResponse<T extends WorkerResponse, Ctor extends new (worker: CorsWorker, ...args: any[]) => T>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor> extends [CorsWorker, ...infer R] ? R : never): Promise<Response>;
+}
+
+declare abstract class RouteWorker extends BasicWorker {
+    protected readonly routes: Routes;
+    protected initialize(table: RouteTable): void;
+    protected add<Path extends string>(method: Method, path: Path, callback: RouteCallback): this;
+    protected dispatch(): Promise<Response>;
+    protected get(): Promise<Response>;
+    protected put(): Promise<Response>;
+    protected post(): Promise<Response>;
+    protected patch(): Promise<Response>;
+    protected delete(): Promise<Response>;
+}
+
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, Cors, type CorsProvider, type CorsWorker, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, addCorsHeaders, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+"
+`;
+
 exports[`library export tests > matches the exported symbols snapshot 1`] = `
 [
   "BadRequest",

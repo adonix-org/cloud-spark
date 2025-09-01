@@ -17,12 +17,15 @@
 import { match, MatchFunction } from "path-to-regexp";
 import { Method } from "./common";
 
+/** Parameters extracted from a matched route */
+export type RouteParams = Record<string, string>;
+
 /**
  * Type for a route callback function.
  * @param params - Named parameters extracted from the URL path.
  * @returns A Response object or a Promise resolving to a Response.
  */
-export type RouteCallback = (params: Record<string, string>) => Promise<Response> | Response;
+export type RouteCallback = (params: RouteParams) => Promise<Response> | Response;
 
 /**
  * Represents a single route.
@@ -31,7 +34,7 @@ export interface Route {
     /** HTTP method for the route */
     method: Method;
     /** Path-to-regexp matcher function for this route */
-    matcher: MatchFunction<Record<string, string>>;
+    matcher: MatchFunction<RouteParams>;
     /** Callback to execute when the route is matched */
     callback: RouteCallback;
 }
@@ -43,7 +46,7 @@ export interface MatchedRoute {
     /** The route that matched */
     route: Route;
     /** Parameters extracted from the URL path */
-    params: Record<string, string>;
+    params: RouteParams;
 }
 
 /** Tuple type representing a single route: [method, path, callback] */
@@ -77,7 +80,7 @@ export class Routes implements Iterable<Route> {
      * @param callback - Function to execute when this route matches
      */
     public add(method: Method, path: string, callback: RouteCallback) {
-        const matcher = match<Record<string, string>>(path, {
+        const matcher = match<RouteParams>(path, {
             decode: decodeURIComponent,
         });
         this.routes.push({ method, matcher, callback });

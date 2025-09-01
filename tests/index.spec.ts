@@ -17,6 +17,8 @@
 import { describe, expect, it } from "vitest";
 import * as IndexExports from "../src/index";
 import { lexCompare } from "../src/common";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 describe("library export tests", () => {
     it("does not export the internal env type", () => {
@@ -33,5 +35,10 @@ describe("library export tests", () => {
     it("matches the exported symbols snapshot", () => {
         const keys = Object.keys(IndexExports).sort(lexCompare);
         expect(keys).toMatchSnapshot();
+    });
+
+    it("catches any changes to index.d.ts", () => {
+        const dts = readFileSync(join(__dirname, "../dist/index.d.ts"), "utf-8");
+        expect(dts).toMatchSnapshot();
     });
 });
