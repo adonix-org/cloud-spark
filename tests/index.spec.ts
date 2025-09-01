@@ -32,7 +32,7 @@ describe("library export tests", () => {
         expect(keys).toMatchSnapshot();
     });
 
-    it("catches any changes to index.d.ts", () => {
+    it("matches the index.d.ts snapshot", () => {
         const dts = readFileSync(join(__dirname, "../dist/index.d.ts"), "utf-8");
         expect(dts).toMatchSnapshot();
     });

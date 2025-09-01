@@ -1,6 +1,47 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`library export tests > catches any changes to index.d.ts 1`] = `
+exports[`library export tests > matches the exported symbols snapshot 1`] = `
+[
+  "BadRequest",
+  "BasicWorker",
+  "CacheControl",
+  "ClonedResponse",
+  "Cors",
+  "Forbidden",
+  "Head",
+  "HtmlResponse",
+  "HttpError",
+  "HttpHeader",
+  "InternalServerError",
+  "JsonResponse",
+  "MediaType",
+  "Method",
+  "MethodNotAllowed",
+  "MethodNotImplemented",
+  "NotFound",
+  "NotImplemented",
+  "Options",
+  "RouteWorker",
+  "Routes",
+  "ServiceUnavailable",
+  "StatusCodes",
+  "SuccessResponse",
+  "TextResponse",
+  "Time",
+  "Unauthorized",
+  "WorkerResponse",
+  "addCorsHeaders",
+  "getContentType",
+  "getOrigin",
+  "isMethod",
+  "lexCompare",
+  "mergeHeader",
+  "normalizeUrl",
+  "setHeader",
+]
+`;
+
+exports[`library export tests > matches the index.d.ts snapshot 1`] = `
 "import { StatusCodes } from 'http-status-codes';
 export { StatusCodes } from 'http-status-codes';
 import CacheLib from 'cache-control-parser';
@@ -638,45 +679,4 @@ declare abstract class RouteWorker extends BasicWorker {
 
 export { BadRequest, BasicWorker, CacheControl, ClonedResponse, Cors, type CorsProvider, type CorsWorker, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, addCorsHeaders, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
-`;
-
-exports[`library export tests > matches the exported symbols snapshot 1`] = `
-[
-  "BadRequest",
-  "BasicWorker",
-  "CacheControl",
-  "ClonedResponse",
-  "Cors",
-  "Forbidden",
-  "Head",
-  "HtmlResponse",
-  "HttpError",
-  "HttpHeader",
-  "InternalServerError",
-  "JsonResponse",
-  "MediaType",
-  "Method",
-  "MethodNotAllowed",
-  "MethodNotImplemented",
-  "NotFound",
-  "NotImplemented",
-  "Options",
-  "RouteWorker",
-  "Routes",
-  "ServiceUnavailable",
-  "StatusCodes",
-  "SuccessResponse",
-  "TextResponse",
-  "Time",
-  "Unauthorized",
-  "WorkerResponse",
-  "addCorsHeaders",
-  "getContentType",
-  "getOrigin",
-  "isMethod",
-  "lexCompare",
-  "mergeHeader",
-  "normalizeUrl",
-  "setHeader",
-]
 `;
