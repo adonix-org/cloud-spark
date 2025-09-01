@@ -64,9 +64,9 @@ export class Routes implements Iterable<Route> {
     private readonly routes: Route[] = [];
 
     /**
-     * Initialize the route container with a table of routes.
-     * Clears any previously registered routes.
-     * @param table - Array of [method, path, callback] tuples
+     * Registers all routes from the given table, replacing any existing routes.
+     *
+     * @param table The list of routes to register, in the form [method, path, callback].
      */
     public registerRoutes(table: RouteTable): void {
         this.routes.length = 0;
