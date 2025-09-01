@@ -22,9 +22,7 @@ export abstract class RouteWorker extends BasicWorker {
     protected readonly routes: Routes = new Routes();
 
     protected initialize(table: RouteTable): void {
-        for (const [method, path, callback] of table) {
-            this.routes.add(method, path, callback);
-        }
+        this.routes.initialize(table);
     }
 
     protected add<Path extends string>(method: Method, path: Path, callback: RouteCallback): this {
