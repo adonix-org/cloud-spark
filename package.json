@@ -31,7 +31,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/adonix-org/cloud-spark"
+        "url": "git+https://github.com/adonix-org/cloud-spark.git"
     },
     "bugs": {
         "email": "support@adonix.org",
