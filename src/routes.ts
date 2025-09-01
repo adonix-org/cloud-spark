@@ -98,8 +98,8 @@ export class Routes implements Iterable<Route> {
         for (const route of this) {
             if (route.method !== method) continue;
 
-            const result = route.matcher(pathname);
-            if (result) return { route, params: result.params };
+            const found = route.matcher(pathname);
+            if (found) return { route, params: found.params };
         }
 
         return null;
