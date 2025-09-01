@@ -443,7 +443,7 @@ declare class Routes implements Iterable<Route> {
      * Clears any previously registered routes.
      * @param table - Array of [method, path, callback] tuples
      */
-    initialize(table: RouteTable): void;
+    registerRoutes(table: RouteTable): void;
     /**
      * Add a single route to the container.
      * @param method - HTTP method (GET, POST, etc.)
@@ -667,7 +667,7 @@ declare abstract class BasicWorker extends CacheWorker {
 
 declare abstract class RouteWorker extends BasicWorker {
     protected readonly routes: Routes;
-    protected initialize(table: RouteTable): void;
+    protected registerRoutes(table: RouteTable): void;
     protected add<Path extends string>(method: Method, path: Path, callback: RouteCallback): this;
     protected dispatch(): Promise<Response>;
     protected get(): Promise<Response>;

@@ -54,7 +54,7 @@ describe("route worker unit tests", () => {
         class InitTestWorker extends TestWorker {
             constructor(request: Request) {
                 super(request);
-                this.initialize(TestRoutes.table);
+                this.registerRoutes(TestRoutes.table);
             }
         }
 

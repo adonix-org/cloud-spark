@@ -68,7 +68,7 @@ export class Routes implements Iterable<Route> {
      * Clears any previously registered routes.
      * @param table - Array of [method, path, callback] tuples
      */
-    public initialize(table: RouteTable): void {
+    public registerRoutes(table: RouteTable): void {
         this.routes.length = 0;
         table.forEach(([method, path, callback]) => this.add(method, path, callback));
     }
