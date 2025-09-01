@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { BasicWorker } from "./basic-worker";
 import { Method } from "./common";
 import { NotFound } from "./errors";
-import { Routes, RouteTable, RouteCallback } from "./routes";
+import { Routes, RouteCallback, RouteTable } from "./routes";
 
 export abstract class RouteWorker extends BasicWorker {
     protected readonly routes: Routes = new Routes();
 
-    protected initialize(table: RouteTable) {
-        this.routes.initialize(table);
+    protected initialize(table: RouteTable): void {
+        for (const [method, path, callback] of table) {
+            this.routes.add(method, path, callback);
+        }
     }
 
-    protected add(method: Method, pattern: RegExp | string, callback: RouteCallback) {
-        this.routes.add(method, pattern, callback);
+    protected add<Path extends string>(method: Method, path: Path, callback: RouteCallback): this {
+        this.routes.add(method, path, callback);
         return this;
     }
 
@@ -35,7 +36,7 @@ export abstract class RouteWorker extends BasicWorker {
         const found = this.routes.match(this.request.method as Method, this.request.url);
         if (!found) return super.dispatch();
 
-        return found.route.callback.call(this, found.match);
+        return found.route.callback.call(this, found.params);
     }
 
     protected override async get(): Promise<Response> {

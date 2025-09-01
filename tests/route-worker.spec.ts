@@ -26,8 +26,8 @@ class TestWorker extends RouteWorker {
         super(request, env, ctx);
     }
 
-    public override add(method: Method, pattern: string | RegExp, callback: RouteCallback): this {
-        return super.add(method, pattern, callback);
+    public override add(method: Method, path: string, callback: RouteCallback): this {
+        return super.add(method, path, callback);
     }
 
     public override getAllowedMethods(): Method[] {
@@ -54,7 +54,7 @@ describe("route worker unit tests", () => {
         class InitTestWorker extends TestWorker {
             constructor(request: Request) {
                 super(request);
-                this.initialize(TestRoutes.table); // allowed here
+                this.initialize(TestRoutes.table);
             }
         }
 
@@ -69,7 +69,7 @@ describe("route worker unit tests", () => {
         const request = new Request(new URL("two", VALID_URL));
         const worker = new TestWorker(request);
 
-        worker.add(Method.GET, /^\/two$/, TestRoutes.two);
+        worker.add(Method.GET, "/two", TestRoutes.two);
 
         const response = await worker.fetch();
         expect(await response.text()).toBe("two");
@@ -79,9 +79,8 @@ describe("route worker unit tests", () => {
         const request = new Request(new URL("/matches/7834", VALID_URL));
         const worker = new TestWorker(request);
 
-        // Use a regex literal for clarity
-        worker.add(Method.GET, /^\/matches\/(\d{4})$/, async (digits): Promise<Response> => {
-            return new Response(digits[1]); // capture group 1
+        worker.add(Method.GET, "/matches/:year" as const, async (params): Promise<Response> => {
+            return new Response(params["year"]);
         });
 
         const response = await worker.fetch();

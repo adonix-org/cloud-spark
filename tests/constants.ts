@@ -47,14 +47,14 @@ export namespace TestRoutes {
     };
 
     export const table: RouteTable = [
-        [Method.GET, "^/one$", one],
-        [Method.GET, "^/two$", two],
-        [Method.GET, "^/three$", three],
-        [Method.GET, "^/four$", four],
+        [Method.GET, "/one", one],
+        [Method.GET, "/two", two],
+        [Method.GET, "/three", three],
+        [Method.GET, "/four", four],
     ];
 
     export async function expectResponseBody(found: MatchedRoute, expected: string) {
-        const response = await found.route.callback(found.match);
+        const response = await found.route.callback(found.params);
         const text = await response.text();
         expect(text).toBe(expected);
     }

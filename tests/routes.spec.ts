@@ -20,8 +20,8 @@ import { Method } from "../src/common";
 import { Routes, RouteTable } from "../src/routes";
 
 const init: RouteTable = [
-    [Method.GET, "^/one$", TestRoutes.one],
-    [Method.GET, /^\/two$/, TestRoutes.two],
+    [Method.GET, "/one", TestRoutes.one],
+    [Method.GET, "/two", TestRoutes.two],
 ];
 
 describe("routes unit tests", () => {
@@ -40,36 +40,26 @@ describe("routes unit tests", () => {
         await TestRoutes.expectResponseBody(found!, "one");
     });
 
-    it("returns the route initialized with regex", async () => {
-        const url = new URL("two", VALID_URL);
-        const found = routes.match(Method.GET, url.toString());
-        expect(found).toBeDefined();
-        expect(found!.route.callback).toBe(TestRoutes.two);
-        await TestRoutes.expectResponseBody(found!, "two");
-    });
-
-    it("returns undefined when the pattern is not found", () => {
+    it("returns null when the pattern is not found", () => {
         const url = new URL("four", VALID_URL);
         const route = routes.match(Method.GET, url.toString());
-        expect(route).toBeUndefined();
+        expect(route).toBeNull();
     });
 
-    it("returns undefined when the method is not found", () => {
+    it("returns null when the method is not found", () => {
         const url = new URL("one", VALID_URL);
         const route = routes.match(Method.PUT, url.toString());
-        expect(route).toBeUndefined();
+        expect(route).toBeNull();
     });
 
     it("returns a route added after initialization", async () => {
         const method = Method.POST;
         const url = new URL("three", VALID_URL);
-        const pattern = /^\/three$/;
 
-        routes.add(method, pattern, TestRoutes.three);
+        routes.add(method, "/three", TestRoutes.three);
         const found = routes.match(method, url.toString());
 
         expect(found).toBeDefined();
-        expect(found?.route.pattern).toStrictEqual(pattern);
         expect(found?.route.callback).toBe(TestRoutes.three);
         await TestRoutes.expectResponseBody(found!, "three");
     });
@@ -77,13 +67,11 @@ describe("routes unit tests", () => {
     it("matches the root url", async () => {
         const method = Method.POST;
         const url = new URL(VALID_URL);
-        const pattern = /^\/$/;
 
-        routes.add(method, pattern, TestRoutes.four);
+        routes.add(method, "/", TestRoutes.four);
         const found = routes.match(method, url.toString());
 
         expect(found).toBeDefined();
-        expect(found?.route.pattern).toStrictEqual(pattern);
         expect(found?.route.callback).toBe(TestRoutes.four);
         await TestRoutes.expectResponseBody(found!, "four");
     });

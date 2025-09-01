@@ -21,7 +21,6 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "NotFound",
   "NotImplemented",
   "Options",
-  "Route",
   "RouteWorker",
   "Routes",
   "ServiceUnavailable",
