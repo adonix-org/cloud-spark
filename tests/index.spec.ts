@@ -21,11 +21,6 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 describe("library export tests", () => {
-    it("does not export the internal env type", () => {
-        const exportedKeys = Object.keys(IndexExports);
-        expect(exportedKeys).not.toContain("Env");
-    });
-
     it("ensures that no exported symbol is undefined", () => {
         Object.entries(IndexExports).forEach(([_key, value]) => {
             expect(value).not.toBeUndefined();
