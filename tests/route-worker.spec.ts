@@ -75,17 +75,40 @@ describe("route worker unit tests", () => {
         expect(await response.text()).toBe("two");
     });
 
-    it("returns matches to the callback function", async () => {
+    it("returns path parameter to the callback function", async () => {
         const request = new Request(new URL("/matches/7834", VALID_URL));
         const worker = new TestWorker(request);
 
         worker.add(Method.GET, "/matches/:year" as const, async (params): Promise<Response> => {
-            return new Response(params["year"]);
+            return new Response(JSON.stringify(params));
         });
 
         const response = await worker.fetch();
 
         expect(response).toBeInstanceOf(Response);
-        expect(await response.text()).toBe("7834");
+        expect(await response.json()).toStrictEqual({
+            year: "7834",
+        });
+    });
+
+    it("returns multiple path parameters to the callback function", async () => {
+        const request = new Request(new URL("/matches/2000/06", VALID_URL));
+        const worker = new TestWorker(request);
+
+        worker.add(
+            Method.GET,
+            "/matches/:year/:month" as const,
+            async (params): Promise<Response> => {
+                return new Response(JSON.stringify(params));
+            }
+        );
+
+        const response = await worker.fetch();
+
+        expect(response).toBeInstanceOf(Response);
+        expect(await response.json()).toStrictEqual({
+            year: "2000",
+            month: "06",
+        });
     });
 });
