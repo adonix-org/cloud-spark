@@ -17,7 +17,7 @@
 import { BasicWorker } from "./basic-worker";
 import { CorsProvider } from "./cors";
 import { CorsDefaults } from "./cors-defaults";
-import { CorsMiddleware } from "./cors-middleware";
+import { CorsHandler } from "./cors-handler";
 
 export abstract class CorsWorker extends BasicWorker {
     protected getCorsProvider(): CorsProvider {
@@ -26,6 +26,6 @@ export abstract class CorsWorker extends BasicWorker {
 
     constructor(request: Request, env: Env, ctx: ExecutionContext) {
         super(request, env, ctx);
-        this.use(new CorsMiddleware(this.getCorsProvider()));
+        this.use(new CorsHandler(this.getCorsProvider()));
     }
 }

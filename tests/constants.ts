@@ -71,4 +71,11 @@ export const GET_REQUEST_WITH_ORIGIN = new Request(VALID_URL, {
     },
 });
 
+export const GET_REQUEST_INVALID_ORIGIN = new Request(VALID_URL, {
+    method: Method.GET,
+    headers: {
+        Origin: INVALID_ORIGIN,
+    },
+});
+
 export const BODY_INIT: BodyInit = "OK";

@@ -16,7 +16,12 @@
 
 import { describe, expect, it } from "vitest";
 import { CorsWorker } from "../src/cors-worker";
-import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN } from "./constants";
+import {
+    GET_REQUEST,
+    GET_REQUEST_INVALID_ORIGIN,
+    GET_REQUEST_WITH_ORIGIN,
+    VALID_ORIGIN,
+} from "./constants";
 import { ctx, env } from "./mock";
 import { CorsDefaults, CorsProvider } from "../src";
 
@@ -47,7 +52,7 @@ describe("cors worker unit tests", () => {
         ]);
     });
 
-    it("adds all headers for when allow origin is not *", async () => {
+    it("adds all headers when allow origin is not *", async () => {
         class CorsSettings extends CorsDefaults {
             public getAllowedOrigins(): string[] {
                 return [VALID_ORIGIN];
@@ -65,6 +70,28 @@ describe("cors worker unit tests", () => {
             ["access-control-allow-headers", "Content-Type"],
             ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "https://localhost"],
+            ["access-control-max-age", "604800"],
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["vary", "Origin"],
+        ]);
+    });
+
+    it("adds only select headers when allowed does not contain request origin", async () => {
+        class CorsSettings extends CorsDefaults {
+            public getAllowedOrigins(): string[] {
+                return [VALID_ORIGIN];
+            }
+        }
+        class TestOriginClass extends TestWorker {
+            public override getCorsProvider(): CorsProvider {
+                return new CorsSettings();
+            }
+        }
+        const worker = new TestOriginClass(GET_REQUEST_INVALID_ORIGIN, env, ctx);
+        const response = await worker.fetch();
+        expect([...response.headers.entries()]).toStrictEqual([
+            ["access-control-allow-headers", "Content-Type"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-max-age", "604800"],
             ["content-type", "text/plain;charset=UTF-8"],
             ["vary", "Origin"],
