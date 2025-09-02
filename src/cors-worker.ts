@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { BasicWorker } from "./basic-worker";
 import { CorsProvider } from "./cors";
 import { CorsHandler } from "./cors-handler";
+import { MiddlewareWorker } from "./middleware-worker";
 
 /**
  * Abstract worker that automatically applies CORS headers via middleware.
  *
  * This class registers a `CorsHandler` middleware automatically in the constructor.
  */
-export abstract class CorsWorker extends BasicWorker {
+export abstract class CorsWorker extends MiddlewareWorker {
     /**
      * Creates a new CorsWorker instance and registers the `CorsHandler` middleware.
      *

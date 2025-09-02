@@ -34,11 +34,6 @@ export abstract class MiddlewareWorker extends BaseWorker {
     }
 
     /**
-     * Implementations will dispatch the request for correct handling.
-     */
-    protected abstract dispatch(): Promise<Response>;
-
-    /**
      * Fetch the current request through the registered middleware chain
      * and ultimately to the final worker handler.
      *

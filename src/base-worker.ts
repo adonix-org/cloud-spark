@@ -70,6 +70,17 @@ export abstract class BaseWorker implements Worker {
     }
 
     /**
+     * Dispatches the incoming request to the appropriate handler and produces a response.
+     *
+     * Subclasses must implement this method to define how the worker generates a `Response`
+     * for the current request. This is the central point where request processing occurs,
+     * and where middleware chains, routing, or other custom behavior can be applied.
+     *
+     * @returns A Promise that resolves to the `Response` for the request.
+     */
+    protected abstract dispatch(): Promise<Response>;
+
+    /**
      * The DEFAULT allowed HTTP methods for subclasses.
      */
     public getAllowedMethods(): Method[] {

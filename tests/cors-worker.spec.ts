@@ -26,7 +26,7 @@ import { ctx, env } from "./mock";
 import { CorsProvider } from "../src";
 
 class TestWorker extends CorsWorker {
-    public override async get(): Promise<Response> {
+    protected async dispatch(): Promise<Response> {
         return new Response("OK");
     }
 }
