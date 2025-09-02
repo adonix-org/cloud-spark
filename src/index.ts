@@ -24,3 +24,4 @@ export * from "./middleware";
 export * from "./cors-handler";
 export * from "./basic-worker";
 export * from "./route-worker";
+export * from "./cache-handler";

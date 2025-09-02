@@ -19,7 +19,7 @@ import { Cors } from "./cors";
 import { Middleware } from "./middleware";
 import { Worker } from "./worker";
 
-export class CacheWorker extends Middleware {
+export class CacheHandler extends Middleware {
     protected override async pre(worker: Worker): Promise<void | Response> {
         if (worker.request.method !== Method.GET) return;
 
