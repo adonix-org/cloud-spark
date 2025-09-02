@@ -21,16 +21,20 @@ import { Routes, RouteCallback, RouteTable } from "./routes";
 export abstract class RouteWorker extends BasicWorker {
     protected readonly routes: Routes = new Routes();
 
-    protected registerRoutes(table: RouteTable): void {
-        this.routes.registerRoutes(table);
+    protected abstract registerRoutes(): void;
+
+    protected load(table: RouteTable): void {
+        this.routes.load(table);
     }
 
-    protected add<Path extends string>(method: Method, path: Path, callback: RouteCallback): this {
+    protected add(method: Method, path: string, callback: RouteCallback): this {
         this.routes.add(method, path, callback);
         return this;
     }
 
     protected async dispatch(): Promise<Response> {
+        this.registerRoutes();
+
         const found = this.routes.match(this.request.method as Method, this.request.url);
         if (!found) return super.dispatch();
 

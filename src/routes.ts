@@ -68,7 +68,7 @@ export class Routes implements Iterable<Route> {
      *
      * @param table The list of routes to register, in the form [method, path, callback].
      */
-    public registerRoutes(table: RouteTable): void {
+    public load(table: RouteTable): void {
         this.routes.length = 0;
         table.forEach(([method, path, callback]) => this.add(method, path, callback));
     }

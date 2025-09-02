@@ -29,7 +29,7 @@ export class HttpError extends JsonResponse {
         const json: ErrorJson = {
             status,
             error: getReasonPhrase(status),
-            details: details ?? getReasonPhrase(status),
+            details: details ?? "",
         };
         super(worker, json, CacheControl.DISABLE, status);
     }

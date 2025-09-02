@@ -26,6 +26,12 @@ class TestWorker extends RouteWorker {
         super(request, env, ctx);
     }
 
+    protected registerRoutes(): void {
+        this.add(Method.GET, "/unit/tests/:name/:date", async (parms): Promise<Response> => {
+            return new Response(JSON.stringify(parms));
+        });
+    }
+
     public override add(method: Method, path: string, callback: RouteCallback): this {
         return super.add(method, path, callback);
     }
@@ -46,7 +52,7 @@ describe("route worker unit tests", () => {
         expect(json).toStrictEqual({
             status: 404,
             error: "Not Found",
-            details: "Not Found",
+            details: "",
         });
     });
 
@@ -54,7 +60,7 @@ describe("route worker unit tests", () => {
         class InitTestWorker extends TestWorker {
             constructor(request: Request) {
                 super(request);
-                this.registerRoutes(TestRoutes.table);
+                this.load(TestRoutes.table);
             }
         }
 
@@ -109,6 +115,19 @@ describe("route worker unit tests", () => {
         expect(await response.json()).toStrictEqual({
             year: "2000",
             month: "06",
+        });
+    });
+
+    it("returns path parameters from route defined in register routes method", async () => {
+        const request = new Request(new URL("/unit/tests/routes/2020-01-01", VALID_URL));
+        const worker = new TestWorker(request);
+
+        const response = await worker.fetch();
+
+        expect(response).toBeInstanceOf(Response);
+        expect(await response.json()).toStrictEqual({
+            name: "routes",
+            date: "2020-01-01",
         });
     });
 });

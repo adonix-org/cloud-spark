@@ -136,7 +136,7 @@ describe("basic worker unit tests", () => {
         const expectedJson = {
             status: 500,
             error: "Internal Server Error",
-            details: "Internal Server Error",
+            details: "",
         };
         expect(await response.json()).toStrictEqual(expectedJson);
 

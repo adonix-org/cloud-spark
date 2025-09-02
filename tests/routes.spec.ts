@@ -29,7 +29,7 @@ describe("routes unit tests", () => {
 
     beforeEach(() => {
         routes = new Routes();
-        routes.registerRoutes(init);
+        routes.load(init);
     });
 
     it("returns the route initialized with string", async () => {

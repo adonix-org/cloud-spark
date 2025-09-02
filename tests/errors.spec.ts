@@ -49,7 +49,7 @@ describe("http error unit tests", () => {
         expect(JSON.parse(err.body)).toEqual<ErrorJson>({
             status,
             error: reason,
-            details: reason,
+            details: "",
         });
     });
 
