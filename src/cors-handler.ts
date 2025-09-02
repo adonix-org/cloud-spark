@@ -28,24 +28,10 @@ import { Worker } from "./worker";
  * Can be registered with a `MiddlewareWorker` or any worker that supports middleware.
  */
 export class CorsHandler extends Middleware {
-    /**
-     * Create a new CorsHandler.
-     *
-     * @param provider - The `CorsProvider` that defines the CORS policy.
-     */
     constructor(private readonly provider: CorsProvider = new CorsProvider(DEFAULT_CORS_CONFIG)) {
         super();
     }
 
-    /**
-     * Apply CORS headers to the outgoing response.
-     *
-     * Modifies the response in place according to the `CorsProvider`.
-     * Adds `Vary: Origin` if not allowing all origins.
-     *
-     * @param worker - Worker handling the request.
-     * @param response - Response returned from downstream middleware or final handler.
-     */
     protected override post(worker: Worker, response: Response): Response {
         const mutable = new Response(response.body, response);
 
