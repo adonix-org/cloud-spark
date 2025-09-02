@@ -46,13 +46,14 @@ export class CorsHandler implements Middleware {
      * @returns A Promise resolving to the Response with CORS headers applied.
      */
     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        return next().then((response) => {
-            addCorsHeaders(worker, this.provider, response.headers);
+        const response = await next();
 
-            if (!allowAnyOrigin(this.provider)) {
-                mergeHeader(response.headers, "Vary", "Origin");
-            }
-            return response;
-        });
+        addCorsHeaders(worker, this.provider, response.headers);
+
+        if (!allowAnyOrigin(this.provider)) {
+            mergeHeader(response.headers, "Vary", "Origin");
+        }
+
+        return response;
     }
 }
