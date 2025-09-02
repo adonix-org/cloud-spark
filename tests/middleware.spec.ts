@@ -26,6 +26,7 @@ class TestWorker extends BasicWorker {
     constructor(request: Request) {
         super(request, env, ctx);
     }
+
     protected setup(): void {
         this.use(new PostHandler());
     }
@@ -80,4 +81,39 @@ describe("middleware unit tests", () => {
             ["x-content-type-options", "nosniff"],
         ]);
     });
+});
+
+class Handler extends Middleware {
+    protected override pre(_worker: Worker): void {
+        console.log(this.constructor.name, "PRE");
+    }
+
+    protected override post(_worker: Worker, _response: Response): void {
+        console.log(this.constructor.name, "POST");
+    }
+}
+
+class HandlerA extends Handler {}
+class HandlerB extends Handler {}
+class HandlerC extends Handler {}
+class HandlerD extends Handler {}
+
+class OrderWorker extends TestWorker {
+    protected override dispatch(): Promise<Response> {
+        console.log("DISPATCH");
+        return super.dispatch();
+    }
+
+    protected setup(): void {
+        this.use(new HandlerA());
+        this.use(new HandlerB());
+        this.use(new HandlerC());
+        this.use(new HandlerD());
+    }
+}
+
+it("details order of middleware", async () => {
+    const worker = new OrderWorker(GET_REQUEST);
+    const response = await worker.fetch();
+    expect(await response.text()).toBe("Ok");
 });

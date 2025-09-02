@@ -48,14 +48,11 @@ export abstract class Middleware {
      */
     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const preResult = await this.pre(worker);
-        if (preResult instanceof Response) {
-            return preResult;
-        }
+        if (preResult instanceof Response) return preResult;
 
         const response = await next();
 
         await this.post(worker, response);
-
         return response;
     }
 }
