@@ -15,7 +15,7 @@
  */
 
 import { mergeHeader } from "./common";
-import { addCorsHeaders, CorsProvider } from "./cors";
+import { addCorsHeaders, allowAnyOrigin, CorsProvider } from "./cors";
 import { Middleware } from "./middleware-worker";
 import { Worker } from "./worker";
 
@@ -26,7 +26,7 @@ export class CorsHandler implements Middleware {
         return next().then((response) => {
             addCorsHeaders(worker, this.provider, response.headers);
 
-            if (!this.provider.allowAnyOrigin()) {
+            if (!allowAnyOrigin(this.provider)) {
                 mergeHeader(response.headers, "Vary", "Origin");
             }
             return response;

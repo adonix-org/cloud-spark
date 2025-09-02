@@ -24,9 +24,6 @@ export interface CorsProvider {
     /** Returns a list of allowed origins. */
     getAllowedOrigins(): string[];
 
-    /** Returns true if any origin is allowed (`*`). */
-    allowAnyOrigin(): boolean;
-
     /** Returns the HTTP headers allowed by CORS. */
     getAllowedHeaders(): string[];
 
@@ -71,7 +68,7 @@ export function addCorsHeaders(worker: Worker, cors: CorsProvider, headers: Head
     // CORS is not required.
     if (!origin || origin.trim() === "") return;
 
-    if (cors.allowAnyOrigin()) {
+    if (allowAnyOrigin(cors)) {
         setHeader(headers, Cors.ALLOW_ORIGIN, Cors.ALLOW_ALL_ORIGINS);
     } else if (cors.getAllowedOrigins().includes(origin)) {
         setHeader(headers, Cors.ALLOW_ORIGIN, origin);
@@ -83,6 +80,10 @@ export function addCorsHeaders(worker: Worker, cors: CorsProvider, headers: Head
     setHeader(headers, Cors.ALLOW_METHODS, worker.getAllowedMethods());
     setHeader(headers, Cors.ALLOW_HEADERS, cors.getAllowedHeaders());
     mergeHeader(headers, Cors.EXPOSE_HEADERS, cors.getExposedHeaders());
+}
+
+export function allowAnyOrigin(cors: CorsProvider): boolean {
+    return cors.getAllowedOrigins().includes("*");
 }
 
 /**

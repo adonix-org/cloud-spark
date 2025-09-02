@@ -20,12 +20,12 @@ import { CorsDefaults } from "./cors-defaults";
 import { CorsHandler } from "./cors-handler";
 
 export abstract class CorsWorker extends BasicWorker {
-    protected getCorsProvider(): CorsProvider {
-        return new CorsDefaults();
+    protected getCorsProvider(defaults: CorsProvider): CorsProvider {
+        return defaults;
     }
 
     constructor(request: Request, env: Env, ctx: ExecutionContext) {
         super(request, env, ctx);
-        this.use(new CorsHandler(this.getCorsProvider()));
+        this.use(new CorsHandler(this.getCorsProvider(new CorsDefaults())));
     }
 }
