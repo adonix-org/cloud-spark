@@ -18,20 +18,46 @@ import { Method } from "./common";
 import { NotFound } from "./errors";
 import { Routes, RouteCallback, RouteTable } from "./routes";
 
+/**
+ * Abstract worker that provides routing capabilities.
+ * Extends `BasicWorker` and uses a `Routes` table to map HTTP methods and paths
+ * to handler callbacks.
+ */
 export abstract class RouteWorker extends BasicWorker {
+    /** Routing table used for registering and matching routes. */
     protected readonly routes: Routes = new Routes();
 
+    /**
+     * Subclasses must implement this method to register their routes
+     * using `add()` or `load()`.
+     */
     protected abstract registerRoutes(): void;
 
+    /**
+     * Loads routes from a `RouteTable` into this worker's route table.
+     * @param table The table of routes to load.
+     */
     protected load(table: RouteTable): void {
         this.routes.load(table);
     }
 
+    /**
+     * Adds a single route to this worker.
+     * @param method HTTP method (GET, POST, etc.)
+     * @param path Route path
+     * @param callback Function to handle requests matching this route
+     * @returns The worker instance (for chaining)
+     */
     protected add(method: Method, path: string, callback: RouteCallback): this {
         this.routes.add(method, path, callback);
         return this;
     }
 
+    /**
+     * Matches the incoming request against registered routes and executes
+     * the corresponding callback. Falls back to `BasicWorker.dispatch()` if no match.
+     * @returns The response from the matched route or the default handler.
+     */
     protected async dispatch(): Promise<Response> {
         this.registerRoutes();
 
