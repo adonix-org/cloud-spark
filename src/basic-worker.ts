@@ -15,8 +15,8 @@
  */
 
 import { isMethod, Method } from "./common";
-import { CorsWorker } from "./cors-worker";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "./errors";
+import { MiddlewareWorker } from "./middleware-worker";
 import { Head, Options, WorkerResponse } from "./response";
 import { Worker } from "./worker";
 
@@ -24,7 +24,7 @@ import { Worker } from "./worker";
  * Base worker class providing HTTP method dispatching, caching, and error handling.
  * Extends `CacheWorker` and defines default implementations for HTTP methods.
  */
-export abstract class BasicWorker extends CorsWorker {
+export abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Entry point to handle a fetch request.
      * Checks allowed methods, serves cached responses, or dispatches to the appropriate handler.

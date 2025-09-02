@@ -15,7 +15,7 @@
  */
 
 import { mergeHeader } from "./common";
-import { addCorsHeaders, allowAnyOrigin, CorsProvider } from "./cors";
+import { addCorsHeaders, allowAnyOrigin, CorsProvider, DEFAULT_CORS_CONFIG } from "./cors";
 import { Middleware } from "./middleware";
 import { Worker } from "./worker";
 
@@ -33,7 +33,7 @@ export class CorsHandler extends Middleware {
      *
      * @param provider - The `CorsProvider` that defines the CORS policy.
      */
-    constructor(private readonly provider: CorsProvider) {
+    constructor(private readonly provider: CorsProvider = new CorsProvider(DEFAULT_CORS_CONFIG)) {
         super();
     }
 
