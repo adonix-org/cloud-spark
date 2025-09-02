@@ -19,6 +19,7 @@ import { isMethod, Method } from "./common";
 import { CorsWorker } from "./cors";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "./errors";
 import { Head, Options, WorkerResponse } from "./response";
+
 /**
  * Base worker class providing HTTP method dispatching, caching, and error handling.
  * Extends `CacheWorker` and defines default implementations for HTTP methods.
@@ -27,7 +28,6 @@ export abstract class BasicWorker extends CacheWorker {
     /**
      * Entry point to handle a fetch request.
      * Checks allowed methods, serves cached responses, or dispatches to the appropriate handler.
-     * Returns 405 or 500 responses as needed.
      */
     public async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
