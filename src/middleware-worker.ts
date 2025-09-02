@@ -33,17 +33,6 @@ export abstract class MiddlewareWorker extends BaseWorker {
         return this;
     }
 
-    /**
-     * Fetch the current request through the registered middleware chain
-     * and ultimately to the final worker handler.
-     *
-     * Middleware are executed in **last-registered-first-called** order (via reduceRight).
-     * Each middleware receives the worker instance and a `next` function to call the
-     * next middleware or final handler.
-     *
-     * @returns A Promise resolving to the Response returned by the middleware chain
-     *          or the final handler.
-     */
     public async fetch(): Promise<Response> {
         const chain = this.middlewares.reduceRight(
             (next, mw) => () => mw.handle(this, next),
