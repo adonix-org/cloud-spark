@@ -5,6 +5,7 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "BadRequest",
   "BasicWorker",
   "CacheControl",
+  "CacheHandler",
   "ClonedResponse",
   "Cors",
   "CorsHandler",
@@ -817,6 +818,38 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, Cors, type CorsConfig, CorsHandler, CorsProvider, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, addCorsHeaders, allowAnyOrigin, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+declare class CacheHandler extends Middleware {
+    protected pre(worker: Worker): Promise<void | Response>;
+    protected post(worker: Worker, response: Response): Promise<void>;
+    /**
+     * Returns the cache key for the request.
+     *
+     * Behavior:
+     * - By default, returns the normalized request URL.
+     * - Query parameters are normalized so that the order does not affect the cache key.
+     *   For example, \`?a=1&b=2\` and \`?b=2&a=1\` produce the same cache key.
+     *
+     * @returns {URL | RequestInfo} The URL or RequestInfo used as the cache key.
+     */
+    getCacheKey(request: Request): URL | RequestInfo;
+    /**
+     * Removes headers that should not be stored in the cache (currently only CORS headers).
+     *
+     * @param {Response} response The Response to clean before caching.
+     * @returns {Response} A new Response with excluded headers removed.
+     * @see {@link addCacheHeaders}
+     */
+    removeCacheHeaders(response: Response): Response;
+    /**
+     * Returns the list of headers to exclude from the cached response.
+     * By default, excludes only dynamic CORS headers.
+     *
+     * @returns {string[]} Array of header names to exclude.
+     * @see {@link removeCacheHeaders}
+     */
+    excludeCacheHeaders(): string[];
+}
+
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, Cors, type CorsConfig, CorsHandler, CorsProvider, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, addCorsHeaders, allowAnyOrigin, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;
