@@ -15,7 +15,12 @@
  */
 
 import { mergeHeader, setHeader } from "./common";
-import { CorsWorker } from "./response";
+import { Worker } from "./worker";
+
+/**
+ * A Worker extended with CORS capabilities.
+ */
+export type CorsWorker = Worker & CorsProvider;
 
 /**
  * Implementations will provide a specific CORS policy.

@@ -16,7 +16,8 @@
 
 import { getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader, StatusCodes } from "./common";
-import { CorsWorker, JsonResponse } from "./response";
+import { JsonResponse } from "./response";
+import { CorsWorker } from "./cors";
 
 export interface ErrorJson {
     status: number;

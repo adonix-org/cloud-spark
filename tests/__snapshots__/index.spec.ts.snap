@@ -42,9 +42,9 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
 `;
 
 exports[`library export tests > matches the index.d.ts snapshot 1`] = `
-"import { StatusCodes } from 'http-status-codes';
+"import CacheLib from 'cache-control-parser';
+import { StatusCodes } from 'http-status-codes';
 export { StatusCodes } from 'http-status-codes';
-import CacheLib from 'cache-control-parser';
 import { MatchFunction } from 'path-to-regexp';
 
 /**
@@ -267,7 +267,52 @@ interface Worker {
     getAllowedMethods(): Method[];
 }
 
+/**
+ * A Worker extended with CORS capabilities.
+ */
 type CorsWorker = Worker & CorsProvider;
+/**
+ * Implementations will provide a specific CORS policy.
+ */
+interface CorsProvider {
+    /** Returns a list of allowed origins. */
+    getAllowedOrigins(): string[];
+    /** Returns true if any origin is allowed (\`*\`). */
+    allowAnyOrigin(): boolean;
+    /** Returns the HTTP headers allowed by CORS. */
+    getAllowedHeaders(): string[];
+    /** Returns the HTTP headers that should be exposed to the browser. */
+    getExposedHeaders(): string[];
+    /** Returns the max age (in seconds) for CORS preflight caching. */
+    getMaxAge(): number;
+}
+/**
+ * Constants for common CORS headers.
+ */
+declare namespace Cors {
+    const MAX_AGE = "Access-Control-Max-Age";
+    const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    const ALLOW_HEADERS = "Access-Control-Allow-Headers";
+    const ALLOW_METHODS = "Access-Control-Allow-Methods";
+    const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+    const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+    const ALLOW_ALL_ORIGINS = "*";
+}
+/**
+ * Adds or updates CORS headers on a Headers object according to the provided policy.
+ *
+ * Behavior:
+ * - Removes any existing CORS headers to avoid stale values.
+ * - If the request has no origin, the function exits early.
+ * - If wildcard \`*\` is allowed, sets Access-Control-Allow-Origin to \`*\`.
+ * - If the origin is explicitly allowed, sets the correct headers including credentials and Vary: Origin.
+ * - Optional headers (Expose-Headers, Allow-Headers, Allow-Methods, Max-Age) are always applied.
+ *
+ * @param cors The CorsProvider instance that determines allowed origins and headers
+ * @param headers The Headers object to update
+ */
+declare function addCorsHeaders(origin: string | null, cors: CorsWorker, headers: Headers): void;
+
 declare abstract class BaseResponse {
     headers: Headers;
     status: StatusCodes;
@@ -319,48 +364,6 @@ declare class Head extends WorkerResponse {
 declare class Options extends SuccessResponse {
     constructor(worker: CorsWorker);
 }
-
-/**
- * Implementations will provide a specific CORS policy.
- */
-interface CorsProvider {
-    /** Returns a list of allowed origins. */
-    getAllowedOrigins(): string[];
-    /** Returns true if any origin is allowed (\`*\`). */
-    allowAnyOrigin(): boolean;
-    /** Returns the HTTP headers allowed by CORS. */
-    getAllowedHeaders(): string[];
-    /** Returns the HTTP headers that should be exposed to the browser. */
-    getExposedHeaders(): string[];
-    /** Returns the max age (in seconds) for CORS preflight caching. */
-    getMaxAge(): number;
-}
-/**
- * Constants for common CORS headers.
- */
-declare namespace Cors {
-    const MAX_AGE = "Access-Control-Max-Age";
-    const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    const ALLOW_HEADERS = "Access-Control-Allow-Headers";
-    const ALLOW_METHODS = "Access-Control-Allow-Methods";
-    const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
-    const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-    const ALLOW_ALL_ORIGINS = "*";
-}
-/**
- * Adds or updates CORS headers on a Headers object according to the provided policy.
- *
- * Behavior:
- * - Removes any existing CORS headers to avoid stale values.
- * - If the request has no origin, the function exits early.
- * - If wildcard \`*\` is allowed, sets Access-Control-Allow-Origin to \`*\`.
- * - If the origin is explicitly allowed, sets the correct headers including credentials and Vary: Origin.
- * - Optional headers (Expose-Headers, Allow-Headers, Allow-Methods, Max-Age) are always applied.
- *
- * @param cors The CorsProvider instance that determines allowed origins and headers
- * @param headers The Headers object to update
- */
-declare function addCorsHeaders(origin: string | null, cors: CorsWorker, headers: Headers): void;
 
 interface ErrorJson {
     status: number;
