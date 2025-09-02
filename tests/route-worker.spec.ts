@@ -26,7 +26,7 @@ class TestWorker extends RouteWorker {
         super(request, env, ctx);
     }
 
-    protected registerRoutes(): void {
+    protected setup(): void {
         this.add(Method.GET, "/unit/tests/:name/:date", async (params): Promise<Response> => {
             return new Response(JSON.stringify(params));
         });

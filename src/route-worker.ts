@@ -29,12 +29,6 @@ export abstract class RouteWorker extends BasicWorker {
     protected readonly routes: Routes = new Routes();
 
     /**
-     * Subclasses must implement this method to register their routes
-     * using `add()` or `load()`.
-     */
-    protected abstract registerRoutes(): void;
-
-    /**
      * Loads routes from a `RouteTable` into this worker's route table.
      * @param table The table of routes to load.
      */
@@ -60,8 +54,6 @@ export abstract class RouteWorker extends BasicWorker {
      * @returns The response from the matched route or the default handler.
      */
     protected async dispatch(): Promise<Response> {
-        this.registerRoutes();
-
         const found = this.routes.match(this.request.method as Method, this.request.url);
         if (!found) return super.dispatch();
 

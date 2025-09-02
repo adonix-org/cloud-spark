@@ -28,6 +28,9 @@ import { BasicWorker, CorsProvider } from "../src";
 class TestWorker extends BasicWorker {
     constructor(request: Request) {
         super(request, env, ctx);
+    }
+
+    protected setup(): void {
         this.use(new CorsHandler());
     }
 
@@ -36,14 +39,9 @@ class TestWorker extends BasicWorker {
     }
 }
 
-class TestOriginWorker extends BasicWorker {
-    constructor(request: Request) {
-        super(request, env, ctx);
+class TestOriginWorker extends TestWorker {
+    protected setup(): void {
         this.use(new CorsHandler(new CorsProvider({ allowedOrigins: [VALID_ORIGIN] })));
-    }
-
-    protected override async get(): Promise<Response> {
-        return new Response("Ok");
     }
 }
 
