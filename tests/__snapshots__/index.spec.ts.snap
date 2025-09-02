@@ -615,10 +615,15 @@ declare abstract class BaseWorker implements Worker {
  * Subclasses can override any of the methods to customize the CORS behavior.
  */
 declare abstract class CorsDefaults extends BaseWorker implements CorsProvider {
+    /** Returns the allowed origins. Default: all origins (\`*\`). */
     getAllowedOrigins(): string[];
+    /** Returns true if any origin is allowed (i.e., \`*\` is present). */
     allowAnyOrigin(): boolean;
+    /** Returns the allowed headers for CORS requests. Default: \`Content-Type\`. */
     getAllowedHeaders(): string[];
+    /** Returns the headers exposed to the client. Default: none. */
     getExposedHeaders(): string[];
+    /** Returns the max age (in seconds) for preflight requests. Default: 1 week. */
     getMaxAge(): number;
 }
 
@@ -720,17 +725,58 @@ declare abstract class CacheWorker extends CorsDefaults {
     protected excludeCacheHeaders(): string[];
 }
 
+/**
+ * Base worker class providing HTTP method dispatching, caching, and error handling.
+ * Extends \`CacheWorker\` and defines default implementations for HTTP methods.
+ */
 declare abstract class BasicWorker extends CacheWorker {
+    /**
+     * Entry point to handle a fetch request.
+     * Checks allowed methods, serves cached responses, or dispatches to the appropriate handler.
+     * Returns 405 or 500 responses as needed.
+     */
     fetch(): Promise<Response>;
+    /**
+     * Dispatches the request to the method-specific handler.
+     * Defaults to MethodNotAllowed if the HTTP method is not recognized.
+     */
     protected dispatch(): Promise<Response>;
+    /**
+     * Checks if the given HTTP method is allowed for this worker.
+     * @param method HTTP method string
+     * @returns true if the method is allowed
+     */
     isAllowed(method: string): boolean;
+    /** Default handler for GET requests. Returns MethodNotImplemented unless overridden. */
     protected get(): Promise<Response>;
+    /** Default handler for PUT requests. Returns MethodNotImplemented unless overridden. */
     protected put(): Promise<Response>;
+    /** Default handler for POST requests. Returns MethodNotImplemented unless overridden. */
     protected post(): Promise<Response>;
+    /** Default handler for PATCH requests. Returns MethodNotImplemented unless overridden. */
     protected patch(): Promise<Response>;
+    /** Default handler for DELETE requests. Returns MethodNotImplemented unless overridden. */
     protected delete(): Promise<Response>;
+    /**
+     * Default handler for OPTIONS requests.
+     * Returns an Options response.
+     *
+     * Typically does not need to be overridden.
+     */
     protected options(): Promise<Response>;
+    /**
+     * Default handler for HEAD requests.
+     * Performs a GET request internally and removes the body for HEAD semantics.
+     *
+     * Usually does not need to be overridden, as this behavior covers standard HEAD requirements.
+     */
     protected head(): Promise<Response>;
+    /**
+     * Helper to construct a WorkerResponse of the given class with arguments.
+     * @param ResponseClass The response class to instantiate
+     * @param args Additional constructor arguments
+     * @returns The final Response object
+     */
     protected getResponse<T extends WorkerResponse, Ctor extends new (worker: CorsWorker, ...args: any[]) => T>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor> extends [CorsWorker, ...infer R] ? R : never): Promise<Response>;
 }
 
