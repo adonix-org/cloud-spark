@@ -88,7 +88,7 @@ abstract class CacheResponse extends BaseResponse {
 }
 
 /**
- * Core worker response. Combines CORS, caching, and security headers.
+ * Core worker response. Combines caching, and security headers.
  */
 export abstract class WorkerResponse extends CacheResponse {
     constructor(

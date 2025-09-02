@@ -19,6 +19,11 @@ import { Worker } from "./worker";
 
 /**
  * Default CORS configuration used by `CorsProvider`.
+ *
+ * By default, all origins are allowed, only `Content-Type` is allowed as a header,
+ * no headers are exposed, and preflight caching is 1 week.
+ *
+ * @see {@link CorsConfig}
  */
 export const DEFAULT_CORS_CONFIG: Required<CorsConfig> = {
     /** Origins allowed by default. Default: all (`*`). */
@@ -36,18 +41,20 @@ export const DEFAULT_CORS_CONFIG: Required<CorsConfig> = {
 
 /**
  * Configuration options for `CorsProvider`.
+ *
+ * @see {@link DEFAULT_CORS_CONFIG}
  */
 export interface CorsConfig {
-    /** Origins allowed for CORS requests. Optional; defaults to `["*"]`. */
+    /** Origins allowed for CORS requests. */
     allowedOrigins?: string[];
 
-    /** Allowed HTTP headers for CORS requests. Optional; defaults to `["Content-Type"]`. */
+    /** Allowed HTTP headers for CORS requests. */
     allowedHeaders?: string[];
 
-    /** HTTP headers exposed to the client. Optional; defaults to `[]`. */
+    /** HTTP headers exposed to the client. */
     exposedHeaders?: string[];
 
-    /** Max age in seconds for CORS preflight caching. Optional; defaults to 1 week. */
+    /** Max age in seconds for CORS preflight caching. */
     maxAge?: number;
 }
 
@@ -154,7 +161,7 @@ export function allowAnyOrigin(cors: CorsProvider): boolean {
  *
  * @param headers The Headers object to clean
  */
-function deleteCorsHeaders(headers: Headers) {
+function deleteCorsHeaders(headers: Headers): void {
     headers.delete(Cors.MAX_AGE);
     headers.delete(Cors.ALLOW_ORIGIN);
     headers.delete(Cors.ALLOW_HEADERS);
