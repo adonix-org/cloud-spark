@@ -17,17 +17,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { CacheWorker } from "../src/cache-worker";
 import { env, ctx, defaultCache, namedCache } from "./mock";
-import { GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "./constants";
+import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "./constants";
 import { Method } from "../src/common";
 import { addCorsHeaders } from "../src/cors";
 
 class TestWorker extends CacheWorker {
     constructor(request: Request) {
         super(request, env, ctx);
-    }
-
-    public async fetch(): Promise<Response> {
-        return new Response("OK");
     }
 
     public override async getCachedResponse(cacheName?: string): Promise<Response | undefined> {
@@ -140,5 +136,24 @@ describe("cache worker unit tests", () => {
 
         const response = await postWorker.getCachedResponse();
         expect(response).toBeUndefined();
+    });
+
+    it("returns the cached response", async () => {
+        class CacheTest extends TestWorker {
+            public override async get(): Promise<Response> {
+                return new Response("OK", {
+                    headers: { "X-Test-Random": Math.random().toString() },
+                });
+            }
+        }
+        const worker = new CacheTest(GET_REQUEST);
+
+        const firstResponse = await worker.fetch();
+        const firstHeader = firstResponse.headers.get("X-Test-Random");
+
+        const secondResponse = await worker.fetch();
+        const secondHeader = secondResponse.headers.get("X-Test-Random");
+
+        expect(firstHeader).toBe(secondHeader);
     });
 });

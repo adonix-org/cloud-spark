@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { CacheWorker } from "./cache-worker";
 import { isMethod, Method } from "./common";
 import { CorsWorker } from "./cors";
+import { CorsDefaults } from "./cors-defaults";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "./errors";
 import { Head, Options, WorkerResponse } from "./response";
 
@@ -24,7 +24,7 @@ import { Head, Options, WorkerResponse } from "./response";
  * Base worker class providing HTTP method dispatching, caching, and error handling.
  * Extends `CacheWorker` and defines default implementations for HTTP methods.
  */
-export abstract class BasicWorker extends CacheWorker {
+export abstract class BasicWorker extends CorsDefaults {
     /**
      * Entry point to handle a fetch request.
      * Checks allowed methods, serves cached responses, or dispatches to the appropriate handler.
@@ -35,12 +35,7 @@ export abstract class BasicWorker extends CacheWorker {
         }
 
         try {
-            const cached = await this.getCachedResponse();
-            if (cached) return cached;
-
-            const response = await this.dispatch();
-            this.setCachedResponse(response);
-            return response;
+            return await this.dispatch();
         } catch (error) {
             console.error(error);
             return this.getResponse(InternalServerError);

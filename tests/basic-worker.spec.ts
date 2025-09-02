@@ -65,24 +65,6 @@ describe("basic worker unit tests", () => {
         expect(await response.text()).toBe("");
     });
 
-    it("returns the cached response", async () => {
-        class CacheTest extends TestWorker {
-            protected override async dispatch(): Promise<Response> {
-                return new Response("OK", {
-                    headers: { "X-Test-Random": Math.random().toString() },
-                });
-            }
-        }
-        const worker = new CacheTest(GET_REQUEST);
-
-        const firstResponse = await worker.fetch();
-        const firstHeader = firstResponse.headers.get("X-Test-Random");
-
-        const secondResponse = await worker.fetch();
-        const secondHeader = secondResponse.headers.get("X-Test-Random");
-
-        expect(firstHeader).toBe(secondHeader);
-    });
 
     it("returns a 405 method not allowed response from fetch", async () => {
         const request = new Request(VALID_URL, { method: "BAD" as any });

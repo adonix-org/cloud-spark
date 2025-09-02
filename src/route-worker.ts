@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BasicWorker } from "./basic-worker";
+
+import { CacheWorker } from "./cache-worker";
 import { Method } from "./common";
 import { NotFound } from "./errors";
 import { Routes, RouteCallback, RouteTable } from "./routes";
@@ -23,7 +24,7 @@ import { Routes, RouteCallback, RouteTable } from "./routes";
  * Extends `BasicWorker` and uses a `Routes` table to map HTTP methods and paths
  * to handler callbacks.
  */
-export abstract class RouteWorker extends BasicWorker {
+export abstract class RouteWorker extends CacheWorker {
     /** Routing table used for registering and matching routes. */
     protected readonly routes: Routes = new Routes();
 

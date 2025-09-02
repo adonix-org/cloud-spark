@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { BasicWorker } from "./basic-worker";
 import { getOrigin, Method, normalizeUrl } from "./common";
 import { addCorsHeaders, Cors } from "./cors";
-import { CorsDefaults } from "./cors-defaults";
 
 /**
  * Abstract worker class that adds caching support for GET requests.
@@ -28,7 +28,28 @@ import { CorsDefaults } from "./cors-defaults";
  *
  * Subclasses should override `getCacheKey()` to customize cache key generation if needed.
  */
-export abstract class CacheWorker extends CorsDefaults {
+export abstract class CacheWorker extends BasicWorker {
+    /**
+     * Dispatches the request, returning a cached response if available.
+     *
+     * - Checks for a cached response first and returns it immediately if found.
+     * - Otherwise, calls the parent `dispatch()` to generate a fresh response.
+     * - Stores the fresh response in the cache before returning it.
+     *
+     * This override ensures that caching is applied transparently for all
+     * requests handled by this worker.
+     *
+     * @returns {Promise<Response>} The cached or newly generated response.
+     */
+    protected override async dispatch(): Promise<Response> {
+        const cached = await this.getCachedResponse();
+        if (cached) return cached;
+
+        const response = await super.dispatch();
+        this.setCachedResponse(response);
+        return response;
+    }
+
     /**
      * Returns the cache key for the current request.
      *
