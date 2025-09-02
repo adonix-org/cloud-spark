@@ -7,6 +7,7 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "CacheControl",
   "ClonedResponse",
   "Cors",
+  "CorsHandler",
   "CorsProvider",
   "DEFAULT_CORS_CONFIG",
   "Forbidden",
@@ -591,6 +592,34 @@ declare abstract class Middleware {
 }
 
 /**
+ * Middleware that automatically applies CORS headers to responses.
+ *
+ * Uses a \`CorsProvider\` to determine the allowed origins, allowed headers,
+ * exposed headers, and max age for preflight caching.
+ *
+ * Can be registered with a \`MiddlewareWorker\` or any worker that supports middleware.
+ */
+declare class CorsHandler extends Middleware {
+    private readonly provider;
+    /**
+     * Create a new CorsHandler.
+     *
+     * @param provider - The \`CorsProvider\` that defines the CORS policy.
+     */
+    constructor(provider?: CorsProvider);
+    /**
+     * Apply CORS headers to the outgoing response.
+     *
+     * Modifies the response in place according to the \`CorsProvider\`.
+     * Adds \`Vary: Origin\` if not allowing all origins.
+     *
+     * @param worker - Worker handling the request.
+     * @param response - Response returned from downstream middleware or final handler.
+     */
+    protected post(worker: Worker, response: Response): void;
+}
+
+/**
  * A type-safe Cloudflare Worker handler.
  *
  * Extends \`ExportedHandler\` but guarantees that the \`fetch\` method exists
@@ -788,6 +817,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, Cors, type CorsConfig, CorsProvider, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, addCorsHeaders, allowAnyOrigin, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, Cors, type CorsConfig, CorsHandler, CorsProvider, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, addCorsHeaders, allowAnyOrigin, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;
