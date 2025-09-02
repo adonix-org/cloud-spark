@@ -37,6 +37,15 @@ export class CorsHandler extends Middleware {
         super();
     }
 
+    /**
+     * Apply CORS headers to the outgoing response.
+     *
+     * Modifies the response in place according to the `CorsProvider`.
+     * Adds `Vary: Origin` if not allowing all origins.
+     *
+     * @param worker - Worker handling the request.
+     * @param response - Response returned from downstream middleware or final handler.
+     */
     protected post(worker: Worker, response: Response): void {
         addCorsHeaders(worker, this.provider, response.headers);
         if (!allowAnyOrigin(this.provider)) {
