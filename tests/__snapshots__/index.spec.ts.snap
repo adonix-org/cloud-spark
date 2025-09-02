@@ -268,10 +268,6 @@ interface Worker {
 }
 
 /**
- * A Worker extended with CORS capabilities.
- */
-type CorsWorker = Worker & CorsProvider;
-/**
  * Implementations will provide a specific CORS policy.
  */
 interface CorsProvider {
@@ -311,13 +307,15 @@ declare namespace Cors {
  * @param cors The CorsProvider instance that determines allowed origins and headers
  * @param headers The Headers object to update
  */
-declare function addCorsHeaders(origin: string | null, cors: CorsWorker, headers: Headers): void;
+declare function addCorsHeaders(origin: string | null, worker: Worker, cors: CorsProvider, headers: Headers): void;
 
 /**
  * Base class for building HTTP responses.
  * Manages headers, status, and media type.
  */
 declare abstract class BaseResponse {
+    readonly worker: Worker;
+    constructor(worker: Worker);
     /** HTTP headers for the response. */
     headers: Headers;
     /** HTTP status code (default 200 OK). */
@@ -336,22 +334,11 @@ declare abstract class BaseResponse {
     addContentType(): void;
 }
 /**
- * Base response class that adds CORS headers.
- */
-declare abstract class CorsResponse extends BaseResponse {
-    readonly worker: CorsWorker;
-    constructor(worker: CorsWorker);
-    /** Adds CORS headers to the response. */
-    protected addCorsHeaders(): void;
-    /** Gets the origin of the incoming request. */
-    protected getOrigin(): string | null;
-}
-/**
  * Base response class that adds caching headers.
  */
-declare abstract class CacheResponse extends CorsResponse {
+declare abstract class CacheResponse extends BaseResponse {
     cache?: CacheControl | undefined;
-    constructor(worker: CorsWorker, cache?: CacheControl | undefined);
+    constructor(worker: Worker, cache?: CacheControl | undefined);
     /** Adds Cache-Control header if caching is configured. */
     protected addCacheHeader(): void;
 }
@@ -360,7 +347,7 @@ declare abstract class CacheResponse extends CorsResponse {
  */
 declare abstract class WorkerResponse extends CacheResponse {
     private readonly body;
-    constructor(worker: CorsWorker, body?: BodyInit | null, cache?: CacheControl);
+    constructor(worker: Worker, body?: BodyInit | null, cache?: CacheControl);
     /** Builds the Response object with body, headers, and status. */
     getResponse(): Promise<Response>;
     /** Adds default security headers. */
@@ -370,43 +357,43 @@ declare abstract class WorkerResponse extends CacheResponse {
  * Wraps an existing Response and clones its body, headers, and status.
  */
 declare class ClonedResponse extends WorkerResponse {
-    constructor(worker: CorsWorker, response: Response, cache?: CacheControl);
+    constructor(worker: Worker, response: Response, cache?: CacheControl);
 }
 /**
  * Represents a successful response with customizable body and status.
  */
 declare class SuccessResponse extends WorkerResponse {
-    constructor(worker: CorsWorker, body?: BodyInit | null, cache?: CacheControl, status?: StatusCodes);
+    constructor(worker: Worker, body?: BodyInit | null, cache?: CacheControl, status?: StatusCodes);
 }
 /**
  * JSON response. Automatically sets Content-Type to application/json.
  */
 declare class JsonResponse extends SuccessResponse {
-    constructor(worker: CorsWorker, json?: unknown, cache?: CacheControl, status?: StatusCodes);
+    constructor(worker: Worker, json?: unknown, cache?: CacheControl, status?: StatusCodes);
 }
 /**
  * HTML response. Automatically sets Content-Type to text/html.
  */
 declare class HtmlResponse extends SuccessResponse {
-    constructor(worker: CorsWorker, body: string, cache?: CacheControl, status?: StatusCodes);
+    constructor(worker: Worker, body: string, cache?: CacheControl, status?: StatusCodes);
 }
 /**
  * Plain text response. Automatically sets Content-Type to text/plain.
  */
 declare class TextResponse extends SuccessResponse {
-    constructor(worker: CorsWorker, content: string, cache?: CacheControl, status?: StatusCodes);
+    constructor(worker: Worker, content: string, cache?: CacheControl, status?: StatusCodes);
 }
 /**
  * Response for HEAD requests. Clones headers but has no body.
  */
 declare class Head extends WorkerResponse {
-    constructor(worker: CorsWorker, get: Response);
+    constructor(worker: Worker, get: Response);
 }
 /**
  * Response for OPTIONS requests. Sets allowed methods and returns 204 No Content.
  */
 declare class Options extends SuccessResponse {
-    constructor(worker: CorsWorker);
+    constructor(worker: Worker);
 }
 
 /** Structure for JSON error responses. */
@@ -429,43 +416,43 @@ declare class HttpError extends JsonResponse {
      * @param status HTTP status code.
      * @param details Optional detailed error message.
      */
-    constructor(worker: CorsWorker, status: StatusCodes, details?: string | undefined);
+    constructor(worker: Worker, status: StatusCodes, details?: string | undefined);
 }
 /** 400 Bad Request error response. */
 declare class BadRequest extends HttpError {
-    constructor(worker: CorsWorker, details?: string);
+    constructor(worker: Worker, details?: string);
 }
 /** 401 Unauthorized error response. */
 declare class Unauthorized extends HttpError {
-    constructor(worker: CorsWorker, details?: string);
+    constructor(worker: Worker, details?: string);
 }
 /** 403 Forbidden error response. */
 declare class Forbidden extends HttpError {
-    constructor(worker: CorsWorker, details?: string);
+    constructor(worker: Worker, details?: string);
 }
 /** 404 Not Found error response. */
 declare class NotFound extends HttpError {
-    constructor(worker: CorsWorker, details?: string);
+    constructor(worker: Worker, details?: string);
 }
 /** 405 Method Not Allowed error response. */
 declare class MethodNotAllowed extends HttpError {
-    constructor(worker: CorsWorker);
+    constructor(worker: Worker);
 }
 /** 500 Internal Server Error response. */
 declare class InternalServerError extends HttpError {
-    constructor(worker: CorsWorker, details?: string);
+    constructor(worker: Worker, details?: string);
 }
 /** 501 Not Implemented error response. */
 declare class NotImplemented extends HttpError {
-    constructor(worker: CorsWorker, details?: string);
+    constructor(worker: Worker, details?: string);
 }
 /** 501 Method Not Implemented error response for unsupported HTTP methods. */
 declare class MethodNotImplemented extends NotImplemented {
-    constructor(worker: CorsWorker);
+    constructor(worker: Worker);
 }
 /** 503 Service Unavailable error response. */
 declare class ServiceUnavailable extends HttpError {
-    constructor(worker: CorsWorker, details?: string);
+    constructor(worker: Worker, details?: string);
 }
 
 /** Parameters extracted from a matched route */
@@ -604,34 +591,54 @@ declare abstract class BaseWorker implements Worker {
 }
 
 /**
- * Abstract base class for Workers to provide a default CORS policy.
+ * Middleware for a Worker.
  *
- * Implements the \`CorsProvider\` interface and provides a standard policy:
- * - Allows all origins (\`*\`) by default.
- * - Allows the \`Content-Type\` header.
- * - Exposes no additional headers.
- * - Sets CORS preflight max-age to one week.
- *
- * Subclasses can override any of the methods to customize the CORS behavior.
+ * Middleware can inspect or modify the request, perform side effects,
+ * and optionally call the next middleware or final handler.
  */
-declare abstract class CorsDefaults extends BaseWorker implements CorsProvider {
-    /** Returns the allowed origins. Default: all origins (\`*\`). */
-    getAllowedOrigins(): string[];
-    /** Returns true if any origin is allowed (i.e., \`*\` is present). */
-    allowAnyOrigin(): boolean;
-    /** Returns the allowed headers for CORS requests. Default: \`Content-Type\`. */
-    getAllowedHeaders(): string[];
-    /** Returns the headers exposed to the client. Default: none. */
-    getExposedHeaders(): string[];
-    /** Returns the max age (in seconds) for preflight requests. Default: 1 week. */
-    getMaxAge(): number;
+interface Middleware {
+    /**
+     * Handle a request in the context of the given worker.
+     *
+     * @param worker - The Worker instance handling the request. Provides
+     *                 access to the request, Cloudflare env, ctx, etc.
+     * @param next - Function to call the next middleware or final handler.
+     *               Must return a Promise of a Response.
+     * @returns A Response, either from this middleware or from the next.
+     */
+    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+}
+/**
+ * Worker that supports class-based middleware with optional always-run middleware.
+ * Extends CacheWorker to include caching logic automatically.
+ */
+declare abstract class MiddlewareWorker extends BaseWorker {
+    private readonly middlewares;
+    /**
+     * Register a middleware instance.
+     * @param mw Middleware to register
+     */
+    register(mw: Middleware): this;
+    protected abstract dispatch(): Promise<Response>;
+    /**
+     * Dispatches the current request through the registered middleware chain
+     * and ultimately to the final worker handler.
+     *
+     * Middleware are executed in **last-registered-first-called** order (via reduceRight).
+     * Each middleware receives the worker instance and a \`next\` function to call the
+     * next middleware or final handler.
+     *
+     * @returns A Promise resolving to the Response returned by the middleware chain
+     *          or the final handler.
+     */
+    fetch(): Promise<Response>;
 }
 
 /**
  * Base worker class providing HTTP method dispatching, caching, and error handling.
  * Extends \`CacheWorker\` and defines default implementations for HTTP methods.
  */
-declare abstract class BasicWorker extends CorsDefaults {
+declare abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Entry point to handle a fetch request.
      * Checks allowed methods, serves cached responses, or dispatches to the appropriate handler.
@@ -678,118 +685,7 @@ declare abstract class BasicWorker extends CorsDefaults {
      * @param args Additional constructor arguments
      * @returns The final Response object
      */
-    protected getResponse<T extends WorkerResponse, Ctor extends new (worker: CorsWorker, ...args: any[]) => T>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor> extends [CorsWorker, ...infer R] ? R : never): Promise<Response>;
-}
-
-/**
- * Abstract worker class that adds caching support for GET requests.
- *
- * Behavior:
- * - Caches successful GET responses (\`response.ok === true\`) in the selected cache.
- * - Strips CORS headers from cached responses; all other origin headers are preserved.
- * - Dynamically adds CORS headers to cached responses when returned to the client.
- *
- * Subclasses should override \`getCacheKey()\` to customize cache key generation if needed.
- */
-declare abstract class CacheWorker extends BasicWorker {
-    /**
-     * Dispatches the request, returning a cached response if available.
-     *
-     * - Checks for a cached response first and returns it immediately if found.
-     * - Otherwise, calls the parent \`dispatch()\` to generate a fresh response.
-     * - Stores the fresh response in the cache before returning it.
-     *
-     * This override ensures that caching is applied transparently for all
-     * requests handled by this worker.
-     *
-     * @returns {Promise<Response>} The cached or newly generated response.
-     */
-    protected dispatch(): Promise<Response>;
-    /**
-     * Returns the cache key for the current request.
-     *
-     * Behavior:
-     * - By default, returns the normalized request URL.
-     * - Query parameters are normalized so that the order does not affect the cache key.
-     *   For example, \`?a=1&b=2\` and \`?b=2&a=1\` produce the same cache key.
-     *
-     * Subclasses may override this method to implement custom cache key strategies.
-     *
-     * @returns {URL | RequestInfo} The URL or RequestInfo used as the cache key.
-     */
-    protected getCacheKey(): URL | RequestInfo;
-    /**
-     * Retrieves a cached Response for the current request, if one exists.
-     *
-     * Behavior:
-     * - Only GET requests are considered.
-     * - Returns a new Response with dynamic CORS headers applied via \`addCacheHeaders\`.
-     * - Returns \`undefined\` if no cached response is found.
-     * - Cloudflare dynamic headers (\`CF-Cache-Status\`, \`Age\`, \`Connection\`, etc.) will
-     *   always be present on the returned response, even though they are not stored in the cache.
-     *
-     * @param {string} [cacheName] Optional named cache; defaults to \`caches.default\`.
-     * @returns {Promise<Response | undefined>} A Response with CORS headers, or undefined.
-     * @see {@link setCachedResponse}
-     * @see {@link getCacheKey}
-     */
-    protected getCachedResponse(cacheName?: string): Promise<Response | undefined>;
-    /**
-     * Stores a Response in the cache for the current request.
-     *
-     * Behavior:
-     * - Only caches successful GET responses (\`response.ok === true\`).
-     * - Strips headers via \`removeCacheHeaders\` before storing.
-     * - Uses \`ctx.waitUntil\` to perform caching asynchronously without blocking the response.
-     * - All other origin headers (e.g., Cache-Control, Expires) are preserved.
-     *
-     * @param {Response} response The Response to cache.
-     * @param {string} [cacheName] Optional named cache; defaults to \`caches.default\`.
-     * @see {@link getCachedResponse}
-     * @see {@link getCacheKey}
-     */
-    protected setCachedResponse(response: Response, cacheName?: string): Promise<void>;
-    /**
-     * Controls whether the library's automatic caching is enabled.
-     *
-     * This method only affects the caching behavior provided by the library’s
-     * \`getCachedResponse()\` and \`setCachedResponse()\` methods. It does **not**
-     * prevent users from manually reading from or writing to \`caches.default\`
-     * or any other Cache API. By default, this returns \`true\`, enabling the
-     * library’s default caching behavior.
-     *
-     * Subclasses can override this method to disable automatic caching in
-     * development environments, for certain pathnames, or based on
-     * environment variables.
-     *
-     * @returns {boolean} \`true\` if the library should use its default caching,
-     *                    \`false\` to disable the library cache.
-     */
-    protected isCacheEnabled(): boolean | Promise<boolean>;
-    /**
-     * Adds headers to a cached response.
-     *
-     * @param {Response} cached The cached Response.
-     * @returns {Response} A new Response with dynamic CORS headers applied.
-     * @see {@link removeCacheHeaders}
-     */
-    protected addCacheHeaders(cached: Response): Response;
-    /**
-     * Removes headers that should not be stored in the cache (currently only CORS headers).
-     *
-     * @param {Response} response The Response to clean before caching.
-     * @returns {Response} A new Response with excluded headers removed.
-     * @see {@link addCacheHeaders}
-     */
-    protected removeCacheHeaders(response: Response): Response;
-    /**
-     * Returns the list of headers to exclude from the cached response.
-     * By default, excludes only dynamic CORS headers.
-     *
-     * @returns {string[]} Array of header names to exclude.
-     * @see {@link removeCacheHeaders}
-     */
-    protected excludeCacheHeaders(): string[];
+    protected getResponse<T extends WorkerResponse, Ctor extends new (worker: Worker, ...args: any[]) => T>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor> extends [Worker, ...infer R] ? R : never): Promise<Response>;
 }
 
 /**
@@ -797,7 +693,7 @@ declare abstract class CacheWorker extends BasicWorker {
  * Extends \`BasicWorker\` and uses a \`Routes\` table to map HTTP methods and paths
  * to handler callbacks.
  */
-declare abstract class RouteWorker extends CacheWorker {
+declare abstract class RouteWorker extends BasicWorker {
     /** Routing table used for registering and matching routes. */
     protected readonly routes: Routes;
     /**
@@ -831,6 +727,6 @@ declare abstract class RouteWorker extends CacheWorker {
     protected delete(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, Cors, type CorsProvider, type CorsWorker, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, addCorsHeaders, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, Cors, type CorsProvider, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, addCorsHeaders, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

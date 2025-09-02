@@ -22,15 +22,16 @@ import {
     mergeHeader,
     MediaType,
     setHeader,
-    getOrigin,
 } from "./common";
-import { addCorsHeaders, CorsWorker } from "./cors";
+import { Worker } from "./worker";
 
 /**
  * Base class for building HTTP responses.
  * Manages headers, status, and media type.
  */
 abstract class BaseResponse {
+    constructor(public readonly worker: Worker) {}
+
     /** HTTP headers for the response. */
     public headers: Headers = new Headers();
 
@@ -71,33 +72,10 @@ abstract class BaseResponse {
 }
 
 /**
- * Base response class that adds CORS headers.
- */
-abstract class CorsResponse extends BaseResponse {
-    constructor(public readonly worker: CorsWorker) {
-        super();
-    }
-
-    /** Adds CORS headers to the response. */
-    protected addCorsHeaders(): void {
-        addCorsHeaders(this.getOrigin(), this.worker, this.headers);
-
-        if (!this.worker.allowAnyOrigin()) {
-            this.mergeHeader(HttpHeader.VARY, HttpHeader.ORIGIN);
-        }
-    }
-
-    /** Gets the origin of the incoming request. */
-    protected getOrigin() {
-        return getOrigin(this.worker.request);
-    }
-}
-
-/**
  * Base response class that adds caching headers.
  */
-abstract class CacheResponse extends CorsResponse {
-    constructor(worker: CorsWorker, public cache?: CacheControl) {
+abstract class CacheResponse extends BaseResponse {
+    constructor(worker: Worker, public cache?: CacheControl) {
         super(worker);
     }
 
@@ -114,7 +92,7 @@ abstract class CacheResponse extends CorsResponse {
  */
 export abstract class WorkerResponse extends CacheResponse {
     constructor(
-        worker: CorsWorker,
+        worker: Worker,
         private readonly body: BodyInit | null = null,
         cache?: CacheControl
     ) {
@@ -123,7 +101,6 @@ export abstract class WorkerResponse extends CacheResponse {
 
     /** Builds the Response object with body, headers, and status. */
     public async getResponse(): Promise<Response> {
-        this.addCorsHeaders();
         this.addCacheHeader();
         this.addSecurityHeaders();
 
@@ -143,7 +120,7 @@ export abstract class WorkerResponse extends CacheResponse {
  * Wraps an existing Response and clones its body, headers, and status.
  */
 export class ClonedResponse extends WorkerResponse {
-    constructor(worker: CorsWorker, response: Response, cache?: CacheControl) {
+    constructor(worker: Worker, response: Response, cache?: CacheControl) {
         const clone = response.clone();
         super(worker, clone.body, cache);
         this.headers = new Headers(clone.headers);
@@ -157,7 +134,7 @@ export class ClonedResponse extends WorkerResponse {
  */
 export class SuccessResponse extends WorkerResponse {
     constructor(
-        worker: CorsWorker,
+        worker: Worker,
         body: BodyInit | null = null,
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
@@ -172,7 +149,7 @@ export class SuccessResponse extends WorkerResponse {
  */
 export class JsonResponse extends SuccessResponse {
     constructor(
-        worker: CorsWorker,
+        worker: Worker,
         json: unknown = {},
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
@@ -187,7 +164,7 @@ export class JsonResponse extends SuccessResponse {
  */
 export class HtmlResponse extends SuccessResponse {
     constructor(
-        worker: CorsWorker,
+        worker: Worker,
         body: string,
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
@@ -202,7 +179,7 @@ export class HtmlResponse extends SuccessResponse {
  */
 export class TextResponse extends SuccessResponse {
     constructor(
-        worker: CorsWorker,
+        worker: Worker,
         content: string,
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK
@@ -216,7 +193,7 @@ export class TextResponse extends SuccessResponse {
  * Response for HEAD requests. Clones headers but has no body.
  */
 export class Head extends WorkerResponse {
-    constructor(worker: CorsWorker, get: Response) {
+    constructor(worker: Worker, get: Response) {
         super(worker);
         this.headers = new Headers(get.headers);
     }
@@ -226,7 +203,7 @@ export class Head extends WorkerResponse {
  * Response for OPTIONS requests. Sets allowed methods and returns 204 No Content.
  */
 export class Options extends SuccessResponse {
-    constructor(worker: CorsWorker) {
+    constructor(worker: Worker) {
         super(worker, null, undefined, StatusCodes.NO_CONTENT);
         this.setHeader(HttpHeader.ALLOW, this.worker.getAllowedMethods());
     }

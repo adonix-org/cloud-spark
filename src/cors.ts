@@ -18,11 +18,6 @@ import { mergeHeader, setHeader } from "./common";
 import { Worker } from "./worker";
 
 /**
- * A Worker extended with CORS capabilities.
- */
-export type CorsWorker = Worker & CorsProvider;
-
-/**
  * Implementations will provide a specific CORS policy.
  */
 export interface CorsProvider {
@@ -68,7 +63,12 @@ export namespace Cors {
  * @param cors The CorsProvider instance that determines allowed origins and headers
  * @param headers The Headers object to update
  */
-export function addCorsHeaders(origin: string | null, cors: CorsWorker, headers: Headers): void {
+export function addCorsHeaders(
+    origin: string | null,
+    worker: Worker,
+    cors: CorsProvider,
+    headers: Headers
+): void {
     deleteCorsHeaders(headers);
 
     // CORS is not required.
@@ -83,7 +83,7 @@ export function addCorsHeaders(origin: string | null, cors: CorsWorker, headers:
 
     // Optional headers always applied if CORS.
     setHeader(headers, Cors.MAX_AGE, String(cors.getMaxAge()));
-    setHeader(headers, Cors.ALLOW_METHODS, cors.getAllowedMethods());
+    setHeader(headers, Cors.ALLOW_METHODS, worker.getAllowedMethods());
     setHeader(headers, Cors.ALLOW_HEADERS, cors.getAllowedHeaders());
     mergeHeader(headers, Cors.EXPOSE_HEADERS, cors.getExposedHeaders());
 }

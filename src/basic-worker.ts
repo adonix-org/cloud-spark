@@ -15,16 +15,16 @@
  */
 
 import { isMethod, Method } from "./common";
-import { CorsWorker } from "./cors";
-import { CorsDefaults } from "./cors-defaults";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "./errors";
+import { MiddlewareWorker } from "./middleware-worker";
 import { Head, Options, WorkerResponse } from "./response";
+import { Worker } from "./worker";
 
 /**
  * Base worker class providing HTTP method dispatching, caching, and error handling.
  * Extends `CacheWorker` and defines default implementations for HTTP methods.
  */
-export abstract class BasicWorker extends CorsDefaults {
+export abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Entry point to handle a fetch request.
      * Checks allowed methods, serves cached responses, or dispatches to the appropriate handler.
@@ -35,7 +35,7 @@ export abstract class BasicWorker extends CorsDefaults {
         }
 
         try {
-            return await this.dispatch();
+            return await super.fetch();
         } catch (error) {
             console.error(error);
             return this.getResponse(InternalServerError);
@@ -123,10 +123,10 @@ export abstract class BasicWorker extends CorsDefaults {
      */
     protected async getResponse<
         T extends WorkerResponse,
-        Ctor extends new (worker: CorsWorker, ...args: any[]) => T
+        Ctor extends new (worker: Worker, ...args: any[]) => T
     >(
         ResponseClass: Ctor,
-        ...args: ConstructorParameters<Ctor> extends [CorsWorker, ...infer R] ? R : never
+        ...args: ConstructorParameters<Ctor> extends [Worker, ...infer R] ? R : never
     ): Promise<Response> {
         return new ResponseClass(this, ...args).getResponse();
     }
