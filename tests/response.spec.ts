@@ -93,6 +93,14 @@ describe("response unit tests", () => {
         expect(r.headers.get(HttpHeader.ALLOW)).toBe("GET, HEAD, OPTIONS");
     });
 
+    it("merges existing header", async () => {
+        const resp = new Options(mockWorker);
+        resp.mergeHeader(HttpHeader.ALLOW, "POST");
+        const r = await resp.getResponse();
+        expect(r.status).toBe(StatusCodes.NO_CONTENT);
+        expect(r.headers.get(HttpHeader.ALLOW)).toBe("GET, HEAD, OPTIONS, POST");
+    });
+
     it("adds security header x-content-type-options", async () => {
         const resp = new SuccessResponse(mockWorker);
         const r = await resp.getResponse();
