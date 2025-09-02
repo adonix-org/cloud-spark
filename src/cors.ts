@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mergeHeader, setHeader } from "./common";
+import { getOrigin, mergeHeader, setHeader } from "./common";
 import { Worker } from "./worker";
 
 /**
@@ -57,19 +57,16 @@ export namespace Cors {
  * - Removes any existing CORS headers to avoid stale values.
  * - If the request has no origin, the function exits early.
  * - If wildcard `*` is allowed, sets Access-Control-Allow-Origin to `*`.
- * - If the origin is explicitly allowed, sets the correct headers including credentials and Vary: Origin.
+ * - If the origin is explicitly allowed, sets the correct headers including credentials.
  * - Optional headers (Expose-Headers, Allow-Headers, Allow-Methods, Max-Age) are always applied.
  *
  * @param cors The CorsProvider instance that determines allowed origins and headers
  * @param headers The Headers object to update
  */
-export function addCorsHeaders(
-    origin: string | null,
-    worker: Worker,
-    cors: CorsProvider,
-    headers: Headers
-): void {
+export function addCorsHeaders(worker: Worker, cors: CorsProvider, headers: Headers): void {
     deleteCorsHeaders(headers);
+
+    const origin = getOrigin(worker.request);
 
     // CORS is not required.
     if (!origin || origin.trim() === "") return;

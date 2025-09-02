@@ -47,15 +47,18 @@ export abstract class MiddlewareWorker extends BaseWorker {
      * Register a middleware instance.
      * @param mw Middleware to register
      */
-    public register(mw: Middleware): this {
+    public use(mw: Middleware): this {
         this.middlewares.push(mw);
         return this;
     }
 
+    /**
+     * Implementations will dispatch the request for correct handling.
+     */
     protected abstract dispatch(): Promise<Response>;
 
     /**
-     * Dispatches the current request through the registered middleware chain
+     * Fetch the current request through the registered middleware chain
      * and ultimately to the final worker handler.
      *
      * Middleware are executed in **last-registered-first-called** order (via reduceRight).

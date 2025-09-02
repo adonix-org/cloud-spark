@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { expect } from "vitest";
 import { Method } from "../src/common";
-import { CorsDefaults } from "../src/cors-defaults";
 import { MatchedRoute, RouteCallback, RouteTable } from "../src/routes";
 
 export const VALID_ORIGIN = "https://localhost";
@@ -72,37 +72,3 @@ export const GET_REQUEST_WITH_ORIGIN = new Request(VALID_URL, {
 });
 
 export const BODY_INIT: BodyInit = "OK";
-
-export class DefaultCorsWorker extends CorsDefaults {
-    public async fetch(): Promise<Response> {
-        return new Response(BODY_INIT);
-    }
-}
-
-export class AllowOriginWorker extends DefaultCorsWorker {
-    public override getAllowedOrigins(): string[] {
-        return [VALID_ORIGIN];
-    }
-}
-
-export class EmptyCorsWorker extends DefaultCorsWorker {
-    public override getAllowedOrigins(): string[] {
-        return [];
-    }
-
-    public override getAllowedHeaders(): string[] {
-        return [];
-    }
-
-    public override getAllowedMethods(): Method[] {
-        return [];
-    }
-
-    public override getExposedHeaders(): string[] {
-        return [];
-    }
-
-    public override getMaxAge(): number {
-        return 0;
-    }
-}

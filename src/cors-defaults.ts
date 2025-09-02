@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { BaseWorker } from "./base-worker";
 import { Time } from "./common";
 import { CorsProvider } from "./cors";
 
@@ -29,7 +28,7 @@ import { CorsProvider } from "./cors";
  *
  * Subclasses can override any of the methods to customize the CORS behavior.
  */
-export abstract class CorsDefaults extends BaseWorker implements CorsProvider {
+export class CorsDefaults implements CorsProvider {
     /** Returns the allowed origins. Default: all origins (`*`). */
     public getAllowedOrigins(): string[] {
         return ["*"];
