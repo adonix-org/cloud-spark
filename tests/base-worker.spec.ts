@@ -21,8 +21,12 @@ import { BODY_INIT, GET_REQUEST, VALID_URL } from "./constants";
 import { Method } from "../src/common";
 
 class TestWorker extends BaseWorker {
-    public async fetch(): Promise<Response> {
+    protected async dispatch(): Promise<Response> {
         return new Response(BODY_INIT);
+    }
+
+    public async fetch(): Promise<Response> {
+        return this.dispatch();
     }
 
     // This method is protected in base worker.
@@ -78,6 +82,9 @@ describe("base worker unit tests", () => {
         const instances: BaseWorker[] = [];
 
         class LocalTestWorker extends BaseWorker {
+            protected dispatch(): Promise<Response> {
+                throw new Error("Method not implemented.");
+            }
             constructor(...args: ConstructorParameters<typeof BaseWorker>) {
                 super(...args);
                 instances.push(this);
