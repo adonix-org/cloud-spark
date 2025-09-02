@@ -15,6 +15,7 @@
  */
 
 export * from "./cors";
+export * from "./cors-defaults";
 export * from "./common";
 export * from "./errors";
 export * from "./routes";
