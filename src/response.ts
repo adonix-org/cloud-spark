@@ -26,12 +26,24 @@ import {
 } from "./common";
 import { addCorsHeaders, CorsWorker } from "./cors";
 
+/**
+ * Base class for building HTTP responses.
+ * Manages headers, status, and media type.
+ */
 abstract class BaseResponse {
+    /** HTTP headers for the response. */
     public headers: Headers = new Headers();
+
+    /** HTTP status code (default 200 OK). */
     public status: StatusCodes = StatusCodes.OK;
+
+    /** Optional status text. Defaults to standard reason phrase. */
     public statusText?: string;
+
+    /** Optional media type of the response body. */
     public mediaType?: MediaType;
 
+    /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit {
         return {
             headers: this.headers,
@@ -40,14 +52,17 @@ abstract class BaseResponse {
         };
     }
 
+    /** Sets a header, overwriting any existing value. */
     public setHeader(key: string, value: string | string[]): void {
         setHeader(this.headers, key, value);
     }
 
+    /** Merges a header with existing values (does not overwrite). */
     public mergeHeader(key: string, value: string | string[]): void {
         mergeHeader(this.headers, key, value);
     }
 
+    /** Adds a Content-Type header based on the media type if set. */
     public addContentType() {
         if (this.mediaType) {
             this.headers.set(HttpHeader.CONTENT_TYPE, getContentType(this.mediaType));
@@ -55,11 +70,15 @@ abstract class BaseResponse {
     }
 }
 
+/**
+ * Base response class that adds CORS headers.
+ */
 abstract class CorsResponse extends BaseResponse {
     constructor(public readonly worker: CorsWorker) {
         super();
     }
 
+    /** Adds CORS headers to the response. */
     protected addCorsHeaders(): void {
         addCorsHeaders(this.getOrigin(), this.worker, this.headers);
 
@@ -68,16 +87,21 @@ abstract class CorsResponse extends BaseResponse {
         }
     }
 
+    /** Gets the origin of the incoming request. */
     protected getOrigin() {
         return getOrigin(this.worker.request);
     }
 }
 
+/**
+ * Base response class that adds caching headers.
+ */
 abstract class CacheResponse extends CorsResponse {
     constructor(worker: CorsWorker, public cache?: CacheControl) {
         super(worker);
     }
 
+    /** Adds Cache-Control header if caching is configured. */
     protected addCacheHeader(): void {
         if (this.cache) {
             this.headers.set(HttpHeader.CACHE_CONTROL, CacheControl.stringify(this.cache));
@@ -85,6 +109,9 @@ abstract class CacheResponse extends CorsResponse {
     }
 }
 
+/**
+ * Core worker response. Combines CORS, caching, and security headers.
+ */
 export abstract class WorkerResponse extends CacheResponse {
     constructor(
         worker: CorsWorker,
@@ -94,6 +121,7 @@ export abstract class WorkerResponse extends CacheResponse {
         super(worker, cache);
     }
 
+    /** Builds the Response object with body, headers, and status. */
     public async getResponse(): Promise<Response> {
         this.addCorsHeaders();
         this.addCacheHeader();
@@ -105,11 +133,15 @@ export abstract class WorkerResponse extends CacheResponse {
         return new Response(body, this.responseInit);
     }
 
+    /** Adds default security headers. */
     protected addSecurityHeaders(): void {
         this.setHeader(HttpHeader.X_CONTENT_TYPE_OPTIONS, HttpHeader.NOSNIFF);
     }
 }
 
+/**
+ * Wraps an existing Response and clones its body, headers, and status.
+ */
 export class ClonedResponse extends WorkerResponse {
     constructor(worker: CorsWorker, response: Response, cache?: CacheControl) {
         const clone = response.clone();
@@ -120,6 +152,9 @@ export class ClonedResponse extends WorkerResponse {
     }
 }
 
+/**
+ * Represents a successful response with customizable body and status.
+ */
 export class SuccessResponse extends WorkerResponse {
     constructor(
         worker: CorsWorker,
@@ -132,6 +167,9 @@ export class SuccessResponse extends WorkerResponse {
     }
 }
 
+/**
+ * JSON response. Automatically sets Content-Type to application/json.
+ */
 export class JsonResponse extends SuccessResponse {
     constructor(
         worker: CorsWorker,
@@ -144,6 +182,9 @@ export class JsonResponse extends SuccessResponse {
     }
 }
 
+/**
+ * HTML response. Automatically sets Content-Type to text/html.
+ */
 export class HtmlResponse extends SuccessResponse {
     constructor(
         worker: CorsWorker,
@@ -156,6 +197,9 @@ export class HtmlResponse extends SuccessResponse {
     }
 }
 
+/**
+ * Plain text response. Automatically sets Content-Type to text/plain.
+ */
 export class TextResponse extends SuccessResponse {
     constructor(
         worker: CorsWorker,
@@ -169,7 +213,7 @@ export class TextResponse extends SuccessResponse {
 }
 
 /**
- * Removes the body from a GET response.
+ * Response for HEAD requests. Clones headers but has no body.
  */
 export class Head extends WorkerResponse {
     constructor(worker: CorsWorker, get: Response) {
@@ -178,6 +222,9 @@ export class Head extends WorkerResponse {
     }
 }
 
+/**
+ * Response for OPTIONS requests. Sets allowed methods and returns 204 No Content.
+ */
 export class Options extends SuccessResponse {
     constructor(worker: CorsWorker) {
         super(worker, null, undefined, StatusCodes.NO_CONTENT);

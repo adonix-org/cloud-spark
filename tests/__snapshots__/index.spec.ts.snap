@@ -313,54 +313,98 @@ declare namespace Cors {
  */
 declare function addCorsHeaders(origin: string | null, cors: CorsWorker, headers: Headers): void;
 
+/**
+ * Base class for building HTTP responses.
+ * Manages headers, status, and media type.
+ */
 declare abstract class BaseResponse {
+    /** HTTP headers for the response. */
     headers: Headers;
+    /** HTTP status code (default 200 OK). */
     status: StatusCodes;
+    /** Optional status text. Defaults to standard reason phrase. */
     statusText?: string;
+    /** Optional media type of the response body. */
     mediaType?: MediaType;
+    /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit;
+    /** Sets a header, overwriting any existing value. */
     setHeader(key: string, value: string | string[]): void;
+    /** Merges a header with existing values (does not overwrite). */
     mergeHeader(key: string, value: string | string[]): void;
+    /** Adds a Content-Type header based on the media type if set. */
     addContentType(): void;
 }
+/**
+ * Base response class that adds CORS headers.
+ */
 declare abstract class CorsResponse extends BaseResponse {
     readonly worker: CorsWorker;
     constructor(worker: CorsWorker);
+    /** Adds CORS headers to the response. */
     protected addCorsHeaders(): void;
+    /** Gets the origin of the incoming request. */
     protected getOrigin(): string | null;
 }
+/**
+ * Base response class that adds caching headers.
+ */
 declare abstract class CacheResponse extends CorsResponse {
     cache?: CacheControl | undefined;
     constructor(worker: CorsWorker, cache?: CacheControl | undefined);
+    /** Adds Cache-Control header if caching is configured. */
     protected addCacheHeader(): void;
 }
+/**
+ * Core worker response. Combines CORS, caching, and security headers.
+ */
 declare abstract class WorkerResponse extends CacheResponse {
     private readonly body;
     constructor(worker: CorsWorker, body?: BodyInit | null, cache?: CacheControl);
+    /** Builds the Response object with body, headers, and status. */
     getResponse(): Promise<Response>;
+    /** Adds default security headers. */
     protected addSecurityHeaders(): void;
 }
+/**
+ * Wraps an existing Response and clones its body, headers, and status.
+ */
 declare class ClonedResponse extends WorkerResponse {
     constructor(worker: CorsWorker, response: Response, cache?: CacheControl);
 }
+/**
+ * Represents a successful response with customizable body and status.
+ */
 declare class SuccessResponse extends WorkerResponse {
     constructor(worker: CorsWorker, body?: BodyInit | null, cache?: CacheControl, status?: StatusCodes);
 }
+/**
+ * JSON response. Automatically sets Content-Type to application/json.
+ */
 declare class JsonResponse extends SuccessResponse {
     constructor(worker: CorsWorker, json?: unknown, cache?: CacheControl, status?: StatusCodes);
 }
+/**
+ * HTML response. Automatically sets Content-Type to text/html.
+ */
 declare class HtmlResponse extends SuccessResponse {
     constructor(worker: CorsWorker, body: string, cache?: CacheControl, status?: StatusCodes);
 }
+/**
+ * Plain text response. Automatically sets Content-Type to text/plain.
+ */
 declare class TextResponse extends SuccessResponse {
     constructor(worker: CorsWorker, content: string, cache?: CacheControl, status?: StatusCodes);
 }
 /**
- * Removes the body from a GET response.
+ * Response for HEAD requests. Clones headers but has no body.
  */
 declare class Head extends WorkerResponse {
     constructor(worker: CorsWorker, get: Response);
 }
+/**
+ * Response for OPTIONS requests. Sets allowed methods and returns 204 No Content.
+ */
 declare class Options extends SuccessResponse {
     constructor(worker: CorsWorker);
 }
@@ -668,11 +712,37 @@ declare abstract class BasicWorker extends CacheWorker {
     protected getResponse<T extends WorkerResponse, Ctor extends new (worker: CorsWorker, ...args: any[]) => T>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor> extends [CorsWorker, ...infer R] ? R : never): Promise<Response>;
 }
 
+/**
+ * Abstract worker that provides routing capabilities.
+ * Extends \`BasicWorker\` and uses a \`Routes\` table to map HTTP methods and paths
+ * to handler callbacks.
+ */
 declare abstract class RouteWorker extends BasicWorker {
+    /** Routing table used for registering and matching routes. */
     protected readonly routes: Routes;
+    /**
+     * Subclasses must implement this method to register their routes
+     * using \`add()\` or \`load()\`.
+     */
     protected abstract registerRoutes(): void;
+    /**
+     * Loads routes from a \`RouteTable\` into this worker's route table.
+     * @param table The table of routes to load.
+     */
     protected load(table: RouteTable): void;
+    /**
+     * Adds a single route to this worker.
+     * @param method HTTP method (GET, POST, etc.)
+     * @param path Route path
+     * @param callback Function to handle requests matching this route
+     * @returns The worker instance (for chaining)
+     */
     protected add(method: Method, path: string, callback: RouteCallback): this;
+    /**
+     * Matches the incoming request against registered routes and executes
+     * the corresponding callback. Falls back to \`BasicWorker.dispatch()\` if no match.
+     * @returns The response from the matched route or the default handler.
+     */
     protected dispatch(): Promise<Response>;
     protected get(): Promise<Response>;
     protected put(): Promise<Response>;
