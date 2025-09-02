@@ -28,7 +28,7 @@ class TestWorker extends BasicWorker {
     }
 
     protected setup(): void {
-        this.use(new PostHandler());
+        this.use(new AddHeader());
     }
 
     protected override async dispatch(): Promise<Response> {
@@ -36,34 +36,33 @@ class TestWorker extends BasicWorker {
     }
 }
 
-class AuthWorker extends TestWorker {
-    protected setup(): void {
-        this.use(new PreHandler()).use(new AuthHandler()).use(new PostHandler());
-    }
-}
-
-class PreHandler extends Middleware {}
-
-class PostHandler extends Middleware {
-    protected override post(_worker: Worker, response: Response): Response {
-        response.headers.set("x-post-handler", "true");
+class AddHeader extends Middleware {
+    override async handle(_worker: Worker, next: () => Promise<Response>): Promise<Response> {
+        const response = await next();
+        response.headers.set("x-custom-header", String(true));
         return response;
     }
 }
 
+class AuthWorker extends TestWorker {
+    protected setup(): void {
+        this.use(new AuthHandler());
+    }
+}
+
 class AuthHandler extends Middleware {
-    protected override pre(worker: Worker): Promise<Response> {
+    public override handle(worker: Worker): Promise<Response> {
         return new Unauthorized(worker).getResponse();
     }
 }
 
 describe("middleware unit tests", () => {
-    it("adds a header to the response in post", async () => {
+    it("adds a header to the response", async () => {
         const worker = new TestWorker(GET_REQUEST);
         const response = await worker.fetch();
         expect([...response.headers.entries()]).toStrictEqual([
             ["content-type", "text/plain;charset=UTF-8"],
-            ["x-post-handler", "true"],
+            ["x-custom-header", "true"],
         ]);
     });
 
@@ -84,21 +83,25 @@ describe("middleware unit tests", () => {
     });
 });
 
-class Handler extends Middleware {
-    protected override pre(_worker: Worker): void {
-        console.log(this.constructor.name, "PRE");
-    }
+class TestHandler extends Middleware {
+    public override async handle(
+        _worker: Worker,
+        next: () => Promise<Response>
+    ): Promise<Response> {
+        console.log(this.constructor.name, "BEFORE");
 
-    protected override post(_worker: Worker, _response: Response): Response {
-        console.log(this.constructor.name, "POST");
-        return _response;
+        const response = await next();
+
+        console.log(this.constructor.name, "AFTER");
+
+        return response;
     }
 }
 
-class HandlerA extends Handler {}
-class HandlerB extends Handler {}
-class HandlerC extends Handler {}
-class HandlerD extends Handler {}
+class HandlerA extends TestHandler {}
+class HandlerB extends TestHandler {}
+class HandlerC extends TestHandler {}
+class HandlerD extends TestHandler {}
 
 class OrderWorker extends TestWorker {
     protected override dispatch(): Promise<Response> {

@@ -32,7 +32,9 @@ export class CorsHandler extends Middleware {
         super();
     }
 
-    protected override post(worker: Worker, response: Response): Response {
+    public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+        const response = await next();
+
         const mutable = new Response(response.body, response);
 
         addCorsHeaders(worker, this.provider, mutable.headers);

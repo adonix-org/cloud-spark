@@ -22,37 +22,5 @@ import { Worker } from "./worker";
  * with optional short-circuit support.
  */
 export abstract class Middleware {
-    /**
-     * Implement this method to perform logic **before** the next middleware.
-     * Can inspect or modify the request via the worker instance.
-     * Return a Response to short-circuit the chain, or `undefined` to continue.
-     * @param worker The worker handling the request
-     */
-    protected pre(_worker: Worker): void | Response | Promise<void | Response> {
-        return;
-    }
-
-    /**
-     * Implement this method to perform logic **after** the next middleware.
-     * Can inspect or modify the response before it is returned.
-     * @param worker The worker handling the request
-     * @param response The Response returned from the next middleware or final handler
-     */
-    protected post(_worker: Worker, _response: Response): Response | Promise<Response> {
-        return _response;
-    }
-
-    /**
-     * Executes this middleware around the next middleware or final handler.
-     * Calls `pre`, then `next()` if not short-circuited, then `post`.
-     */
-    public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        const preResponse = await this.pre(worker);
-        if (preResponse instanceof Response) return preResponse;
-
-        const response = await next();
-
-        const postResponse = await this.post(worker, response);
-        return postResponse;
-    }
+    public abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }

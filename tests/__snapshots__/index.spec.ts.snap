@@ -571,25 +571,7 @@ declare class Routes implements Iterable<Route> {
  * with optional short-circuit support.
  */
 declare abstract class Middleware {
-    /**
-     * Implement this method to perform logic **before** the next middleware.
-     * Can inspect or modify the request via the worker instance.
-     * Return a Response to short-circuit the chain, or \`undefined\` to continue.
-     * @param worker The worker handling the request
-     */
-    protected pre(_worker: Worker): void | Response | Promise<void | Response>;
-    /**
-     * Implement this method to perform logic **after** the next middleware.
-     * Can inspect or modify the response before it is returned.
-     * @param worker The worker handling the request
-     * @param response The Response returned from the next middleware or final handler
-     */
-    protected post(_worker: Worker, _response: Response): Response | Promise<Response>;
-    /**
-     * Executes this middleware around the next middleware or final handler.
-     * Calls \`pre\`, then \`next()\` if not short-circuited, then \`post\`.
-     */
-    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+    abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
 /**
@@ -602,22 +584,8 @@ declare abstract class Middleware {
  */
 declare class CorsHandler extends Middleware {
     private readonly provider;
-    /**
-     * Create a new CorsHandler.
-     *
-     * @param provider - The \`CorsProvider\` that defines the CORS policy.
-     */
     constructor(provider?: CorsProvider);
-    /**
-     * Apply CORS headers to the outgoing response.
-     *
-     * Modifies the response in place according to the \`CorsProvider\`.
-     * Adds \`Vary: Origin\` if not allowing all origins.
-     *
-     * @param worker - Worker handling the request.
-     * @param response - Response returned from downstream middleware or final handler.
-     */
-    protected post(worker: Worker, response: Response): Response;
+    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
 /**
@@ -711,17 +679,6 @@ declare abstract class MiddlewareWorker extends BaseWorker {
      * @param mw Middleware to register
      */
     use(mw: Middleware): this;
-    /**
-     * Fetch the current request through the registered middleware chain
-     * and ultimately to the final worker handler.
-     *
-     * Middleware are executed in **last-registered-first-called** order (via reduceRight).
-     * Each middleware receives the worker instance and a \`next\` function to call the
-     * next middleware or final handler.
-     *
-     * @returns A Promise resolving to the Response returned by the middleware chain
-     *          or the final handler.
-     */
     fetch(): Promise<Response>;
 }
 
@@ -819,8 +776,7 @@ declare abstract class RouteWorker extends BasicWorker {
 }
 
 declare class CacheHandler extends Middleware {
-    protected pre(worker: Worker): Promise<void | Response>;
-    protected post(worker: Worker, response: Response): Promise<Response>;
+    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
     /**
      * Returns the cache key for the request.
      *
