@@ -30,22 +30,27 @@ import { CorsProvider } from "./cors";
  * Subclasses can override any of the methods to customize the CORS behavior.
  */
 export abstract class CorsDefaults extends BaseWorker implements CorsProvider {
+    /** Returns the allowed origins. Default: all origins (`*`). */
     public getAllowedOrigins(): string[] {
         return ["*"];
     }
 
+    /** Returns true if any origin is allowed (i.e., `*` is present). */
     public allowAnyOrigin(): boolean {
         return this.getAllowedOrigins().includes("*");
     }
 
+    /** Returns the allowed headers for CORS requests. Default: `Content-Type`. */
     public getAllowedHeaders(): string[] {
         return ["Content-Type"];
     }
 
+    /** Returns the headers exposed to the client. Default: none. */
     public getExposedHeaders(): string[] {
         return [];
     }
 
+    /** Returns the max age (in seconds) for preflight requests. Default: 1 week. */
     public getMaxAge(): number {
         return Time.Week;
     }
