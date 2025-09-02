@@ -38,8 +38,8 @@ export abstract class Middleware {
      * @param worker The worker handling the request
      * @param response The Response returned from the next middleware or final handler
      */
-    protected post(_worker: Worker, _response: Response): void | Promise<void> {
-        return;
+    protected post(_worker: Worker, _response: Response): Response | Promise<Response> {
+        return _response;
     }
 
     /**
@@ -47,12 +47,12 @@ export abstract class Middleware {
      * Calls `pre`, then `next()` if not short-circuited, then `post`.
      */
     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        const preResult = await this.pre(worker);
-        if (preResult instanceof Response) return preResult;
+        const preResponse = await this.pre(worker);
+        if (preResponse instanceof Response) return preResponse;
 
         const response = await next();
 
-        await this.post(worker, response);
-        return response;
+        const postResponse = await this.post(worker, response);
+        return postResponse;
     }
 }

@@ -27,8 +27,8 @@ export class CacheHandler extends Middleware {
         if (cached) return cached;
     }
 
-    protected override async post(worker: Worker, response: Response): Promise<void> {
-        if (!response.ok || worker.request.method !== Method.GET) return;
+    protected override async post(worker: Worker, response: Response): Promise<Response> {
+        if (!response.ok || worker.request.method !== Method.GET) return response;
 
         worker.ctx.waitUntil(
             caches.default.put(
@@ -36,6 +36,7 @@ export class CacheHandler extends Middleware {
                 this.removeCacheHeaders(response.clone())
             )
         );
+        return response;
     }
 
     /**

@@ -584,7 +584,7 @@ declare abstract class Middleware {
      * @param worker The worker handling the request
      * @param response The Response returned from the next middleware or final handler
      */
-    protected post(_worker: Worker, _response: Response): void | Promise<void>;
+    protected post(_worker: Worker, _response: Response): Response | Promise<Response>;
     /**
      * Executes this middleware around the next middleware or final handler.
      * Calls \`pre\`, then \`next()\` if not short-circuited, then \`post\`.
@@ -617,7 +617,7 @@ declare class CorsHandler extends Middleware {
      * @param worker - Worker handling the request.
      * @param response - Response returned from downstream middleware or final handler.
      */
-    protected post(worker: Worker, response: Response): void;
+    protected post(worker: Worker, response: Response): Response;
 }
 
 /**
@@ -820,7 +820,7 @@ declare abstract class RouteWorker extends BasicWorker {
 
 declare class CacheHandler extends Middleware {
     protected pre(worker: Worker): Promise<void | Response>;
-    protected post(worker: Worker, response: Response): Promise<void>;
+    protected post(worker: Worker, response: Response): Promise<Response>;
     /**
      * Returns the cache key for the request.
      *

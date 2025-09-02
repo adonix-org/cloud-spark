@@ -45,8 +45,9 @@ class AuthWorker extends TestWorker {
 class PreHandler extends Middleware {}
 
 class PostHandler extends Middleware {
-    protected override post(_worker: Worker, response: Response): void {
+    protected override post(_worker: Worker, response: Response): Response {
         response.headers.set("x-post-handler", "true");
+        return response;
     }
 }
 
@@ -88,8 +89,9 @@ class Handler extends Middleware {
         console.log(this.constructor.name, "PRE");
     }
 
-    protected override post(_worker: Worker, _response: Response): void {
+    protected override post(_worker: Worker, _response: Response): Response {
         console.log(this.constructor.name, "POST");
+        return _response;
     }
 }
 

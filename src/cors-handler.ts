@@ -46,10 +46,14 @@ export class CorsHandler extends Middleware {
      * @param worker - Worker handling the request.
      * @param response - Response returned from downstream middleware or final handler.
      */
-    protected override post(worker: Worker, response: Response): void {
-        addCorsHeaders(worker, this.provider, response.headers);
+    protected override post(worker: Worker, response: Response): Response {
+        const mutable = new Response(response.body, response);
+
+        addCorsHeaders(worker, this.provider, mutable.headers);
         if (!allowAnyOrigin(this.provider)) {
-            mergeHeader(response.headers, "Vary", "Origin");
+            mergeHeader(mutable.headers, "Vary", "Origin");
         }
+
+        return mutable;
     }
 }
