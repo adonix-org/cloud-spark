@@ -19,13 +19,26 @@ import { CacheControl, HttpHeader, StatusCodes } from "./common";
 import { JsonResponse } from "./response";
 import { CorsWorker } from "./cors";
 
+/** Structure for JSON error responses. */
 export interface ErrorJson {
+    /** HTTP status code. */
     status: number;
+    /** Standard HTTP reason phrase. */
     error: string;
+    /** Optional detailed message about the error. */
     details: string;
 }
 
+/**
+ * Generic HTTP error response.
+ * Sends a JSON body with status, error message, and details.
+ */
 export class HttpError extends JsonResponse {
+    /**
+     * @param worker The worker handling the request.
+     * @param status HTTP status code.
+     * @param details Optional detailed error message.
+     */
     constructor(worker: CorsWorker, status: StatusCodes, protected readonly details?: string) {
         const json: ErrorJson = {
             status,
@@ -36,30 +49,35 @@ export class HttpError extends JsonResponse {
     }
 }
 
+/** 400 Bad Request error response. */
 export class BadRequest extends HttpError {
     constructor(worker: CorsWorker, details?: string) {
         super(worker, StatusCodes.BAD_REQUEST, details);
     }
 }
 
+/** 401 Unauthorized error response. */
 export class Unauthorized extends HttpError {
     constructor(worker: CorsWorker, details?: string) {
         super(worker, StatusCodes.UNAUTHORIZED, details);
     }
 }
 
+/** 403 Forbidden error response. */
 export class Forbidden extends HttpError {
     constructor(worker: CorsWorker, details?: string) {
         super(worker, StatusCodes.FORBIDDEN, details);
     }
 }
 
+/** 404 Not Found error response. */
 export class NotFound extends HttpError {
     constructor(worker: CorsWorker, details?: string) {
         super(worker, StatusCodes.NOT_FOUND, details);
     }
 }
 
+/** 405 Method Not Allowed error response. */
 export class MethodNotAllowed extends HttpError {
     constructor(worker: CorsWorker) {
         super(
@@ -71,24 +89,28 @@ export class MethodNotAllowed extends HttpError {
     }
 }
 
+/** 500 Internal Server Error response. */
 export class InternalServerError extends HttpError {
     constructor(worker: CorsWorker, details?: string) {
         super(worker, StatusCodes.INTERNAL_SERVER_ERROR, details);
     }
 }
 
+/** 501 Not Implemented error response. */
 export class NotImplemented extends HttpError {
     constructor(worker: CorsWorker, details?: string) {
         super(worker, StatusCodes.NOT_IMPLEMENTED, details);
     }
 }
 
+/** 501 Method Not Implemented error response for unsupported HTTP methods. */
 export class MethodNotImplemented extends NotImplemented {
     constructor(worker: CorsWorker) {
         super(worker, `${worker.request.method} method not implemented.`);
     }
 }
 
+/** 503 Service Unavailable error response. */
 export class ServiceUnavailable extends HttpError {
     constructor(worker: CorsWorker, details?: string) {
         super(worker, StatusCodes.SERVICE_UNAVAILABLE, details);

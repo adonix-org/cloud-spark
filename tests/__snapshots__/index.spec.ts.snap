@@ -409,39 +409,61 @@ declare class Options extends SuccessResponse {
     constructor(worker: CorsWorker);
 }
 
+/** Structure for JSON error responses. */
 interface ErrorJson {
+    /** HTTP status code. */
     status: number;
+    /** Standard HTTP reason phrase. */
     error: string;
+    /** Optional detailed message about the error. */
     details: string;
 }
+/**
+ * Generic HTTP error response.
+ * Sends a JSON body with status, error message, and details.
+ */
 declare class HttpError extends JsonResponse {
     protected readonly details?: string | undefined;
+    /**
+     * @param worker The worker handling the request.
+     * @param status HTTP status code.
+     * @param details Optional detailed error message.
+     */
     constructor(worker: CorsWorker, status: StatusCodes, details?: string | undefined);
 }
+/** 400 Bad Request error response. */
 declare class BadRequest extends HttpError {
     constructor(worker: CorsWorker, details?: string);
 }
+/** 401 Unauthorized error response. */
 declare class Unauthorized extends HttpError {
     constructor(worker: CorsWorker, details?: string);
 }
+/** 403 Forbidden error response. */
 declare class Forbidden extends HttpError {
     constructor(worker: CorsWorker, details?: string);
 }
+/** 404 Not Found error response. */
 declare class NotFound extends HttpError {
     constructor(worker: CorsWorker, details?: string);
 }
+/** 405 Method Not Allowed error response. */
 declare class MethodNotAllowed extends HttpError {
     constructor(worker: CorsWorker);
 }
+/** 500 Internal Server Error response. */
 declare class InternalServerError extends HttpError {
     constructor(worker: CorsWorker, details?: string);
 }
+/** 501 Not Implemented error response. */
 declare class NotImplemented extends HttpError {
     constructor(worker: CorsWorker, details?: string);
 }
+/** 501 Method Not Implemented error response for unsupported HTTP methods. */
 declare class MethodNotImplemented extends NotImplemented {
     constructor(worker: CorsWorker);
 }
+/** 503 Service Unavailable error response. */
 declare class ServiceUnavailable extends HttpError {
     constructor(worker: CorsWorker, details?: string);
 }
