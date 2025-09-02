@@ -1,0 +1,96 @@
+/*
+ * Copyright (C) 2025 Ty Busby
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { describe, expect, it } from "vitest";
+import {
+    GET_REQUEST,
+    GET_REQUEST_INVALID_ORIGIN,
+    GET_REQUEST_WITH_ORIGIN,
+    VALID_ORIGIN,
+} from "./constants";
+import { ctx, env } from "./mock";
+import { CorsHandler } from "../src/cors-handler";
+import { BasicWorker, CorsProvider } from "../src";
+
+class TestWorker extends BasicWorker {
+    constructor(request: Request) {
+        super(request, env, ctx);
+        this.use(new CorsHandler());
+    }
+
+    protected override async get(): Promise<Response> {
+        return new Response("Ok");
+    }
+}
+
+class TestOriginWorker extends BasicWorker {
+    constructor(request: Request) {
+        super(request, env, ctx);
+        this.use(new CorsHandler(new CorsProvider({ allowedOrigins: [VALID_ORIGIN] })));
+    }
+
+    protected override async get(): Promise<Response> {
+        return new Response("Ok");
+    }
+}
+
+describe("cors worker unit tests", () => {
+    it("returns response with cors headers", async () => {
+        const worker = new TestWorker(GET_REQUEST_WITH_ORIGIN);
+        const response = await worker.fetch();
+        expect([...response.headers.entries()]).toStrictEqual([
+            ["access-control-allow-headers", "Content-Type"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
+            ["access-control-allow-origin", "*"],
+            ["access-control-max-age", "604800"],
+            ["content-type", "text/plain;charset=UTF-8"],
+        ]);
+    });
+
+    it("returns response without cors headers", async () => {
+        const worker = new TestWorker(GET_REQUEST);
+        const response = await worker.fetch();
+        expect([...response.headers.entries()]).toStrictEqual([
+            ["content-type", "text/plain;charset=UTF-8"],
+        ]);
+    });
+
+    it("adds all headers when allow origin is not *", async () => {
+        const worker = new TestOriginWorker(GET_REQUEST_WITH_ORIGIN);
+        const response = await worker.fetch();
+        expect([...response.headers.entries()]).toStrictEqual([
+            ["access-control-allow-credentials", "true"],
+            ["access-control-allow-headers", "Content-Type"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
+            ["access-control-allow-origin", "https://localhost"],
+            ["access-control-max-age", "604800"],
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["vary", "Origin"],
+        ]);
+    });
+
+    it("adds only select headers when allowed does not contain request origin", async () => {
+        const worker = new TestOriginWorker(GET_REQUEST_INVALID_ORIGIN);
+        const response = await worker.fetch();
+        expect([...response.headers.entries()]).toStrictEqual([
+            ["access-control-allow-headers", "Content-Type"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
+            ["access-control-max-age", "604800"],
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["vary", "Origin"],
+        ]);
+    });
+});
