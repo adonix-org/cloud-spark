@@ -17,20 +17,45 @@
 import { Worker } from "./worker";
 
 /**
- * Middleware for a Worker.
- *
- * Middleware can inspect or modify the request, perform side effects,
- * and optionally call the next middleware or final handler.
+ * Abstract base class for Worker middleware.
+ * Provides a structured pre/post pattern around the next middleware or final handler,
+ * with optional short-circuit support.
  */
-export interface Middleware {
+export abstract class Middleware {
     /**
-     * Handle a request in the context of the given worker.
-     *
-     * @param worker - The Worker instance handling the request. Provides
-     *                 access to the request, Cloudflare env, ctx, etc.
-     * @param next - Function to call the next middleware or final handler.
-     *               Must return a Promise of a Response.
-     * @returns A Response, either from this middleware or from the next.
+     * Implement this method to perform logic **before** the next middleware.
+     * Can inspect or modify the request via the worker instance.
+     * Return a Response to short-circuit the chain, or `undefined` to continue.
+     * @param worker The worker handling the request
      */
-    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+    protected pre(_worker: Worker): void | Response | Promise<void | Response> {
+        return;
+    }
+
+    /**
+     * Implement this method to perform logic **after** the next middleware.
+     * Can inspect or modify the response before it is returned.
+     * @param worker The worker handling the request
+     * @param response The Response returned from the next middleware or final handler
+     */
+    protected post(_worker: Worker, _response: Response): void | Promise<void> {
+        return;
+    }
+
+    /**
+     * Executes this middleware around the next middleware or final handler.
+     * Calls `pre`, then `next()` if not short-circuited, then `post`.
+     */
+    public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+        const preResult = await this.pre(worker);
+        if (preResult instanceof Response) {
+            return preResult;
+        }
+
+        const response = await next();
+
+        await this.post(worker, response);
+
+        return response;
+    }
 }

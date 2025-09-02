@@ -27,33 +27,20 @@ import { Worker } from "./worker";
  *
  * Can be registered with a `MiddlewareWorker` or any worker that supports middleware.
  */
-export class CorsHandler implements Middleware {
+export class CorsHandler extends Middleware {
     /**
      * Create a new CorsHandler.
      *
      * @param provider - The `CorsProvider` that defines the CORS policy.
      */
-    constructor(private readonly provider: CorsProvider) {}
+    constructor(private readonly provider: CorsProvider) {
+        super();
+    }
 
-    /**
-     * Handles a request by invoking the next middleware or final handler,
-     * then applying the appropriate CORS headers to the response.
-     *
-     * @param worker - The worker handling the request. Provides access
-     *                 to the request, environment, and execution context.
-     * @param next - Function that calls the next middleware or final handler.
-     *               Must return a Promise resolving to a Response.
-     * @returns A Promise resolving to the Response with CORS headers applied.
-     */
-    public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        const response = await next();
-
+    protected post(worker: Worker, response: Response): void {
         addCorsHeaders(worker, this.provider, response.headers);
-
         if (!allowAnyOrigin(this.provider)) {
             mergeHeader(response.headers, "Vary", "Origin");
         }
-
-        return response;
     }
 }
