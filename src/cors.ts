@@ -14,24 +14,80 @@
  * limitations under the License.
  */
 
-import { getOrigin, mergeHeader, setHeader } from "./common";
+import { getOrigin, mergeHeader, setHeader, Time } from "./common";
 import { Worker } from "./worker";
 
 /**
- * Implementations will provide a specific CORS policy.
+ * Default CORS configuration used by `CorsProvider`.
  */
-export interface CorsProvider {
-    /** Returns a list of allowed origins. */
-    getAllowedOrigins(): string[];
+export const DEFAULT_CORS_CONFIG: Required<CorsConfig> = {
+    /** Origins allowed by default. Default: all (`*`). */
+    allowedOrigins: ["*"],
 
-    /** Returns the HTTP headers allowed by CORS. */
-    getAllowedHeaders(): string[];
+    /** Allowed headers for CORS requests. Default: `Content-Type`. */
+    allowedHeaders: ["Content-Type"],
 
-    /** Returns the HTTP headers that should be exposed to the browser. */
-    getExposedHeaders(): string[];
+    /** Headers exposed to the client. Default: none. */
+    exposedHeaders: [],
 
-    /** Returns the max age (in seconds) for CORS preflight caching. */
-    getMaxAge(): number;
+    /** Max age (in seconds) for preflight caching. Default: 1 week. */
+    maxAge: Time.Week,
+} as const;
+
+/**
+ * Configuration options for `CorsProvider`.
+ */
+export interface CorsConfig {
+    /** Origins allowed for CORS requests. Optional; defaults to `["*"]`. */
+    allowedOrigins?: string[];
+
+    /** Allowed HTTP headers for CORS requests. Optional; defaults to `["Content-Type"]`. */
+    allowedHeaders?: string[];
+
+    /** HTTP headers exposed to the client. Optional; defaults to `[]`. */
+    exposedHeaders?: string[];
+
+    /** Max age in seconds for CORS preflight caching. Optional; defaults to 1 week. */
+    maxAge?: number;
+}
+
+/**
+ * Provides CORS settings for a worker.
+ *
+ * Combines a user-supplied `CorsConfig` with defaults. Used by
+ * `CorsHandler` to automatically set the appropriate headers.
+ */
+export class CorsProvider {
+    private readonly config: Required<CorsConfig>;
+
+    /**
+     * Create a new `CorsProvider`.
+     *
+     * @param config - Optional configuration to override defaults.
+     */
+    constructor(config: CorsConfig = {}) {
+        this.config = { ...DEFAULT_CORS_CONFIG, ...config };
+    }
+
+    /** Returns the allowed origins. Default: all (`*`). */
+    public getAllowedOrigins(): string[] {
+        return this.config.allowedOrigins;
+    }
+
+    /** Returns the allowed HTTP headers. Default: `["Content-Type"]`. */
+    public getAllowedHeaders(): string[] {
+        return this.config.allowedHeaders;
+    }
+
+    /** Returns headers exposed to the client. Default: `[]`. */
+    public getExposedHeaders(): string[] {
+        return this.config.exposedHeaders;
+    }
+
+    /** Returns the max age in seconds for preflight requests. Default: 1 week. */
+    public getMaxAge(): number {
+        return this.config.maxAge;
+    }
 }
 
 /**
@@ -82,6 +138,12 @@ export function addCorsHeaders(worker: Worker, cors: CorsProvider, headers: Head
     mergeHeader(headers, Cors.EXPOSE_HEADERS, cors.getExposedHeaders());
 }
 
+/**
+ * Determines if a CORS policy allows any origin (`*`).
+ *
+ * @param cors - The `CorsProvider` instance to check.
+ * @returns `true` if the allowed origins include `"*"`, otherwise `false`.
+ */
 export function allowAnyOrigin(cors: CorsProvider): boolean {
     return cors.getAllowedOrigins().includes("*");
 }

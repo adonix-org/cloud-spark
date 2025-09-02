@@ -16,16 +16,40 @@
 
 import { BasicWorker } from "./basic-worker";
 import { CorsProvider } from "./cors";
-import { CorsDefaults } from "./cors-defaults";
 import { CorsHandler } from "./cors-handler";
 
+/**
+ * Abstract worker that automatically applies CORS headers via middleware.
+ *
+ * Subclasses can override `getCorsProvider()` to customize the CORS policy.
+ * By default, all origins are allowed, only `Content-Type` is allowed as a header,
+ * no headers are exposed, and preflight caching is 1 week.
+ *
+ * This class registers a `CorsHandler` middleware automatically in the constructor.
+ */
 export abstract class CorsWorker extends BasicWorker {
+    /**
+     * Returns the CORS policy to use for this worker.
+     *
+     * Subclasses can override this method to tweak the defaults, e.g.,
+     * add allowed headers or change allowed origins.
+     *
+     * @param defaults - The default `CorsProvider` instance
+     * @returns A `CorsProvider` instance representing the policy
+     */
     protected getCorsProvider(defaults: CorsProvider): CorsProvider {
         return defaults;
     }
 
+    /**
+     * Creates a new CorsWorker instance and registers the `CorsHandler` middleware.
+     *
+     * @param request - The incoming request
+     * @param env - The Cloudflare Workers environment variables
+     * @param ctx - The Cloudflare execution context
+     */
     constructor(request: Request, env: Env, ctx: ExecutionContext) {
         super(request, env, ctx);
-        this.use(new CorsHandler(this.getCorsProvider(new CorsDefaults())));
+        this.use(new CorsHandler(this.getCorsProvider(new CorsProvider())));
     }
 }

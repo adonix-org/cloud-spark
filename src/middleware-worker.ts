@@ -15,26 +15,7 @@
  */
 
 import { BaseWorker } from "./base-worker";
-import { Worker } from "./worker";
-
-/**
- * Middleware for a Worker.
- *
- * Middleware can inspect or modify the request, perform side effects,
- * and optionally call the next middleware or final handler.
- */
-export interface Middleware {
-    /**
-     * Handle a request in the context of the given worker.
-     *
-     * @param worker - The Worker instance handling the request. Provides
-     *                 access to the request, Cloudflare env, ctx, etc.
-     * @param next - Function to call the next middleware or final handler.
-     *               Must return a Promise of a Response.
-     * @returns A Response, either from this middleware or from the next.
-     */
-    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
-}
+import { Middleware } from "./middleware";
 
 /**
  * Worker that supports class-based middleware with optional always-run middleware.

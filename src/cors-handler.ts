@@ -16,7 +16,7 @@
 
 import { mergeHeader } from "./common";
 import { addCorsHeaders, allowAnyOrigin, CorsProvider } from "./cors";
-import { Middleware } from "./middleware-worker";
+import { Middleware } from "./middleware";
 import { Worker } from "./worker";
 
 export class CorsHandler implements Middleware {

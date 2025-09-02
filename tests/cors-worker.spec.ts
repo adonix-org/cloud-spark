@@ -23,11 +23,19 @@ import {
     VALID_ORIGIN,
 } from "./constants";
 import { ctx, env } from "./mock";
-import { CorsDefaults, CorsProvider } from "../src";
+import { CorsProvider } from "../src";
 
 class TestWorker extends CorsWorker {
     public override async get(): Promise<Response> {
         return new Response("OK");
+    }
+}
+
+class TestOriginClass extends TestWorker {
+    public override getCorsProvider(): CorsProvider {
+        return new CorsProvider({
+            allowedOrigins: [VALID_ORIGIN],
+        });
     }
 }
 
@@ -53,16 +61,6 @@ describe("cors worker unit tests", () => {
     });
 
     it("adds all headers when allow origin is not *", async () => {
-        class CorsSettings extends CorsDefaults {
-            public getAllowedOrigins(): string[] {
-                return [VALID_ORIGIN];
-            }
-        }
-        class TestOriginClass extends TestWorker {
-            public override getCorsProvider(): CorsProvider {
-                return new CorsSettings();
-            }
-        }
         const worker = new TestOriginClass(GET_REQUEST_WITH_ORIGIN, env, ctx);
         const response = await worker.fetch();
         expect([...response.headers.entries()]).toStrictEqual([
@@ -77,16 +75,6 @@ describe("cors worker unit tests", () => {
     });
 
     it("adds only select headers when allowed does not contain request origin", async () => {
-        class CorsSettings extends CorsDefaults {
-            public getAllowedOrigins(): string[] {
-                return [VALID_ORIGIN];
-            }
-        }
-        class TestOriginClass extends TestWorker {
-            public override getCorsProvider(): CorsProvider {
-                return new CorsSettings();
-            }
-        }
         const worker = new TestOriginClass(GET_REQUEST_INVALID_ORIGIN, env, ctx);
         const response = await worker.fetch();
         expect([...response.headers.entries()]).toStrictEqual([
