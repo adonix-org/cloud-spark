@@ -15,7 +15,6 @@
  */
 
 import { Method, normalizeUrl } from "./common";
-import { Cors } from "./cors";
 import { Middleware } from "./middleware";
 import { Worker } from "./worker";
 
@@ -31,10 +30,7 @@ export class CacheHandler extends Middleware {
         if (!response.ok || worker.request.method !== Method.GET) return response;
 
         worker.ctx.waitUntil(
-            caches.default.put(
-                this.getCacheKey(worker.request),
-                this.removeCacheHeaders(response.clone())
-            )
+            caches.default.put(this.getCacheKey(worker.request), response.clone())
         );
         return response;
     }
@@ -51,47 +47,5 @@ export class CacheHandler extends Middleware {
      */
     public getCacheKey(request: Request): URL | RequestInfo {
         return normalizeUrl(request.url);
-    }
-
-    /**
-     * Removes headers that should not be stored in the cache (currently only CORS headers).
-     *
-     * @param {Response} response The Response to clean before caching.
-     * @returns {Response} A new Response with excluded headers removed.
-     * @see {@link addCacheHeaders}
-     */
-    public removeCacheHeaders(response: Response): Response {
-        const excludeSet = new Set(this.excludeCacheHeaders().map((h) => h.toLowerCase()));
-        const headers = new Headers();
-
-        for (const [key, value] of response.headers) {
-            if (!excludeSet.has(key)) {
-                headers.set(key, value);
-            }
-        }
-
-        return new Response(response.body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers,
-        });
-    }
-
-    /**
-     * Returns the list of headers to exclude from the cached response.
-     * By default, excludes only dynamic CORS headers.
-     *
-     * @returns {string[]} Array of header names to exclude.
-     * @see {@link removeCacheHeaders}
-     */
-    public excludeCacheHeaders(): string[] {
-        return [
-            Cors.ALLOW_ORIGIN,
-            Cors.ALLOW_CREDENTIALS,
-            Cors.EXPOSE_HEADERS,
-            Cors.ALLOW_METHODS,
-            Cors.ALLOW_HEADERS,
-            Cors.MAX_AGE,
-        ];
     }
 }
