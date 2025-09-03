@@ -30,19 +30,19 @@ export const BASIC_METHODS: Method[] = ALL_METHODS.filter(
 );
 
 export namespace TestRoutes {
-    export const one: RouteCallback = async () => {
+    export const one: RouteCallback = () => {
         return new Response("one");
     };
 
-    export const two: RouteCallback = async () => {
+    export const two: RouteCallback = () => {
         return new Response("two");
     };
 
-    export const three: RouteCallback = async () => {
+    export const three: RouteCallback = () => {
         return new Response("three");
     };
 
-    export const four: RouteCallback = async () => {
+    export const four: RouteCallback = () => {
         return new Response("four");
     };
 
@@ -81,8 +81,8 @@ export const GET_REQUEST_INVALID_ORIGIN = new Request(VALID_URL, {
 export const BODY_INIT: BodyInit = "OK";
 
 export function assertDefined<T>(value: T | null | undefined, message?: string): T {
-  if (value === null || value === undefined) {
-    throw new Error(message ?? "Unexpected null or undefined");
-  }
-  return value;
+    if (value === null || value === undefined) {
+        throw new Error(message ?? "Unexpected null or undefined");
+    }
+    return value;
 }
