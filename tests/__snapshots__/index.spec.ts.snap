@@ -698,10 +698,10 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      */
     protected dispatch(): Promise<Response>;
     /**
-     * Hook for subclasses to perform any setup, e.g., registering middleware,
+     * Hook for subclasses to perform any initialization, e.g., registering middleware,
      * overriding defaults, or configuring state.
      */
-    protected setup(): void;
+    protected init(): void;
     /**
      * Checks if the given HTTP method is allowed for this worker.
      * @param method HTTP method string

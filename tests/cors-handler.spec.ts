@@ -30,7 +30,7 @@ class TestWorker extends BasicWorker {
         super(request, env, ctx);
     }
 
-    protected setup(): void {
+    protected init(): void {
         this.use(new CorsHandler());
     }
 
@@ -40,7 +40,7 @@ class TestWorker extends BasicWorker {
 }
 
 class TestOriginWorker extends TestWorker {
-    protected setup(): void {
+    protected init(): void {
         this.use(new CorsHandler(new CorsProvider({ allowedOrigins: [VALID_ORIGIN] })));
     }
 }

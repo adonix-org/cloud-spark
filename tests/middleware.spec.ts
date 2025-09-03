@@ -27,7 +27,7 @@ class TestWorker extends BasicWorker {
         super(request, env, ctx);
     }
 
-    protected setup(): void {
+    protected init(): void {
         this.use(new AddHeader());
     }
 
@@ -45,7 +45,7 @@ class AddHeader extends Middleware {
 }
 
 class AuthWorker extends TestWorker {
-    protected setup(): void {
+    protected init(): void {
         this.use(new AuthHandler());
     }
 }
@@ -109,7 +109,7 @@ class OrderWorker extends TestWorker {
         return super.dispatch();
     }
 
-    protected setup(): void {
+    protected init(): void {
         this.use(new HandlerA());
         this.use(new HandlerB());
         this.use(new HandlerC());

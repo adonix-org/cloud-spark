@@ -35,7 +35,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
         }
 
         try {
-            this.setup();
+            this.init();
             return await super.fetch();
         } catch (error) {
             console.error(error);
@@ -62,10 +62,10 @@ export abstract class BasicWorker extends MiddlewareWorker {
     }
 
     /**
-     * Hook for subclasses to perform any setup, e.g., registering middleware,
+     * Hook for subclasses to perform any initialization, e.g., registering middleware,
      * overriding defaults, or configuring state.
      */
-    protected setup(): void {
+    protected init(): void {
         return;
     }
 
