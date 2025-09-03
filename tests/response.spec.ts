@@ -23,10 +23,10 @@ import {
     ClonedResponse,
     Head,
     Options,
-} from "../src/response";
+} from "@src/response";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
-import { CacheControl, HttpHeader } from "../src/common";
-import { VALID_URL } from "./utils/constants";
+import { CacheControl, HttpHeader } from "@src/common";
+import { VALID_URL } from "@constants";
 
 const mockWorker = {
     request: new Request(VALID_URL),

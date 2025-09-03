@@ -15,7 +15,7 @@
  */
 
 import { beforeEach } from "vitest";
-import { defaultCache, namedCache } from "./mock";
+import { defaultCache, namedCache } from "@mock";
 
 beforeEach(() => {
     defaultCache.clear();

@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN } from "./utils/constants";
+import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN } from "@constants";
 import {
     getContentType,
     getOrigin,
@@ -24,7 +24,7 @@ import {
     mergeHeader,
     normalizeUrl,
     setHeader,
-} from "../src/common";
+} from "@src/common";
 
 describe("common functions unit tests", () => {
     describe("is method function", () => {

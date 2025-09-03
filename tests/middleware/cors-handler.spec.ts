@@ -22,9 +22,9 @@ import {
     VALID_ORIGIN,
 } from "../utils/constants";
 import { ctx, env } from "../utils/mock";
-import { CorsHandler } from "../../src/middleware/cors-handler";
-import { BasicWorker } from "../../src/basic-worker";
-import { CorsProvider } from "../../src/cors";
+import { CorsHandler } from "@src/middleware/cors-handler";
+import { BasicWorker } from "@src/basic-worker";
+import { CorsProvider } from "@src/cors";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {

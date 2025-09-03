@@ -27,7 +27,7 @@ import {
     MethodNotImplemented,
     ServiceUnavailable,
     ErrorJson,
-} from "../src/errors";
+} from "@src/errors";
 
 const worker = {
     request: { method: "POST" },
