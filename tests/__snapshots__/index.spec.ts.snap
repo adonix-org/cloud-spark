@@ -584,7 +584,7 @@ declare abstract class Middleware {
  */
 declare class CorsHandler extends Middleware {
     private readonly provider;
-    constructor(provider?: CorsProvider);
+    constructor(init: CorsProvider | CorsConfig);
     handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
