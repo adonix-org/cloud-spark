@@ -37,7 +37,7 @@ describe("routes unit tests", () => {
         const found = assertDefined(routes.match(Method.GET, url.toString()));
 
         expect(found.route.callback).toBe(TestRoutes.one);
-        await TestRoutes.expectResponseBody(found!, "one");
+        await TestRoutes.expectResponseBody(found, "one");
     });
 
     it("returns null when the pattern is not found", () => {
@@ -60,7 +60,7 @@ describe("routes unit tests", () => {
         const found = assertDefined(routes.match(method, url.toString()));
 
         expect(found.route.callback).toBe(TestRoutes.three);
-        await TestRoutes.expectResponseBody(found!, "three");
+        await TestRoutes.expectResponseBody(found, "three");
     });
 
     it("matches the root url", async () => {

@@ -26,7 +26,7 @@ export const VALID_URL = `${VALID_ORIGIN}/`;
 export const ALL_METHODS: Method[] = Object.values(Method);
 export const SPECIAL_METHODS: Method[] = [Method.HEAD, Method.OPTIONS];
 export const BASIC_METHODS: Method[] = ALL_METHODS.filter(
-    (method) => !SPECIAL_METHODS.includes(method)
+    (method) => SPECIAL_METHODS.includes(method)
 );
 
 export namespace TestRoutes {
