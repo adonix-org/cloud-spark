@@ -16,11 +16,6 @@
 
 import { Worker } from "../worker";
 
-/**
- * Abstract base class for Worker middleware.
- * Provides a structured pre/post pattern around the next middleware or final handler,
- * with optional short-circuit support.
- */
 export abstract class Middleware {
     public abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }

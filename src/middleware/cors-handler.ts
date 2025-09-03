@@ -19,14 +19,7 @@ import { addCorsHeaders, allowAnyOrigin, CorsConfig, CorsProvider } from "../cor
 import { Worker } from "../worker";
 import { Middleware } from "./middleware";
 
-/**
- * Middleware that automatically applies CORS headers to responses.
- *
- * Uses a `CorsProvider` to determine the allowed origins, allowed headers,
- * exposed headers, and max age for preflight caching.
- *
- * Can be registered with a `MiddlewareWorker` or any worker that supports middleware.
- */
+
 export class CorsHandler extends Middleware {
     private readonly provider: CorsProvider;
 

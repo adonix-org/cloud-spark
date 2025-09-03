@@ -645,11 +645,6 @@ declare abstract class BaseWorker implements Worker {
     static ignite<W extends Worker>(this: WorkerConstructor<W>): FetchHandler;
 }
 
-/**
- * Abstract base class for Worker middleware.
- * Provides a structured pre/post pattern around the next middleware or final handler,
- * with optional short-circuit support.
- */
 declare abstract class Middleware {
     abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
@@ -756,14 +751,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-/**
- * Middleware that automatically applies CORS headers to responses.
- *
- * Uses a \`CorsProvider\` to determine the allowed origins, allowed headers,
- * exposed headers, and max age for preflight caching.
- *
- * Can be registered with a \`MiddlewareWorker\` or any worker that supports middleware.
- */
 declare class CorsHandler extends Middleware {
     private readonly provider;
     constructor(init?: CorsProvider | CorsConfig);
