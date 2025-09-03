@@ -772,18 +772,9 @@ declare abstract class RouteWorker extends BasicWorker {
 
 declare class CacheHandler extends Middleware {
     protected readonly cacheName?: string | undefined;
-    constructor(cacheName?: string | undefined);
+    protected readonly getKey?: ((request: Request) => URL | RequestInfo) | undefined;
+    constructor(cacheName?: string | undefined, getKey?: ((request: Request) => URL | RequestInfo) | undefined);
     handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
-    /**
-     * Returns the cache key for the request.
-     *
-     * Behavior:
-     * - By default, returns the normalized request URL.
-     * - Query parameters are normalized so that the order does not affect the cache key.
-     *   For example, \`?a=1&b=2\` and \`?b=2&a=1\` produce the same cache key.
-     *
-     * @returns {URL | RequestInfo} The URL or RequestInfo used as the cache key.
-     */
     getCacheKey(request: Request): URL | RequestInfo;
 }
 

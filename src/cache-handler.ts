@@ -19,7 +19,10 @@ import { Middleware } from "./middleware";
 import { Worker } from "./worker";
 
 export class CacheHandler extends Middleware {
-    constructor(protected readonly cacheName?: string) {
+    constructor(
+        protected readonly cacheName?: string,
+        protected readonly getKey?: (request: Request) => URL | RequestInfo
+    ) {
         super();
     }
 
@@ -39,17 +42,7 @@ export class CacheHandler extends Middleware {
         return response;
     }
 
-    /**
-     * Returns the cache key for the request.
-     *
-     * Behavior:
-     * - By default, returns the normalized request URL.
-     * - Query parameters are normalized so that the order does not affect the cache key.
-     *   For example, `?a=1&b=2` and `?b=2&a=1` produce the same cache key.
-     *
-     * @returns {URL | RequestInfo} The URL or RequestInfo used as the cache key.
-     */
     public getCacheKey(request: Request): URL | RequestInfo {
-        return normalizeUrl(request.url);
+        return this.getKey ? this.getKey(request) : normalizeUrl(request.url);
     }
 }

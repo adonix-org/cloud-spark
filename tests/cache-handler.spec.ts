@@ -15,10 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import {
-    GET_REQUEST,
-    VALID_URL,
-} from "./constants";
+import { GET_REQUEST, VALID_URL } from "./constants";
 import { ctx, defaultCache, env, namedCache } from "./mock";
 import { CacheHandler } from "../src";
 import { MiddlewareWorker } from "../src/middleware-worker";
@@ -87,5 +84,19 @@ describe("cache worker unit tests", () => {
 
         const key = new CacheHandler().getCacheKey(new Request(url)) as URL;
         expect(key.toString()).toBe("https://localhost/?a=1&b=2&c=3");
+    });
+
+    it("allows overriding get cache key", async () => {
+        const url = new URL(VALID_URL);
+        url.searchParams.set("b", "2");
+        url.searchParams.set("c", "3");
+        url.searchParams.set("a", "1");
+
+        expect(url.toString()).toBe("https://localhost/?b=2&c=3&a=1");
+
+        const key = new CacheHandler(undefined, (request) => {
+            return request.url;
+        }).getCacheKey(new Request(url)) as URL;
+        expect(key.toString()).toBe("https://localhost/?b=2&c=3&a=1");
     });
 });
