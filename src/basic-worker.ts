@@ -29,7 +29,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * Entry point to handle a fetch request.
      * Checks allowed methods, serves cached responses, or dispatches to the appropriate handler.
      */
-    public async fetch(): Promise<Response> {
+    public override async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
             return this.getResponse(MethodNotAllowed);
         }
@@ -47,7 +47,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * Dispatches the request to the method-specific handler.
      * Defaults to MethodNotAllowed if the HTTP method is not recognized.
      */
-    protected async dispatch(): Promise<Response> {
+    protected override async dispatch(): Promise<Response> {
         const method = this.request.method as Method;
         const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),

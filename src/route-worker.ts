@@ -53,7 +53,7 @@ export abstract class RouteWorker extends BasicWorker {
      * the corresponding callback. Falls back to `BasicWorker.dispatch()` if no match.
      * @returns The response from the matched route or the default handler.
      */
-    protected async dispatch(): Promise<Response> {
+    protected override async dispatch(): Promise<Response> {
         const found = this.routes.match(this.request.method as Method, this.request.url);
         if (!found) return super.dispatch();
 

@@ -650,7 +650,7 @@ declare abstract class Middleware {
 }
 
 declare abstract class MiddlewareWorker extends BaseWorker {
-    private readonly middlewares;
+    protected readonly middlewares: Middleware[];
     /**
      * Register a middleware instance.
      * @param mw Middleware to register

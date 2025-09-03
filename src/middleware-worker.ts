@@ -18,7 +18,7 @@ import { BaseWorker } from "./base-worker";
 import { Middleware } from "./middleware/middleware";
 
 export abstract class MiddlewareWorker extends BaseWorker {
-    private readonly middlewares: Middleware[] = [];
+    protected readonly middlewares: Middleware[] = [];
 
     /**
      * Register a middleware instance.
@@ -29,7 +29,7 @@ export abstract class MiddlewareWorker extends BaseWorker {
         return this;
     }
 
-    public async fetch(): Promise<Response> {
+    public override async fetch(): Promise<Response> {
         const chain = this.middlewares.reduceRight(
             (next, mw) => () => mw.handle(this, next),
             () => this.dispatch()
