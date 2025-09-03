@@ -15,7 +15,7 @@
  */
 
 import { mergeHeader } from "./common";
-import { addCorsHeaders, allowAnyOrigin, CorsProvider, DEFAULT_CORS_CONFIG } from "./cors";
+import { addCorsHeaders, allowAnyOrigin, CorsConfig, CorsProvider } from "./cors";
 import { Middleware } from "./middleware";
 import { Worker } from "./worker";
 
@@ -28,8 +28,11 @@ import { Worker } from "./worker";
  * Can be registered with a `MiddlewareWorker` or any worker that supports middleware.
  */
 export class CorsHandler extends Middleware {
-    constructor(private readonly provider: CorsProvider = new CorsProvider(DEFAULT_CORS_CONFIG)) {
+    private readonly provider: CorsProvider;
+
+    constructor(init: CorsProvider | CorsConfig) {
         super();
+        this.provider = init instanceof CorsProvider ? init : new CorsProvider(init);
     }
 
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {

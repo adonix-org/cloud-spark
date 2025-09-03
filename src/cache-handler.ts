@@ -22,7 +22,7 @@ export class CacheHandler extends Middleware {
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         if (worker.request.method === Method.GET) {
             const cached = await caches.default.match(this.getCacheKey(worker.request));
-            if (cached) return cached; // short-circuit if cached
+            if (cached) return cached;
         }
 
         const response = await next();
