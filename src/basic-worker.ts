@@ -62,8 +62,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
     }
 
     /**
-     * Hook for subclasses to perform any initialization, e.g., registering middleware,
-     * overriding defaults, or configuring state.
+     * Hook for subclasses to perform any initialization.
      */
     protected init(): void {
         return;
