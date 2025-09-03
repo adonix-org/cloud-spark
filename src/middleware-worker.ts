@@ -17,10 +17,6 @@
 import { BaseWorker } from "./base-worker";
 import { Middleware } from "./middleware";
 
-/**
- * Worker that supports class-based middleware with optional always-run middleware.
- * Extends CacheWorker to include caching logic automatically.
- */
 export abstract class MiddlewareWorker extends BaseWorker {
     private readonly middlewares: Middleware[] = [];
 
