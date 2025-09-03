@@ -584,7 +584,7 @@ declare abstract class Middleware {
  */
 declare class CorsHandler extends Middleware {
     private readonly provider;
-    constructor(init: CorsProvider | CorsConfig);
+    constructor(init?: CorsProvider | CorsConfig);
     handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
@@ -668,10 +668,6 @@ declare abstract class BaseWorker implements Worker {
     static ignite<W extends Worker>(this: WorkerConstructor<W>): FetchHandler;
 }
 
-/**
- * Worker that supports class-based middleware with optional always-run middleware.
- * Extends CacheWorker to include caching logic automatically.
- */
 declare abstract class MiddlewareWorker extends BaseWorker {
     private readonly middlewares;
     /**

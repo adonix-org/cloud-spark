@@ -30,16 +30,20 @@ import { Worker } from "./worker";
 export class CorsHandler extends Middleware {
     private readonly provider: CorsProvider;
 
-    constructor(init: CorsProvider | CorsConfig) {
+    constructor(init?: CorsProvider | CorsConfig) {
         super();
-        this.provider = init instanceof CorsProvider ? init : new CorsProvider(init);
+        if (init) {
+            this.provider = init instanceof CorsProvider ? init : new CorsProvider(init);
+        } else {
+            this.provider = new CorsProvider();
+        }
     }
 
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const response = await next();
 
         const mutable = new Response(response.body, response);
-        
+
         addCorsHeaders(worker, this.provider, mutable.headers);
         if (!allowAnyOrigin(this.provider)) {
             mergeHeader(mutable.headers, "Vary", "Origin");
