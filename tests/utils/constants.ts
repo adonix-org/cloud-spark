@@ -55,8 +55,7 @@ export namespace TestRoutes {
 
     export async function expectResponseBody(found: MatchedRoute, expected: string) {
         const response = await found.route.callback(found.params);
-        const text = await response.text();
-        expect(text).toBe(expected);
+        expect(await response.text()).toBe(expected);
     }
 }
 
