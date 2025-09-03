@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Method, normalizeUrl } from "./common";
+import { Method, normalizeUrl } from "../common";
 import { Middleware } from "./middleware";
-import { Worker } from "./worker";
+import { Worker } from "../worker";
 
 export class CacheHandler extends Middleware {
     constructor(

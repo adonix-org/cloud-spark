@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { mergeHeader } from "./common";
-import { addCorsHeaders, allowAnyOrigin, CorsConfig, CorsProvider } from "./cors";
+import { mergeHeader } from "../common";
+import { addCorsHeaders, allowAnyOrigin, CorsConfig, CorsProvider } from "../cors";
+import { Worker } from "../worker";
 import { Middleware } from "./middleware";
-import { Worker } from "./worker";
 
 /**
  * Middleware that automatically applies CORS headers to responses.

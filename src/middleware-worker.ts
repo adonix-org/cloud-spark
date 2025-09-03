@@ -15,7 +15,7 @@
  */
 
 import { BaseWorker } from "./base-worker";
-import { Middleware } from "./middleware";
+import { Middleware } from "./middleware/middleware";
 
 export abstract class MiddlewareWorker extends BaseWorker {
     private readonly middlewares: Middleware[] = [];

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Worker } from "./worker";
+import { Worker } from "../worker";
 
 /**
  * Abstract base class for Worker middleware.
