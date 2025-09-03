@@ -771,6 +771,8 @@ declare abstract class RouteWorker extends BasicWorker {
 }
 
 declare class CacheHandler extends Middleware {
+    protected readonly cacheName?: string | undefined;
+    constructor(cacheName?: string | undefined);
     handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
     /**
      * Returns the cache key for the request.

@@ -19,18 +19,22 @@ import { Middleware } from "./middleware";
 import { Worker } from "./worker";
 
 export class CacheHandler extends Middleware {
+    constructor(protected readonly cacheName?: string) {
+        super();
+    }
+
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+        const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
+
         if (worker.request.method === Method.GET) {
-            const cached = await caches.default.match(this.getCacheKey(worker.request));
+            const cached = await cache.match(this.getCacheKey(worker.request));
             if (cached) return cached;
         }
 
         const response = await next();
 
         if (response.ok && worker.request.method === Method.GET) {
-            worker.ctx.waitUntil(
-                caches.default.put(this.getCacheKey(worker.request), response.clone())
-            );
+            worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
         }
         return response;
     }

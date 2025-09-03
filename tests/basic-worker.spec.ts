@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { describe, it, expect, vi } from "vitest";
 import { env, ctx } from "./mock";
 import { BasicWorker } from "../src/basic-worker";
@@ -64,7 +65,6 @@ describe("basic worker unit tests", () => {
         expect(response).toBeInstanceOf(Response);
         expect(await response.text()).toBe("");
     });
-
 
     it("returns a 405 method not allowed response from fetch", async () => {
         const request = new Request(VALID_URL, { method: "BAD" as any });
