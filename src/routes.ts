@@ -80,9 +80,7 @@ export class Routes implements Iterable<Route> {
      * @param callback - Function to execute when this route matches
      */
     public add(method: Method, path: string, callback: RouteCallback) {
-        const matcher = match<RouteParams>(path, {
-            decode: decodeURIComponent,
-        });
+        const matcher = match<RouteParams>(path);
         this.routes.push({ method, matcher, callback });
     }
 

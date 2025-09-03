@@ -134,4 +134,19 @@ describe("route worker unit tests", () => {
             date: "2020-01-01",
         });
     });
+
+    it("returns decoded path parameters", async () => {
+        const request = new Request(new URL("/unit/tests/hello world/2020-01-01", VALID_URL));
+        const worker = new TestWorker(request);
+
+        expect(request.url).toBe("https://localhost/unit/tests/hello%20world/2020-01-01");
+
+        const response = await worker.fetch();
+
+        expect(response).toBeInstanceOf(Response);
+        expect(await response.json()).toStrictEqual({
+            name: "hello world",
+            date: "2020-01-01",
+        });
+    });
 });
