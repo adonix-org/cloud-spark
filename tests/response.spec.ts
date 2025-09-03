@@ -26,7 +26,7 @@ import {
 } from "@src/response";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader } from "@src/common";
-import { VALID_URL } from "@constants";
+import { assertDefined, VALID_URL } from "@constants";
 
 const mockWorker = {
     request: new Request(VALID_URL),
@@ -111,6 +111,12 @@ describe("response unit tests", () => {
         const cache: CacheControl = { "max-age": 65 };
         const resp = new JsonResponse(mockWorker, { foo: "bar" }, cache);
         const r = await resp.getResponse();
-        expect(CacheControl.parse(r.headers.get(HttpHeader.CACHE_CONTROL)!)["max-age"]).toBe(65);
+
+        const h = assertDefined(
+            r.headers.get(HttpHeader.CACHE_CONTROL),
+            "cache header not defined"
+        );
+
+        expect(CacheControl.parse(h)["max-age"]).toBe(65);
     });
 });

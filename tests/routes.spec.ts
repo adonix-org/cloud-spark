@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { TestRoutes, VALID_URL } from "@constants";
+import { assertDefined, TestRoutes, VALID_URL } from "@constants";
 import { Method } from "@src/common";
 import { Routes, RouteTable } from "@src/routes";
 
@@ -34,9 +34,9 @@ describe("routes unit tests", () => {
 
     it("returns the route initialized with string", async () => {
         const url = new URL("one", VALID_URL);
-        const found = routes.match(Method.GET, url.toString());
-        expect(found).toBeDefined();
-        expect(found?.route.callback).toBe(TestRoutes.one);
+        const found = assertDefined(routes.match(Method.GET, url.toString()));
+
+        expect(found.route.callback).toBe(TestRoutes.one);
         await TestRoutes.expectResponseBody(found!, "one");
     });
 
@@ -57,10 +57,9 @@ describe("routes unit tests", () => {
         const url = new URL("three", VALID_URL);
 
         routes.add(method, "/three", TestRoutes.three);
-        const found = routes.match(method, url.toString());
+        const found = assertDefined(routes.match(method, url.toString()));
 
-        expect(found).toBeDefined();
-        expect(found?.route.callback).toBe(TestRoutes.three);
+        expect(found.route.callback).toBe(TestRoutes.three);
         await TestRoutes.expectResponseBody(found!, "three");
     });
 
@@ -69,10 +68,9 @@ describe("routes unit tests", () => {
         const url = new URL(VALID_URL);
 
         routes.add(method, "/", TestRoutes.four);
-        const found = routes.match(method, url.toString());
+        const found = assertDefined(routes.match(method, url.toString()));
 
-        expect(found).toBeDefined();
-        expect(found?.route.callback).toBe(TestRoutes.four);
-        await TestRoutes.expectResponseBody(found!, "four");
+        expect(found.route.callback).toBe(TestRoutes.four);
+        await TestRoutes.expectResponseBody(found, "four");
     });
 });

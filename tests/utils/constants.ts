@@ -79,3 +79,10 @@ export const GET_REQUEST_INVALID_ORIGIN = new Request(VALID_URL, {
 });
 
 export const BODY_INIT: BodyInit = "OK";
+
+export function assertDefined<T>(value: T | null | undefined, message?: string): T {
+  if (value === null || value === undefined) {
+    throw new Error(message ?? "Unexpected null or undefined");
+  }
+  return value;
+}
