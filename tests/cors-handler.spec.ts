@@ -91,4 +91,21 @@ describe("cors worker unit tests", () => {
             ["vary", "Origin"],
         ]);
     });
+
+    it("initializes the cors provider using config object", async () => {
+        class TestInitWorker extends TestWorker {
+            protected init(): void {
+                this.use(new CorsHandler({ allowedHeaders: ["x-test-header"] }));
+            }
+        }
+        const worker = new TestInitWorker(GET_REQUEST_WITH_ORIGIN);
+        const response = await worker.fetch();
+        expect([...response.headers.entries()]).toStrictEqual([
+            ["access-control-allow-headers", "x-test-header"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
+            ["access-control-allow-origin", "*"],
+            ["access-control-max-age", "604800"],
+            ["content-type", "text/plain;charset=UTF-8"],
+        ]);
+    });
 });
