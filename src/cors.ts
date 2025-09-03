@@ -157,7 +157,6 @@ export function allowAnyOrigin(cors: CorsProvider): boolean {
 
 /**
  * Deletes all standard CORS headers from the given Headers object.
- * Useful for cleaning cached responses or resetting headers before reapplying CORS.
  *
  * @param headers The Headers object to clean
  */
