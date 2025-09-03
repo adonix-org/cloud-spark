@@ -44,7 +44,7 @@
         "coverage": "vitest run --coverage"
     },
     "devDependencies": {
-        "@cloudflare/workers-types": "^4.20250902.0",
+        "@cloudflare/workers-types": "^4.20250903.0",
         "@vitest/coverage-v8": "^3.2.4",
         "tsup": "^8.5.0",
         "typescript": "^5.9.2",
@@ -53,6 +53,6 @@
     "dependencies": {
         "cache-control-parser": "^2.0.6",
         "http-status-codes": "^2.3.0",
-        "path-to-regexp": "^8.2.0"
+        "path-to-regexp": "^8.3.0"
     }
 }
