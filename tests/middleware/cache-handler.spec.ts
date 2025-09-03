@@ -15,10 +15,10 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { GET_REQUEST, VALID_URL } from "./constants";
-import { ctx, defaultCache, env, namedCache } from "./mock";
-import { CacheHandler } from "../src";
-import { MiddlewareWorker } from "../src/middleware-worker";
+import { GET_REQUEST, VALID_URL } from "../constants";
+import { ctx, defaultCache, env, namedCache } from "../mock";
+import { CacheHandler } from "../../src/middleware/cache-handler";
+import { MiddlewareWorker } from "../../src/middleware-worker";
 
 class TestWorker extends MiddlewareWorker {
     constructor(request: Request, cacheName?: string) {
