@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { TestRoutes, VALID_URL } from "./constants";
+import { TestRoutes, VALID_URL } from "./utils/constants";
 import { Method } from "../src/common";
 import { Routes, RouteTable } from "../src/routes";
 

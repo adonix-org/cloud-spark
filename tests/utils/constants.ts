@@ -15,8 +15,8 @@
  */
 
 import { expect } from "vitest";
-import { Method } from "../src/common";
-import { MatchedRoute, RouteCallback, RouteTable } from "../src/routes";
+import { Method } from "../../src/common";
+import { MatchedRoute, RouteCallback, RouteTable } from "../../src/routes";
 
 export const VALID_ORIGIN = "https://localhost";
 export const INVALID_ORIGIN = "https://localhost.invalid";

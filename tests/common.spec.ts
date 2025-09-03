@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN } from "./constants";
+import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN } from "./utils/constants";
 import {
     getContentType,
     getOrigin,

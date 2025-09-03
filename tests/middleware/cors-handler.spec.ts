@@ -20,8 +20,8 @@ import {
     GET_REQUEST_INVALID_ORIGIN,
     GET_REQUEST_WITH_ORIGIN,
     VALID_ORIGIN,
-} from "../constants";
-import { ctx, env } from "../mock";
+} from "../utils/constants";
+import { ctx, env } from "../utils/mock";
 import { CorsHandler } from "../../src/middleware/cors-handler";
 import { BasicWorker } from "../../src/basic-worker";
 import { CorsProvider } from "../../src/cors";

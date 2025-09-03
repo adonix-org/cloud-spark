@@ -15,11 +15,11 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { ALL_METHODS, BASIC_METHODS, TestRoutes, VALID_URL } from "./constants";
+import { ALL_METHODS, BASIC_METHODS, TestRoutes, VALID_URL } from "./utils/constants";
 import { Method } from "../src/common";
 import { RouteCallback } from "../src/routes";
 import { RouteWorker } from "../src/route-worker";
-import { ctx, env } from "./mock";
+import { ctx, env } from "./utils/mock";
 
 class TestWorker extends RouteWorker {
     constructor(request: Request) {

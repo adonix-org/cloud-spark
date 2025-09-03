@@ -15,8 +15,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { env, ctx } from "../mock";
-import { GET_REQUEST } from "../constants";
+import { env, ctx } from "../utils/mock";
+import { GET_REQUEST } from "../utils/constants";
 import { BasicWorker } from "../../src/basic-worker";
 import { Middleware } from "../../src/middleware/middleware";
 import { Unauthorized } from "../../src/errors";

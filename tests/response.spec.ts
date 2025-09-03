@@ -26,7 +26,7 @@ import {
 } from "../src/response";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader } from "../src/common";
-import { VALID_URL } from "./constants";
+import { VALID_URL } from "./utils/constants";
 
 const mockWorker = {
     request: new Request(VALID_URL),
