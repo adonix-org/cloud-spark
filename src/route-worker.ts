@@ -43,7 +43,7 @@ export abstract class RouteWorker extends BasicWorker {
      * @param callback Function to handle requests matching this route
      * @returns The worker instance (for chaining)
      */
-    protected add(method: Method, path: string, callback: RouteCallback): this {
+    protected addRoute(method: Method, path: string, callback: RouteCallback): this {
         this.routes.add(method, path, callback);
         return this;
     }

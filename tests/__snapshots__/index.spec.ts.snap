@@ -507,7 +507,7 @@ type RouteParams = Record<string, string>;
  * @param params - Named parameters extracted from the URL path.
  * @returns A Response object or a Promise resolving to a Response.
  */
-type RouteCallback = (params: RouteParams) => Promise<Response> | Response;
+type RouteCallback = (params: RouteParams) => Response | Promise<Response>;
 /**
  * Represents a single route.
  */
@@ -737,7 +737,7 @@ declare abstract class RouteWorker extends BasicWorker {
      * @param callback Function to handle requests matching this route
      * @returns The worker instance (for chaining)
      */
-    protected add(method: Method, path: string, callback: RouteCallback): this;
+    protected addRoute(method: Method, path: string, callback: RouteCallback): this;
     /**
      * Matches the incoming request against registered routes and executes
      * the corresponding callback. Falls back to \`BasicWorker.dispatch()\` if no match.

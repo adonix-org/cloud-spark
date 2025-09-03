@@ -27,13 +27,13 @@ class TestWorker extends RouteWorker {
     }
 
     protected init(): void {
-        this.add(Method.GET, "/unit/tests/:name/:date", async (params): Promise<Response> => {
+        this.addRoute(Method.GET, "/unit/tests/:name/:date", async (params): Promise<Response> => {
             return new Response(JSON.stringify(params));
         });
     }
 
-    public override add(method: Method, path: string, callback: RouteCallback): this {
-        return super.add(method, path, callback);
+    public override addRoute(method: Method, path: string, callback: RouteCallback): this {
+        return super.addRoute(method, path, callback);
     }
 
     public override getAllowedMethods(): Method[] {
@@ -75,7 +75,7 @@ describe("route worker unit tests", () => {
         const request = new Request(new URL("two", VALID_URL));
         const worker = new TestWorker(request);
 
-        worker.add(Method.GET, "/two", TestRoutes.two);
+        worker.addRoute(Method.GET, "/two", TestRoutes.two);
 
         const response = await worker.fetch();
         expect(await response.text()).toBe("two");
@@ -85,9 +85,13 @@ describe("route worker unit tests", () => {
         const request = new Request(new URL("/matches/7834", VALID_URL));
         const worker = new TestWorker(request);
 
-        worker.add(Method.GET, "/matches/:year" as const, async (params): Promise<Response> => {
-            return new Response(JSON.stringify(params));
-        });
+        worker.addRoute(
+            Method.GET,
+            "/matches/:year" as const,
+            async (params): Promise<Response> => {
+                return new Response(JSON.stringify(params));
+            }
+        );
 
         const response = await worker.fetch();
 
@@ -101,7 +105,7 @@ describe("route worker unit tests", () => {
         const request = new Request(new URL("/matches/2000/06", VALID_URL));
         const worker = new TestWorker(request);
 
-        worker.add(
+        worker.addRoute(
             Method.GET,
             "/matches/:year/:month" as const,
             async (params): Promise<Response> => {

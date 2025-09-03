@@ -25,7 +25,7 @@ export type RouteParams = Record<string, string>;
  * @param params - Named parameters extracted from the URL path.
  * @returns A Response object or a Promise resolving to a Response.
  */
-export type RouteCallback = (params: RouteParams) => Promise<Response> | Response;
+export type RouteCallback = (params: RouteParams) => Response | Promise<Response>;
 
 /**
  * Represents a single route.
