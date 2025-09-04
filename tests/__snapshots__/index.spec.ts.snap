@@ -233,16 +233,6 @@ declare function lexCompare(a: string, b: string): number;
 declare function getOrigin(request: Request): string | null;
 
 /**
- * Represents the constructor of a Worker or a subclass of Worker.
- *
- * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
- * @param req - The \`Request\` object to be handled by the worker instance.
- * @param env - The environment bindings available to the worker.
- * @param ctx - The \`ExecutionContext\` for the worker invocation.
- * @returns An instance of the worker type \`T\`.
- */
-type WorkerConstructor<T extends Worker = Worker> = new (request: Request, env: Env, ctx: ExecutionContext) => T;
-/**
  * Defines the contract for a Cloudflare-compatible Worker.
  *
  * Implementations are responsible for handling incoming requests,
@@ -487,6 +477,16 @@ declare class Routes implements Iterable<Route> {
 }
 
 /**
+ * Represents the constructor of a Worker subclass.
+ *
+ * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
+ * @param req - The \`Request\` object to be handled by the worker instance.
+ * @param env - The environment bindings available to the worker.
+ * @param ctx - The \`ExecutionContext\` for the worker invocation.
+ * @returns An instance of the worker type \`T\`.
+ */
+type WorkerConstructor<T extends Worker = Worker> = new (request: Request, env: Env, ctx: ExecutionContext) => T;
+/**
  * A type-safe Cloudflare Worker handler.
  *
  * Extends \`ExportedHandler\` but guarantees that the \`fetch\` method exists
@@ -698,6 +698,6 @@ declare class CacheHandler extends Middleware {
     getCacheKey(request: Request): URL | RequestInfo;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;
