@@ -19,4 +19,5 @@ export * from "./errors";
 export * from "./routes";
 export * from "./workers";
 export * from "./responses";
+export * from "./interfaces";
 export * from "./middleware";
