@@ -23,7 +23,7 @@ import {
     ClonedResponse,
     Head,
     Options,
-} from "@src/response";
+} from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader } from "@src/common";
 import { assertDefined, VALID_URL } from "@constants";
@@ -114,7 +114,7 @@ describe("response unit tests", () => {
 
         const h = assertDefined(
             r.headers.get(HttpHeader.CACHE_CONTROL),
-            "cache header not defined"
+            "cache header not defined",
         );
 
         expect(CacheControl.parse(h)["max-age"]).toBe(65);

@@ -18,5 +18,5 @@ export * from "./common";
 export * from "./errors";
 export * from "./routes";
 export * from "./workers";
-export * from "./response";
+export * from "./responses";
 export * from "./middleware";

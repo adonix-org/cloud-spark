@@ -17,7 +17,7 @@
 import { isMethod, Method } from "../common";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
 import { MiddlewareWorker } from "./middleware-worker";
-import { Head, Options, WorkerResponse } from "../response";
+import { Head, Options, WorkerResponse } from "../responses";
 import { Worker } from "./worker";
 
 /**
