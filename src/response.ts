@@ -75,7 +75,10 @@ abstract class BaseResponse {
  * Base response class that adds caching headers.
  */
 abstract class CacheResponse extends BaseResponse {
-    constructor(worker: Worker, public cache?: CacheControl) {
+    constructor(
+        worker: Worker,
+        public cache?: CacheControl,
+    ) {
         super(worker);
     }
 
@@ -94,7 +97,7 @@ export abstract class WorkerResponse extends CacheResponse {
     constructor(
         worker: Worker,
         private readonly body: BodyInit | null = null,
-        cache?: CacheControl
+        cache?: CacheControl,
     ) {
         super(worker, cache);
     }
@@ -137,7 +140,7 @@ export class SuccessResponse extends WorkerResponse {
         worker: Worker,
         body: BodyInit | null = null,
         cache?: CacheControl,
-        status: StatusCodes = StatusCodes.OK
+        status: StatusCodes = StatusCodes.OK,
     ) {
         super(worker, body, cache);
         this.status = status;
@@ -152,7 +155,7 @@ export class JsonResponse extends SuccessResponse {
         worker: Worker,
         json: unknown = {},
         cache?: CacheControl,
-        status: StatusCodes = StatusCodes.OK
+        status: StatusCodes = StatusCodes.OK,
     ) {
         super(worker, JSON.stringify(json), cache, status);
         this.mediaType = MediaType.JSON;
@@ -167,7 +170,7 @@ export class HtmlResponse extends SuccessResponse {
         worker: Worker,
         body: string,
         cache?: CacheControl,
-        status: StatusCodes = StatusCodes.OK
+        status: StatusCodes = StatusCodes.OK,
     ) {
         super(worker, body, cache, status);
         this.mediaType = MediaType.HTML;
@@ -182,7 +185,7 @@ export class TextResponse extends SuccessResponse {
         worker: Worker,
         content: string,
         cache?: CacheControl,
-        status: StatusCodes = StatusCodes.OK
+        status: StatusCodes = StatusCodes.OK,
     ) {
         super(worker, content, cache, status);
         this.mediaType = MediaType.PLAIN_TEXT;

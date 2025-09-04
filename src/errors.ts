@@ -39,7 +39,11 @@ export class HttpError extends JsonResponse {
      * @param status HTTP status code.
      * @param details Optional detailed error message.
      */
-    constructor(worker: Worker, status: StatusCodes, protected readonly details?: string) {
+    constructor(
+        worker: Worker,
+        status: StatusCodes,
+        protected readonly details?: string,
+    ) {
         const json: ErrorJson = {
             status,
             error: getReasonPhrase(status),
@@ -83,7 +87,7 @@ export class MethodNotAllowed extends HttpError {
         super(
             worker,
             StatusCodes.METHOD_NOT_ALLOWED,
-            `${worker.request.method} method not allowed.`
+            `${worker.request.method} method not allowed.`,
         );
         this.setHeader(HttpHeader.ALLOW, this.worker.getAllowedMethods());
     }

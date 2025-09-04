@@ -131,7 +131,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      */
     protected async getResponse<
         T extends WorkerResponse,
-        Ctor extends new (worker: Worker, ...args: any[]) => T
+        Ctor extends new (worker: Worker, ...args: any[]) => T,
     >(
         ResponseClass: Ctor,
         ...args: ConstructorParameters<Ctor> extends [Worker, ...infer R] ? R : never

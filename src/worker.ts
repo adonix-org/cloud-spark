@@ -28,7 +28,7 @@ import { Method } from "./common";
 export type WorkerConstructor<T extends Worker = Worker> = new (
     request: Request,
     env: Env,
-    ctx: ExecutionContext
+    ctx: ExecutionContext,
 ) => T;
 
 /**

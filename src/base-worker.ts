@@ -51,7 +51,7 @@ export abstract class BaseWorker implements Worker {
     constructor(
         private readonly _request: Request,
         private readonly _env: Env,
-        private readonly _ctx: ExecutionContext
+        private readonly _ctx: ExecutionContext,
     ) {}
 
     /** The Request object associated with this worker invocation */
