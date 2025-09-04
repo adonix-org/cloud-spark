@@ -27,11 +27,8 @@ export type RouteParams = Record<string, string>;
  */
 export type RouteCallback = (params: RouteParams) => Response | Promise<Response>;
 
-/** Tuple type representing a single route: [method, path, callback] */
-export type RouteTuple = [Method, string, RouteCallback];
-
 /** Array of route tuples, used to initialize Routes */
-export type RouteTable = RouteTuple[];
+export type RouteTable = [Method, string, RouteCallback][];
 
 /**
  * Represents a single route.
