@@ -22,7 +22,7 @@ import {
     VALID_ORIGIN,
 } from "@constants";
 import { ctx, env } from "@mock";
-import { CorsHandler } from "@src/middleware/cors";
+import { CorsHandler } from "@src/middleware/cors/base";
 import { BasicWorker } from "@src/basic-worker";
 
 class TestWorker extends BasicWorker {
@@ -45,7 +45,7 @@ class TestOriginWorker extends TestWorker {
     }
 }
 
-describe("cors worker unit tests", () => {
+describe("cors middleware unit tests", () => {
     it("returns response with cors headers", async () => {
         const worker = new TestWorker(GET_REQUEST_WITH_ORIGIN);
         const response = await worker.fetch();

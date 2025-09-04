@@ -14,35 +14,4 @@
  * limitations under the License.
  */
 
-import { Method, normalizeUrl } from "../../common";
-import { Middleware } from "../base";
-import { Worker } from "../../worker";
-
-export class CacheHandler extends Middleware {
-    constructor(
-        protected readonly cacheName?: string,
-        protected readonly getKey?: (request: Request) => URL | RequestInfo,
-    ) {
-        super();
-    }
-
-    public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
-
-        if (worker.request.method === Method.GET) {
-            const cached = await cache.match(this.getCacheKey(worker.request));
-            if (cached) return cached;
-        }
-
-        const response = await next();
-
-        if (worker.request.method === Method.GET && response.ok) {
-            worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-        }
-        return response;
-    }
-
-    public getCacheKey(request: Request): URL | RequestInfo {
-        return this.getKey ? this.getKey(request) : normalizeUrl(request.url);
-    }
-}
+export * from "./base";

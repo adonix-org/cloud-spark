@@ -17,7 +17,7 @@
 import { describe, expect, it } from "vitest";
 import { GET_REQUEST, VALID_URL } from "@constants";
 import { ctx, defaultCache, env, namedCache } from "@mock";
-import { CacheHandler } from "@src/middleware/cache";
+import { CacheHandler } from "@src/middleware/cache/base";
 import { MiddlewareWorker } from "@src/middleware-worker";
 
 class TestWorker extends MiddlewareWorker {

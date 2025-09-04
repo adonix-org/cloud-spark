@@ -14,32 +14,5 @@
  * limitations under the License.
  */
 
-import { mergeHeader } from "../../common";
-import { addCorsHeaders, allowAnyOrigin } from "./cors";
-import { CorsConfig, DEFAULT_CORS_CONFIG } from "./cors-config";
-import { Worker } from "../../worker";
-import { Middleware } from "../base";
-
+export * from "./base";
 export * from "./cors-config";
-
-export class CorsHandler extends Middleware {
-    private readonly config: Required<CorsConfig>;
-
-    constructor(init?: Partial<CorsConfig>) {
-        super();
-        this.config = { ...DEFAULT_CORS_CONFIG, ...init };
-    }
-
-    public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        const response = await next();
-
-        const mutable = new Response(response.body, response);
-
-        addCorsHeaders(worker, this.config, mutable.headers);
-        if (!allowAnyOrigin(this.config)) {
-            mergeHeader(mutable.headers, "Vary", "Origin");
-        }
-
-        return mutable;
-    }
-}
