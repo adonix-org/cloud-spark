@@ -16,9 +16,10 @@
 
 import { mergeHeader } from "../../common";
 import { addCorsHeaders, allowAnyOrigin } from "./utils";
-import { CorsConfig, DEFAULT_CORS_CONFIG } from "./config";
-import { Worker } from "../../workers/worker";
+import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../base";
+import { CorsConfig } from "../../interfaces/cors-config";
+import { DEFAULT_CORS_CONFIG } from "./default";
 
 export class CorsHandler extends Middleware {
     private readonly config: Required<CorsConfig>;

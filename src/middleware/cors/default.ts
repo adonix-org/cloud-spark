@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-import { Worker } from "../interfaces/worker";
+import { Time } from "../../common";
+import { CorsConfig } from "../../interfaces/cors-config";
 
-export abstract class Middleware {
-    public abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
-}
+export const DEFAULT_CORS_CONFIG: CorsConfig = {
+    /** Origins allowed by default. Default: all (`*`). */
+    allowedOrigins: ["*"],
+
+    /** Allowed headers for CORS requests. Default: `Content-Type`. */
+    allowedHeaders: ["Content-Type"],
+
+    /** Headers exposed to the client. Default: none. */
+    exposedHeaders: [],
+
+    /** Max age (in seconds) for preflight caching. Default: 1 week. */
+    maxAge: Time.Week,
+} as const;

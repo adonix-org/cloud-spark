@@ -14,46 +14,9 @@
  * limitations under the License.
  */
 
-import { match, MatchFunction } from "path-to-regexp";
+import { match } from "path-to-regexp";
 import { Method } from "./common";
-
-/** Parameters extracted from a matched route */
-export type RouteParams = Record<string, string>;
-
-/**
- * Type for a route callback function.
- * @param params - Named parameters extracted from the URL path.
- * @returns A Response object or a Promise resolving to a Response.
- */
-export type RouteCallback = (params: RouteParams) => Response | Promise<Response>;
-
-/**
- * Represents a single route.
- */
-export interface Route {
-    /** HTTP method for the route */
-    method: Method;
-    /** Path-to-regexp matcher function for this route */
-    matcher: MatchFunction<RouteParams>;
-    /** Callback to execute when the route is matched */
-    callback: RouteCallback;
-}
-
-/**
- * Result of a route match.
- */
-export interface MatchedRoute {
-    /** The route that matched */
-    route: Route;
-    /** Parameters extracted from the URL path */
-    params: RouteParams;
-}
-
-/** Tuple type representing a single route: [method, path, callback] */
-export type RouteTuple = [Method, string, RouteCallback];
-
-/** Array of route tuples, used to initialize Routes */
-export type RouteTable = RouteTuple[];
+import { MatchedRoute, Route, RouteCallback, RouteParams, RouteTable } from "./interfaces/route";
 
 /**
  * Container for route definitions and matching logic.

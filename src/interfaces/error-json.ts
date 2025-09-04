@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { Worker } from "../interfaces/worker";
-
-export abstract class Middleware {
-    public abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+/** Structure for JSON error responses. */
+export interface ErrorJson {
+    /** HTTP status code. */
+    status: number;
+    /** Standard HTTP reason phrase. */
+    error: string;
+    /** Optional detailed message about the error. */
+    details: string;
 }

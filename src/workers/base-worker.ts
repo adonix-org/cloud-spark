@@ -15,7 +15,8 @@
  */
 
 import { Method } from "../common";
-import { Worker } from "./worker";
+import { FetchHandler } from "../interfaces/fetch-handler";
+import { Worker } from "../interfaces/worker";
 
 /**
  * Represents the constructor of a Worker subclass.
@@ -31,26 +32,6 @@ type WorkerConstructor<T extends Worker = Worker> = new (
     env: Env,
     ctx: ExecutionContext,
 ) => T;
-
-/**
- * A type-safe Cloudflare Worker handler.
- *
- * Extends `ExportedHandler` but guarantees that the `fetch` method exists
- * and has the correct signature for Cloudflare Worker invocation.
- *
- * @template E - The type of environment bindings passed to the worker. Defaults to `Env`.
- */
-interface FetchHandler extends ExportedHandler<Env> {
-    /**
-     * Handles an incoming request and produces a response.
-     *
-     * @param request - The incoming `Request` object.
-     * @param env - Environment bindings (e.g., KV namespaces, secrets, Durable Objects).
-     * @param ctx - Execution context for background tasks (`waitUntil`).
-     * @returns A `Promise` that resolves to the response.
-     */
-    fetch: (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
-}
 
 /**
  * Provides the foundational structure for handling requests,

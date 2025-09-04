@@ -17,17 +17,8 @@
 import { getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader, StatusCodes } from "./common";
 import { JsonResponse } from "./responses";
-import { Worker } from "./workers/worker";
-
-/** Structure for JSON error responses. */
-export interface ErrorJson {
-    /** HTTP status code. */
-    status: number;
-    /** Standard HTTP reason phrase. */
-    error: string;
-    /** Optional detailed message about the error. */
-    details: string;
-}
+import { Worker } from "./interfaces/worker";
+import { ErrorJson } from "./interfaces/error-json";
 
 /**
  * Generic HTTP error response.

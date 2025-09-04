@@ -18,7 +18,7 @@ import { isMethod, Method } from "../common";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
 import { MiddlewareWorker } from "./middleware-worker";
 import { Head, Options, WorkerResponse } from "../responses";
-import { Worker } from "./worker";
+import { Worker } from "../interfaces/worker";
 
 /**
  * Base worker class providing HTTP method dispatching, caching, and error handling.

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Worker } from "../interfaces/worker";
-
-export abstract class Middleware {
-    public abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
-}
+export * from "./cors-config";
+export * from "./error-json";
+export * from "./route";
+export * from "./worker";
