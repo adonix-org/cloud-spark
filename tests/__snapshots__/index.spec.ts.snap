@@ -610,13 +610,25 @@ declare abstract class Middleware {
     abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
+/** Internal base worker for handling middleware chains. */
 declare abstract class MiddlewareWorker extends BaseWorker {
+    /** Middleware handlers registered for this worker. */
     protected readonly middlewares: Middleware[];
     /**
-     * Register a middleware instance.
-     * @param mw Middleware to register
+     * Add a middleware to this worker.
+     *
+     * The middleware will run for every request handled by this worker,
+     * in the order they are added.
+     *
+     * @param handler - The middleware to run.
+     * @returns \`this\` to allow chaining multiple \`.use()\` calls.
      */
-    use(mw: Middleware): this;
+    use(handler: Middleware): this;
+    /**
+     * Executes the middleware chain and dispatches the request.
+     *
+     * @returns The Response produced by the last middleware or \`dispatch()\`.
+     */
     fetch(): Promise<Response>;
 }
 
@@ -679,30 +691,34 @@ declare abstract class BasicWorker extends MiddlewareWorker {
 }
 
 /**
- * Abstract worker that provides routing capabilities.
- * Extends \`BasicWorker\` and uses a \`Routes\` table to map HTTP methods and paths
- * to handler callbacks.
+ * Base worker supporting route-based request handling.
+ *
+ * Subclass \`RouteWorker\` to define a worker with multiple route handlers.
+ *
+ * Routes can be registered individually via \`addRoute()\` or in bulk via \`load()\`.
+ * Middleware can be attached with \`use()\` to run for all requests.
+ * \`\`\`
  */
 declare abstract class RouteWorker extends BasicWorker {
-    /** Routing table used for registering and matching routes. */
-    protected readonly routes: Routes;
+    /** Internal table of registered routes. */
+    private readonly routes;
     /**
-     * Loads routes from a \`RouteTable\` into this worker's route table.
-     * @param table The table of routes to load.
+     * Load multiple routes at once from a route table.
+     * @param table - Array of routes to register.
      */
     protected load(table: RouteTable): void;
     /**
-     * Adds a single route to this worker.
-     * @param method HTTP method (GET, POST, etc.)
-     * @param path Route path
-     * @param callback Function to handle requests matching this route
-     * @returns The worker instance (for chaining)
+     * Add a single route.
+     * @param method - HTTP method (GET, POST, etc.)
+     * @param path - Route path, supports parameters like "/users/:id"
+     * @param callback - Function to handle requests matching this route
+     * @returns \`this\` for chaining multiple route additions
      */
     protected addRoute(method: Method, path: string, callback: RouteCallback): this;
     /**
-     * Matches the incoming request against registered routes and executes
-     * the corresponding callback. Falls back to \`BasicWorker.dispatch()\` if no match.
-     * @returns The response from the matched route or the default handler.
+     * Matches the incoming request against registered routes and executes the callback.
+     * Falls back to the default handler if no match is found.
+     * This is called automatically when the worker handles a request.
      */
     protected dispatch(): Promise<Response>;
     protected get(): Promise<Response>;

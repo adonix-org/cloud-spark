@@ -21,28 +21,32 @@ import { Routes } from "../routes";
 import { RouteCallback, RouteTable } from "../interfaces/route";
 
 /**
- * Abstract worker that provides routing capabilities.
- * Extends `BasicWorker` and uses a `Routes` table to map HTTP methods and paths
- * to handler callbacks.
+ * Base worker supporting route-based request handling.
+ *
+ * Subclass `RouteWorker` to define a worker with multiple route handlers.
+ *
+ * Routes can be registered individually via `addRoute()` or in bulk via `load()`.
+ * Middleware can be attached with `use()` to run for all requests.
+ * ```
  */
 export abstract class RouteWorker extends BasicWorker {
-    /** Routing table used for registering and matching routes. */
-    protected readonly routes: Routes = new Routes();
+    /** Internal table of registered routes. */
+    private readonly routes: Routes = new Routes();
 
     /**
-     * Loads routes from a `RouteTable` into this worker's route table.
-     * @param table The table of routes to load.
+     * Load multiple routes at once from a route table.
+     * @param table - Array of routes to register.
      */
     protected load(table: RouteTable): void {
         this.routes.load(table);
     }
 
     /**
-     * Adds a single route to this worker.
-     * @param method HTTP method (GET, POST, etc.)
-     * @param path Route path
-     * @param callback Function to handle requests matching this route
-     * @returns The worker instance (for chaining)
+     * Add a single route.
+     * @param method - HTTP method (GET, POST, etc.)
+     * @param path - Route path, supports parameters like "/users/:id"
+     * @param callback - Function to handle requests matching this route
+     * @returns `this` for chaining multiple route additions
      */
     protected addRoute(method: Method, path: string, callback: RouteCallback): this {
         this.routes.add(method, path, callback);
@@ -50,9 +54,9 @@ export abstract class RouteWorker extends BasicWorker {
     }
 
     /**
-     * Matches the incoming request against registered routes and executes
-     * the corresponding callback. Falls back to `BasicWorker.dispatch()` if no match.
-     * @returns The response from the matched route or the default handler.
+     * Matches the incoming request against registered routes and executes the callback.
+     * Falls back to the default handler if no match is found.
+     * This is called automatically when the worker handles a request.
      */
     protected override async dispatch(): Promise<Response> {
         const found = this.routes.match(this.request.method as Method, this.request.url);

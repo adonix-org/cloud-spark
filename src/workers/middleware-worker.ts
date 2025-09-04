@@ -16,22 +16,33 @@
 
 import { BaseWorker } from "./base-worker";
 import { Middleware } from "../middleware/middleware";
-
+/** Internal base worker for handling middleware chains. */
 export abstract class MiddlewareWorker extends BaseWorker {
+    /** Middleware handlers registered for this worker. */
     protected readonly middlewares: Middleware[] = [];
 
     /**
-     * Register a middleware instance.
-     * @param mw Middleware to register
+     * Add a middleware to this worker.
+     *
+     * The middleware will run for every request handled by this worker,
+     * in the order they are added.
+     *
+     * @param handler - The middleware to run.
+     * @returns `this` to allow chaining multiple `.use()` calls.
      */
-    public use(mw: Middleware): this {
-        this.middlewares.push(mw);
+    public use(handler: Middleware): this {
+        this.middlewares.push(handler);
         return this;
     }
 
+    /**
+     * Executes the middleware chain and dispatches the request.
+     *
+     * @returns The Response produced by the last middleware or `dispatch()`.
+     */
     public override async fetch(): Promise<Response> {
         const chain = this.middlewares.reduceRight(
-            (next, mw) => () => mw.handle(this, next),
+            (next, handler) => () => handler.handle(this, next),
             () => this.dispatch(),
         );
         return await chain();

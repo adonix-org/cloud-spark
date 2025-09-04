@@ -19,14 +19,6 @@ import { CorsConfig } from "../../interfaces/cors-config";
 
 /**
  * Default configuration for CORS middleware.
- *
- * Provides a baseline set of CORS rules applied when no custom configuration
- * is supplied to the middleware. This allows all origins (`*`), permits
- * the `Content-Type` header, exposes no additional headers, and caches
- * preflight requests for 1 week by default.
- *
- * You can override any of these defaults by passing a custom `CorsConfig`
- * to the CORS middleware constructor.
  */
 export const defaultCorsConfig: CorsConfig = {
     allowedOrigins: ["*"], // Origins allowed for CORS requests
