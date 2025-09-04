@@ -58,7 +58,7 @@ class AuthHandler extends Middleware {
 }
 
 describe("middleware unit tests", () => {
-    it("adds a header to the response", async () => {
+    it("adds a custom header to the response", async () => {
         const worker = new TestWorker(GET_REQUEST);
         const response = await worker.fetch();
 
@@ -68,7 +68,7 @@ describe("middleware unit tests", () => {
         ]);
     });
 
-    it("interrupts middleware processing with unauthorized", async () => {
+    it("interrupts middleware processing when unauthorized", async () => {
         const worker = new AuthWorker(GET_REQUEST);
         const response = await worker.fetch();
         const json = await response.json();
