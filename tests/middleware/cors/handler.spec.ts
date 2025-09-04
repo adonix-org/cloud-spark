@@ -22,7 +22,7 @@ import {
     VALID_ORIGIN,
 } from "@constants";
 import { ctx, env } from "@mock";
-import { CorsHandler } from "@src/middleware/cors/base";
+import { CorsHandler } from "@src/middleware/cors/handler";
 import { BasicWorker } from "@src/workers/basic-worker";
 
 class TestWorker extends BasicWorker {

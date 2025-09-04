@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./base";
+export * from "./handler";
 export * from "./cors-config";
