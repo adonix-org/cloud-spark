@@ -14,16 +14,43 @@
  * limitations under the License.
  */
 
+/**
+ * Configuration options for Cross-Origin Resource Sharing (CORS).
+ *
+ * Implementations of CORS middleware use this interface to determine
+ * how cross-origin requests are validated and which headers are sent
+ * in the response.
+ */
 export interface CorsConfig {
-    /** Origins allowed for CORS requests. */
+    /**
+     * Origins allowed for CORS requests.
+     *
+     * Use `["*"]` to allow all origins, or provide a list of specific origins.
+     * Example: `["https://example.com", "https://api.example.com"]`
+     */
     allowedOrigins: string[];
 
-    /** Allowed HTTP headers for CORS requests. */
+    /**
+     * HTTP headers allowed in CORS requests.
+     *
+     * Requests that include headers not listed here will be blocked
+     * during the preflight check.
+     */
     allowedHeaders: string[];
 
-    /** HTTP headers exposed to the client. */
+    /**
+     * HTTP headers exposed to the client.
+     *
+     * By default, most headers are not accessible from client-side JavaScript.
+     * Use this option to explicitly allow certain response headers to be read.
+     */
     exposedHeaders: string[];
 
-    /** Max age in seconds for CORS preflight caching. */
+    /**
+     * Maximum age (in seconds) that the results of a preflight request
+     * can be cached by the client.
+     *
+     * Example: `60 * 60 * 24 * 7` (1 week).
+     */
     maxAge: number;
 }

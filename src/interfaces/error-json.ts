@@ -14,12 +14,34 @@
  * limitations under the License.
  */
 
-/** Structure for JSON error responses. */
+/**
+ * Structure for JSON-formatted error responses.
+ *
+ * This interface defines the standard shape of error responses returned
+ * by middleware or workers when an operation fails. It ensures consistent
+ * error reporting and easy parsing by clients.
+ */
 export interface ErrorJson {
-    /** HTTP status code. */
+    /**
+     * HTTP status code associated with the error.
+     *
+     * Example: `404` for Not Found, `500` for Internal Server Error.
+     */
     status: number;
-    /** Standard HTTP reason phrase. */
+
+    /**
+     * Standard HTTP reason phrase corresponding to the status code.
+     *
+     * Example: `"Not Found"` for 404, `"Internal Server Error"` for 500.
+     */
     error: string;
-    /** Optional detailed message about the error. */
+
+    /**
+     * Optional detailed message describing the error.
+     *
+     * This can include additional context, debugging hints, or
+     * information useful to the client. May be an empty string
+     * if no details are provided.
+     */
     details: string;
 }
