@@ -15,8 +15,8 @@
  */
 
 import { mergeHeader } from "../../common";
-import { addCorsHeaders, allowAnyOrigin } from "./cors";
-import { CorsConfig, DEFAULT_CORS_CONFIG } from "./cors-config";
+import { addCorsHeaders, allowAnyOrigin } from "./utils";
+import { CorsConfig, DEFAULT_CORS_CONFIG } from "./config";
 import { Worker } from "../../workers/worker";
 import { Middleware } from "../base";
 

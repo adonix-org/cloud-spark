@@ -15,4 +15,4 @@
  */
 
 export * from "./handler";
-export * from "./cors-config";
+export * from "./config";
