@@ -17,7 +17,7 @@
 import { describe, it, expect } from "vitest";
 import { ALL_METHODS, BASIC_METHODS, TestRoutes, VALID_URL } from "@constants";
 import { Method } from "@src/common";
-import { RouteCallback } from "@src/routes";
+import { RouteCallback } from "@src/interfaces/route";
 import { RouteWorker } from "@src/workers/route-worker";
 import { ctx, env } from "@mock";
 

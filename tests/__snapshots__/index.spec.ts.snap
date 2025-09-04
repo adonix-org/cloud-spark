@@ -8,7 +8,6 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "CacheHandler",
   "ClonedResponse",
   "CorsHandler",
-  "DEFAULT_CORS_CONFIG",
   "Forbidden",
   "Head",
   "HtmlResponse",
@@ -352,15 +351,6 @@ declare class Options extends SuccessResponse {
     constructor(worker: Worker);
 }
 
-/** Structure for JSON error responses. */
-interface ErrorJson {
-    /** HTTP status code. */
-    status: number;
-    /** Standard HTTP reason phrase. */
-    error: string;
-    /** Optional detailed message about the error. */
-    details: string;
-}
 /**
  * Generic HTTP error response.
  * Sends a JSON body with status, error message, and details.
@@ -419,6 +409,8 @@ type RouteParams = Record<string, string>;
  * @returns A Response object or a Promise resolving to a Response.
  */
 type RouteCallback = (params: RouteParams) => Response | Promise<Response>;
+/** Array of route tuples, used to initialize Routes */
+type RouteTable = [Method, string, RouteCallback][];
 /**
  * Represents a single route.
  */
@@ -439,10 +431,7 @@ interface MatchedRoute {
     /** Parameters extracted from the URL path */
     params: RouteParams;
 }
-/** Tuple type representing a single route: [method, path, callback] */
-type RouteTuple = [Method, string, RouteCallback];
-/** Array of route tuples, used to initialize Routes */
-type RouteTable = RouteTuple[];
+
 /**
  * Container for route definitions and matching logic.
  * Implements Iterable to allow iteration over all routes.
@@ -477,16 +466,6 @@ declare class Routes implements Iterable<Route> {
 }
 
 /**
- * Represents the constructor of a Worker subclass.
- *
- * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
- * @param req - The \`Request\` object to be handled by the worker instance.
- * @param env - The environment bindings available to the worker.
- * @param ctx - The \`ExecutionContext\` for the worker invocation.
- * @returns An instance of the worker type \`T\`.
- */
-type WorkerConstructor<T extends Worker = Worker> = new (request: Request, env: Env, ctx: ExecutionContext) => T;
-/**
  * A type-safe Cloudflare Worker handler.
  *
  * Extends \`ExportedHandler\` but guarantees that the \`fetch\` method exists
@@ -505,6 +484,17 @@ interface FetchHandler extends ExportedHandler<Env> {
      */
     fetch: (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
 }
+
+/**
+ * Represents the constructor of a Worker subclass.
+ *
+ * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
+ * @param req - The \`Request\` object to be handled by the worker instance.
+ * @param env - The environment bindings available to the worker.
+ * @param ctx - The \`ExecutionContext\` for the worker invocation.
+ * @returns An instance of the worker type \`T\`.
+ */
+type WorkerConstructor<T extends Worker = Worker> = new (request: Request, env: Env, ctx: ExecutionContext) => T;
 /**
  * Provides the foundational structure for handling requests,
  * environment bindings, and the worker execution context.
@@ -672,7 +662,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-declare const DEFAULT_CORS_CONFIG: CorsConfig;
 interface CorsConfig {
     /** Origins allowed for CORS requests. */
     allowedOrigins: string[];
@@ -698,6 +687,6 @@ declare class CacheHandler extends Middleware {
     getCacheKey(request: Request): URL | RequestInfo;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, CorsHandler, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

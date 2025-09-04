@@ -17,7 +17,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { assertDefined, TestRoutes, VALID_URL } from "@constants";
 import { Method } from "@src/common";
-import { Routes, RouteTable } from "@src/routes";
+import { RouteTable } from "@src/interfaces/route";
+import { Routes } from "@src/routes";
 
 const init: RouteTable = [
     [Method.GET, "/one", TestRoutes.one],
