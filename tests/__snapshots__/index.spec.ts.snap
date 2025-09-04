@@ -672,20 +672,7 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-/**
- * Default CORS configuration used by \`CorsProvider\`.
- *
- * By default, all origins are allowed, only \`Content-Type\` is allowed as a header,
- * no headers are exposed, and preflight caching is 1 week.
- *
- * @see {@link CorsConfig}
- */
 declare const DEFAULT_CORS_CONFIG: CorsConfig;
-/**
- * Configuration options for \`CorsProvider\`.
- *
- * @see {@link DEFAULT_CORS_CONFIG}
- */
 interface CorsConfig {
     /** Origins allowed for CORS requests. */
     allowedOrigins: string[];
