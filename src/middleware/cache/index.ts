@@ -36,7 +36,7 @@ export class CacheHandler extends Middleware {
 
         const response = await next();
 
-        if (response.ok && worker.request.method === Method.GET) {
+        if (worker.request.method === Method.GET && response.ok) {
             worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
         }
         return response;
