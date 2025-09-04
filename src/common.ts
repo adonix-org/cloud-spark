@@ -46,6 +46,7 @@ export namespace HttpHeader {
     export const ALLOW = "Allow";
     export const CONTENT_TYPE = "Content-Type";
     export const CACHE_CONTROL = "Cache-Control";
+    export const USER_AGENT = "User-Agent";
 
     // Security Headers
     export const X_FRAME_OPTIONS = "X-Frame-Options"; // e.g. "DENY" or "SAMEORIGIN"

@@ -20,6 +20,6 @@ export * from "./routes";
 export * from "./responses";
 
 // folder/index.ts
-export * from "./workers";
 export * from "./interfaces";
 export * from "./middleware";
+export * from "./workers";
