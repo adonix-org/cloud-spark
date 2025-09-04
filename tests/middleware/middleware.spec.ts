@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from "vitest";
 import { env, ctx } from "@mock";
-import { GET_REQUEST } from "@constants";
+import { BODY_INIT, GET_REQUEST } from "@constants";
 import { BasicWorker } from "@src/basic-worker";
 import { Middleware } from "@src/middleware/middleware";
 import { Unauthorized } from "@src/errors";
@@ -32,7 +32,7 @@ class TestWorker extends BasicWorker {
     }
 
     protected override async dispatch(): Promise<Response> {
-        return new Response("Ok");
+        return new Response(BODY_INIT);
     }
 }
 
@@ -47,6 +47,7 @@ class AddHeader extends Middleware {
 class AuthWorker extends TestWorker {
     protected init(): void {
         this.use(new AuthHandler());
+        this.use(new AddHeader());
     }
 }
 
@@ -60,6 +61,7 @@ describe("middleware unit tests", () => {
     it("adds a header to the response", async () => {
         const worker = new TestWorker(GET_REQUEST);
         const response = await worker.fetch();
+
         expect([...response.headers.entries()]).toStrictEqual([
             ["content-type", "text/plain;charset=UTF-8"],
             ["x-custom-header", "true"],
@@ -70,6 +72,7 @@ describe("middleware unit tests", () => {
         const worker = new AuthWorker(GET_REQUEST);
         const response = await worker.fetch();
         const json = await response.json();
+
         expect(json).toStrictEqual({
             details: "",
             error: "Unauthorized",
