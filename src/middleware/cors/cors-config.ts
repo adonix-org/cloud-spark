@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Time } from "./common";
+import { Time } from "../../common";
 
 /**
  * Default CORS configuration used by `CorsProvider`.
@@ -24,7 +24,7 @@ import { Time } from "./common";
  *
  * @see {@link CorsConfig}
  */
-export const DEFAULT_CORS_CONFIG: Required<CorsConfig> = {
+export const DEFAULT_CORS_CONFIG: CorsConfig = {
     /** Origins allowed by default. Default: all (`*`). */
     allowedOrigins: ["*"],
 
@@ -45,14 +45,14 @@ export const DEFAULT_CORS_CONFIG: Required<CorsConfig> = {
  */
 export interface CorsConfig {
     /** Origins allowed for CORS requests. */
-    allowedOrigins?: string[];
+    allowedOrigins: string[];
 
     /** Allowed HTTP headers for CORS requests. */
-    allowedHeaders?: string[];
+    allowedHeaders: string[];
 
     /** HTTP headers exposed to the client. */
-    exposedHeaders?: string[];
+    exposedHeaders: string[];
 
     /** Max age in seconds for CORS preflight caching. */
-    maxAge?: number;
+    maxAge: number;
 }

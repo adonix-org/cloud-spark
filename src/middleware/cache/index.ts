@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { Method, normalizeUrl } from "../common";
-import { Middleware } from "./middleware";
-import { Worker } from "../worker";
+import { Method, normalizeUrl } from "../../common";
+import { Middleware } from "../base";
+import { Worker } from "../../worker";
 
 export class CacheHandler extends Middleware {
     constructor(
         protected readonly cacheName?: string,
-        protected readonly getKey?: (request: Request) => URL | RequestInfo
+        protected readonly getKey?: (request: Request) => URL | RequestInfo,
     ) {
         super();
     }

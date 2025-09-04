@@ -20,7 +20,6 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "Method",
   "MethodNotAllowed",
   "MethodNotImplemented",
-  "Middleware",
   "NotFound",
   "NotImplemented",
   "Options",
@@ -79,8 +78,15 @@ declare namespace HttpHeader {
     const PERMISSIONS_POLICY = "Permissions-Policy";
     const CONTENT_SECURITY_POLICY = "Content-Security-Policy";
     const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
+    const MAX_AGE = "Access-Control-Max-Age";
+    const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    const ALLOW_HEADERS = "Access-Control-Allow-Headers";
+    const ALLOW_METHODS = "Access-Control-Allow-Methods";
+    const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+    const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
     const NOSNIFF = "nosniff";
     const ORIGIN = "Origin";
+    const ALLOW_ALL_ORIGINS = "*";
 }
 /**
  * Time constants in seconds. Month is approximated as 30 days.
@@ -481,31 +487,6 @@ declare class Routes implements Iterable<Route> {
 }
 
 /**
- * Default CORS configuration used by \`CorsProvider\`.
- *
- * By default, all origins are allowed, only \`Content-Type\` is allowed as a header,
- * no headers are exposed, and preflight caching is 1 week.
- *
- * @see {@link CorsConfig}
- */
-declare const DEFAULT_CORS_CONFIG: Required<CorsConfig>;
-/**
- * Configuration options for \`CorsProvider\`.
- *
- * @see {@link DEFAULT_CORS_CONFIG}
- */
-interface CorsConfig {
-    /** Origins allowed for CORS requests. */
-    allowedOrigins?: string[];
-    /** Allowed HTTP headers for CORS requests. */
-    allowedHeaders?: string[];
-    /** HTTP headers exposed to the client. */
-    exposedHeaders?: string[];
-    /** Max age in seconds for CORS preflight caching. */
-    maxAge?: number;
-}
-
-/**
  * A type-safe Cloudflare Worker handler.
  *
  * Extends \`ExportedHandler\` but guarantees that the \`fetch\` method exists
@@ -691,9 +672,34 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
+/**
+ * Default CORS configuration used by \`CorsProvider\`.
+ *
+ * By default, all origins are allowed, only \`Content-Type\` is allowed as a header,
+ * no headers are exposed, and preflight caching is 1 week.
+ *
+ * @see {@link CorsConfig}
+ */
+declare const DEFAULT_CORS_CONFIG: CorsConfig;
+/**
+ * Configuration options for \`CorsProvider\`.
+ *
+ * @see {@link DEFAULT_CORS_CONFIG}
+ */
+interface CorsConfig {
+    /** Origins allowed for CORS requests. */
+    allowedOrigins: string[];
+    /** Allowed HTTP headers for CORS requests. */
+    allowedHeaders: string[];
+    /** HTTP headers exposed to the client. */
+    exposedHeaders: string[];
+    /** Max age in seconds for CORS preflight caching. */
+    maxAge: number;
+}
+
 declare class CorsHandler extends Middleware {
-    private readonly provider;
-    constructor(init?: CorsConfig);
+    private readonly config;
+    constructor(init?: Partial<CorsConfig>);
     handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
@@ -705,6 +711,6 @@ declare class CacheHandler extends Middleware {
     getCacheKey(request: Request): URL | RequestInfo;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

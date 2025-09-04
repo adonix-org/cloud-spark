@@ -55,9 +55,18 @@ export namespace HttpHeader {
     export const CONTENT_SECURITY_POLICY = "Content-Security-Policy"; // fine-grained script/style/image restrictions
     export const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security"; // e.g. "max-age=63072000; includeSubDomains; preload"
 
+    // Cors Headers
+    export const MAX_AGE = "Access-Control-Max-Age";
+    export const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    export const ALLOW_HEADERS = "Access-Control-Allow-Headers";
+    export const ALLOW_METHODS = "Access-Control-Allow-Methods";
+    export const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+    export const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+
     // Values
     export const NOSNIFF = "nosniff";
     export const ORIGIN = "Origin";
+    export const ALLOW_ALL_ORIGINS = "*";
 }
 
 /**
@@ -258,7 +267,7 @@ export function normalizeUrl(url: string): URL {
 
 /**
  * Lexicographically compares two strings.
- * 
+ *
  * This comparator can be used in `Array.prototype.sort()` to produce a
  * consistent, stable ordering of string arrays.
  *

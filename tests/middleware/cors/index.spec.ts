@@ -20,9 +20,9 @@ import {
     GET_REQUEST_INVALID_ORIGIN,
     GET_REQUEST_WITH_ORIGIN,
     VALID_ORIGIN,
-} from "../utils/constants";
-import { ctx, env } from "../utils/mock";
-import { CorsHandler } from "@src/middleware/cors-handler";
+} from "@constants";
+import { ctx, env } from "@mock";
+import { CorsHandler } from "@src/middleware/cors";
 import { BasicWorker } from "@src/basic-worker";
 
 class TestWorker extends BasicWorker {
