@@ -19,7 +19,7 @@ import { addCorsHeaders, allowAnyOrigin } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig } from "../../interfaces/cors-config";
-import { DEFAULT_CORS_CONFIG } from "./default";
+import { DEFAULT_CORS_CONFIG } from "./defaults";
 
 export class CorsHandler extends Middleware {
     private readonly config: Required<CorsConfig>;
