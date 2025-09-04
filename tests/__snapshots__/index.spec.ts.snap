@@ -7,9 +7,7 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "CacheControl",
   "CacheHandler",
   "ClonedResponse",
-  "Cors",
   "CorsHandler",
-  "CorsProvider",
   "DEFAULT_CORS_CONFIG",
   "Forbidden",
   "Head",
@@ -35,8 +33,6 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "Time",
   "Unauthorized",
   "WorkerResponse",
-  "addCorsHeaders",
-  "allowAnyOrigin",
   "getContentType",
   "getOrigin",
   "isMethod",
@@ -274,87 +270,6 @@ interface Worker {
 }
 
 /**
- * Default CORS configuration used by \`CorsProvider\`.
- *
- * By default, all origins are allowed, only \`Content-Type\` is allowed as a header,
- * no headers are exposed, and preflight caching is 1 week.
- *
- * @see {@link CorsConfig}
- */
-declare const DEFAULT_CORS_CONFIG: Required<CorsConfig>;
-/**
- * Configuration options for \`CorsProvider\`.
- *
- * @see {@link DEFAULT_CORS_CONFIG}
- */
-interface CorsConfig {
-    /** Origins allowed for CORS requests. */
-    allowedOrigins?: string[];
-    /** Allowed HTTP headers for CORS requests. */
-    allowedHeaders?: string[];
-    /** HTTP headers exposed to the client. */
-    exposedHeaders?: string[];
-    /** Max age in seconds for CORS preflight caching. */
-    maxAge?: number;
-}
-/**
- * Provides CORS settings for a worker.
- *
- * Combines a user-supplied \`CorsConfig\` with defaults. Used by
- * \`CorsHandler\` to automatically set the appropriate headers.
- */
-declare class CorsProvider {
-    private readonly config;
-    /**
-     * Create a new \`CorsProvider\`.
-     *
-     * @param config - Optional configuration to override defaults.
-     */
-    constructor(config?: CorsConfig);
-    /** Returns the allowed origins. Default: all (\`*\`). */
-    getAllowedOrigins(): string[];
-    /** Returns the allowed HTTP headers. Default: \`["Content-Type"]\`. */
-    getAllowedHeaders(): string[];
-    /** Returns headers exposed to the client. Default: \`[]\`. */
-    getExposedHeaders(): string[];
-    /** Returns the max age in seconds for preflight requests. Default: 1 week. */
-    getMaxAge(): number;
-}
-/**
- * Constants for common CORS headers.
- */
-declare namespace Cors {
-    const MAX_AGE = "Access-Control-Max-Age";
-    const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    const ALLOW_HEADERS = "Access-Control-Allow-Headers";
-    const ALLOW_METHODS = "Access-Control-Allow-Methods";
-    const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
-    const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-    const ALLOW_ALL_ORIGINS = "*";
-}
-/**
- * Adds or updates CORS headers on a Headers object according to the provided policy.
- *
- * Behavior:
- * - Removes any existing CORS headers to avoid stale values.
- * - If the request has no origin, the function exits early.
- * - If wildcard \`*\` is allowed, sets Access-Control-Allow-Origin to \`*\`.
- * - If the origin is explicitly allowed, sets the correct headers including credentials.
- * - Optional headers (Expose-Headers, Allow-Headers, Allow-Methods, Max-Age) are always applied.
- *
- * @param cors The CorsProvider instance that determines allowed origins and headers
- * @param headers The Headers object to update
- */
-declare function addCorsHeaders(worker: Worker, cors: CorsProvider, headers: Headers): void;
-/**
- * Determines if a CORS policy allows any origin (\`*\`).
- *
- * @param cors - The \`CorsProvider\` instance to check.
- * @returns \`true\` if the allowed origins include \`"*"\`, otherwise \`false\`.
- */
-declare function allowAnyOrigin(cors: CorsProvider): boolean;
-
-/**
  * Base class for building HTTP responses.
  * Manages headers, status, and media type.
  */
@@ -566,6 +481,31 @@ declare class Routes implements Iterable<Route> {
 }
 
 /**
+ * Default CORS configuration used by \`CorsProvider\`.
+ *
+ * By default, all origins are allowed, only \`Content-Type\` is allowed as a header,
+ * no headers are exposed, and preflight caching is 1 week.
+ *
+ * @see {@link CorsConfig}
+ */
+declare const DEFAULT_CORS_CONFIG: Required<CorsConfig>;
+/**
+ * Configuration options for \`CorsProvider\`.
+ *
+ * @see {@link DEFAULT_CORS_CONFIG}
+ */
+interface CorsConfig {
+    /** Origins allowed for CORS requests. */
+    allowedOrigins?: string[];
+    /** Allowed HTTP headers for CORS requests. */
+    allowedHeaders?: string[];
+    /** HTTP headers exposed to the client. */
+    exposedHeaders?: string[];
+    /** Max age in seconds for CORS preflight caching. */
+    maxAge?: number;
+}
+
+/**
  * A type-safe Cloudflare Worker handler.
  *
  * Extends \`ExportedHandler\` but guarantees that the \`fetch\` method exists
@@ -753,7 +693,7 @@ declare abstract class RouteWorker extends BasicWorker {
 
 declare class CorsHandler extends Middleware {
     private readonly provider;
-    constructor(init?: CorsProvider | CorsConfig);
+    constructor(init?: CorsConfig);
     handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
@@ -765,6 +705,6 @@ declare class CacheHandler extends Middleware {
     getCacheKey(request: Request): URL | RequestInfo;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, Cors, type CorsConfig, CorsHandler, CorsProvider, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, addCorsHeaders, allowAnyOrigin, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, DEFAULT_CORS_CONFIG, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerConstructor, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

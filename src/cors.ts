@@ -14,49 +14,9 @@
  * limitations under the License.
  */
 
-import { getOrigin, mergeHeader, setHeader, Time } from "./common";
+import { getOrigin, mergeHeader, setHeader } from "./common";
+import { CorsConfig, DEFAULT_CORS_CONFIG } from "./cors-config";
 import { Worker } from "./worker";
-
-/**
- * Default CORS configuration used by `CorsProvider`.
- *
- * By default, all origins are allowed, only `Content-Type` is allowed as a header,
- * no headers are exposed, and preflight caching is 1 week.
- *
- * @see {@link CorsConfig}
- */
-export const DEFAULT_CORS_CONFIG: Required<CorsConfig> = {
-    /** Origins allowed by default. Default: all (`*`). */
-    allowedOrigins: ["*"],
-
-    /** Allowed headers for CORS requests. Default: `Content-Type`. */
-    allowedHeaders: ["Content-Type"],
-
-    /** Headers exposed to the client. Default: none. */
-    exposedHeaders: [],
-
-    /** Max age (in seconds) for preflight caching. Default: 1 week. */
-    maxAge: Time.Week,
-} as const;
-
-/**
- * Configuration options for `CorsProvider`.
- *
- * @see {@link DEFAULT_CORS_CONFIG}
- */
-export interface CorsConfig {
-    /** Origins allowed for CORS requests. */
-    allowedOrigins?: string[];
-
-    /** Allowed HTTP headers for CORS requests. */
-    allowedHeaders?: string[];
-
-    /** HTTP headers exposed to the client. */
-    exposedHeaders?: string[];
-
-    /** Max age in seconds for CORS preflight caching. */
-    maxAge?: number;
-}
 
 /**
  * Provides CORS settings for a worker.

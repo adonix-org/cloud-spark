@@ -15,21 +15,17 @@
  */
 
 import { mergeHeader } from "../common";
-import { addCorsHeaders, allowAnyOrigin, CorsConfig, CorsProvider } from "../cors";
+import { addCorsHeaders, allowAnyOrigin, CorsProvider } from "../cors";
+import { CorsConfig } from "../cors-config";
 import { Worker } from "../worker";
 import { Middleware } from "./middleware";
-
 
 export class CorsHandler extends Middleware {
     private readonly provider: CorsProvider;
 
-    constructor(init?: CorsProvider | CorsConfig) {
+    constructor(init?: CorsConfig) {
         super();
-        if (init) {
-            this.provider = init instanceof CorsProvider ? init : new CorsProvider(init);
-        } else {
-            this.provider = new CorsProvider();
-        }
+        this.provider = new CorsProvider(init);
     }
 
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {

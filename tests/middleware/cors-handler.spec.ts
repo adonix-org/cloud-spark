@@ -24,7 +24,6 @@ import {
 import { ctx, env } from "../utils/mock";
 import { CorsHandler } from "@src/middleware/cors-handler";
 import { BasicWorker } from "@src/basic-worker";
-import { CorsProvider } from "@src/cors";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {
@@ -42,7 +41,7 @@ class TestWorker extends BasicWorker {
 
 class TestOriginWorker extends TestWorker {
     protected init(): void {
-        this.use(new CorsHandler(new CorsProvider({ allowedOrigins: [VALID_ORIGIN] })));
+        this.use(new CorsHandler({ allowedOrigins: [VALID_ORIGIN] }));
     }
 }
 
