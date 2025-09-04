@@ -673,6 +673,16 @@ interface CorsConfig {
     maxAge: number;
 }
 
+/** Structure for JSON error responses. */
+interface ErrorJson {
+    /** HTTP status code. */
+    status: number;
+    /** Standard HTTP reason phrase. */
+    error: string;
+    /** Optional detailed message about the error. */
+    details: string;
+}
+
 declare class CorsHandler extends Middleware {
     private readonly config;
     constructor(init?: Partial<CorsConfig>);
@@ -687,6 +697,6 @@ declare class CacheHandler extends Middleware {
     getCacheKey(request: Request): URL | RequestInfo;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, CorsHandler, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;
