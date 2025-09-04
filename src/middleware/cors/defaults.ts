@@ -17,16 +17,20 @@
 import { Time } from "../../common";
 import { CorsConfig } from "../../interfaces/cors-config";
 
-export const DEFAULT_CORS_CONFIG: CorsConfig = {
-    /** Origins allowed by default. Default: all (`*`). */
-    allowedOrigins: ["*"],
-
-    /** Allowed headers for CORS requests. Default: `Content-Type`. */
-    allowedHeaders: ["Content-Type"],
-
-    /** Headers exposed to the client. Default: none. */
-    exposedHeaders: [],
-
-    /** Max age (in seconds) for preflight caching. Default: 1 week. */
-    maxAge: Time.Week,
+/**
+ * Default configuration for CORS middleware.
+ *
+ * Provides a baseline set of CORS rules applied when no custom configuration
+ * is supplied to the middleware. This allows all origins (`*`), permits
+ * the `Content-Type` header, exposes no additional headers, and caches
+ * preflight requests for 1 week by default.
+ *
+ * You can override any of these defaults by passing a custom `CorsConfig`
+ * to the CORS middleware constructor.
+ */
+export const defaultCorsConfig: CorsConfig = {
+    allowedOrigins: ["*"], // Origins allowed for CORS requests
+    allowedHeaders: ["Content-Type"], // HTTP headers allowed in requests
+    exposedHeaders: [], // Headers exposed to the client
+    maxAge: Time.Week, // Max age in seconds for preflight caching
 } as const;

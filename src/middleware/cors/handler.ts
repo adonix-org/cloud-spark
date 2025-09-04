@@ -19,16 +19,46 @@ import { addCorsHeaders, allowAnyOrigin } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig } from "../../interfaces/cors-config";
-import { DEFAULT_CORS_CONFIG } from "./defaults";
+import { defaultCorsConfig } from "./defaults";
 
+/**
+ * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
+ *
+ * This middleware reads the configuration provided (or uses `defaultCorsConfig`)
+ * and ensures that responses include the appropriate CORS headers. It also
+ * handles the `Vary: Origin` header when not allowing all origins.
+ *
+ * Example usage:
+ * ```ts
+ * const cors = new CorsHandler({ allowedOrigins: ["https://myapp.com"] });
+ * worker.use(cors);
+ * ```
+ */
 export class CorsHandler extends Middleware {
+    /** The configuration used for this instance, with all defaults applied. */
     private readonly config: Required<CorsConfig>;
 
+    /**
+     * Create a new CORS middleware instance.
+     *
+     * @param init - Partial configuration to override the defaults. Any values
+     *               not provided will use `defaultCorsConfig`.
+     */
     constructor(init?: Partial<CorsConfig>) {
         super();
-        this.config = { ...DEFAULT_CORS_CONFIG, ...init };
+        this.config = { ...defaultCorsConfig, ...init };
     }
 
+    /**
+     * Handle a request by applying CORS headers to the response.
+     *
+     * @param worker - The Worker instance containing the request context.
+     * @param next - Function to invoke the next middleware in the chain.
+     * @returns A Response object with CORS headers applied.
+     *
+     * This middleware does not short-circuit the request; it always calls `next()`
+     * and modifies the resulting response.
+     */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const response = await next();
 
