@@ -16,14 +16,6 @@
 
 import { Time } from "../../common";
 
-/**
- * Default CORS configuration used by `CorsProvider`.
- *
- * By default, all origins are allowed, only `Content-Type` is allowed as a header,
- * no headers are exposed, and preflight caching is 1 week.
- *
- * @see {@link CorsConfig}
- */
 export const DEFAULT_CORS_CONFIG: CorsConfig = {
     /** Origins allowed by default. Default: all (`*`). */
     allowedOrigins: ["*"],
@@ -38,11 +30,6 @@ export const DEFAULT_CORS_CONFIG: CorsConfig = {
     maxAge: Time.Week,
 } as const;
 
-/**
- * Configuration options for `CorsProvider`.
- *
- * @see {@link DEFAULT_CORS_CONFIG}
- */
 export interface CorsConfig {
     /** Origins allowed for CORS requests. */
     allowedOrigins: string[];
