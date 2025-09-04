@@ -17,7 +17,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { env, ctx } from "@mock";
 import { ALL_METHODS, BASIC_METHODS, GET_REQUEST, VALID_URL } from "@constants";
-import { BasicWorker } from "@src/basic-worker";
+import { BasicWorker } from "@src/workers/basic-worker";
 import { Method } from "@src/common";
 
 class TestWorker extends BasicWorker {

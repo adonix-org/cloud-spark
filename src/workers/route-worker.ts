@@ -15,9 +15,9 @@
  */
 
 import { BasicWorker } from "./basic-worker";
-import { Method } from "./common";
-import { NotFound } from "./errors";
-import { Routes, RouteCallback, RouteTable } from "./routes";
+import { Method } from "../common";
+import { NotFound } from "../errors";
+import { Routes, RouteCallback, RouteTable } from "../routes";
 
 /**
  * Abstract worker that provides routing capabilities.

@@ -16,7 +16,7 @@
 
 import { Method, normalizeUrl } from "../../common";
 import { Middleware } from "../base";
-import { Worker } from "../../worker";
+import { Worker } from "../../workers/worker";
 
 export class CacheHandler extends Middleware {
     constructor(

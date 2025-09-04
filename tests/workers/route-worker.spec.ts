@@ -18,7 +18,7 @@ import { describe, it, expect } from "vitest";
 import { ALL_METHODS, BASIC_METHODS, TestRoutes, VALID_URL } from "@constants";
 import { Method } from "@src/common";
 import { RouteCallback } from "@src/routes";
-import { RouteWorker } from "@src/route-worker";
+import { RouteWorker } from "@src/workers/route-worker";
 import { ctx, env } from "@mock";
 
 class TestWorker extends RouteWorker {
@@ -90,7 +90,7 @@ describe("route worker unit tests", () => {
             "/matches/:year" as const,
             async (params): Promise<Response> => {
                 return new Response(JSON.stringify(params));
-            }
+            },
         );
 
         const response = await worker.fetch();
@@ -110,7 +110,7 @@ describe("route worker unit tests", () => {
             "/matches/:year/:month" as const,
             async (params): Promise<Response> => {
                 return new Response(JSON.stringify(params));
-            }
+            },
         );
 
         const response = await worker.fetch();

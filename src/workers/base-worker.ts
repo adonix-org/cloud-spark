@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method } from "./common";
+import { Method } from "../common";
 import { Worker, WorkerConstructor } from "./worker";
 
 /**

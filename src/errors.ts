@@ -17,7 +17,7 @@
 import { getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader, StatusCodes } from "./common";
 import { JsonResponse } from "./response";
-import { Worker } from "./worker";
+import { Worker } from "./workers/worker";
 
 /** Structure for JSON error responses. */
 export interface ErrorJson {

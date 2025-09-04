@@ -23,7 +23,7 @@ import {
 } from "@constants";
 import { ctx, env } from "@mock";
 import { CorsHandler } from "@src/middleware/cors/base";
-import { BasicWorker } from "@src/basic-worker";
+import { BasicWorker } from "@src/workers/basic-worker";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {

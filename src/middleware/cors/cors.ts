@@ -16,7 +16,7 @@
 
 import { getOrigin, HttpHeader, mergeHeader, setHeader } from "../../common";
 import { CorsConfig } from "./cors-config";
-import { Worker } from "../../worker";
+import { Worker } from "../../workers/worker";
 
 export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Headers): void {
     deleteCorsHeaders(headers);

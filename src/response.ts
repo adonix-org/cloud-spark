@@ -23,7 +23,7 @@ import {
     MediaType,
     setHeader,
 } from "./common";
-import { Worker } from "./worker";
+import { Worker } from "./workers/worker";
 
 /**
  * Base class for building HTTP responses.

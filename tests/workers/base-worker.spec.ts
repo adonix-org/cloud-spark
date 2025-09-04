@@ -17,7 +17,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { env, ctx } from "@mock";
 import { BODY_INIT, GET_REQUEST, VALID_URL } from "@constants";
-import { BaseWorker } from "@src/base-worker";
+import { BaseWorker } from "@src/workers/base-worker";
 import { Method } from "@src/common";
 
 class TestWorker extends BaseWorker {

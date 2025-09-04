@@ -17,10 +17,10 @@
 import { describe, it, expect } from "vitest";
 import { env, ctx } from "@mock";
 import { BODY_INIT, GET_REQUEST } from "@constants";
-import { BasicWorker } from "@src/basic-worker";
+import { BasicWorker } from "@src/workers/basic-worker";
 import { Middleware } from "@src/middleware/base";
 import { Unauthorized } from "@src/errors";
-import { Worker } from "@src/worker";
+import { Worker } from "@src/workers/worker";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {

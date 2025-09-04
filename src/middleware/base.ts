@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Worker } from "../worker";
+import { Worker } from "../workers/worker";
 
 export abstract class Middleware {
     public abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
