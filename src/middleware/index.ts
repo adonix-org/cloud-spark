@@ -16,3 +16,4 @@
 
 export * from "./cors";
 export * from "./cache";
+export * from "./middleware";
