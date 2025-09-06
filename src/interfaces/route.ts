@@ -46,6 +46,16 @@ export type RouteCallback = (params: RouteParams) => Response | Promise<Response
  */
 export type RouteTable = [Method, string, RouteHandler][];
 
+/**
+ * A handler for a route, which can be either:
+ *
+ * 1. A `RouteCallback` function that receives the route
+ *    parameters and returns a `Response` or `Promise<Response>`.
+ * 2. A `WorkerClass` (subclass of `Worker`) that will handle
+ *    the request by instantiating a new worker.
+ *
+ * Use a function for simple route handling, or a Worker subclass for more complex, stateful, or reusable route logic.
+ */
 export type RouteHandler = RouteCallback | WorkerClass;
 
 /**
