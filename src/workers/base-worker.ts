@@ -16,22 +16,7 @@
 
 import { Method } from "../common";
 import { FetchHandler } from "../interfaces/fetch-handler";
-import { Worker } from "../interfaces/worker";
-
-/**
- * Represents the constructor of a Worker subclass.
- *
- * @template T - The specific type of Worker being constructed. Defaults to `Worker`.
- * @param req - The `Request` object to be handled by the worker instance.
- * @param env - The environment bindings available to the worker.
- * @param ctx - The `ExecutionContext` for the worker invocation.
- * @returns An instance of the worker type `T`.
- */
-type WorkerConstructor<T extends Worker = Worker> = new (
-    request: Request,
-    env: Env,
-    ctx: ExecutionContext,
-) => T;
+import { Worker, WorkerClass } from "../interfaces/worker";
 
 /**
  * Provides the foundational structure for handling requests,
@@ -90,7 +75,7 @@ export abstract class BaseWorker implements Worker {
      * @returns A new worker instance of the same subclass as `this`.
      */
     protected create(request: Request): this {
-        const ctor = this.constructor as WorkerConstructor<this>;
+        const ctor = this.constructor as WorkerClass<this>;
         return new ctor(request, this.env, this.ctx);
     }
 
@@ -111,7 +96,7 @@ export abstract class BaseWorker implements Worker {
      * export default MyWorker.ignite();
      * ```
      */
-    public static ignite<W extends Worker>(this: WorkerConstructor<W>): FetchHandler {
+    public static ignite<W extends Worker>(this: WorkerClass<W>): FetchHandler {
         return {
             fetch: (request: Request, env: Env, ctx: ExecutionContext) =>
                 new this(request, env, ctx).fetch(),

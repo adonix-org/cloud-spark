@@ -17,6 +17,21 @@
 import { Method } from "../common";
 
 /**
+ * Represents the constructor of a Worker subclass.
+ *
+ * @template T - The specific type of Worker being constructed. Defaults to `Worker`.
+ * @param req - The `Request` object to be handled by the worker instance.
+ * @param env - The environment bindings available to the worker.
+ * @param ctx - The `ExecutionContext` for the worker invocation.
+ * @returns An instance of the worker type `T`.
+ */
+export type WorkerClass<T extends Worker = Worker> = new (
+    request: Request,
+    env: Env,
+    ctx: ExecutionContext,
+) => T;
+
+/**
  * Defines the contract for a Cloudflare-compatible Worker.
  *
  * Implementations are responsible for handling incoming requests,

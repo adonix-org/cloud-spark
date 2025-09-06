@@ -16,6 +16,7 @@
 
 import { MatchFunction } from "path-to-regexp";
 import { Method } from "../common";
+import { WorkerClass } from "./worker";
 
 /**
  * Parameters extracted from a matched route.
@@ -43,7 +44,9 @@ export type RouteCallback = (params: RouteParams) => Response | Promise<Response
  * 2. Path string (supports parameters, e.g., "/users/:id")
  * 3. Callback function to handle matched requests
  */
-export type RouteTable = [Method, string, RouteCallback][];
+export type RouteTable = [Method, string, RouteHandler][];
+
+export type RouteHandler = RouteCallback | WorkerClass;
 
 /**
  * Represents a single route.
@@ -58,8 +61,8 @@ export interface Route {
     /** Path-to-regexp matcher function for this route */
     matcher: MatchFunction<RouteParams>;
 
-    /** Callback to execute when the route is matched */
-    callback: RouteCallback;
+    /** Function or Worker to execute or instantiate when the route is matched */
+    handler: RouteHandler;
 }
 
 /**

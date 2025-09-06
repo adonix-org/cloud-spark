@@ -18,7 +18,8 @@ import { BasicWorker } from "./basic-worker";
 import { Method } from "../common";
 import { NotFound } from "../errors";
 import { Routes } from "../routes";
-import { RouteCallback, RouteTable } from "../interfaces/route";
+import { RouteHandler, RouteTable } from "../interfaces/route";
+import { WorkerClass } from "../interfaces/worker";
 
 /**
  * Base worker supporting route-based request handling.
@@ -42,27 +43,51 @@ export abstract class RouteWorker extends BasicWorker {
     }
 
     /**
-     * Add a single route.
-     * @param method - HTTP method (GET, POST, etc.)
-     * @param path - Route path, supports parameters like "/users/:id"
-     * @param callback - Function to handle requests matching this route
-     * @returns `this` for chaining multiple route additions
+     * Registers a new route in the worker.
+     *
+     * When a request matches the specified method and path, the provided handler
+     * will be executed. The handler can be either:
+     * - A function that receives URL parameters, or
+     * - A Worker subclass that will handle the request.
+     *
+     * @param method  - HTTP method for the route (GET, POST, etc.).
+     * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
+     * @param handler - The function or Worker class to run when the route matches.
+     * @returns The current worker instance, allowing method chaining.
      */
-    protected addRoute(method: Method, path: string, callback: RouteCallback): this {
-        this.routes.add(method, path, callback);
+    protected addRoute(method: Method, path: string, handler: RouteHandler): this {
+        this.routes.add(method, path, handler);
         return this;
     }
 
     /**
-     * Matches the incoming request against registered routes and executes the callback.
-     * Falls back to the default handler if no match is found.
-     * This is called automatically when the worker handles a request.
+     * Matches the incoming request against registered routes and dispatches it.
+     *
+     * If a route is found:
+     * - If the handler is a Worker class, a new instance is created and its `fetch()` is called.
+     * - If the handler is a callback function, it is invoked with the extracted route parameters.
+     *
+     * If no route matches, the request is passed to the parent `dispatch()` handler.
+     *
+     * @returns A `Promise<Response>` from the matched handler or parent dispatch.
      */
     protected override async dispatch(): Promise<Response> {
         const found = this.routes.match(this.request.method as Method, this.request.url);
         if (!found) return super.dispatch();
 
-        return found.route.callback.call(this, found.params);
+        const { handler } = found.route;
+        if (RouteWorker.isWorkerClass(handler)) {
+            return new handler(this.request, this.env, this.ctx).fetch();
+        }
+        return handler.call(this, found.params);
+    }
+
+    /**
+     * Type guard to determine if a handler is a Worker constructor.
+     * Returns true if the handler is a class with a `.fetch()` method on its prototype.
+     */
+    private static isWorkerClass(handler: RouteHandler): handler is WorkerClass {
+        return Boolean((handler as any)?.prototype?.fetch);
     }
 
     protected override async get(): Promise<Response> {

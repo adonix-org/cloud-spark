@@ -234,6 +234,16 @@ declare function lexCompare(a: string, b: string): number;
 declare function getOrigin(request: Request): string | null;
 
 /**
+ * Represents the constructor of a Worker subclass.
+ *
+ * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
+ * @param req - The \`Request\` object to be handled by the worker instance.
+ * @param env - The environment bindings available to the worker.
+ * @param ctx - The \`ExecutionContext\` for the worker invocation.
+ * @returns An instance of the worker type \`T\`.
+ */
+type WorkerClass<T extends Worker = Worker> = new (request: Request, env: Env, ctx: ExecutionContext) => T;
+/**
  * Defines the contract for a Cloudflare-compatible Worker.
  *
  * Implementations are responsible for handling incoming requests,
@@ -427,7 +437,8 @@ type RouteCallback = (params: RouteParams) => Response | Promise<Response>;
  * 2. Path string (supports parameters, e.g., "/users/:id")
  * 3. Callback function to handle matched requests
  */
-type RouteTable = [Method, string, RouteCallback][];
+type RouteTable = [Method, string, RouteHandler][];
+type RouteHandler = RouteCallback | WorkerClass;
 /**
  * Represents a single route.
  *
@@ -439,8 +450,8 @@ interface Route {
     method: Method;
     /** Path-to-regexp matcher function for this route */
     matcher: MatchFunction<RouteParams>;
-    /** Callback to execute when the route is matched */
-    callback: RouteCallback;
+    /** Function or Worker to execute or instantiate when the route is matched */
+    handler: RouteHandler;
 }
 /**
  * Result of a route match.
@@ -464,16 +475,21 @@ declare class Routes implements Iterable<Route> {
     /**
      * Registers all routes from the given table, replacing any existing routes.
      *
-     * @param table The list of routes to register, in the form [method, path, callback].
+     * @param table - Array of route tuples in the form \`[method, path, handler]\`.
+     *                Each tuple defines an HTTP method, a URL path pattern,
+     *                and a handler, which can be either a callback function or a
+     *                Worker constructor.
      */
     load(table: RouteTable): void;
     /**
-     * Add a single route to the container.
-     * @param method - HTTP method (GET, POST, etc.)
-     * @param path - URL path pattern (Express-style, e.g., "/users/:id")
-     * @param callback - Function to execute when this route matches
+     * Adds a single route to the container.
+     *
+     * @param method  - HTTP method for the route (GET, POST, etc.).
+     * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
+     * @param handler - Function or Worker constructor to execute when this route matches.
+     *                  Can be a \`RouteCallback\` or a \`WorkerConstructor\`.
      */
-    add(method: Method, path: string, callback: RouteCallback): void;
+    add(method: Method, path: string, handler: RouteHandler): void;
     /**
      * Attempt to match a URL against the registered routes.
      * @param method - HTTP method of the request
@@ -696,16 +712,6 @@ interface FetchHandler extends ExportedHandler<Env> {
 }
 
 /**
- * Represents the constructor of a Worker subclass.
- *
- * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
- * @param req - The \`Request\` object to be handled by the worker instance.
- * @param env - The environment bindings available to the worker.
- * @param ctx - The \`ExecutionContext\` for the worker invocation.
- * @returns An instance of the worker type \`T\`.
- */
-type WorkerConstructor<T extends Worker = Worker> = new (request: Request, env: Env, ctx: ExecutionContext) => T;
-/**
  * Provides the foundational structure for handling requests,
  * environment bindings, and the worker execution context.
  *
@@ -763,7 +769,7 @@ declare abstract class BaseWorker implements Worker {
      * export default MyWorker.ignite();
      * \`\`\`
      */
-    static ignite<W extends Worker>(this: WorkerConstructor<W>): FetchHandler;
+    static ignite<W extends Worker>(this: WorkerClass<W>): FetchHandler;
 }
 
 /** Internal base worker for handling middleware chains. */
@@ -864,19 +870,36 @@ declare abstract class RouteWorker extends BasicWorker {
      */
     protected load(table: RouteTable): void;
     /**
-     * Add a single route.
-     * @param method - HTTP method (GET, POST, etc.)
-     * @param path - Route path, supports parameters like "/users/:id"
-     * @param callback - Function to handle requests matching this route
-     * @returns \`this\` for chaining multiple route additions
+     * Registers a new route in the worker.
+     *
+     * When a request matches the specified method and path, the provided handler
+     * will be executed. The handler can be either:
+     * - A function that receives URL parameters, or
+     * - A Worker subclass that will handle the request.
+     *
+     * @param method  - HTTP method for the route (GET, POST, etc.).
+     * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
+     * @param handler - The function or Worker class to run when the route matches.
+     * @returns The current worker instance, allowing method chaining.
      */
-    protected addRoute(method: Method, path: string, callback: RouteCallback): this;
+    protected addRoute(method: Method, path: string, handler: RouteHandler): this;
     /**
-     * Matches the incoming request against registered routes and executes the callback.
-     * Falls back to the default handler if no match is found.
-     * This is called automatically when the worker handles a request.
+     * Matches the incoming request against registered routes and dispatches it.
+     *
+     * If a route is found:
+     * - If the handler is a Worker class, a new instance is created and its \`fetch()\` is called.
+     * - If the handler is a callback function, it is invoked with the extracted route parameters.
+     *
+     * If no route matches, the request is passed to the parent \`dispatch()\` handler.
+     *
+     * @returns A \`Promise<Response>\` from the matched handler or parent dispatch.
      */
     protected dispatch(): Promise<Response>;
+    /**
+     * Type guard to determine if a handler is a Worker constructor.
+     * Returns true if the handler is a class with a \`.fetch()\` method on its prototype.
+     */
+    private static isWorkerClass;
     protected get(): Promise<Response>;
     protected put(): Promise<Response>;
     protected post(): Promise<Response>;
@@ -884,6 +907,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteParams, type RouteTable, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteHandler, type RouteParams, type RouteTable, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

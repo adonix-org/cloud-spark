@@ -17,6 +17,7 @@
 import { expect } from "vitest";
 import { Method } from "@src/common";
 import { MatchedRoute, RouteCallback, RouteTable } from "@src/interfaces/route";
+import { WorkerClass } from "@src/interfaces/worker";
 
 export const VALID_ORIGIN = "https://localhost";
 export const INVALID_ORIGIN = "https://localhost.invalid";
@@ -54,9 +55,16 @@ export namespace TestRoutes {
     ];
 
     export async function expectResponseBody(found: MatchedRoute, expected: string) {
-        const response = await found.route.callback(found.params);
-        expect(await response.text()).toBe(expected);
+        const { handler } = found.route;
+        if (isCallback(handler)) {
+            const response = await handler(found.params);
+            expect(await response.text()).toBe(expected);
+        }
     }
+}
+
+function isCallback(handler: RouteCallback | WorkerClass): handler is RouteCallback {
+    return !Boolean((handler as any)?.prototype?.fetch);
 }
 
 export const GET_REQUEST = new Request(VALID_URL, {

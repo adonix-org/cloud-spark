@@ -16,7 +16,7 @@
 
 import { match } from "path-to-regexp";
 import { Method } from "./common";
-import { MatchedRoute, Route, RouteCallback, RouteParams, RouteTable } from "./interfaces/route";
+import { MatchedRoute, Route, RouteHandler, RouteParams, RouteTable } from "./interfaces/route";
 
 /**
  * Container for route definitions and matching logic.
@@ -29,22 +29,27 @@ export class Routes implements Iterable<Route> {
     /**
      * Registers all routes from the given table, replacing any existing routes.
      *
-     * @param table The list of routes to register, in the form [method, path, callback].
+     * @param table - Array of route tuples in the form `[method, path, handler]`.
+     *                Each tuple defines an HTTP method, a URL path pattern,
+     *                and a handler, which can be either a callback function or a
+     *                Worker constructor.
      */
     public load(table: RouteTable): void {
         this.routes.length = 0;
-        table.forEach(([method, path, callback]) => this.add(method, path, callback));
+        table.forEach(([method, path, handler]) => this.add(method, path, handler));
     }
 
     /**
-     * Add a single route to the container.
-     * @param method - HTTP method (GET, POST, etc.)
-     * @param path - URL path pattern (Express-style, e.g., "/users/:id")
-     * @param callback - Function to execute when this route matches
+     * Adds a single route to the container.
+     *
+     * @param method  - HTTP method for the route (GET, POST, etc.).
+     * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
+     * @param handler - Function or Worker constructor to execute when this route matches.
+     *                  Can be a `RouteCallback` or a `WorkerConstructor`.
      */
-    public add(method: Method, path: string, callback: RouteCallback) {
+    public add(method: Method, path: string, handler: RouteHandler) {
         const matcher = match<RouteParams>(path);
-        this.routes.push({ method, matcher, callback });
+        this.routes.push({ method, matcher, handler });
     }
 
     /**

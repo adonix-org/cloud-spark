@@ -37,7 +37,7 @@ describe("routes unit tests", () => {
         const url = new URL("one", VALID_URL);
         const found = assertDefined(routes.match(Method.GET, url.toString()));
 
-        expect(found.route.callback).toBe(TestRoutes.one);
+        expect(found.route.handler).toBe(TestRoutes.one);
         await TestRoutes.expectResponseBody(found, "one");
     });
 
@@ -60,7 +60,7 @@ describe("routes unit tests", () => {
         routes.add(method, "/three", TestRoutes.three);
         const found = assertDefined(routes.match(method, url.toString()));
 
-        expect(found.route.callback).toBe(TestRoutes.three);
+        expect(found.route.handler).toBe(TestRoutes.three);
         await TestRoutes.expectResponseBody(found, "three");
     });
 
@@ -71,7 +71,7 @@ describe("routes unit tests", () => {
         routes.add(method, "/", TestRoutes.four);
         const found = assertDefined(routes.match(method, url.toString()));
 
-        expect(found.route.callback).toBe(TestRoutes.four);
+        expect(found.route.handler).toBe(TestRoutes.four);
         await TestRoutes.expectResponseBody(found, "four");
     });
 });

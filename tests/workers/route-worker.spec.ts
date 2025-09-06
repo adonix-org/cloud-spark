@@ -17,7 +17,7 @@
 import { describe, it, expect } from "vitest";
 import { ALL_METHODS, BASIC_METHODS, TestRoutes, VALID_URL } from "@constants";
 import { Method } from "@src/common";
-import { RouteCallback } from "@src/interfaces/route";
+import { RouteHandler } from "@src/interfaces/route";
 import { RouteWorker } from "@src/workers/route-worker";
 import { ctx, env } from "@mock";
 
@@ -32,8 +32,8 @@ class TestWorker extends RouteWorker {
         });
     }
 
-    public override addRoute(method: Method, path: string, callback: RouteCallback): this {
-        return super.addRoute(method, path, callback);
+    public override addRoute(method: Method, path: string, handler: RouteHandler): this {
+        return super.addRoute(method, path, handler);
     }
 
     public override getAllowedMethods(): Method[] {
@@ -148,5 +148,28 @@ describe("route worker unit tests", () => {
             name: "hello world",
             date: "2020-01-01",
         });
+    });
+
+    it("returns sub worker path parameters", async () => {
+        class SubWorker extends RouteWorker {
+            protected init(): void {
+                this.addRoute(
+                    Method.GET,
+                    "/subworker/:keyword",
+                    async (params): Promise<Response> => {
+                        return new Response(JSON.stringify(params));
+                    },
+                );
+            }
+        }
+
+        const request = new Request(new URL("/subworker/ignite", VALID_URL));
+        const worker = new TestWorker(request);
+        worker.addRoute(Method.GET, "/subworker/*path", SubWorker);
+
+        const response = await worker.fetch();
+
+        expect(response).toBeInstanceOf(Response);
+        expect(await response.json()).toStrictEqual({ keyword: "ignite" });
     });
 });
