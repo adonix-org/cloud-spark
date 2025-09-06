@@ -32,7 +32,7 @@ export class Routes implements Iterable<Route> {
      * @param table - Array of route tuples in the form `[method, path, handler]`.
      *                Each tuple defines an HTTP method, a URL path pattern,
      *                and a handler, which can be either a callback function or a
-     *                Worker constructor.
+     *                Worker class.
      */
     public load(table: RouteTable): void {
         this.routes.length = 0;
@@ -44,8 +44,8 @@ export class Routes implements Iterable<Route> {
      *
      * @param method  - HTTP method for the route (GET, POST, etc.).
      * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
-     * @param handler - Function or Worker constructor to execute when this route matches.
-     *                  Can be a `RouteCallback` or a `WorkerConstructor`.
+     * @param handler - Function or Worker class to execute when this route matches.
+     *                  Can be a `RouteCallback` or a `WorkerClass`.
      */
     public add(method: Method, path: string, handler: RouteHandler) {
         const matcher = match<RouteParams>(path);

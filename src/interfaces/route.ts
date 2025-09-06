@@ -53,8 +53,6 @@ export type RouteTable = [Method, string, RouteHandler][];
  *    parameters and returns a `Response` or `Promise<Response>`.
  * 2. A `WorkerClass` (subclass of `Worker`) that will handle
  *    the request by instantiating a new worker.
- *
- * Use a function for simple route handling, or a Worker subclass for more complex, stateful, or reusable route logic.
  */
 export type RouteHandler = RouteCallback | WorkerClass;
 
@@ -62,7 +60,7 @@ export type RouteHandler = RouteCallback | WorkerClass;
  * Represents a single route.
  *
  * Contains all necessary information to match an incoming request and
- * execute the associated callback.
+ * pass to the registered handler.
  */
 export interface Route {
     /** HTTP method for the route (e.g., GET, POST, etc.) */
