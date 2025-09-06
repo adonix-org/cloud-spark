@@ -21,13 +21,13 @@ import { Head, Options, WorkerResponse } from "../responses";
 import { Worker } from "../interfaces/worker";
 
 /**
- * Base worker class providing HTTP method dispatching, caching, and error handling.
- * Extends `CacheWorker` and defines default implementations for HTTP methods.
+ * Basic worker class providing HTTP method dispatching and error handling.
+ * Extends `MiddlewareWorker` and defines default implementations for HTTP methods.
  */
 export abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Entry point to handle a fetch request.
-     * Checks allowed methods, serves cached responses, or dispatches to the appropriate handler.
+     * Checks allowed methods and dispatches to the appropriate handler.
      */
     public override async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
@@ -114,9 +114,10 @@ export abstract class BasicWorker extends MiddlewareWorker {
 
     /**
      * Default handler for HEAD requests.
-     * Performs a GET request internally and removes the body for HEAD semantics.
+     * Performs a GET request and removes the body for HEAD semantics.
      *
-     * Usually does not need to be overridden, as this behavior covers standard HEAD requirements.
+     * Usually does not need to be overridden, as this behavior covers 
+     * standard HEAD requirements.
      */
     protected async head(): Promise<Response> {
         const worker = this.create(new Request(this.request, { method: Method.GET }));

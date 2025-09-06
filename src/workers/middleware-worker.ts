@@ -16,6 +16,7 @@
 
 import { BaseWorker } from "./base-worker";
 import { Middleware } from "../middleware/middleware";
+
 /** Internal base worker for handling middleware chains. */
 export abstract class MiddlewareWorker extends BaseWorker {
     /** Middleware handlers registered for this worker. */

@@ -803,13 +803,13 @@ declare abstract class MiddlewareWorker extends BaseWorker {
 }
 
 /**
- * Base worker class providing HTTP method dispatching, caching, and error handling.
- * Extends \`CacheWorker\` and defines default implementations for HTTP methods.
+ * Basic worker class providing HTTP method dispatching and error handling.
+ * Extends \`MiddlewareWorker\` and defines default implementations for HTTP methods.
  */
 declare abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Entry point to handle a fetch request.
-     * Checks allowed methods, serves cached responses, or dispatches to the appropriate handler.
+     * Checks allowed methods and dispatches to the appropriate handler.
      */
     fetch(): Promise<Response>;
     /**
@@ -846,9 +846,10 @@ declare abstract class BasicWorker extends MiddlewareWorker {
     protected options(): Promise<Response>;
     /**
      * Default handler for HEAD requests.
-     * Performs a GET request internally and removes the body for HEAD semantics.
+     * Performs a GET request and removes the body for HEAD semantics.
      *
-     * Usually does not need to be overridden, as this behavior covers standard HEAD requirements.
+     * Usually does not need to be overridden, as this behavior covers
+     * standard HEAD requirements.
      */
     protected head(): Promise<Response>;
     /**
