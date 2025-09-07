@@ -24,7 +24,7 @@ import { WorkerClass } from "./worker";
  * The keys correspond to named parameters in the route's path pattern,
  * and the values are the strings captured from the URL.
  */
-export type RouteParams = Record<string, string>;
+export type PathParams = Record<string, string>;
 
 /**
  * Type for a route callback function.
@@ -34,7 +34,7 @@ export type RouteParams = Record<string, string>;
  * @param params - Named parameters extracted from the URL path.
  * @returns A Response object or a Promise resolving to a Response.
  */
-export type RouteCallback = (params: RouteParams) => Response | Promise<Response>;
+export type RouteCallback = (params: PathParams) => Response | Promise<Response>;
 
 /**
  * Array of route tuples, used to initialize a `Routes` object.
@@ -67,7 +67,7 @@ export interface Route {
     method: Method;
 
     /** Path-to-regexp matcher function for this route */
-    matcher: MatchFunction<RouteParams>;
+    matcher: MatchFunction<PathParams>;
 
     /** Function or Worker to execute or instantiate when the route is matched */
     handler: RouteHandler;
@@ -83,5 +83,5 @@ export interface MatchedRoute {
     route: Route;
 
     /** Parameters extracted from the URL path */
-    params: RouteParams;
+    params: PathParams;
 }

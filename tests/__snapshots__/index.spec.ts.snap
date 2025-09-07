@@ -419,7 +419,7 @@ declare class ServiceUnavailable extends HttpError {
  * The keys correspond to named parameters in the route's path pattern,
  * and the values are the strings captured from the URL.
  */
-type RouteParams = Record<string, string>;
+type PathParams = Record<string, string>;
 /**
  * Type for a route callback function.
  *
@@ -428,7 +428,7 @@ type RouteParams = Record<string, string>;
  * @param params - Named parameters extracted from the URL path.
  * @returns A Response object or a Promise resolving to a Response.
  */
-type RouteCallback = (params: RouteParams) => Response | Promise<Response>;
+type RouteCallback = (params: PathParams) => Response | Promise<Response>;
 /**
  * Array of route tuples, used to initialize a \`Routes\` object.
  *
@@ -457,7 +457,7 @@ interface Route {
     /** HTTP method for the route (e.g., GET, POST, etc.) */
     method: Method;
     /** Path-to-regexp matcher function for this route */
-    matcher: MatchFunction<RouteParams>;
+    matcher: MatchFunction<PathParams>;
     /** Function or Worker to execute or instantiate when the route is matched */
     handler: RouteHandler;
 }
@@ -470,7 +470,7 @@ interface MatchedRoute {
     /** The route that matched the request */
     route: Route;
     /** Parameters extracted from the URL path */
-    params: RouteParams;
+    params: PathParams;
 }
 
 /**
@@ -916,6 +916,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type Route, type RouteCallback, type RouteHandler, type RouteParams, type RouteTable, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

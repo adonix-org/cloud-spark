@@ -16,7 +16,7 @@
 
 import { match } from "path-to-regexp";
 import { Method } from "./common";
-import { MatchedRoute, Route, RouteHandler, RouteParams, RouteTable } from "./interfaces/route";
+import { MatchedRoute, Route, RouteHandler, PathParams, RouteTable } from "./interfaces/route";
 
 /**
  * Container for route definitions and matching logic.
@@ -48,7 +48,7 @@ export class Routes implements Iterable<Route> {
      *                  Can be a `RouteCallback` or a `WorkerClass`.
      */
     public add(method: Method, path: string, handler: RouteHandler) {
-        const matcher = match<RouteParams>(path);
+        const matcher = match<PathParams>(path);
         this.routes.push({ method, matcher, handler });
     }
 
