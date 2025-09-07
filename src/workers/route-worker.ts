@@ -38,7 +38,7 @@ export abstract class RouteWorker extends BasicWorker {
      * Load multiple routes at once from a route table.
      * @param table - Array of routes to register.
      */
-    protected load(table: RouteTable): void {
+    protected table(table: RouteTable): void {
         this.routes.load(table);
     }
 
