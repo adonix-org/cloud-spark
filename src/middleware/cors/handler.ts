@@ -36,7 +36,7 @@ import { defaultCorsConfig } from "./defaults";
  */
 export class CorsHandler extends Middleware {
     /** The configuration used for this instance, with all defaults applied. */
-    private readonly config: Required<CorsConfig>;
+    private readonly config: CorsConfig;
 
     /**
      * Create a new CORS middleware instance.
