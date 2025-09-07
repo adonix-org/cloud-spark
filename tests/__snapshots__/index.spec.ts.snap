@@ -488,7 +488,7 @@ declare class Routes implements Iterable<Route> {
      *                and a handler, which can be either a callback function or a
      *                Worker class.
      */
-    load(table: RouteTable): void;
+    table(table: RouteTable): void;
     /**
      * Adds a single route to the container.
      *
@@ -901,7 +901,7 @@ declare abstract class RouteWorker extends BasicWorker {
      *
      * If a route is found:
      * - If the handler is a Worker class, a new instance is created and its \`fetch()\` is called.
-     * - If the handler is a callback function, it is invoked with the extracted route parameters.
+     * - If the handler is a callback function, it is invoked with the extracted path parameters.
      *
      * If no route matches, the request is passed to the parent \`dispatch()\` handler.
      *

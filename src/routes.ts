@@ -34,7 +34,7 @@ export class Routes implements Iterable<Route> {
      *                and a handler, which can be either a callback function or a
      *                Worker class.
      */
-    public load(table: RouteTable): void {
+    public table(table: RouteTable): void {
         this.routes.length = 0;
         table.forEach(([method, path, handler]) => this.add(method, path, handler));
     }

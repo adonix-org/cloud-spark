@@ -40,7 +40,7 @@ export abstract class RouteWorker extends BasicWorker {
      * @param table - Array of routes to register.
      */
     protected table(table: RouteTable): void {
-        this.routes.load(table);
+        this.routes.table(table);
     }
 
     /**

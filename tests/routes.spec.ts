@@ -30,7 +30,7 @@ describe("routes unit tests", () => {
 
     beforeEach(() => {
         routes = new Routes();
-        routes.load(init);
+        routes.table(init);
     });
 
     it("returns the route initialized with string", async () => {
