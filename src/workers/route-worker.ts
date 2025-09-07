@@ -84,12 +84,12 @@ export abstract class RouteWorker extends BasicWorker {
     }
 
     /**
-     * Type guard to check if a given handler is a Worker class.
+     * Runtime type guard to check if a given handler is a Worker class.
      *
-     * A Worker class is defined as any class that extends `BaseWorker`.
+     * A Worker class is any class that extends `BaseWorker`.
      *
-     * @param handler - The function or constructor to test.
-     * @returns `true` if `handler` is a subclass of `BaseWorker`, `false` otherwise.
+     * @param handler - The constructor function to test.
+     * @returns `true` if `handler` is a subclass of `BaseWorker` at runtime, `false` otherwise.
      */
     private static isWorkerClass(handler: RouteHandler): handler is WorkerClass {
         return BaseWorker.prototype.isPrototypeOf(handler.prototype);
