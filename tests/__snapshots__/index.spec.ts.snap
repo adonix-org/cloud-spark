@@ -512,6 +512,10 @@ declare class Routes implements Iterable<Route> {
 }
 
 /**
+ * An initialization that allows overriding the default CORS configuration.
+ */
+type CorsInit = Partial<CorsConfig>;
+/**
  * Configuration options for Cross-Origin Resource Sharing (CORS).
  *
  * Implementations of CORS middleware use this interface to determine
@@ -635,7 +639,7 @@ declare class CorsHandler extends Middleware {
      * @param init - Partial configuration to override the defaults. Any values
      *               not provided will use \`defaultCorsConfig\`.
      */
-    constructor(init?: Partial<CorsConfig>);
+    constructor(init?: CorsInit);
     /**
      * Handle a request by applying CORS headers to the response.
      *
@@ -916,6 +920,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;
