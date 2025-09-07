@@ -18,7 +18,7 @@ import { mergeHeader } from "../../common";
 import { addCorsHeaders, allowAnyOrigin } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
-import { CorsConfig } from "../../interfaces/cors-config";
+import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
 import { defaultCorsConfig } from "./defaults";
 
 /**
@@ -44,7 +44,7 @@ export class CorsHandler extends Middleware {
      * @param init - Partial configuration to override the defaults. Any values
      *               not provided will use `defaultCorsConfig`.
      */
-    constructor(init?: Partial<CorsConfig>) {
+    constructor(init?: CorsInit) {
         super();
         this.config = { ...defaultCorsConfig, ...init };
     }

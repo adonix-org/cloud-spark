@@ -15,6 +15,11 @@
  */
 
 /**
+ * An initialization that allows overriding the default CORS configuration.
+ */
+export type CorsInit = Partial<CorsConfig>;
+
+/**
  * Configuration options for Cross-Origin Resource Sharing (CORS).
  *
  * Implementations of CORS middleware use this interface to determine
