@@ -55,7 +55,7 @@ export abstract class RouteWorker extends BasicWorker {
      * @param handler - The function or Worker class to run when the route matches.
      * @returns The current worker instance, allowing method chaining.
      */
-    protected addRoute(method: Method, path: string, handler: RouteHandler): this {
+    protected route(method: Method, path: string, handler: RouteHandler): this {
         this.routes.add(method, path, handler);
         return this;
     }

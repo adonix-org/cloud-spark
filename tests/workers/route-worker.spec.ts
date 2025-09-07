@@ -27,13 +27,13 @@ class TestWorker extends RouteWorker {
     }
 
     protected init(): void {
-        this.addRoute(Method.GET, "/unit/tests/:name/:date", async (params): Promise<Response> => {
+        this.route(Method.GET, "/unit/tests/:name/:date", async (params): Promise<Response> => {
             return new Response(JSON.stringify(params));
         });
     }
 
-    public override addRoute(method: Method, path: string, handler: RouteHandler): this {
-        return super.addRoute(method, path, handler);
+    public override route(method: Method, path: string, handler: RouteHandler): this {
+        return super.route(method, path, handler);
     }
 
     public override getAllowedMethods(): Method[] {
@@ -75,7 +75,7 @@ describe("route worker unit tests", () => {
         const request = new Request(new URL("two", VALID_URL));
         const worker = new TestWorker(request);
 
-        worker.addRoute(Method.GET, "/two", TestRoutes.two);
+        worker.route(Method.GET, "/two", TestRoutes.two);
 
         const response = await worker.fetch();
         expect(await response.text()).toBe("two");
@@ -85,13 +85,9 @@ describe("route worker unit tests", () => {
         const request = new Request(new URL("/matches/7834", VALID_URL));
         const worker = new TestWorker(request);
 
-        worker.addRoute(
-            Method.GET,
-            "/matches/:year" as const,
-            async (params): Promise<Response> => {
-                return new Response(JSON.stringify(params));
-            },
-        );
+        worker.route(Method.GET, "/matches/:year" as const, async (params): Promise<Response> => {
+            return new Response(JSON.stringify(params));
+        });
 
         const response = await worker.fetch();
 
@@ -105,7 +101,7 @@ describe("route worker unit tests", () => {
         const request = new Request(new URL("/matches/2000/06", VALID_URL));
         const worker = new TestWorker(request);
 
-        worker.addRoute(
+        worker.route(
             Method.GET,
             "/matches/:year/:month" as const,
             async (params): Promise<Response> => {
@@ -153,19 +149,15 @@ describe("route worker unit tests", () => {
     it("returns sub worker path parameters", async () => {
         class SubWorker extends RouteWorker {
             protected init(): void {
-                this.addRoute(
-                    Method.GET,
-                    "/subworker/:keyword",
-                    async (params): Promise<Response> => {
-                        return new Response(JSON.stringify(params));
-                    },
-                );
+                this.route(Method.GET, "/subworker/:keyword", async (params): Promise<Response> => {
+                    return new Response(JSON.stringify(params));
+                });
             }
         }
 
         const request = new Request(new URL("/subworker/ignite", VALID_URL));
         const worker = new TestWorker(request);
-        worker.addRoute(Method.GET, "/subworker/*path", SubWorker);
+        worker.route(Method.GET, "/subworker/*path", SubWorker);
 
         const response = await worker.fetch();
 
