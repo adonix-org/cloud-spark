@@ -1,0 +1,929 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`library export tests > matches the exported symbols snapshot 1`] = `
+[
+  "BadRequest",
+  "BasicWorker",
+  "CacheControl",
+  "CacheHandler",
+  "ClonedResponse",
+  "CorsHandler",
+  "Forbidden",
+  "Head",
+  "HtmlResponse",
+  "HttpError",
+  "HttpHeader",
+  "InternalServerError",
+  "JsonResponse",
+  "MediaType",
+  "Method",
+  "MethodNotAllowed",
+  "MethodNotImplemented",
+  "Middleware",
+  "NotFound",
+  "NotImplemented",
+  "Options",
+  "RouteWorker",
+  "Routes",
+  "ServiceUnavailable",
+  "StatusCodes",
+  "SuccessResponse",
+  "TextResponse",
+  "Time",
+  "Unauthorized",
+  "WorkerResponse",
+  "getContentType",
+  "getOrigin",
+  "isMethod",
+  "lexCompare",
+  "mergeHeader",
+  "normalizeUrl",
+  "setHeader",
+]
+`;
+
+exports[`library export tests > matches the index.d.ts snapshot 1`] = `
+"import CacheLib from 'cache-control-parser';
+import { StatusCodes } from 'http-status-codes';
+export { StatusCodes } from 'http-status-codes';
+import { MatchFunction } from 'path-to-regexp';
+
+/**
+ * @see {@link https://github.com/etienne-martin/cache-control-parser | cache-control-parser}
+ */
+type CacheControl = CacheLib.CacheControl;
+declare const CacheControl: {
+    parse: (cacheControlHeader: string) => CacheLib.CacheControl;
+    stringify: (cacheControl: CacheLib.CacheControl) => string;
+    /** A Cache-Control directive that disables all caching. */
+    DISABLE: Readonly<{
+        "no-cache": true;
+        "no-store": true;
+        "must-revalidate": true;
+        "max-age": 0;
+    }>;
+};
+
+/**
+ * Standard HTTP header names and common values.
+ */
+declare namespace HttpHeader {
+    const VARY = "Vary";
+    const ALLOW = "Allow";
+    const CONTENT_TYPE = "Content-Type";
+    const CACHE_CONTROL = "Cache-Control";
+    const USER_AGENT = "User-Agent";
+    const X_FRAME_OPTIONS = "X-Frame-Options";
+    const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
+    const REFERRER_POLICY = "Referrer-Policy";
+    const PERMISSIONS_POLICY = "Permissions-Policy";
+    const CONTENT_SECURITY_POLICY = "Content-Security-Policy";
+    const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
+    const MAX_AGE = "Access-Control-Max-Age";
+    const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    const ALLOW_HEADERS = "Access-Control-Allow-Headers";
+    const ALLOW_METHODS = "Access-Control-Allow-Methods";
+    const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+    const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+    const NOSNIFF = "nosniff";
+    const ORIGIN = "Origin";
+    const ALLOW_ALL_ORIGINS = "*";
+}
+/**
+ * Time constants in seconds. Month is approximated as 30 days.
+ */
+declare const Time: {
+    readonly Second: 1;
+    readonly Minute: 60;
+    readonly Hour: 3600;
+    readonly Day: 86400;
+    readonly Week: 604800;
+    readonly Month: 2592000;
+    readonly Year: 31536000;
+};
+/**
+ * Standard HTTP request methods.
+ */
+declare enum Method {
+    GET = "GET",
+    PUT = "PUT",
+    HEAD = "HEAD",
+    POST = "POST",
+    PATCH = "PATCH",
+    DELETE = "DELETE",
+    OPTIONS = "OPTIONS"
+}
+/**
+ * Type guard that checks if a string is a valid HTTP method.
+ *
+ * @param value - The string to test.
+ * @returns True if \`value\` is a recognized HTTP method.
+ */
+declare function isMethod(value: string): value is Method;
+/**
+ * Returns the proper Content-Type string for a given media type.
+ * Appends \`charset=utf-8\` for text-based types that require it.
+ *
+ * @param type - The media type.
+ * @returns A string suitable for the \`Content-Type\` header.
+ */
+declare function getContentType(type: MediaType): string;
+/**
+ * Common media types types used for HTTP headers.
+ */
+declare enum MediaType {
+    PLAIN_TEXT = "text/plain",
+    HTML = "text/html",
+    CSS = "text/css",
+    CSV = "text/csv",
+    XML = "text/xml",
+    MARKDOWN = "text/markdown",
+    RICH_TEXT = "text/richtext",
+    JSON = "application/json",
+    XML_APP = "application/xml",
+    YAML = "application/x-yaml",
+    FORM_URLENCODED = "application/x-www-form-urlencoded",
+    NDJSON = "application/x-ndjson",
+    MSGPACK = "application/x-msgpack",
+    PROTOBUF = "application/x-protobuf",
+    MULTIPART_FORM_DATA = "multipart/form-data",
+    MULTIPART_MIXED = "multipart/mixed",
+    MULTIPART_ALTERNATIVE = "multipart/alternative",
+    MULTIPART_DIGEST = "multipart/digest",
+    MULTIPART_RELATED = "multipart/related",
+    MULTIPART_SIGNED = "multipart/signed",
+    MULTIPART_ENCRYPTED = "multipart/encrypted",
+    OCTET_STREAM = "application/octet-stream",
+    PDF = "application/pdf",
+    ZIP = "application/zip",
+    GZIP = "application/gzip",
+    MSWORD = "application/msword",
+    DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    EXCEL = "application/vnd.ms-excel",
+    XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    POWERPOINT = "application/vnd.ms-powerpoint",
+    PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    ICO = "image/x-icon",
+    ICO_MS = "image/vnd.microsoft.icon",
+    GIF = "image/gif",
+    PNG = "image/png",
+    JPEG = "image/jpeg",
+    WEBP = "image/webp",
+    SVG = "image/svg+xml",
+    HEIF = "image/heif",
+    AVIF = "image/avif",
+    EVENT_STREAM = "text/event-stream",
+    TAR = "application/x-tar",
+    BZIP2 = "application/x-bzip2"
+}
+/**
+ * Sets a header on the given Headers object.
+ *
+ * - If \`value\` is an array, duplicates and empty strings are removed.
+ * - If the resulting value array is empty, the header is deleted.
+ * - Otherwise, values are joined with \`", "\` and set as the header value.
+ *
+ * @param headers - The Headers object to modify.
+ * @param key - The header name to set.
+ * @param value - The header value(s) to set. Can be a string or array of strings.
+ */
+declare function setHeader(headers: Headers, key: string, value: string | string[]): void;
+/**
+ * Merges new value(s) into an existing header on the given Headers object.
+ *
+ * - Preserves any existing values and adds new ones.
+ * - Removes duplicates and trims all values.
+ * - If the header does not exist, it is created.
+ *
+ * @param headers - The Headers object to modify.
+ * @param key - The header name to merge into.
+ * @param value - The new header value(s) to add. Can be a string or array of strings.
+ */
+declare function mergeHeader(headers: Headers, key: string, value: string | string[]): void;
+/**
+ * Normalizes a URL string for use as a consistent cache key.
+ *
+ * - Sorts query parameters alphabetically so \`?b=2&a=1\` and \`?a=1&b=2\` are treated the same.
+ * - Strips fragment identifiers (\`#...\`) since they are not sent in HTTP requests.
+ * - Leaves protocol, host, path, and query values intact.
+ *
+ * @param url The original URL string to normalize.
+ * @returns A normalized URL string suitable for hashing or direct cache key use.
+ */
+declare function normalizeUrl(url: string): URL;
+/**
+ * Lexicographically compares two strings.
+ *
+ * This comparator can be used in \`Array.prototype.sort()\` to produce a
+ * consistent, stable ordering of string arrays.
+ *
+ * @param a - The first string to compare.
+ * @param b - The second string to compare.
+ * @returns A number indicating the relative order of \`a\` and \`b\`.
+ */
+declare function lexCompare(a: string, b: string): number;
+/**
+ * Extracts the \`Origin\` header value from a request.
+ *
+ * The \`Origin\` header identifies the origin (scheme, host, and port)
+ * of the request initiator. It is commonly used for CORS checks.
+ *
+ * @param request - The incoming {@link Request} object.
+ * @returns The origin string if present, otherwise \`null\`.
+ */
+declare function getOrigin(request: Request): string | null;
+
+/**
+ * Represents the constructor of a Worker subclass.
+ *
+ * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
+ * @param req - The \`Request\` object to be handled by the worker instance.
+ * @param env - The environment bindings available to the worker.
+ * @param ctx - The \`ExecutionContext\` for the worker invocation.
+ * @returns An instance of the worker type \`T\`.
+ */
+type WorkerClass<T extends Worker = Worker> = new (request: Request, env: Env, ctx: ExecutionContext) => T;
+/**
+ * Defines the contract for a Cloudflare-compatible Worker.
+ *
+ * Implementations are responsible for handling incoming requests,
+ * providing access to the request, environment bindings, and
+ * execution context.
+ */
+interface Worker {
+    /**
+     * Processes the incoming {@link Request} and produces a {@link Response}.
+     *
+     * @returns A Promise that resolves to the HTTP {@link Response}.
+     */
+    fetch(): Promise<Response>;
+    /**
+     * The original {@link Request} being processed by this worker instance.
+     */
+    get request(): Request;
+    /**
+     * The environment bindings provided at runtime (e.g., KV, R2, secrets).
+     */
+    get env(): Env;
+    /**
+     * The {@link ExecutionContext} associated with the current request,
+     * used to manage background tasks and request lifecycle.
+     */
+    get ctx(): ExecutionContext;
+    /**
+     * The HTTP methods supported by this worker.
+     */
+    getAllowedMethods(): Method[];
+}
+
+/**
+ * Base class for building HTTP responses.
+ * Manages headers, status, and media type.
+ */
+declare abstract class BaseResponse {
+    readonly worker: Worker;
+    constructor(worker: Worker);
+    /** HTTP headers for the response. */
+    headers: Headers;
+    /** HTTP status code (default 200 OK). */
+    status: StatusCodes;
+    /** Optional status text. Defaults to standard reason phrase. */
+    statusText?: string;
+    /** Optional media type of the response body. */
+    mediaType?: MediaType;
+    /** Converts current state to ResponseInit for constructing a Response. */
+    protected get responseInit(): ResponseInit;
+    /** Sets a header, overwriting any existing value. */
+    setHeader(key: string, value: string | string[]): void;
+    /** Merges a header with existing values (does not overwrite). */
+    mergeHeader(key: string, value: string | string[]): void;
+    /** Adds a Content-Type header based on the media type if set. */
+    addContentType(): void;
+}
+/**
+ * Base response class that adds caching headers.
+ */
+declare abstract class CacheResponse extends BaseResponse {
+    cache?: CacheControl | undefined;
+    constructor(worker: Worker, cache?: CacheControl | undefined);
+    /** Adds Cache-Control header if caching is configured. */
+    protected addCacheHeader(): void;
+}
+/**
+ * Core worker response. Combines caching, and security headers.
+ */
+declare abstract class WorkerResponse extends CacheResponse {
+    private readonly body;
+    constructor(worker: Worker, body?: BodyInit | null, cache?: CacheControl);
+    /** Builds the Response object with body, headers, and status. */
+    getResponse(): Promise<Response>;
+    /** Adds default security headers. */
+    protected addSecurityHeaders(): void;
+}
+/**
+ * Wraps an existing Response and clones its body, headers, and status.
+ */
+declare class ClonedResponse extends WorkerResponse {
+    constructor(worker: Worker, response: Response, cache?: CacheControl);
+}
+/**
+ * Represents a successful response with customizable body and status.
+ */
+declare class SuccessResponse extends WorkerResponse {
+    constructor(worker: Worker, body?: BodyInit | null, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * JSON response. Automatically sets Content-Type to application/json.
+ */
+declare class JsonResponse extends SuccessResponse {
+    constructor(worker: Worker, json?: unknown, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * HTML response. Automatically sets Content-Type to text/html.
+ */
+declare class HtmlResponse extends SuccessResponse {
+    constructor(worker: Worker, body: string, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * Plain text response. Automatically sets Content-Type to text/plain.
+ */
+declare class TextResponse extends SuccessResponse {
+    constructor(worker: Worker, content: string, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * Response for HEAD requests. Clones headers but has no body.
+ */
+declare class Head extends WorkerResponse {
+    constructor(worker: Worker, get: Response);
+}
+/**
+ * Response for OPTIONS requests. Sets allowed methods and returns 204 No Content.
+ */
+declare class Options extends SuccessResponse {
+    constructor(worker: Worker);
+}
+
+/**
+ * Generic HTTP error response.
+ * Sends a JSON body with status, error message, and details.
+ */
+declare class HttpError extends JsonResponse {
+    protected readonly details?: string | undefined;
+    /**
+     * @param worker The worker handling the request.
+     * @param status HTTP status code.
+     * @param details Optional detailed error message.
+     */
+    constructor(worker: Worker, status: StatusCodes, details?: string | undefined);
+}
+/** 400 Bad Request error response. */
+declare class BadRequest extends HttpError {
+    constructor(worker: Worker, details?: string);
+}
+/** 401 Unauthorized error response. */
+declare class Unauthorized extends HttpError {
+    constructor(worker: Worker, details?: string);
+}
+/** 403 Forbidden error response. */
+declare class Forbidden extends HttpError {
+    constructor(worker: Worker, details?: string);
+}
+/** 404 Not Found error response. */
+declare class NotFound extends HttpError {
+    constructor(worker: Worker, details?: string);
+}
+/** 405 Method Not Allowed error response. */
+declare class MethodNotAllowed extends HttpError {
+    constructor(worker: Worker);
+}
+/** 500 Internal Server Error response. */
+declare class InternalServerError extends HttpError {
+    constructor(worker: Worker, details?: string);
+}
+/** 501 Not Implemented error response. */
+declare class NotImplemented extends HttpError {
+    constructor(worker: Worker, details?: string);
+}
+/** 501 Method Not Implemented error response for unsupported HTTP methods. */
+declare class MethodNotImplemented extends NotImplemented {
+    constructor(worker: Worker);
+}
+/** 503 Service Unavailable error response. */
+declare class ServiceUnavailable extends HttpError {
+    constructor(worker: Worker, details?: string);
+}
+
+/**
+ * Parameters extracted from a matched route.
+ *
+ * The keys correspond to named parameters in the route's path pattern,
+ * and the values are the strings captured from the URL.
+ */
+type PathParams = Record<string, string>;
+/**
+ * Type for a route callback function.
+ *
+ * Route callbacks are executed when a request matches a route.
+ *
+ * @param params - Named parameters extracted from the URL path.
+ * @returns A Response object or a Promise resolving to a Response.
+ */
+type RouteCallback = (params: PathParams) => Response | Promise<Response>;
+/**
+ * Array of route tuples, used to initialize a \`Routes\` object.
+ *
+ * Each tuple consists of:
+ * 1. HTTP method (e.g., "GET", "POST")
+ * 2. Path string (supports parameters, e.g., "/users/:id")
+ * 3. Callback function to handle matched requests
+ */
+type RouteTable = [Method, string, RouteHandler][];
+/**
+ * A handler for a route, which can be either:
+ *
+ * 1. A \`RouteCallback\` function that receives the route
+ *    parameters and returns a \`Response\` or \`Promise<Response>\`.
+ * 2. A \`WorkerClass\` (subclass of \`Worker\`) that will handle
+ *    the request by instantiating a new worker.
+ */
+type RouteHandler = RouteCallback | WorkerClass;
+/**
+ * Represents a single route.
+ *
+ * Contains all necessary information to match an incoming request and
+ * pass to the registered handler.
+ */
+interface Route {
+    /** HTTP method for the route (e.g., GET, POST, etc.) */
+    method: Method;
+    /** Path-to-regexp matcher function for this route */
+    matcher: MatchFunction<PathParams>;
+    /** Function or Worker to execute or instantiate when the route is matched */
+    handler: RouteHandler;
+}
+/**
+ * Result of a route match.
+ *
+ * Returned by routing logic when a request matches a route pattern.
+ */
+interface MatchedRoute {
+    /** The route that matched the request */
+    route: Route;
+    /** Parameters extracted from the URL path */
+    params: PathParams;
+}
+
+/**
+ * Container for route definitions and matching logic.
+ * Implements Iterable to allow iteration over all routes.
+ */
+declare class Routes implements Iterable<Route> {
+    /** Internal array of registered routes */
+    private readonly routes;
+    /**
+     * Registers all routes from the given table, replacing any existing routes.
+     *
+     * @param table - Array of route tuples in the form \`[method, path, handler]\`.
+     *                Each tuple defines an HTTP method, a URL path pattern,
+     *                and a handler, which can be either a callback function or a
+     *                Worker class.
+     */
+    load(table: RouteTable): void;
+    /**
+     * Adds a single route to the container.
+     *
+     * @param method  - HTTP method for the route (GET, POST, etc.).
+     * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
+     * @param handler - Function or Worker class to execute when this route matches.
+     *                  Can be a \`RouteCallback\` or a \`WorkerClass\`.
+     */
+    add(method: Method, path: string, handler: RouteHandler): void;
+    /**
+     * Attempt to match a URL against the registered routes.
+     * @param method - HTTP method of the request
+     * @param url - Full URL string to match against
+     * @returns A MatchedRoute object if a route matches, otherwise null
+     */
+    match(method: Method, url: string): MatchedRoute | null;
+    /**
+     * Iterate over all registered routes.
+     */
+    [Symbol.iterator](): Iterator<Route>;
+}
+
+/**
+ * An initialization that allows overriding the default CORS configuration.
+ */
+type CorsInit = Partial<CorsConfig>;
+/**
+ * Configuration options for Cross-Origin Resource Sharing (CORS).
+ *
+ * Implementations of CORS middleware use this interface to determine
+ * how cross-origin requests are validated and which headers are sent
+ * in the response.
+ */
+interface CorsConfig {
+    /**
+     * Origins allowed for CORS requests.
+     *
+     * Use \`["*"]\` to allow all origins, or provide a list of specific origins.
+     * Example: \`["https://example.com", "https://api.example.com"]\`
+     */
+    allowedOrigins: string[];
+    /**
+     * HTTP headers allowed in CORS requests.
+     *
+     * Requests that include headers not listed here will be blocked
+     * during the preflight check.
+     */
+    allowedHeaders: string[];
+    /**
+     * HTTP headers exposed to the client.
+     *
+     * By default, most headers are not accessible from client-side JavaScript.
+     * Use this option to explicitly allow certain response headers to be read.
+     */
+    exposedHeaders: string[];
+    /**
+     * Maximum age (in seconds) that the results of a preflight request
+     * can be cached by the client.
+     *
+     * Example: \`60 * 60 * 24 * 7\` (1 week).
+     */
+    maxAge: number;
+}
+
+/**
+ * Structure for JSON-formatted error responses.
+ *
+ * This interface defines the standard shape of error responses returned
+ * by middleware or workers when an operation fails. It ensures consistent
+ * error reporting and easy parsing by clients.
+ */
+interface ErrorJson {
+    /**
+     * HTTP status code associated with the error.
+     *
+     * Example: \`404\` for Not Found, \`500\` for Internal Server Error.
+     */
+    status: number;
+    /**
+     * Standard HTTP reason phrase corresponding to the status code.
+     *
+     * Example: \`"Not Found"\` for 404, \`"Internal Server Error"\` for 500.
+     */
+    error: string;
+    /**
+     * Optional detailed message describing the error.
+     *
+     * This can include additional context, debugging hints, or
+     * information useful to the client. May be an empty string
+     * if no details are provided.
+     */
+    details: string;
+}
+
+/**
+ * Abstract base class for middleware.
+ *
+ * Middleware classes implement request/response processing logic in a
+ * chainable manner. Each middleware receives a \`Worker\` object and a
+ * \`next\` function that invokes the next middleware in the chain.
+ *
+ * Subclasses **must implement** the \`handle\` method.
+ *
+ * Example subclass:
+ * \`\`\`ts
+ * class LoggingMiddleware extends Middleware {
+ *   public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+ *     console.log(\`Processing request: \${worker.request.url}\`);
+ *     const response = await next();
+ *     console.log(\`Response status: \${response.status}\`);
+ *     return response;
+ *   }
+ * }
+ * \`\`\`
+ */
+declare abstract class Middleware {
+    /**
+     * Process a request in the middleware chain.
+     *
+     * @param worker - The \`Worker\` instance representing the request context.
+     * @param next - Function to invoke the next middleware in the chain.
+     *               Must be called to continue the chain unless the middleware
+     *               terminates early (e.g., returns a response directly).
+     * @returns A \`Response\` object, either returned directly or from \`next()\`.
+     */
+    abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+}
+
+/**
+ * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
+ *
+ * This middleware reads the configuration provided (or uses \`defaultCorsConfig\`)
+ * and ensures that responses include the appropriate CORS headers. It also
+ * handles the \`Vary: Origin\` header when not allowing all origins.
+ *
+ * Example usage:
+ * \`\`\`ts
+ * const cors = new CorsHandler({ allowedOrigins: ["https://myapp.com"] });
+ * worker.use(cors);
+ * \`\`\`
+ */
+declare class CorsHandler extends Middleware {
+    /** The configuration used for this instance, with all defaults applied. */
+    private readonly config;
+    /**
+     * Create a new CORS middleware instance.
+     *
+     * @param init - Partial configuration to override the defaults. Any values
+     *               not provided will use \`defaultCorsConfig\`.
+     */
+    constructor(init?: CorsInit);
+    /**
+     * Handle a request by applying CORS headers to the response.
+     *
+     * @param worker - The Worker instance containing the request context.
+     * @param next - Function to invoke the next middleware in the chain.
+     * @returns A Response object with CORS headers applied.
+     *
+     * This middleware does not short-circuit the request; it always calls \`next()\`
+     * and modifies the resulting response.
+     */
+    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+}
+
+/**
+ * Middleware for caching GET requests.
+ *
+ * This middleware checks a cache (either a named cache or the default)
+ * before passing the request down the middleware chain. Responses for
+ * successful GET requests are automatically stored in the cache.
+ *
+ * Non-GET requests are never cached. The cache key can be customized
+ * via the \`getKey\` function; otherwise, the URL is normalized and used.
+ *
+ * Example usage:
+ * \`\`\`ts
+ * const cacheMiddleware = new CacheHandler("my-cache", (req) => new URL(req.url));
+ * worker.use(cacheMiddleware);
+ * \`\`\`
+ */
+declare class CacheHandler extends Middleware {
+    protected readonly cacheName?: string | undefined;
+    protected readonly getKey?: ((request: Request) => URL | RequestInfo) | undefined;
+    /**
+     * @param cacheName - Optional name of the cache to use. If omitted,
+     *                    \`caches.default\` is used.
+     * @param getKey - Optional function to generate a cache key from a request.
+     *                 Defaults to using the normalized request URL.
+     */
+    constructor(cacheName?: string | undefined, getKey?: ((request: Request) => URL | RequestInfo) | undefined);
+    /**
+     * Handle a request in the caching middleware.
+     *
+     * Checks the cache for GET requests and returns the cached response if available.
+     * Otherwise, calls \`next()\` to continue the middleware chain and caches
+     * the response if successful.
+     *
+     * @param worker - The Worker instance containing the request context.
+     * @param next - Function to invoke the next middleware in the chain.
+     * @returns A Response object, either from cache or the next middleware.
+     */
+    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+    /**
+     * Generate the cache key for a request.
+     *
+     * @param request - The Request object to generate a cache key for.
+     * @returns A URL or RequestInfo used as the cache key.
+     *
+     * If a custom \`getKey\` function was provided in the constructor, it is used.
+     * Otherwise, the request URL is normalized.
+     */
+    getCacheKey(request: Request): URL | RequestInfo;
+}
+
+/**
+ * A type-safe Cloudflare Worker handler.
+ *
+ * Extends \`ExportedHandler\` but guarantees that the \`fetch\` method exists
+ * and has the correct signature for Cloudflare Worker invocation.
+ *
+ * @template E - The type of environment bindings passed to the worker. Defaults to \`Env\`.
+ */
+interface FetchHandler extends ExportedHandler<Env> {
+    /**
+     * Handles an incoming request and produces a response.
+     *
+     * @param request - The incoming \`Request\` object.
+     * @param env - Environment bindings (e.g., KV namespaces, secrets, Durable Objects).
+     * @param ctx - Execution context for background tasks (\`waitUntil\`).
+     * @returns A \`Promise\` that resolves to the response.
+     */
+    fetch: (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
+}
+
+/**
+ * Provides the foundational structure for handling requests,
+ * environment bindings, and the worker execution context.
+ *
+ * Features:
+ * - Holds the current \`Request\` object (\`request\` getter).
+ * - Provides access to environment bindings (\`env\` getter).
+ * - Provides access to the worker execution context (\`ctx\` getter).
+ * - Subclasses must implement \`fetch()\` to process the request.
+ */
+declare abstract class BaseWorker implements Worker {
+    private readonly _request;
+    private readonly _env;
+    private readonly _ctx;
+    constructor(_request: Request, _env: Env, _ctx: ExecutionContext);
+    /** The Request object associated with this worker invocation */
+    get request(): Request;
+    /** Environment bindings (e.g., KV, secrets, or other globals) */
+    get env(): Env;
+    /** Execution context for background tasks or \`waitUntil\` */
+    get ctx(): ExecutionContext;
+    /**
+     * Dispatches the incoming request to the appropriate handler and produces a response.
+     *
+     * Subclasses must implement this method to define how the worker generates a \`Response\`
+     * for the current request. This is the central point where request processing occurs,
+     * and where middleware chains, routing, or other custom behavior can be applied.
+     *
+     * @returns A Promise that resolves to the \`Response\` for the request.
+     */
+    protected abstract dispatch(): Promise<Response>;
+    /**
+     * The DEFAULT allowed HTTP methods for subclasses.
+     */
+    getAllowedMethods(): Method[];
+    /**
+     * Creates a new instance of the current Worker subclass.
+     *
+     * @param request - The {@link Request} to pass to the new worker instance.
+     * @returns A new worker instance of the same subclass as \`this\`.
+     */
+    protected create(request: Request): this;
+    /**
+     * Process the {@link Request} and produce a {@link Response}.
+     *
+     * @returns A {@link Response} promise for the {@link Request}.
+     */
+    abstract fetch(): Promise<Response>;
+    /**
+     * **Ignite** your \`Worker\` implementation into a Cloudflare handler.
+     *
+     * @returns A \`FetchHandler\` that launches a new worker instance for each request.
+     *
+     * @example
+     * \`\`\`ts
+     * export default MyWorker.ignite();
+     * \`\`\`
+     */
+    static ignite<W extends Worker>(this: WorkerClass<W>): FetchHandler;
+}
+
+/** Internal base worker for handling middleware chains. */
+declare abstract class MiddlewareWorker extends BaseWorker {
+    /** Middleware handlers registered for this worker. */
+    protected readonly middlewares: Middleware[];
+    /**
+     * Add a middleware to this worker.
+     *
+     * The middleware will run for every request handled by this worker,
+     * in the order they are added.
+     *
+     * @param handler - The middleware to run.
+     * @returns \`this\` to allow chaining multiple \`.use()\` calls.
+     */
+    use(handler: Middleware): this;
+    /**
+     * Executes the middleware chain and dispatches the request.
+     *
+     * @returns The Response produced by the last middleware or \`dispatch()\`.
+     */
+    fetch(): Promise<Response>;
+}
+
+/**
+ * Basic worker class providing HTTP method dispatching and error handling.
+ * Extends \`MiddlewareWorker\` and defines default implementations for HTTP methods.
+ */
+declare abstract class BasicWorker extends MiddlewareWorker {
+    /**
+     * Entry point to handle a fetch request.
+     * Checks allowed methods and dispatches to the appropriate handler.
+     */
+    fetch(): Promise<Response>;
+    /**
+     * Dispatches the request to the method-specific handler.
+     * Defaults to MethodNotAllowed if the HTTP method is not recognized.
+     */
+    protected dispatch(): Promise<Response>;
+    /**
+     * Hook for subclasses to perform any initialization.
+     */
+    protected init(): void;
+    /**
+     * Checks if the given HTTP method is allowed for this worker.
+     * @param method HTTP method string
+     * @returns true if the method is allowed
+     */
+    isAllowed(method: string): boolean;
+    /** Default handler for GET requests. Returns MethodNotImplemented unless overridden. */
+    protected get(): Promise<Response>;
+    /** Default handler for PUT requests. Returns MethodNotImplemented unless overridden. */
+    protected put(): Promise<Response>;
+    /** Default handler for POST requests. Returns MethodNotImplemented unless overridden. */
+    protected post(): Promise<Response>;
+    /** Default handler for PATCH requests. Returns MethodNotImplemented unless overridden. */
+    protected patch(): Promise<Response>;
+    /** Default handler for DELETE requests. Returns MethodNotImplemented unless overridden. */
+    protected delete(): Promise<Response>;
+    /**
+     * Default handler for OPTIONS requests.
+     * Returns an Options response.
+     *
+     * Typically does not need to be overridden.
+     */
+    protected options(): Promise<Response>;
+    /**
+     * Default handler for HEAD requests.
+     * Performs a GET request and removes the body for HEAD semantics.
+     *
+     * Usually does not need to be overridden, as this behavior covers
+     * standard HEAD requirements.
+     */
+    protected head(): Promise<Response>;
+    /**
+     * Helper to construct a WorkerResponse of the given class with arguments.
+     * @param ResponseClass The response class to instantiate
+     * @param args Additional constructor arguments
+     * @returns The final Response object
+     */
+    protected getResponse<T extends WorkerResponse, Ctor extends new (worker: Worker, ...args: any[]) => T>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor> extends [Worker, ...infer R] ? R : never): Promise<Response>;
+}
+
+/**
+ * Base worker supporting route-based request handling.
+ *
+ * Subclass \`RouteWorker\` to define a worker with multiple route handlers.
+ *
+ * Routes can be registered individually via \`addRoute()\` or in bulk via \`load()\`.
+ * Middleware can be attached with \`use()\` to run for all requests.
+ * \`\`\`
+ */
+declare abstract class RouteWorker extends BasicWorker {
+    /** Internal table of registered routes. */
+    private readonly routes;
+    /**
+     * Load multiple routes at once from a route table.
+     * @param table - Array of routes to register.
+     */
+    protected table(table: RouteTable): void;
+    /**
+     * Registers a new route in the worker.
+     *
+     * When a request matches the specified method and path, the provided handler
+     * will be executed. The handler can be either:
+     * - A function that receives URL parameters, or
+     * - A Worker subclass that will handle the request.
+     *
+     * @param method  - HTTP method for the route (GET, POST, etc.).
+     * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
+     * @param handler - The function or Worker class to run when the route matches.
+     * @returns The current worker instance, allowing method chaining.
+     */
+    protected route(method: Method, path: string, handler: RouteHandler): this;
+    /**
+     * Matches the incoming request against registered routes and dispatches it.
+     *
+     * If a route is found:
+     * - If the handler is a Worker class, a new instance is created and its \`fetch()\` is called.
+     * - If the handler is a callback function, it is invoked with the extracted route parameters.
+     *
+     * If no route matches, the request is passed to the parent \`dispatch()\` handler.
+     *
+     * @returns A \`Promise<Response>\` from the matched handler or parent dispatch.
+     */
+    protected dispatch(): Promise<Response>;
+    /**
+     * Type guard to check if a given handler is a Worker class.
+     *
+     * A Worker class is defined as any class that extends \`BaseWorker\`.
+     *
+     * @param handler - The function or constructor to test.
+     * @returns \`true\` if \`handler\` is a subclass of \`BaseWorker\`, \`false\` otherwise.
+     */
+    private static isWorkerClass;
+    protected get(): Promise<Response>;
+    protected put(): Promise<Response>;
+    protected post(): Promise<Response>;
+    protected patch(): Promise<Response>;
+    protected delete(): Promise<Response>;
+}
+
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+"
+`;
