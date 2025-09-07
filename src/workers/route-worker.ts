@@ -20,6 +20,7 @@ import { NotFound } from "../errors";
 import { Routes } from "../routes";
 import { RouteHandler, RouteTable } from "../interfaces/route";
 import { WorkerClass } from "../interfaces/worker";
+import { BaseWorker } from "./base-worker";
 
 /**
  * Base worker supporting route-based request handling.
@@ -83,11 +84,15 @@ export abstract class RouteWorker extends BasicWorker {
     }
 
     /**
-     * Type guard to determine if a handler is a Worker constructor.
-     * Returns true if the handler is a class with a `.fetch()` method on its prototype.
+     * Type guard to check if a given handler is a Worker class.
+     *
+     * A Worker class is defined as any class that extends `BaseWorker`.
+     *
+     * @param handler - The function or constructor to test.
+     * @returns `true` if `handler` is a subclass of `BaseWorker`, `false` otherwise.
      */
     private static isWorkerClass(handler: RouteHandler): handler is WorkerClass {
-        return Boolean((handler as any)?.prototype?.fetch);
+        return BaseWorker.prototype.isPrototypeOf(handler.prototype);
     }
 
     protected override async get(): Promise<Response> {
