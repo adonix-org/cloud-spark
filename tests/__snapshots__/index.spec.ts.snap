@@ -8,7 +8,10 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "CacheHandler",
   "ClonedResponse",
   "CorsHandler",
+  "DELETE",
   "Forbidden",
+  "GET",
+  "HEAD",
   "Head",
   "HtmlResponse",
   "HttpError",
@@ -22,7 +25,11 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "Middleware",
   "NotFound",
   "NotImplemented",
+  "OPTIONS",
   "Options",
+  "PATCH",
+  "POST",
+  "PUT",
   "RouteWorker",
   "Routes",
   "ServiceUnavailable",
@@ -113,6 +120,19 @@ declare enum Method {
     DELETE = "DELETE",
     OPTIONS = "OPTIONS"
 }
+/**
+ * Shorthand constants for each HTTP method.
+ *
+ * These are equivalent to the corresponding enum members in \`Method\`.
+ * For example, \`GET === Method.GET\`.
+ */
+declare const GET: Method;
+declare const PUT: Method;
+declare const HEAD: Method;
+declare const POST: Method;
+declare const PATCH: Method;
+declare const DELETE: Method;
+declare const OPTIONS: Method;
 /**
  * Type guard that checks if a string is a valid HTTP method.
  *
@@ -430,15 +450,6 @@ type PathParams = Record<string, string>;
  */
 type RouteCallback = (params: PathParams) => Response | Promise<Response>;
 /**
- * Array of route tuples, used to initialize a \`Routes\` object.
- *
- * Each tuple consists of:
- * 1. HTTP method (e.g., "GET", "POST")
- * 2. Path string (supports parameters, e.g., "/users/:id")
- * 3. Callback function to handle matched requests
- */
-type RouteTable = [Method, string, RouteHandler][];
-/**
  * A handler for a route, which can be either:
  *
  * 1. A \`RouteCallback\` function that receives the route
@@ -472,6 +483,20 @@ interface MatchedRoute {
     /** Parameters extracted from the URL path */
     params: PathParams;
 }
+/**
+ * A route tuple. Each tuple consists of:
+ *
+ * 1. HTTP method (e.g., "GET", "POST")
+ * 2. Path string (supports parameters, e.g., "/users/:id")
+ * 3. Callback function or Worker class to handle matched requests
+ * */
+type RouteTuple = [Method, string, RouteHandler];
+/**
+ * Array of route tuples, used to populate a \`Routes\` object.
+ *
+ * @see {@link RouteTuple}
+ */
+type RouteTable = Iterable<RouteTuple>;
 
 /**
  * Container for route definitions and matching logic.
@@ -481,25 +506,17 @@ declare class Routes implements Iterable<Route> {
     /** Internal array of registered routes */
     private readonly routes;
     /**
-     * Registers all routes from the given table, replacing any existing routes.
+     * Add routes to the router.
      *
-     * @param table - Array of route tuples in the form \`[method, path, handler]\`.
-     *                Each tuple defines an HTTP method, a URL path pattern,
-     *                and a handler, which can be either a callback function or a
-     *                Worker class.
-     */
-    table(table: RouteTable): void;
-    /**
-     * Adds a single route to the container.
+     * Accepts any iterable of [method, path, handler] tuples.
+     * This includes arrays, Sets, or generators.
      *
-     * @param method  - HTTP method for the route (GET, POST, etc.).
-     * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
-     * @param handler - Function or Worker class to execute when this route matches.
-     *                  Can be a \`RouteCallback\` or a \`WorkerClass\`.
+     * @param routes - Iterable of route tuples to add.
      */
-    add(method: Method, path: string, handler: RouteHandler): void;
+    add(routes: RouteTable): void;
     /**
      * Attempt to match a URL against the registered routes.
+     *
      * @param method - HTTP method of the request
      * @param url - Full URL string to match against
      * @returns A MatchedRoute object if a route matches, otherwise null
@@ -876,14 +893,9 @@ declare abstract class BasicWorker extends MiddlewareWorker {
  */
 declare abstract class RouteWorker extends BasicWorker {
     /** Internal table of registered routes. */
-    private readonly routes;
+    private readonly _routes;
     /**
-     * Load multiple routes at once from a route table.
-     * @param table - Array of routes to register.
-     */
-    protected table(table: RouteTable): void;
-    /**
-     * Registers a new route in the worker.
+     * Registers a single new route in the worker.
      *
      * When a request matches the specified method and path, the provided handler
      * will be executed. The handler can be either:
@@ -896,6 +908,19 @@ declare abstract class RouteWorker extends BasicWorker {
      * @returns The current worker instance, allowing method chaining.
      */
     protected route(method: Method, path: string, handler: RouteHandler): this;
+    /**
+     * Registers multiple routes at once in the worker.
+     *
+     * Each route should be a tuple \`[method, path, handler]\` where:
+     * - \`method\`  - HTTP method for the route (GET, POST, etc.).
+     * - \`path\`    - URL path pattern (Express-style, e.g., "/users/:id").
+     * - \`handler\` - A function that receives URL parameters or a Worker subclass
+     *               that will handle the request.
+     *
+     * @param routes - An iterable of routes to register. Each item is a \`[method, path, handler]\` tuple.
+     * @returns The current worker instance, allowing method chaining.
+     */
+    protected routes(routes: RouteTable): this;
     /**
      * Matches the incoming request against registered routes and dispatches it.
      *
@@ -924,6 +949,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, type ErrorJson, Forbidden, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, Options, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

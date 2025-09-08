@@ -33,18 +33,10 @@ import { BaseWorker } from "./base-worker";
  */
 export abstract class RouteWorker extends BasicWorker {
     /** Internal table of registered routes. */
-    private readonly routes: Routes = new Routes();
+    private readonly _routes: Routes = new Routes();
 
     /**
-     * Load multiple routes at once from a route table.
-     * @param table - Array of routes to register.
-     */
-    protected table(table: RouteTable): void {
-        this.routes.table(table);
-    }
-
-    /**
-     * Registers a new route in the worker.
+     * Registers a single new route in the worker.
      *
      * When a request matches the specified method and path, the provided handler
      * will be executed. The handler can be either:
@@ -57,7 +49,24 @@ export abstract class RouteWorker extends BasicWorker {
      * @returns The current worker instance, allowing method chaining.
      */
     protected route(method: Method, path: string, handler: RouteHandler): this {
-        this.routes.add(method, path, handler);
+        this.routes([[method, path, handler]]);
+        return this;
+    }
+
+    /**
+     * Registers multiple routes at once in the worker.
+     *
+     * Each route should be a tuple `[method, path, handler]` where:
+     * - `method`  - HTTP method for the route (GET, POST, etc.).
+     * - `path`    - URL path pattern (Express-style, e.g., "/users/:id").
+     * - `handler` - A function that receives URL parameters or a Worker subclass
+     *               that will handle the request.
+     *
+     * @param routes - An iterable of routes to register. Each item is a `[method, path, handler]` tuple.
+     * @returns The current worker instance, allowing method chaining.
+     */
+    protected routes(routes: RouteTable): this {
+        this._routes.add(routes);
         return this;
     }
 
@@ -73,7 +82,7 @@ export abstract class RouteWorker extends BasicWorker {
      * @returns A `Promise<Response>` from the matched handler or parent dispatch.
      */
     protected override async dispatch(): Promise<Response> {
-        const found = this.routes.match(this.request.method as Method, this.request.url);
+        const found = this._routes.match(this.request.method as Method, this.request.url);
         if (!found) return super.dispatch();
 
         const { handler } = found.route;

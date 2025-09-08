@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method, normalizeUrl } from "../../common";
+import { GET, normalizeUrl } from "../../common";
 import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 
@@ -62,14 +62,14 @@ export class CacheHandler extends Middleware {
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
 
-        if (worker.request.method === Method.GET) {
+        if (worker.request.method === GET) {
             const cached = await cache.match(this.getCacheKey(worker.request));
             if (cached) return cached;
         }
 
         const response = await next();
 
-        if (worker.request.method === Method.GET && response.ok) {
+        if (worker.request.method === GET && response.ok) {
             worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
         }
         return response;

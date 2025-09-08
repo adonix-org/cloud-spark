@@ -37,16 +37,6 @@ export type PathParams = Record<string, string>;
 export type RouteCallback = (params: PathParams) => Response | Promise<Response>;
 
 /**
- * Array of route tuples, used to initialize a `Routes` object.
- *
- * Each tuple consists of:
- * 1. HTTP method (e.g., "GET", "POST")
- * 2. Path string (supports parameters, e.g., "/users/:id")
- * 3. Callback function to handle matched requests
- */
-export type RouteTable = [Method, string, RouteHandler][];
-
-/**
  * A handler for a route, which can be either:
  *
  * 1. A `RouteCallback` function that receives the route
@@ -85,3 +75,19 @@ export interface MatchedRoute {
     /** Parameters extracted from the URL path */
     params: PathParams;
 }
+
+/**
+ * A route tuple. Each tuple consists of:
+ *
+ * 1. HTTP method (e.g., "GET", "POST")
+ * 2. Path string (supports parameters, e.g., "/users/:id")
+ * 3. Callback function or Worker class to handle matched requests
+ * */
+export type RouteTuple = [Method, string, RouteHandler];
+
+/**
+ * Array of route tuples, used to populate a `Routes` object.
+ *
+ * @see {@link RouteTuple}
+ */
+export type RouteTable = Iterable<RouteTuple>;

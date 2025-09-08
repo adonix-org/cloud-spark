@@ -30,7 +30,7 @@ describe("routes unit tests", () => {
 
     beforeEach(() => {
         routes = new Routes();
-        routes.table(init);
+        routes.add(init);
     });
 
     it("returns the route initialized with string", async () => {
@@ -57,7 +57,7 @@ describe("routes unit tests", () => {
         const method = Method.POST;
         const url = new URL("three", VALID_URL);
 
-        routes.add(method, "/three", TestRoutes.three);
+        routes.add([[method, "/three", TestRoutes.three]]);
         const found = assertDefined(routes.match(method, url.toString()));
 
         expect(found.route.handler).toBe(TestRoutes.three);
@@ -68,7 +68,7 @@ describe("routes unit tests", () => {
         const method = Method.POST;
         const url = new URL(VALID_URL);
 
-        routes.add(method, "/", TestRoutes.four);
+        routes.add([[method, "/", TestRoutes.four]]);
         const found = assertDefined(routes.match(method, url.toString()));
 
         expect(found.route.handler).toBe(TestRoutes.four);

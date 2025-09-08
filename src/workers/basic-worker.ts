@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isMethod, Method } from "../common";
+import { GET, isMethod, Method } from "../common";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
 import { MiddlewareWorker } from "./middleware-worker";
 import { Head, Options, WorkerResponse } from "../responses";
@@ -120,7 +120,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * standard HEAD requirements.
      */
     protected async head(): Promise<Response> {
-        const worker = this.create(new Request(this.request, { method: Method.GET }));
+        const worker = this.create(new Request(this.request, { method: GET }));
         return this.getResponse(Head, await worker.fetch());
     }
 

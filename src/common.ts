@@ -95,6 +95,20 @@ export enum Method {
     DELETE = "DELETE",
     OPTIONS = "OPTIONS",
 }
+
+/**
+ * Shorthand constants for each HTTP method.
+ *
+ * These are equivalent to the corresponding enum members in `Method`.
+ * For example, `GET === Method.GET`.
+ */
+export const { GET, PUT, HEAD, POST, PATCH, DELETE, OPTIONS } = Method;
+
+/**
+ * A set containing all supported HTTP methods.
+ *
+ * Useful for runtime checks like validating request methods.
+ */
 const METHOD_SET: Set<string> = new Set(Object.values(Method));
 
 /**
