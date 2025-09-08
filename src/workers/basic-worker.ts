@@ -35,7 +35,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
         }
 
         try {
-            this.init();
+            await this.init();
             return await super.fetch();
         } catch (error) {
             console.error(error);
@@ -64,7 +64,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Hook for subclasses to perform any initialization.
      */
-    protected init(): void {
+    protected init(): void | Promise<void> {
         return;
     }
 
@@ -116,7 +116,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * Default handler for HEAD requests.
      * Performs a GET request and removes the body for HEAD semantics.
      *
-     * Usually does not need to be overridden, as this behavior covers 
+     * Usually does not need to be overridden, as this behavior covers
      * standard HEAD requirements.
      */
     protected async head(): Promise<Response> {

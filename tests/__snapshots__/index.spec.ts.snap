@@ -824,7 +824,7 @@ declare abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Hook for subclasses to perform any initialization.
      */
-    protected init(): void;
+    protected init(): void | Promise<void>;
     /**
      * Checks if the given HTTP method is allowed for this worker.
      * @param method HTTP method string
