@@ -31,7 +31,6 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "POST",
   "PUT",
   "RouteWorker",
-  "Routes",
   "ServiceUnavailable",
   "StatusCodes",
   "SuccessResponse",
@@ -149,7 +148,7 @@ declare function isMethod(value: string): value is Method;
  */
 declare function getContentType(type: MediaType): string;
 /**
- * Common media types types used for HTTP headers.
+ * Common media types used for HTTP headers.
  */
 declare enum MediaType {
     PLAIN_TEXT = "text/plain",
@@ -199,7 +198,7 @@ declare enum MediaType {
 /**
  * Sets a header on the given Headers object.
  *
- * - If \`value\` is an array, duplicates and empty strings are removed.
+ * - If \`value\` is an array, any duplicates and empty strings are removed.
  * - If the resulting value array is empty, the header is deleted.
  * - Otherwise, values are joined with \`", "\` and set as the header value.
  *
@@ -434,102 +433,7 @@ declare class ServiceUnavailable extends HttpError {
 }
 
 /**
- * Parameters extracted from a matched route.
- *
- * The keys correspond to named parameters in the route's path pattern,
- * and the values are the strings captured from the URL.
- */
-type PathParams = Record<string, string>;
-/**
- * Type for a route callback function.
- *
- * Route callbacks are executed when a request matches a route.
- *
- * @param params - Named parameters extracted from the URL path.
- * @returns A Response object or a Promise resolving to a Response.
- */
-type RouteCallback = (params: PathParams) => Response | Promise<Response>;
-/**
- * A handler for a route, which can be either:
- *
- * 1. A \`RouteCallback\` function that receives the route
- *    parameters and returns a \`Response\` or \`Promise<Response>\`.
- * 2. A \`WorkerClass\` (subclass of \`Worker\`) that will handle
- *    the request by instantiating a new worker.
- */
-type RouteHandler = RouteCallback | WorkerClass;
-/**
- * Represents a single route.
- *
- * Contains all necessary information to match an incoming request and
- * pass to the registered handler.
- */
-interface Route {
-    /** HTTP method for the route (e.g., GET, POST, etc.) */
-    method: Method;
-    /** Path-to-regexp matcher function for this route */
-    matcher: MatchFunction<PathParams>;
-    /** Function or Worker to execute or instantiate when the route is matched */
-    handler: RouteHandler;
-}
-/**
- * Result of a route match.
- *
- * Returned by routing logic when a request matches a route pattern.
- */
-interface MatchedRoute {
-    /** The route that matched the request */
-    route: Route;
-    /** Parameters extracted from the URL path */
-    params: PathParams;
-}
-/**
- * A route tuple. Each tuple consists of:
- *
- * 1. HTTP method (e.g., "GET", "POST")
- * 2. Path string (supports parameters, e.g., "/users/:id")
- * 3. Callback function or Worker class to handle matched requests
- * */
-type RouteTuple = [Method, string, RouteHandler];
-/**
- * Array of route tuples, used to populate a \`Routes\` object.
- *
- * @see {@link RouteTuple}
- */
-type RouteTable = Iterable<RouteTuple>;
-
-/**
- * Container for route definitions and matching logic.
- * Implements Iterable to allow iteration over all routes.
- */
-declare class Routes implements Iterable<Route> {
-    /** Internal array of registered routes */
-    private readonly routes;
-    /**
-     * Add routes to the router.
-     *
-     * Accepts any iterable of [method, path, handler] tuples.
-     * This includes arrays, Sets, or generators.
-     *
-     * @param routes - Iterable of route tuples to add.
-     */
-    add(routes: RouteTable): void;
-    /**
-     * Attempt to match a URL against the registered routes.
-     *
-     * @param method - HTTP method of the request
-     * @param url - Full URL string to match against
-     * @returns A MatchedRoute object if a route matches, otherwise null
-     */
-    match(method: Method, url: string): MatchedRoute | null;
-    /**
-     * Iterate over all registered routes.
-     */
-    [Symbol.iterator](): Iterator<Route>;
-}
-
-/**
- * An initialization that allows overriding the default CORS configuration.
+ * Override only what is needed from the default CORS configuration.
  */
 type CorsInit = Partial<CorsConfig>;
 /**
@@ -601,6 +505,81 @@ interface ErrorJson {
 }
 
 /**
+ * Parameters extracted from a matched route.
+ *
+ * The keys correspond to named parameters in the route's path pattern,
+ * and the values are the strings captured from the URL.
+ *
+ * @example
+ * // For a route defined as "/users/:userId/posts/:postId"
+ * // and a URL "/users/42/posts/7", the extracted PathParams would be:
+ * const params: PathParams = {
+ *   userId: "42",
+ *   postId: "7"
+ * };
+ */
+type PathParams = Record<string, string>;
+/**
+ * Type for a route callback function.
+ *
+ * Route callbacks are executed when a request matches a route.
+ *
+ * @param params - Named parameters extracted from the URL path.
+ * @returns A Response object or a Promise resolving to a Response.
+ */
+type RouteCallback = (params: PathParams) => Response | Promise<Response>;
+/**
+ * A handler for a route, which can be either:
+ *
+ * 1. \`RouteCallback\` function that receives the route
+ *    parameters and returns a \`Response\` or \`Promise<Response>\`.
+ * 2. \`WorkerClass\` (subclass of \`Worker\`) that will handle
+ *    the request by instantiating a new worker.
+ */
+type RouteHandler = RouteCallback | WorkerClass;
+/**
+ * Represents a single route.
+ *
+ * Contains all necessary information to match an incoming request and
+ * pass to the registered handler.
+ */
+interface Route {
+    /** HTTP method for the route (e.g., GET, POST, etc.) */
+    method: Method;
+    /** Path-to-regexp matcher function for this route */
+    matcher: MatchFunction<PathParams>;
+    /** Function or Worker to execute or instantiate when the route is matched */
+    handler: RouteHandler;
+}
+/**
+ * Result of a route match.
+ *
+ * Returned by routing logic when a request matches a route pattern.
+ */
+interface MatchedRoute {
+    /** The route that matched the request */
+    route: Route;
+    /** Parameters extracted from the URL path */
+    params: PathParams;
+}
+/**
+ * A route tuple. Each tuple consists of:
+ *
+ * 1. HTTP method (e.g., "GET", "POST")
+ * 2. Path string (supports parameters, e.g., "/users/:id")
+ * 3. Callback function or Worker class to handle matched requests
+ * */
+type RouteTuple = [Method, string, RouteHandler];
+/**
+ * Iterable of route tuples, used to populate a \`Routes\` object.
+ *
+ * Each item yields a {@link RouteTuple} representing a single route.
+ *
+ * @see {@link RouteTuple}
+ */
+type RouteTable = Iterable<RouteTuple>;
+
+/**
  * Abstract base class for middleware.
  *
  * Middleware classes implement request/response processing logic in a
@@ -612,12 +591,12 @@ interface ErrorJson {
  * Example subclass:
  * \`\`\`ts
  * class LoggingMiddleware extends Middleware {
- *   public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
- *     console.log(\`Processing request: \${worker.request.url}\`);
- *     const response = await next();
- *     console.log(\`Response status: \${response.status}\`);
- *     return response;
- *   }
+ *     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+ *         console.log(\`Processing request: \${worker.request.url}\`);
+ *         const response = await next();
+ *         console.log(\`Response status: \${response.status}\`);
+ *         return response;
+ *      }
  * }
  * \`\`\`
  */
@@ -637,14 +616,19 @@ declare abstract class Middleware {
 /**
  * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
  *
- * This middleware reads the configuration provided (or uses \`defaultCorsConfig\`)
- * and ensures that responses include the appropriate CORS headers. It also
- * handles the \`Vary: Origin\` header when not allowing all origins.
+ * Merges the initialization config (if provided), with {@link defaultCorsConfig}.
  *
- * Example usage:
+ * ⚠️ **Important:** This middleware needs to run **after any caching**.
+ * Otherwise, CORS headers can end up cached and cause unexpected errors.
+ *
+ * Example Worker:
  * \`\`\`ts
- * const cors = new CorsHandler({ allowedOrigins: ["https://myapp.com"] });
- * worker.use(cors);
+ * // Request → [CorsHandler] → [CacheHandler] → [Worker Handler]
+ * // Response ← [CorsHandler] ← [CacheHandler] ↙
+ * protected override init(): void {
+ *     worker.use(new CorsHandler());
+ *     worker.use(new CacheHandler());
+ * }
  * \`\`\`
  */
 declare class CorsHandler extends Middleware {
@@ -680,10 +664,8 @@ declare class CorsHandler extends Middleware {
  * Non-GET requests are never cached. The cache key can be customized
  * via the \`getKey\` function; otherwise, the URL is normalized and used.
  *
- * Example usage:
  * \`\`\`ts
- * const cacheMiddleware = new CacheHandler("my-cache", (req) => new URL(req.url));
- * worker.use(cacheMiddleware);
+ * worker.use(new CacheHandler());
  * \`\`\`
  */
 declare class CacheHandler extends Middleware {
@@ -717,7 +699,7 @@ declare class CacheHandler extends Middleware {
      * If a custom \`getKey\` function was provided in the constructor, it is used.
      * Otherwise, the request URL is normalized.
      */
-    getCacheKey(request: Request): URL | RequestInfo;
+    private getCacheKey;
 }
 
 /**
@@ -765,14 +747,13 @@ declare abstract class BaseWorker implements Worker {
      * Dispatches the incoming request to the appropriate handler and produces a response.
      *
      * Subclasses must implement this method to define how the worker generates a \`Response\`
-     * for the current request. This is the central point where request processing occurs,
-     * and where middleware chains, routing, or other custom behavior can be applied.
+     * for the current request. This is the central point where request processing occurs.
      *
      * @returns A Promise that resolves to the \`Response\` for the request.
      */
     protected abstract dispatch(): Promise<Response>;
     /**
-     * The DEFAULT allowed HTTP methods for subclasses.
+     * DEFAULT allowed HTTP methods for subclasses.
      */
     getAllowedMethods(): Method[];
     /**
@@ -793,7 +774,6 @@ declare abstract class BaseWorker implements Worker {
      *
      * @returns A \`FetchHandler\` that launches a new worker instance for each request.
      *
-     * @example
      * \`\`\`ts
      * export default MyWorker.ignite();
      * \`\`\`
@@ -806,7 +786,7 @@ declare abstract class MiddlewareWorker extends BaseWorker {
     /** Middleware handlers registered for this worker. */
     protected readonly middlewares: Middleware[];
     /**
-     * Add a middleware to this worker.
+     * Add a middleware instance to this worker.
      *
      * The middleware will run for every request handled by this worker,
      * in the order they are added.
@@ -825,17 +805,14 @@ declare abstract class MiddlewareWorker extends BaseWorker {
 
 /**
  * Basic worker class providing HTTP method dispatching and error handling.
- * Extends \`MiddlewareWorker\` and defines default implementations for HTTP methods.
  */
 declare abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Entry point to handle a fetch request.
-     * Checks allowed methods and dispatches to the appropriate handler.
      */
     fetch(): Promise<Response>;
     /**
      * Dispatches the request to the method-specific handler.
-     * Defaults to MethodNotAllowed if the HTTP method is not recognized.
      */
     protected dispatch(): Promise<Response>;
     /**
@@ -848,15 +825,15 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      * @returns true if the method is allowed
      */
     isAllowed(method: string): boolean;
-    /** Default handler for GET requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for GET requests. */
     protected get(): Promise<Response>;
-    /** Default handler for PUT requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for PUT requests. */
     protected put(): Promise<Response>;
-    /** Default handler for POST requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for POST requests. */
     protected post(): Promise<Response>;
-    /** Default handler for PATCH requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for PATCH requests. */
     protected patch(): Promise<Response>;
-    /** Default handler for DELETE requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for DELETE requests. */
     protected delete(): Promise<Response>;
     /**
      * Default handler for OPTIONS requests.
@@ -874,10 +851,18 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      */
     protected head(): Promise<Response>;
     /**
-     * Helper to construct a WorkerResponse of the given class with arguments.
+     * Simplify and standardize {@link Response} creation by extending {@link WorkerResponse}
+     * or any of its subclasses and passing to this method.
+     *
+     * Or directly use any of the built-in classes.
+     *
+     * \`\`\`ts
+     * this.getResponse(TextResponse, "Hello World!")
+     * \`\`\`
+     *
      * @param ResponseClass The response class to instantiate
      * @param args Additional constructor arguments
-     * @returns The final Response object
+     * @returns A Promise resolving to the {@link Response} object
      */
     protected getResponse<T extends WorkerResponse, Ctor extends new (worker: Worker, ...args: any[]) => T>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor> extends [Worker, ...infer R] ? R : never): Promise<Response>;
 }
@@ -887,9 +872,7 @@ declare abstract class BasicWorker extends MiddlewareWorker {
  *
  * Subclass \`RouteWorker\` to define a worker with multiple route handlers.
  *
- * Routes can be registered individually via \`addRoute()\` or in bulk via \`load()\`.
- * Middleware can be attached with \`use()\` to run for all requests.
- * \`\`\`
+ * Routes can be registered individually via \`route()\` or in bulk via \`routes()\`.
  */
 declare abstract class RouteWorker extends BasicWorker {
     /** Internal table of registered routes. */
@@ -949,6 +932,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, Routes, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

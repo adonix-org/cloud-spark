@@ -136,7 +136,7 @@ export function getContentType(type: MediaType): string {
 }
 
 /**
- * Common media types types used for HTTP headers.
+ * Common media types used for HTTP headers.
  */
 export enum MediaType {
     PLAIN_TEXT = "text/plain",
@@ -209,7 +209,7 @@ const ADD_CHARSET: Set<MediaType> = new Set([
 /**
  * Sets a header on the given Headers object.
  *
- * - If `value` is an array, duplicates and empty strings are removed.
+ * - If `value` is an array, any duplicates and empty strings are removed.
  * - If the resulting value array is empty, the header is deleted.
  * - Otherwise, values are joined with `", "` and set as the header value.
  *
