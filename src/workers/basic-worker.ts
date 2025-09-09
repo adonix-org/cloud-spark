@@ -17,7 +17,7 @@
 import { GET, isMethod, Method } from "../common";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
 import { MiddlewareWorker } from "./middleware-worker";
-import { Head, Options, WorkerResponse } from "../responses";
+import { Head, WorkerResponse } from "../responses";
 import { Worker } from "../interfaces/worker";
 
 /**
@@ -53,7 +53,6 @@ export abstract class BasicWorker extends MiddlewareWorker {
             POST: () => this.post(),
             PATCH: () => this.patch(),
             DELETE: () => this.delete(),
-            OPTIONS: () => this.options(),
         };
         return (handler[method] ?? (() => this.getResponse(MethodNotAllowed)))();
     }
@@ -97,16 +96,6 @@ export abstract class BasicWorker extends MiddlewareWorker {
     /** Override and implement this method for DELETE requests. */
     protected async delete(): Promise<Response> {
         return this.getResponse(MethodNotImplemented);
-    }
-
-    /**
-     * Default handler for OPTIONS requests.
-     * Returns an Options response.
-     *
-     * Typically does not need to be overridden.
-     */
-    protected async options(): Promise<Response> {
-        return this.getResponse(Options);
     }
 
     /**

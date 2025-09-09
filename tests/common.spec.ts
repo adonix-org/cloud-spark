@@ -31,7 +31,6 @@ describe("common functions unit tests", () => {
         it("is a method", () => {
             expect(isMethod("GET")).toBe(true);
             expect(isMethod("HEAD")).toBe(true);
-            expect(isMethod("OPTIONS")).toBe(true);
             expect(isMethod("DELETE")).toBe(true);
             expect(isMethod("POST")).toBe(true);
             expect(isMethod("PUT")).toBe(true);

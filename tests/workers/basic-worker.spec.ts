@@ -57,15 +57,6 @@ describe("basic worker unit tests", () => {
         expect(await response.text()).toBe("");
     });
 
-    it("returns OPTIONS response", async () => {
-        const request = new Request(VALID_URL, { method: Method.OPTIONS });
-        const worker = new TestWorker(request);
-
-        const response = await worker.fetch();
-        expect(response).toBeInstanceOf(Response);
-        expect(await response.text()).toBe("");
-    });
-
     it("returns a 405 method not allowed response from fetch", async () => {
         const request = new Request(VALID_URL, { method: "BAD" as any });
         const worker = new TestWorker(request);

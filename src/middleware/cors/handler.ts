@@ -18,7 +18,9 @@ import { addCorsHeaders } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
-import { defaultCorsConfig } from "./constants";
+import { defaultCorsConfig, OPTIONS } from "./constants";
+import { StatusCodes } from "../../common";
+import { SuccessResponse } from "../../responses";
 
 /**
  * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
@@ -64,10 +66,26 @@ export class CorsHandler extends Middleware {
      * and modifies the resulting response.
      */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+        if (worker.request.method === OPTIONS) {
+            const options = new Options(worker);
+            addCorsHeaders(worker, this.config, options.headers);
+            return options.getResponse();
+        }
+
         const response = await next();
 
         const mutable = new Response(response.body, response);
         addCorsHeaders(worker, this.config, mutable.headers);
         return mutable;
+    }
+}
+
+/**
+ * Response for OPTIONS preflight requests.
+ * Sets CORS headers and returns 204 No Content.
+ */
+class Options extends SuccessResponse {
+    constructor(worker: Worker) {
+        super(worker, null, undefined, StatusCodes.NO_CONTENT);
     }
 }

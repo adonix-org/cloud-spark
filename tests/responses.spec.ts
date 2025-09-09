@@ -22,7 +22,6 @@ import {
     TextResponse,
     ClonedResponse,
     Head,
-    Options,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader } from "@src/common";
@@ -84,21 +83,6 @@ describe("response unit tests", () => {
         const r = await resp.getResponse();
         expect(r.headers.get("X-Test")).toBe("ok");
         expect(await r.text()).toBe("");
-    });
-
-    it("sets no-content and adds 'allow' header in options response", async () => {
-        const resp = new Options(mockWorker);
-        const r = await resp.getResponse();
-        expect(r.status).toBe(StatusCodes.NO_CONTENT);
-        expect(r.headers.get(HttpHeader.ALLOW)).toBe("GET, HEAD, OPTIONS");
-    });
-
-    it("merges existing header", async () => {
-        const resp = new Options(mockWorker);
-        resp.mergeHeader(HttpHeader.ALLOW, "POST");
-        const r = await resp.getResponse();
-        expect(r.status).toBe(StatusCodes.NO_CONTENT);
-        expect(r.headers.get(HttpHeader.ALLOW)).toBe("GET, HEAD, OPTIONS, POST");
     });
 
     it("sets cache header if defined", async () => {

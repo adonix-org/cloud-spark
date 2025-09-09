@@ -94,7 +94,6 @@ export enum Method {
     POST = "POST",
     PATCH = "PATCH",
     DELETE = "DELETE",
-    OPTIONS = "OPTIONS",
 }
 
 /**
@@ -103,7 +102,7 @@ export enum Method {
  * These are equivalent to the corresponding enum members in `Method`.
  * For example, `GET === Method.GET`.
  */
-export const { GET, PUT, HEAD, POST, PATCH, DELETE, OPTIONS } = Method;
+export const { GET, PUT, HEAD, POST, PATCH, DELETE } = Method;
 
 /**
  * A set containing all supported HTTP methods.

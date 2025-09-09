@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { getOrigin, HttpHeader, mergeHeader, Method, setHeader } from "../../common";
+import { getOrigin, HttpHeader, mergeHeader, setHeader } from "../../common";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
+import { OPTIONS } from "./constants";
 
 /**
  * Adds CORS headers to the given Headers object based on the request and config.
@@ -45,7 +46,7 @@ export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Header
     // Add for all CORS requests.
     setHeader(headers, HttpHeader.MAX_AGE, String(cors.maxAge));
     setHeader(headers, HttpHeader.ALLOW_HEADERS, cors.allowedHeaders);
-    mergeHeader(headers, HttpHeader.ALLOW_METHODS, [...worker.getAllowedMethods(), Method.OPTIONS]);
+    mergeHeader(headers, HttpHeader.ALLOW_METHODS, [...worker.getAllowedMethods(), OPTIONS]);
     mergeHeader(headers, HttpHeader.EXPOSE_HEADERS, cors.exposedHeaders);
 }
 

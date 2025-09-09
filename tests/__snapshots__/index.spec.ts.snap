@@ -25,8 +25,6 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "Middleware",
   "NotFound",
   "NotImplemented",
-  "OPTIONS",
-  "Options",
   "PATCH",
   "POST",
   "PUT",
@@ -117,8 +115,7 @@ declare enum Method {
     HEAD = "HEAD",
     POST = "POST",
     PATCH = "PATCH",
-    DELETE = "DELETE",
-    OPTIONS = "OPTIONS"
+    DELETE = "DELETE"
 }
 /**
  * Shorthand constants for each HTTP method.
@@ -132,7 +129,6 @@ declare const HEAD: Method;
 declare const POST: Method;
 declare const PATCH: Method;
 declare const DELETE: Method;
-declare const OPTIONS: Method;
 /**
  * Type guard that checks if a string is a valid HTTP method.
  *
@@ -373,12 +369,6 @@ declare class TextResponse extends SuccessResponse {
  */
 declare class Head extends WorkerResponse {
     constructor(worker: Worker, get: Response);
-}
-/**
- * Response for OPTIONS requests. Sets allowed methods and returns 204 No Content.
- */
-declare class Options extends SuccessResponse {
-    constructor(worker: Worker);
 }
 
 /**
@@ -835,13 +825,6 @@ declare abstract class BasicWorker extends MiddlewareWorker {
     /** Override and implement this method for DELETE requests. */
     protected delete(): Promise<Response>;
     /**
-     * Default handler for OPTIONS requests.
-     * Returns an Options response.
-     *
-     * Typically does not need to be overridden.
-     */
-    protected options(): Promise<Response>;
-    /**
      * Default handler for HEAD requests.
      * Performs a GET request and removes the body for HEAD semantics.
      *
@@ -931,6 +914,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;
