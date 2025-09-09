@@ -813,7 +813,7 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      * @param method HTTP method string
      * @returns true if the method is allowed
      */
-    isAllowed(method: string): boolean;
+    isAllowed(method: Method): boolean;
     /** Override and implement this method for GET requests. */
     protected get(): Promise<Response>;
     /** Override and implement this method for PUT requests. */
