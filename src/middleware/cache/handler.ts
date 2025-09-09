@@ -30,8 +30,7 @@ import { Worker } from "../../interfaces/worker";
  *
  * Example usage:
  * ```ts
- * const cacheMiddleware = new CacheHandler("my-cache", (req) => new URL(req.url));
- * worker.use(cacheMiddleware);
+ * worker.use(new CacheHandler());
  * ```
  */
 export class CacheHandler extends Middleware {
@@ -84,7 +83,7 @@ export class CacheHandler extends Middleware {
      * If a custom `getKey` function was provided in the constructor, it is used.
      * Otherwise, the request URL is normalized.
      */
-    public getCacheKey(request: Request): URL | RequestInfo {
+    private getCacheKey(request: Request): URL | RequestInfo {
         return this.getKey ? this.getKey(request) : normalizeUrl(request.url);
     }
 }

@@ -19,19 +19,24 @@ import { addCorsHeaders, allowAnyOrigin } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
-import { defaultCorsConfig } from "./defaults";
+import { defaultCorsConfig } from "./constants";
 
 /**
  * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
  *
- * This middleware reads the configuration provided (or uses `defaultCorsConfig`)
- * and ensures that responses include the appropriate CORS headers. It also
- * handles the `Vary: Origin` header when not allowing all origins.
+ * Merges the initialization config (if provided), with {@link defaultCorsConfig}.
  *
- * Example usage:
+ * ⚠️ **Important:** This middleware needs to run **after any caching**.
+ * Otherwise, CORS headers can end up cached and cause unexpected errors.
+ *
+ * Example Worker:
  * ```ts
- * const cors = new CorsHandler({ allowedOrigins: ["https://myapp.com"] });
- * worker.use(cors);
+ * // Request → [CorsHandler] → [CacheHandler] → [Worker Handler]
+ * // Response ← [CorsHandler] ← [CacheHandler] ↙
+ * protected override init(): void {
+ *     worker.use(new CorsHandler());
+ *     worker.use(new CacheHandler());
+ * }
  * ```
  */
 export class CorsHandler extends Middleware {
