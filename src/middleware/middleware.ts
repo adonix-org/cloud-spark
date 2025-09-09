@@ -28,12 +28,12 @@ import { Worker } from "../interfaces/worker";
  * Example subclass:
  * ```ts
  * class LoggingMiddleware extends Middleware {
- *   public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
- *     console.log(`Processing request: ${worker.request.url}`);
- *     const response = await next();
- *     console.log(`Response status: ${response.status}`);
- *     return response;
- *   }
+ *     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+ *         console.log(`Processing request: ${worker.request.url}`);
+ *         const response = await next();
+ *         console.log(`Response status: ${response.status}`);
+ *         return response;
+ *      }
  * }
  * ```
  */

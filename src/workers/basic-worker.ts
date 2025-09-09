@@ -22,12 +22,10 @@ import { Worker } from "../interfaces/worker";
 
 /**
  * Basic worker class providing HTTP method dispatching and error handling.
- * Extends `MiddlewareWorker` and defines default implementations for HTTP methods.
  */
 export abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Entry point to handle a fetch request.
-     * Checks allowed methods and dispatches to the appropriate handler.
      */
     public override async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
@@ -45,7 +43,6 @@ export abstract class BasicWorker extends MiddlewareWorker {
 
     /**
      * Dispatches the request to the method-specific handler.
-     * Defaults to MethodNotAllowed if the HTTP method is not recognized.
      */
     protected override async dispatch(): Promise<Response> {
         const method = this.request.method as Method;
@@ -77,27 +74,27 @@ export abstract class BasicWorker extends MiddlewareWorker {
         return isMethod(method) && this.getAllowedMethods().includes(method);
     }
 
-    /** Default handler for GET requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for GET requests. */
     protected async get(): Promise<Response> {
         return this.getResponse(MethodNotImplemented);
     }
 
-    /** Default handler for PUT requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for PUT requests. */
     protected async put(): Promise<Response> {
         return this.getResponse(MethodNotImplemented);
     }
 
-    /** Default handler for POST requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for POST requests. */
     protected async post(): Promise<Response> {
         return this.getResponse(MethodNotImplemented);
     }
 
-    /** Default handler for PATCH requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for PATCH requests. */
     protected async patch(): Promise<Response> {
         return this.getResponse(MethodNotImplemented);
     }
 
-    /** Default handler for DELETE requests. Returns MethodNotImplemented unless overridden. */
+    /** Override and implement this method for DELETE requests. */
     protected async delete(): Promise<Response> {
         return this.getResponse(MethodNotImplemented);
     }
@@ -125,10 +122,18 @@ export abstract class BasicWorker extends MiddlewareWorker {
     }
 
     /**
-     * Helper to construct a WorkerResponse of the given class with arguments.
+     * Simplify and standardize {@link Response} creation by extending {@link WorkerResponse}
+     * or any of its subclasses and passing to this method.
+     *
+     * Or directly use any of the built-in classes.
+     *
+     * ```ts
+     * this.getResponse(TextResponse, "Hello World!")
+     * ```
+     *
      * @param ResponseClass The response class to instantiate
      * @param args Additional constructor arguments
-     * @returns The final Response object
+     * @returns A Promise resolving to the {@link Response} object
      */
     protected async getResponse<
         T extends WorkerResponse,

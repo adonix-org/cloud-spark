@@ -28,7 +28,6 @@ import { Worker } from "../../interfaces/worker";
  * Non-GET requests are never cached. The cache key can be customized
  * via the `getKey` function; otherwise, the URL is normalized and used.
  *
- * Example usage:
  * ```ts
  * worker.use(new CacheHandler());
  * ```
