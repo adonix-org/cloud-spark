@@ -336,8 +336,6 @@ declare abstract class WorkerResponse extends CacheResponse {
     constructor(worker: Worker, body?: BodyInit | null, cache?: CacheControl);
     /** Builds the Response object with body, headers, and status. */
     getResponse(): Promise<Response>;
-    /** Adds default security headers. */
-    protected addSecurityHeaders(): void;
 }
 /**
  * Wraps an existing Response and clones its body, headers, and status.

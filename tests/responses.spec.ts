@@ -101,12 +101,6 @@ describe("response unit tests", () => {
         expect(r.headers.get(HttpHeader.ALLOW)).toBe("GET, HEAD, OPTIONS, POST");
     });
 
-    it("adds security header x-content-type-options", async () => {
-        const resp = new SuccessResponse(mockWorker);
-        const r = await resp.getResponse();
-        expect(r.headers.get(HttpHeader.X_CONTENT_TYPE_OPTIONS)).toBe(HttpHeader.NOSNIFF);
-    });
-
     it("sets cache header if defined", async () => {
         const cache: CacheControl = { "max-age": 65 };
         const resp = new JsonResponse(mockWorker, { foo: "bar" }, cache);

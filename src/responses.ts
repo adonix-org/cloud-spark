@@ -105,17 +105,11 @@ export abstract class WorkerResponse extends CacheResponse {
     /** Builds the Response object with body, headers, and status. */
     public async getResponse(): Promise<Response> {
         this.addCacheHeader();
-        this.addSecurityHeaders();
 
         const body = this.status === StatusCodes.NO_CONTENT ? null : this.body;
 
         if (body) this.addContentType();
         return new Response(body, this.responseInit);
-    }
-
-    /** Adds default security headers. */
-    protected addSecurityHeaders(): void {
-        this.setHeader(HttpHeader.X_CONTENT_TYPE_OPTIONS, HttpHeader.NOSNIFF);
     }
 }
 

@@ -81,7 +81,6 @@ describe("middleware unit tests", () => {
         expect([...response.headers.entries()]).toStrictEqual([
             ["cache-control", "no-cache, no-store, must-revalidate, max-age=0"],
             ["content-type", "application/json; charset=utf-8"],
-            ["x-content-type-options", "nosniff"],
         ]);
     });
 });
