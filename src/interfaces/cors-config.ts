@@ -15,7 +15,7 @@
  */
 
 /**
- * An initialization that allows overriding the default CORS configuration.
+ * Override only what is needed from the default CORS configuration.
  */
 export type CorsInit = Partial<CorsConfig>;
 

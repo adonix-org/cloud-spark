@@ -23,6 +23,14 @@ import { WorkerClass } from "./worker";
  *
  * The keys correspond to named parameters in the route's path pattern,
  * and the values are the strings captured from the URL.
+ *
+ * @example
+ * // For a route defined as "/users/:userId/posts/:postId"
+ * // and a URL "/users/42/posts/7", the extracted PathParams would be:
+ * const params: PathParams = {
+ *   userId: "42",
+ *   postId: "7"
+ * };
  */
 export type PathParams = Record<string, string>;
 
@@ -39,9 +47,9 @@ export type RouteCallback = (params: PathParams) => Response | Promise<Response>
 /**
  * A handler for a route, which can be either:
  *
- * 1. A `RouteCallback` function that receives the route
+ * 1. `RouteCallback` function that receives the route
  *    parameters and returns a `Response` or `Promise<Response>`.
- * 2. A `WorkerClass` (subclass of `Worker`) that will handle
+ * 2. `WorkerClass` (subclass of `Worker`) that will handle
  *    the request by instantiating a new worker.
  */
 export type RouteHandler = RouteCallback | WorkerClass;
@@ -86,7 +94,9 @@ export interface MatchedRoute {
 export type RouteTuple = [Method, string, RouteHandler];
 
 /**
- * Array of route tuples, used to populate a `Routes` object.
+ * Iterable of route tuples, used to populate a `Routes` object.
+ *
+ * Each item yields a {@link RouteTuple} representing a single route.
  *
  * @see {@link RouteTuple}
  */
