@@ -28,10 +28,6 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * Entry point to handle a fetch request.
      */
     public override async fetch(): Promise<Response> {
-        if (!this.isAllowed(this.request.method)) {
-            return this.getResponse(MethodNotAllowed);
-        }
-
         try {
             await this.init();
             return await super.fetch();
@@ -46,6 +42,9 @@ export abstract class BasicWorker extends MiddlewareWorker {
      */
     protected override async dispatch(): Promise<Response> {
         const method = this.request.method as Method;
+        if (!this.isAllowed(method)) {
+            return this.getResponse(MethodNotAllowed);
+        }
         const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),
             PUT: () => this.put(),
@@ -69,7 +68,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * @param method HTTP method string
      * @returns true if the method is allowed
      */
-    public isAllowed(method: string): boolean {
+    public isAllowed(method: Method): boolean {
         return isMethod(method) && this.getAllowedMethods().includes(method);
     }
 

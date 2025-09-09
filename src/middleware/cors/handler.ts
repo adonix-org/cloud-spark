@@ -19,7 +19,7 @@ import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
 import { defaultCorsConfig, OPTIONS } from "./constants";
-import { StatusCodes } from "../../common";
+import { HttpHeader, mergeHeader, StatusCodes } from "../../common";
 import { SuccessResponse } from "../../responses";
 
 /**
@@ -76,6 +76,9 @@ export class CorsHandler extends Middleware {
 
         const mutable = new Response(response.body, response);
         addCorsHeaders(worker, this.config, mutable.headers);
+        if (response.status === StatusCodes.METHOD_NOT_ALLOWED) {
+            mergeHeader(mutable.headers, HttpHeader.ALLOW, OPTIONS);
+        }
         return mutable;
     }
 }
