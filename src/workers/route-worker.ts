@@ -27,9 +27,7 @@ import { BaseWorker } from "./base-worker";
  *
  * Subclass `RouteWorker` to define a worker with multiple route handlers.
  *
- * Routes can be registered individually via `addRoute()` or in bulk via `load()`.
- * Middleware can be attached with `use()` to run for all requests.
- * ```
+ * Routes can be registered individually via `route()` or in bulk via `routes()`.
  */
 export abstract class RouteWorker extends BasicWorker {
     /** Internal table of registered routes. */

@@ -23,7 +23,7 @@ export abstract class MiddlewareWorker extends BaseWorker {
     protected readonly middlewares: Middleware[] = [];
 
     /**
-     * Add a middleware to this worker.
+     * Add a middleware instance to this worker.
      *
      * The middleware will run for every request handled by this worker,
      * in the order they are added.
