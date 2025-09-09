@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getOrigin, HttpHeader, mergeHeader, setHeader } from "../../common";
+import { getOrigin, HttpHeader, mergeHeader, Method, setHeader } from "../../common";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
 
@@ -25,7 +25,7 @@ export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Header
     deleteCorsHeaders(headers);
 
     const origin = getOrigin(worker.request);
-    if (!origin || origin.trim() === "") return;
+    if (!origin || !isCors(worker.request)) return;
 
     if (allowAnyOrigin(cors)) {
         setHeader(headers, HttpHeader.ALLOW_ORIGIN, HttpHeader.ALLOW_ALL_ORIGINS);
@@ -35,14 +35,25 @@ export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Header
     }
 
     setHeader(headers, HttpHeader.MAX_AGE, String(cors.maxAge));
-    setHeader(headers, HttpHeader.ALLOW_METHODS, worker.getAllowedMethods());
     setHeader(headers, HttpHeader.ALLOW_HEADERS, cors.allowedHeaders);
+    mergeHeader(headers, HttpHeader.ALLOW_METHODS, [...worker.getAllowedMethods(), Method.OPTIONS]);
     mergeHeader(headers, HttpHeader.EXPOSE_HEADERS, cors.exposedHeaders);
 }
 
 /** Returns true if the CORS config allows all origins (`*`). */
 export function allowAnyOrigin(cors: CorsConfig): boolean {
     return cors.allowedOrigins.includes("*");
+}
+
+/**
+ * Determines whether a given request is a cross-origin request that requires CORS headers.
+ *
+ * @param request - The incoming Request object.
+ * @returns `true` if the request is cross-origin and should have CORS headers, `false` otherwise.
+ */
+function isCors(request: Request): boolean {
+    const site = request.headers.get(HttpHeader.SEC_FETCH_SITE);
+    return site === HttpHeader.CROSS_SITE;
 }
 
 /** Removes all standard CORS headers from a Headers object. */

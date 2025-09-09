@@ -76,9 +76,10 @@ declare const CacheControl: {
 declare namespace HttpHeader {
     const VARY = "Vary";
     const ALLOW = "Allow";
+    const USER_AGENT = "User-Agent";
     const CONTENT_TYPE = "Content-Type";
     const CACHE_CONTROL = "Cache-Control";
-    const USER_AGENT = "User-Agent";
+    const SEC_FETCH_SITE = "Sec-Fetch-Site";
     const X_FRAME_OPTIONS = "X-Frame-Options";
     const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
     const REFERRER_POLICY = "Referrer-Policy";
@@ -91,9 +92,9 @@ declare namespace HttpHeader {
     const ALLOW_METHODS = "Access-Control-Allow-Methods";
     const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
     const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-    const NOSNIFF = "nosniff";
     const ORIGIN = "Origin";
     const ALLOW_ALL_ORIGINS = "*";
+    const CROSS_SITE = "cross-site";
 }
 /**
  * Time constants in seconds. Month is approximated as 30 days.

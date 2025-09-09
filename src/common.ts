@@ -44,9 +44,10 @@ export { StatusCodes } from "http-status-codes";
 export namespace HttpHeader {
     export const VARY = "Vary";
     export const ALLOW = "Allow";
+    export const USER_AGENT = "User-Agent";
     export const CONTENT_TYPE = "Content-Type";
     export const CACHE_CONTROL = "Cache-Control";
-    export const USER_AGENT = "User-Agent";
+    export const SEC_FETCH_SITE = "Sec-Fetch-Site";
 
     // Security Headers
     export const X_FRAME_OPTIONS = "X-Frame-Options"; // e.g. "DENY" or "SAMEORIGIN"
@@ -65,9 +66,9 @@ export namespace HttpHeader {
     export const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
 
     // Values
-    export const NOSNIFF = "nosniff";
     export const ORIGIN = "Origin";
     export const ALLOW_ALL_ORIGINS = "*";
+    export const CROSS_SITE = "cross-site";
 }
 
 /**
