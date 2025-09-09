@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { mergeHeader } from "../../common";
-import { addCorsHeaders, allowAnyOrigin } from "./utils";
+import { addCorsHeaders } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
@@ -68,12 +67,7 @@ export class CorsHandler extends Middleware {
         const response = await next();
 
         const mutable = new Response(response.body, response);
-
         addCorsHeaders(worker, this.config, mutable.headers);
-        if (!allowAnyOrigin(this.config)) {
-            mergeHeader(mutable.headers, "Vary", "Origin");
-        }
-
         return mutable;
     }
 }

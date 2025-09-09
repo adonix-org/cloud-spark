@@ -28,12 +28,21 @@ export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Header
     if (!origin || !isCors(worker.request)) return;
 
     if (allowAnyOrigin(cors)) {
+        // Allowed Origin: *
         setHeader(headers, HttpHeader.ALLOW_ORIGIN, HttpHeader.ALLOW_ALL_ORIGINS);
-    } else if (cors.allowedOrigins.includes(origin)) {
-        setHeader(headers, HttpHeader.ALLOW_ORIGIN, origin);
-        setHeader(headers, HttpHeader.ALLOW_CREDENTIALS, "true");
+    } else {
+        // Allowed Origin: "https://example.com"
+        // Always add Vary: Origin
+        mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
+
+        if (cors.allowedOrigins.includes(origin)) {
+            // When the provided origin is allowed:
+            setHeader(headers, HttpHeader.ALLOW_ORIGIN, origin);
+            setHeader(headers, HttpHeader.ALLOW_CREDENTIALS, "true");
+        }
     }
 
+    // Add for all CORS requests.
     setHeader(headers, HttpHeader.MAX_AGE, String(cors.maxAge));
     setHeader(headers, HttpHeader.ALLOW_HEADERS, cors.allowedHeaders);
     mergeHeader(headers, HttpHeader.ALLOW_METHODS, [...worker.getAllowedMethods(), Method.OPTIONS]);
