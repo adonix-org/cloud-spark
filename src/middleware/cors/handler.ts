@@ -22,25 +22,20 @@ import { defaultCorsConfig } from "./constants";
 import { OPTIONS } from "../../common";
 import { ClonedResponse, Options } from "../../responses";
 
+/**
+ * Creates a CORS middleware instance.
+ *
+ * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
+ * for incoming requests, including preflight OPTIONS requests, and adds
+ * appropriate headers to responses.
+ *
+ * @param init - Optional configuration for CORS behavior. See {@link CorsConfig}.
+ * @returns A {@link Middleware} instance that can be used in your middleware chain.
+ */
 export function cors(init?: CorsInit): Middleware {
     return new CorsHandler(init);
 }
 
-/**
- * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
- *
- * Merges the initialization config (if provided), with {@link defaultCorsConfig}.
- *
- * Example Worker:
- * ```ts
- * // Request → [CorsHandler] → [CacheHandler] → [Worker Handler]
- * // Response ← [CorsHandler] ← [CacheHandler] ↙
- * protected override init(): void {
- *     worker.use(new CorsHandler());
- *     worker.use(new CacheHandler());
- * }
- * ```
- */
 class CorsHandler extends Middleware {
     /** The configuration used for this instance, with all defaults applied. */
     private readonly config: CorsConfig;

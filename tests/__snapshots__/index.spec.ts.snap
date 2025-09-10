@@ -615,8 +615,33 @@ declare abstract class Middleware {
     abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
+/**
+ * Creates a CORS middleware instance.
+ *
+ * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
+ * for incoming requests, including preflight OPTIONS requests, and adds
+ * appropriate headers to responses.
+ *
+ * @param init - Optional configuration for CORS behavior. See {@link CorsConfig}.
+ * @returns A {@link Middleware} instance that can be used in your middleware chain.
+ */
 declare function cors(init?: CorsInit): Middleware;
 
+/**
+ * Middleware for caching GET requests.
+ *
+ * This middleware checks a cache (either a named cache or the default)
+ * before passing the request down the middleware chain. Responses for
+ * successful GET requests are automatically stored in the cache.
+ *
+ * Non-GET requests are never cached. The cache key can be customized
+ * via the \`getKey\` function; otherwise, the URL is normalized and used.
+ *
+ * @param cacheName - Optional name of the cache to use. Defaults to \`caches.default\`.
+ * @param getKey - Optional function to generate a cache key from a request.
+ * @returns A {@link Middleware} instance that can be added to your middleware chain.
+ * \`\`\`
+ */
 declare function cache(cacheName?: string, getKey?: (request: Request) => URL | RequestInfo): Middleware;
 
 /**

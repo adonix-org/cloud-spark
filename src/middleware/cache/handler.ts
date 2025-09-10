@@ -18,13 +18,6 @@ import { GET, normalizeUrl } from "../../common";
 import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 
-export function cache(
-    cacheName?: string,
-    getKey?: (request: Request) => URL | RequestInfo,
-): Middleware {
-    return new CacheHandler(cacheName, getKey);
-}
-
 /**
  * Middleware for caching GET requests.
  *
@@ -35,10 +28,18 @@ export function cache(
  * Non-GET requests are never cached. The cache key can be customized
  * via the `getKey` function; otherwise, the URL is normalized and used.
  *
- * ```ts
- * worker.use(new CacheHandler());
+ * @param cacheName - Optional name of the cache to use. Defaults to `caches.default`.
+ * @param getKey - Optional function to generate a cache key from a request.
+ * @returns A {@link Middleware} instance that can be added to your middleware chain.
  * ```
  */
+export function cache(
+    cacheName?: string,
+    getKey?: (request: Request) => URL | RequestInfo,
+): Middleware {
+    return new CacheHandler(cacheName, getKey);
+}
+
 class CacheHandler extends Middleware {
     /**
      * @param cacheName - Optional name of the cache to use. If omitted,
