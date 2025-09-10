@@ -748,6 +748,9 @@ declare abstract class BaseWorker implements Worker {
     protected abstract dispatch(): Promise<Response>;
     /**
      * DEFAULT allowed HTTP methods for subclasses.
+     *
+     * These defaults were selected for getting started quickly and should be
+     * overridden for the specific worker.
      */
     getAllowedMethods(): Method[];
     /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GET, HEAD, Method } from "../common";
+import { GET, HEAD, Method, OPTIONS } from "../common";
 import { FetchHandler } from "../interfaces/fetch-handler";
 import { Worker, WorkerClass } from "../interfaces/worker";
 
@@ -62,9 +62,12 @@ export abstract class BaseWorker implements Worker {
 
     /**
      * DEFAULT allowed HTTP methods for subclasses.
+     *
+     * These defaults were selected for getting started quickly and should be
+     * overridden for the specific worker.
      */
     public getAllowedMethods(): Method[] {
-        return [GET, HEAD];
+        return [GET, HEAD, OPTIONS];
     }
 
     /**
