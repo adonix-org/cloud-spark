@@ -61,9 +61,6 @@ export class CorsHandler extends Middleware {
      * @param worker - The Worker instance containing the request context.
      * @param next - Function to invoke the next middleware in the chain.
      * @returns A Response object with CORS headers applied.
-     *
-     * This middleware does not short-circuit the request; it always calls `next()`
-     * and modifies the resulting response.
      */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         if (worker.request.method === OPTIONS) {

@@ -80,10 +80,11 @@ describe("cache worker unit tests", () => {
         url.searchParams.set("c", "3");
         url.searchParams.set("a", "1");
 
-        expect(url.toString()).toBe("https://localhost/?b=2&c=3&a=1");
+        const worker = new TestWorker(new Request(url));
+        await worker.fetch();
 
-        const key = new CacheHandler().getCacheKey(new Request(url)) as URL;
-        expect(key.toString()).toBe("https://localhost/?a=1&b=2&c=3");
+        expect(defaultCache.size).toBe(1);
+        expect(defaultCache.match("https://localhost/?a=1&b=2&c=3")).toBeDefined();
     });
 
     it("allows overriding get cache key", async () => {
@@ -92,11 +93,24 @@ describe("cache worker unit tests", () => {
         url.searchParams.set("c", "3");
         url.searchParams.set("a", "1");
 
-        expect(url.toString()).toBe("https://localhost/?b=2&c=3&a=1");
+        class CacheWorker extends MiddlewareWorker {
+            protected async dispatch(): Promise<Response> {
+                return new Response("from dispatch");
+            }
+            constructor(request: Request) {
+                super(request, env, ctx);
+                this.use(
+                    new CacheHandler(undefined, (): URL => {
+                        return url;
+                    }),
+                );
+            }
+        }
 
-        const key = new CacheHandler(undefined, (request) => {
-            return request.url;
-        }).getCacheKey(new Request(url)) as URL;
-        expect(key.toString()).toBe("https://localhost/?b=2&c=3&a=1");
+        const worker = new CacheWorker(new Request(url));
+        await worker.fetch();
+
+        expect(defaultCache.size).toBe(1);
+        expect(defaultCache.match("https://localhost/?b=2&c=3&a=1")).toBeDefined();
     });
 });

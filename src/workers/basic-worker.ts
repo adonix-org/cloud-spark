@@ -45,6 +45,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
         if (!this.isAllowed(method)) {
             return this.getResponse(MethodNotAllowed);
         }
+
         const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),
             PUT: () => this.put(),
@@ -53,7 +54,8 @@ export abstract class BasicWorker extends MiddlewareWorker {
             PATCH: () => this.patch(),
             DELETE: () => this.delete(),
         };
-        return (handler[method] ?? (() => this.getResponse(MethodNotAllowed)))();
+
+        return handler[method]();
     }
 
     /**

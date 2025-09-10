@@ -62,8 +62,7 @@ export function allowAnyOrigin(cors: CorsConfig): boolean {
  * @returns `true` if the request is cross-origin and should have CORS headers, `false` otherwise.
  */
 function isCors(request: Request): boolean {
-    const site = request.headers.get(HttpHeader.SEC_FETCH_SITE);
-    return site === HttpHeader.CROSS_SITE;
+    return request.headers.get(HttpHeader.SEC_FETCH_SITE) === HttpHeader.CROSS_SITE;
 }
 
 /** Removes all standard CORS headers from a Headers object. */
