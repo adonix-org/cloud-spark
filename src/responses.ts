@@ -41,8 +41,8 @@ abstract class BaseResponse {
     /** Optional status text. Defaults to standard reason phrase. */
     public statusText?: string;
 
-    /** Optional media type of the response body. */
-    public mediaType?: MediaType;
+    /** Default media type of the response body. */
+    public mediaType: MediaType = MediaType.PLAIN_TEXT;
 
     /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit {
@@ -63,9 +63,9 @@ abstract class BaseResponse {
         mergeHeader(this.headers, key, value);
     }
 
-    /** Adds a Content-Type header based on the media type if set. */
+    /** Adds a Content-Type header if not already existing (does not overwrite). */
     public addContentType() {
-        if (this.mediaType) {
+        if (!this.headers.get(HttpHeader.CONTENT_TYPE)) {
             this.headers.set(HttpHeader.CONTENT_TYPE, getContentType(this.mediaType));
         }
     }
@@ -195,4 +195,3 @@ export class Head extends WorkerResponse {
         this.headers = new Headers(get.headers);
     }
 }
-

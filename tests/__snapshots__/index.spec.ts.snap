@@ -305,15 +305,15 @@ declare abstract class BaseResponse {
     status: StatusCodes;
     /** Optional status text. Defaults to standard reason phrase. */
     statusText?: string;
-    /** Optional media type of the response body. */
-    mediaType?: MediaType;
+    /** Default media type of the response body. */
+    mediaType: MediaType;
     /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit;
     /** Sets a header, overwriting any existing value. */
     setHeader(key: string, value: string | string[]): void;
     /** Merges a header with existing values (does not overwrite). */
     mergeHeader(key: string, value: string | string[]): void;
-    /** Adds a Content-Type header based on the media type if set. */
+    /** Adds a Content-Type header if not already existing (does not overwrite). */
     addContentType(): void;
 }
 /**
