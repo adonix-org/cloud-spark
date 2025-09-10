@@ -19,8 +19,8 @@ import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
 import { defaultCorsConfig, OPTIONS } from "./constants";
-import { HttpHeader, mergeHeader, StatusCodes } from "../../common";
-import { SuccessResponse } from "../../responses";
+import { HttpHeader, StatusCodes } from "../../common";
+import { ClonedResponse, SuccessResponse } from "../../responses";
 
 /**
  * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
@@ -71,12 +71,12 @@ export class CorsHandler extends Middleware {
 
         const response = await next();
 
-        const mutable = new Response(response.body, response);
-        addCorsHeaders(worker, this.config, mutable.headers);
+        const clone = new ClonedResponse(worker, await next());
+        addCorsHeaders(worker, this.config, clone.headers);
         if (response.status === StatusCodes.METHOD_NOT_ALLOWED) {
-            mergeHeader(mutable.headers, HttpHeader.ALLOW, OPTIONS);
+            clone.mergeHeader(HttpHeader.ALLOW, OPTIONS);
         }
-        return mutable;
+        return clone.getResponse();
     }
 }
 

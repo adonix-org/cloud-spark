@@ -26,7 +26,9 @@ export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Header
     deleteCorsHeaders(headers);
 
     const origin = getOrigin(worker.request);
-    if (!origin || !isCors(worker.request)) return;
+    if (!origin) return;
+
+    if (!isCors(worker.request)) return;
 
     if (allowAnyOrigin(cors)) {
         // Allowed Origin: *

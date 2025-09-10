@@ -297,8 +297,7 @@ interface Worker {
  * Manages headers, status, and media type.
  */
 declare abstract class BaseResponse {
-    readonly worker: Worker;
-    constructor(worker: Worker);
+    constructor();
     /** HTTP headers for the response. */
     headers: Headers;
     /** HTTP status code (default 200 OK). */
@@ -321,7 +320,7 @@ declare abstract class BaseResponse {
  */
 declare abstract class CacheResponse extends BaseResponse {
     cache?: CacheControl | undefined;
-    constructor(worker: Worker, cache?: CacheControl | undefined);
+    constructor(cache?: CacheControl | undefined);
     /** Adds Cache-Control header if caching is configured. */
     protected addCacheHeader(): void;
 }
@@ -329,6 +328,7 @@ declare abstract class CacheResponse extends BaseResponse {
  * Core worker response. Combines caching, and security headers.
  */
 declare abstract class WorkerResponse extends CacheResponse {
+    readonly worker: Worker;
     private readonly body;
     constructor(worker: Worker, body?: BodyInit | null, cache?: CacheControl);
     /** Builds the Response object with body, headers, and status. */

@@ -306,5 +306,6 @@ export function lexCompare(a: string, b: string): number {
  * @returns The origin string if present, otherwise `null`.
  */
 export function getOrigin(request: Request): string | null {
-    return request.headers.get(HttpHeader.ORIGIN);
+    const origin = request.headers.get(HttpHeader.ORIGIN);
+    return origin ? origin.trim() : null;
 }

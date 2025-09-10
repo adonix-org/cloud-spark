@@ -30,7 +30,7 @@ import { Worker } from "./interfaces/worker";
  * Manages headers, status, and media type.
  */
 abstract class BaseResponse {
-    constructor(public readonly worker: Worker) {}
+    constructor() {}
 
     /** HTTP headers for the response. */
     public headers: Headers = new Headers();
@@ -75,11 +75,8 @@ abstract class BaseResponse {
  * Base response class that adds caching headers.
  */
 abstract class CacheResponse extends BaseResponse {
-    constructor(
-        worker: Worker,
-        public cache?: CacheControl,
-    ) {
-        super(worker);
+    constructor(public cache?: CacheControl) {
+        super();
     }
 
     /** Adds Cache-Control header if caching is configured. */
@@ -95,11 +92,11 @@ abstract class CacheResponse extends BaseResponse {
  */
 export abstract class WorkerResponse extends CacheResponse {
     constructor(
-        worker: Worker,
+        public readonly worker: Worker,
         private readonly body: BodyInit | null = null,
         cache?: CacheControl,
     ) {
-        super(worker, cache);
+        super(cache);
     }
 
     /** Builds the Response object with body, headers, and status. */
