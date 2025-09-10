@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Time } from "../../common";
+import { HttpHeader, Time } from "../../common";
 import { CorsConfig } from "../../interfaces/cors-config";
 
 /**
@@ -22,7 +22,7 @@ import { CorsConfig } from "../../interfaces/cors-config";
  */
 export const defaultCorsConfig: CorsConfig = {
     allowedOrigins: ["*"], // Origins allowed for CORS requests
-    allowedHeaders: ["Content-Type"], // HTTP headers allowed in requests
+    allowedHeaders: [HttpHeader.CONTENT_TYPE], // HTTP headers allowed in requests
     exposedHeaders: [], // Headers exposed to the client
     maxAge: Time.Week, // Max age in seconds for preflight caching
 } as const;
