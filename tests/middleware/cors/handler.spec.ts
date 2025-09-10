@@ -23,7 +23,7 @@ import {
     VALID_URL,
 } from "@constants";
 import { ctx, env } from "@mock";
-import { CorsHandler } from "@src/middleware/cors/handler";
+import { cors } from "@src/middleware/cors/handler";
 import { BasicWorker } from "@src/workers/basic-worker";
 import { GET, HEAD, Method, OPTIONS } from "@src/common";
 
@@ -33,7 +33,7 @@ class TestWorker extends BasicWorker {
     }
 
     protected init(): void {
-        this.use(new CorsHandler());
+        this.use(cors());
     }
 
     protected override async get(): Promise<Response> {
@@ -47,7 +47,7 @@ class TestWorker extends BasicWorker {
 
 class TestOriginWorker extends TestWorker {
     protected init(): void {
-        this.use(new CorsHandler({ allowedOrigins: [VALID_ORIGIN] }));
+        this.use(cors({ allowedOrigins: [VALID_ORIGIN] }));
     }
 }
 
@@ -101,7 +101,7 @@ describe("cors middleware unit tests", () => {
     it("initializes the cors provider using config object", async () => {
         class TestInitWorker extends TestWorker {
             protected init(): void {
-                this.use(new CorsHandler({ allowedHeaders: ["x-test-header"] }));
+                this.use(cors({ allowedHeaders: ["x-test-header"] }));
             }
         }
         const worker = new TestInitWorker(GET_REQUEST_WITH_ORIGIN);

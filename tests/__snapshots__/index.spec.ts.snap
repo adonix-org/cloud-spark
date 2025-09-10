@@ -5,9 +5,7 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "BadRequest",
   "BasicWorker",
   "CacheControl",
-  "CacheHandler",
   "ClonedResponse",
-  "CorsHandler",
   "DELETE",
   "Forbidden",
   "GET",
@@ -38,6 +36,8 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "Time",
   "Unauthorized",
   "WorkerResponse",
+  "cache",
+  "cors",
   "getContentType",
   "getOrigin",
   "isMethod",
@@ -613,88 +613,9 @@ declare abstract class Middleware {
     abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
-/**
- * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
- *
- * Merges the initialization config (if provided), with {@link defaultCorsConfig}.
- *
- * Example Worker:
- * \`\`\`ts
- * // Request → [CorsHandler] → [CacheHandler] → [Worker Handler]
- * // Response ← [CorsHandler] ← [CacheHandler] ↙
- * protected override init(): void {
- *     worker.use(new CorsHandler());
- *     worker.use(new CacheHandler());
- * }
- * \`\`\`
- */
-declare class CorsHandler extends Middleware {
-    /** The configuration used for this instance, with all defaults applied. */
-    private readonly config;
-    /**
-     * Create a new CORS middleware instance.
-     *
-     * @param init - Partial configuration to override the defaults. Any values
-     *               not provided will use \`defaultCorsConfig\`.
-     */
-    constructor(init?: CorsInit);
-    /**
-     * Handle a request by applying CORS headers to the response.
-     *
-     * @param worker - The Worker instance containing the request context.
-     * @param next - Function to invoke the next middleware in the chain.
-     * @returns A Response object with CORS headers applied.
-     */
-    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
-}
+declare function cors(init?: CorsInit): Middleware;
 
-/**
- * Middleware for caching GET requests.
- *
- * This middleware checks a cache (either a named cache or the default)
- * before passing the request down the middleware chain. Responses for
- * successful GET requests are automatically stored in the cache.
- *
- * Non-GET requests are never cached. The cache key can be customized
- * via the \`getKey\` function; otherwise, the URL is normalized and used.
- *
- * \`\`\`ts
- * worker.use(new CacheHandler());
- * \`\`\`
- */
-declare class CacheHandler extends Middleware {
-    protected readonly cacheName?: string | undefined;
-    protected readonly getKey?: ((request: Request) => URL | RequestInfo) | undefined;
-    /**
-     * @param cacheName - Optional name of the cache to use. If omitted,
-     *                    \`caches.default\` is used.
-     * @param getKey - Optional function to generate a cache key from a request.
-     *                 Defaults to using the normalized request URL.
-     */
-    constructor(cacheName?: string | undefined, getKey?: ((request: Request) => URL | RequestInfo) | undefined);
-    /**
-     * Handle a request in the caching middleware.
-     *
-     * Checks the cache for GET requests and returns the cached response if available.
-     * Otherwise, calls \`next()\` to continue the middleware chain and caches
-     * the response if successful.
-     *
-     * @param worker - The Worker instance containing the request context.
-     * @param next - Function to invoke the next middleware in the chain.
-     * @returns A Response object, either from cache or the next middleware.
-     */
-    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
-    /**
-     * Generate the cache key for a request.
-     *
-     * @param request - The Request object to generate a cache key for.
-     * @returns A URL or RequestInfo used as the cache key.
-     *
-     * If a custom \`getKey\` function was provided in the constructor, it is used.
-     * Otherwise, the request URL is normalized.
-     */
-    private getCacheKey;
-}
+declare function cache(cacheName?: string, getKey?: (request: Request) => URL | RequestInfo): Middleware;
 
 /**
  * A type-safe Cloudflare Worker handler.
@@ -925,6 +846,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected options(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, cache, cors, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

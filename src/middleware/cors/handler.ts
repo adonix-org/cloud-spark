@@ -22,6 +22,10 @@ import { defaultCorsConfig } from "./constants";
 import { OPTIONS } from "../../common";
 import { ClonedResponse, Options } from "../../responses";
 
+export function cors(init?: CorsInit): Middleware {
+    return new CorsHandler(init);
+}
+
 /**
  * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
  *
@@ -37,7 +41,7 @@ import { ClonedResponse, Options } from "../../responses";
  * }
  * ```
  */
-export class CorsHandler extends Middleware {
+class CorsHandler extends Middleware {
     /** The configuration used for this instance, with all defaults applied. */
     private readonly config: CorsConfig;
 

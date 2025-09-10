@@ -18,6 +18,13 @@ import { GET, normalizeUrl } from "../../common";
 import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 
+export function cache(
+    cacheName?: string,
+    getKey?: (request: Request) => URL | RequestInfo,
+): Middleware {
+    return new CacheHandler(cacheName, getKey);
+}
+
 /**
  * Middleware for caching GET requests.
  *
@@ -32,7 +39,7 @@ import { Worker } from "../../interfaces/worker";
  * worker.use(new CacheHandler());
  * ```
  */
-export class CacheHandler extends Middleware {
+class CacheHandler extends Middleware {
     /**
      * @param cacheName - Optional name of the cache to use. If omitted,
      *                    `caches.default` is used.
