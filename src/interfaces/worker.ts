@@ -63,7 +63,9 @@ export interface Worker {
     get ctx(): ExecutionContext;
 
     /**
-     * The HTTP methods supported by this worker.
+     * Returns the list of HTTP methods that are allowed for this worker.
+     *
+     * @returns {Method[]} An array of allowed HTTP methods.
      */
     getAllowedMethods(): Method[];
 }
