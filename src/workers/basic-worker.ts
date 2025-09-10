@@ -109,7 +109,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * Default handler for HEAD requests.
      * Performs a GET request and removes the body for HEAD semantics.
      *
-     * Usually does not need to be overridden, as this behavior covers
+     * Usually does not need to be overridden as this behavior covers
      * standard HEAD requirements.
      */
     protected async head(): Promise<Response> {

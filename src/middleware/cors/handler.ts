@@ -19,7 +19,7 @@ import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
 import { defaultCorsConfig } from "./constants";
-import { HttpHeader, OPTIONS, StatusCodes } from "../../common";
+import { OPTIONS } from "../../common";
 import { ClonedResponse, Options } from "../../responses";
 
 /**
@@ -68,12 +68,8 @@ export class CorsHandler extends Middleware {
 
         const response = await next();
 
-        const clone = new ClonedResponse(worker, await next());
+        const clone = new ClonedResponse(worker, response);
         addCorsHeaders(worker, this.config, clone.headers);
-        if (response.status === StatusCodes.METHOD_NOT_ALLOWED) {
-            clone.mergeHeader(HttpHeader.ALLOW, OPTIONS);
-        }
         return clone.getResponse();
     }
 }
-
