@@ -26,6 +26,7 @@ import {
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader } from "@src/common";
 import { assertDefined, VALID_URL } from "@constants";
+import { MethodNotAllowed } from "@src/errors";
 
 const mockWorker = {
     request: new Request(VALID_URL),
@@ -96,5 +97,11 @@ describe("response unit tests", () => {
         );
 
         expect(CacheControl.parse(h)["max-age"]).toBe(65);
+    });
+
+    it("correctly merges a value to an existing header", async () => {
+        const resp = new MethodNotAllowed(mockWorker);
+        resp.mergeHeader(HttpHeader.ALLOW, "DELETE");
+        expect(resp.headers.get(HttpHeader.ALLOW)).toBe("DELETE, GET, HEAD, OPTIONS");
     });
 });
