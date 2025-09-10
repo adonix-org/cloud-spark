@@ -500,7 +500,7 @@ interface ErrorJson {
      * Optional detailed message describing the error.
      *
      * This can include additional context, debugging hints, or
-     * information useful to the client. May be an empty string
+     * information useful to the client. Will be an empty string
      * if no details are provided.
      */
     details: string;
