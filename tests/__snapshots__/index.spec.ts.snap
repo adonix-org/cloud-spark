@@ -25,6 +25,8 @@ exports[`library export tests > matches the exported symbols snapshot 1`] = `
   "Middleware",
   "NotFound",
   "NotImplemented",
+  "OPTIONS",
+  "Options",
   "PATCH",
   "POST",
   "PUT",
@@ -115,7 +117,8 @@ declare enum Method {
     HEAD = "HEAD",
     POST = "POST",
     PATCH = "PATCH",
-    DELETE = "DELETE"
+    DELETE = "DELETE",
+    OPTIONS = "OPTIONS"
 }
 /**
  * Shorthand constants for each HTTP method.
@@ -129,6 +132,7 @@ declare const HEAD: Method;
 declare const POST: Method;
 declare const PATCH: Method;
 declare const DELETE: Method;
+declare const OPTIONS: Method;
 /**
  * Type guard that checks if a string is a valid HTTP method.
  *
@@ -370,6 +374,13 @@ declare class TextResponse extends SuccessResponse {
 declare class Head extends WorkerResponse {
     constructor(worker: Worker, get: Response);
 }
+/**
+ * Response for OPTIONS preflight requests.
+ * Sets CORS headers and returns 204 No Content.
+ */
+declare class Options extends SuccessResponse {
+    constructor(worker: Worker);
+}
 
 /**
  * Generic HTTP error response.
@@ -607,9 +618,6 @@ declare abstract class Middleware {
  *
  * Merges the initialization config (if provided), with {@link defaultCorsConfig}.
  *
- * ⚠️ **Important:** This middleware needs to run **after any caching**.
- * Otherwise, CORS headers can end up cached and cause unexpected errors.
- *
  * Example Worker:
  * \`\`\`ts
  * // Request → [CorsHandler] → [CacheHandler] → [Worker Handler]
@@ -810,7 +818,7 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      * @param method HTTP method string
      * @returns true if the method is allowed
      */
-    isAllowed(method: Method): boolean;
+    isAllowed(method: string): boolean;
     /** Override and implement this method for GET requests. */
     protected get(): Promise<Response>;
     /** Override and implement this method for PUT requests. */
@@ -821,6 +829,8 @@ declare abstract class BasicWorker extends MiddlewareWorker {
     protected patch(): Promise<Response>;
     /** Override and implement this method for DELETE requests. */
     protected delete(): Promise<Response>;
+    /** Override and implement this method for OPTIONS requests. */
+    protected options(): Promise<Response>;
     /**
      * Default handler for HEAD requests.
      * Performs a GET request and removes the body for HEAD semantics.
@@ -909,8 +919,9 @@ declare abstract class RouteWorker extends BasicWorker {
     protected post(): Promise<Response>;
     protected patch(): Promise<Response>;
     protected delete(): Promise<Response>;
+    protected options(): Promise<Response>;
 }
 
-export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, CacheHandler, ClonedResponse, type CorsConfig, CorsHandler, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, getContentType, getOrigin, isMethod, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

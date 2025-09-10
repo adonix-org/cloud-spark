@@ -121,4 +121,8 @@ export abstract class RouteWorker extends BasicWorker {
     protected override async delete(): Promise<Response> {
         return this.getResponse(NotFound);
     }
+
+    protected override async options(): Promise<Response> {
+        return this.getResponse(NotFound);
+    }
 }

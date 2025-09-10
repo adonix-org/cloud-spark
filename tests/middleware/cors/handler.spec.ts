@@ -25,6 +25,7 @@ import {
 import { ctx, env } from "@mock";
 import { CorsHandler } from "@src/middleware/cors/handler";
 import { BasicWorker } from "@src/workers/basic-worker";
+import { GET, HEAD, Method, OPTIONS } from "@src/common";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {
@@ -37,6 +38,10 @@ class TestWorker extends BasicWorker {
 
     protected override async get(): Promise<Response> {
         return new Response("Ok");
+    }
+
+    public override getAllowedMethods(): Method[] {
+        return [GET, HEAD, OPTIONS];
     }
 }
 
@@ -110,38 +115,11 @@ describe("cors middleware unit tests", () => {
         ]);
     });
 
-    it("adds options to allow header when method not allowed", async () => {
-        const request = new Request(VALID_URL, {
-            method: "FOO" as any,
-            headers: {
-                Origin: VALID_ORIGIN,
-                "Sec-Fetch-Site": "cross-site",
-            },
-        });
-        const worker = new TestWorker(request);
-        const response = await worker.fetch();
-        expect(await response.json()).toStrictEqual({
-            details: "FOO method not allowed.",
-            error: "Method Not Allowed",
-            status: 405,
-        });
-        expect([...response.headers.entries()]).toStrictEqual([
-            ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
-            ["access-control-allow-origin", "*"],
-            ["access-control-max-age", "604800"],
-            ["allow", "GET, HEAD, OPTIONS"],
-            ["cache-control", "no-cache, no-store, must-revalidate, max-age=0"],
-            ["content-type", "application/json; charset=utf-8"],
-        ]);
-    });
-
     it("intercepts the options preflight request and returns the response", async () => {
         const request = new Request(VALID_URL, {
             method: "OPTIONS",
             headers: {
                 Origin: VALID_ORIGIN,
-                "Sec-Fetch-Site": "cross-site",
             },
         });
         const worker = new TestWorker(request);

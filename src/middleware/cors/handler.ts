@@ -18,17 +18,14 @@ import { addCorsHeaders } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
-import { defaultCorsConfig, OPTIONS } from "./constants";
-import { HttpHeader, StatusCodes } from "../../common";
-import { ClonedResponse, SuccessResponse } from "../../responses";
+import { defaultCorsConfig } from "./constants";
+import { HttpHeader, OPTIONS, StatusCodes } from "../../common";
+import { ClonedResponse, Options } from "../../responses";
 
 /**
  * Middleware that applies Cross-Origin Resource Sharing (CORS) headers to responses.
  *
  * Merges the initialization config (if provided), with {@link defaultCorsConfig}.
- *
- * ⚠️ **Important:** This middleware needs to run **after any caching**.
- * Otherwise, CORS headers can end up cached and cause unexpected errors.
  *
  * Example Worker:
  * ```ts
@@ -80,12 +77,3 @@ export class CorsHandler extends Middleware {
     }
 }
 
-/**
- * Response for OPTIONS preflight requests.
- * Sets CORS headers and returns 204 No Content.
- */
-class Options extends SuccessResponse {
-    constructor(worker: Worker) {
-        super(worker, null, undefined, StatusCodes.NO_CONTENT);
-    }
-}

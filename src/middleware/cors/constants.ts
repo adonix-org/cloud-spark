@@ -17,8 +17,6 @@
 import { Time } from "../../common";
 import { CorsConfig } from "../../interfaces/cors-config";
 
-export const OPTIONS = "OPTIONS";
-
 /**
  * Default configuration for CORS middleware.
  */

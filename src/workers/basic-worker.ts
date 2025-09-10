@@ -28,6 +28,10 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * Entry point to handle a fetch request.
      */
     public override async fetch(): Promise<Response> {
+        if (!this.isAllowed(this.request.method)) {
+            return this.getResponse(MethodNotAllowed);
+        }
+
         try {
             await this.init();
             return await super.fetch();
@@ -42,10 +46,6 @@ export abstract class BasicWorker extends MiddlewareWorker {
      */
     protected override async dispatch(): Promise<Response> {
         const method = this.request.method as Method;
-        if (!this.isAllowed(method)) {
-            return this.getResponse(MethodNotAllowed);
-        }
-
         const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),
             PUT: () => this.put(),
@@ -53,9 +53,10 @@ export abstract class BasicWorker extends MiddlewareWorker {
             POST: () => this.post(),
             PATCH: () => this.patch(),
             DELETE: () => this.delete(),
+            OPTIONS: () => this.options(),
         };
 
-        return handler[method]();
+        return (handler[method] ?? (() => this.getResponse(MethodNotAllowed)))();
     }
 
     /**
@@ -70,7 +71,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * @param method HTTP method string
      * @returns true if the method is allowed
      */
-    public isAllowed(method: Method): boolean {
+    public isAllowed(method: string): boolean {
         return isMethod(method) && this.getAllowedMethods().includes(method);
     }
 
@@ -96,6 +97,11 @@ export abstract class BasicWorker extends MiddlewareWorker {
 
     /** Override and implement this method for DELETE requests. */
     protected async delete(): Promise<Response> {
+        return this.getResponse(MethodNotImplemented);
+    }
+
+    /** Override and implement this method for OPTIONS requests. */
+    protected async options(): Promise<Response> {
         return this.getResponse(MethodNotImplemented);
     }
 
