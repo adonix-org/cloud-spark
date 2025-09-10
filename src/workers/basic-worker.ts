@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GET, isMethod, Method } from "../common";
+import { GET, HEAD, isMethod, Method, OPTIONS } from "../common";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
 import { MiddlewareWorker } from "./middleware-worker";
 import { Head, WorkerResponse } from "../responses";
@@ -115,6 +115,16 @@ export abstract class BasicWorker extends MiddlewareWorker {
     protected async head(): Promise<Response> {
         const worker = this.create(new Request(this.request, { method: GET }));
         return this.getResponse(Head, await worker.fetch());
+    }
+
+    /**
+     * DEFAULT allowed HTTP methods for subclasses.
+     *
+     * These defaults were selected for getting started quickly and should be
+     * overridden for each specific worker.
+     */
+    public getAllowedMethods(): Method[] {
+        return [GET, HEAD, OPTIONS];
     }
 
     /**

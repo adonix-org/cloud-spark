@@ -667,13 +667,7 @@ declare abstract class BaseWorker implements Worker {
      * @returns A Promise that resolves to the \`Response\` for the request.
      */
     protected abstract dispatch(): Promise<Response>;
-    /**
-     * DEFAULT allowed HTTP methods for subclasses.
-     *
-     * These defaults were selected for getting started quickly and should be
-     * overridden for the specific worker.
-     */
-    getAllowedMethods(): Method[];
+    abstract getAllowedMethods(): Method[];
     /**
      * Creates a new instance of the current Worker subclass.
      *
@@ -763,6 +757,13 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      * standard HEAD requirements.
      */
     protected head(): Promise<Response>;
+    /**
+     * DEFAULT allowed HTTP methods for subclasses.
+     *
+     * These defaults were selected for getting started quickly and should be
+     * overridden for each specific worker.
+     */
+    getAllowedMethods(): Method[];
     /**
      * Simplify and standardize {@link Response} creation by extending {@link WorkerResponse}
      * or any of its subclasses and passing to this method.
