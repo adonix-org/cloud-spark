@@ -28,13 +28,11 @@ export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Header
     const origin = getOrigin(worker.request);
     if (!origin) return;
 
-    if (!isCors(worker.request)) return;
-
     if (allowAnyOrigin(cors)) {
         // Allowed Origin: *
         setHeader(headers, HttpHeader.ALLOW_ORIGIN, HttpHeader.ALLOW_ALL_ORIGINS);
     } else {
-        // Allowed Origin: "https://example.com"
+        // Allowed Origin: ["https://example.com"]
         // Always add Vary: Origin
         mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
 
@@ -55,16 +53,6 @@ export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Header
 /** Returns true if the CORS config allows all origins (`*`). */
 export function allowAnyOrigin(cors: CorsConfig): boolean {
     return cors.allowedOrigins.includes("*");
-}
-
-/**
- * Determines whether a given request is a cross-origin request that requires CORS headers.
- *
- * @param request - The incoming Request object.
- * @returns `true` if the request is cross-origin and should have CORS headers, `false` otherwise.
- */
-function isCors(request: Request): boolean {
-    return request.headers.get(HttpHeader.SEC_FETCH_SITE) === HttpHeader.CROSS_SITE;
 }
 
 /** Removes all standard CORS headers from a Headers object. */
