@@ -754,7 +754,7 @@ declare class ClonedResponse extends WorkerResponse {
     constructor(response: Response, cache?: CacheControl);
 }
 /**
- * Represents a successful response with customizable body and status.
+ * Represents a successful response with customizable body, cache and status.
  */
 declare class SuccessResponse extends WorkerResponse {
     constructor(body?: BodyInit | null, cache?: CacheControl, status?: StatusCodes);
@@ -778,7 +778,8 @@ declare class TextResponse extends SuccessResponse {
     constructor(content: string, cache?: CacheControl, status?: StatusCodes);
 }
 /**
- * Response for HEAD requests. Copy headers and status but no body.
+ * Response for HEAD requests. Copy headers and status from a GET response
+ * without the body.
  */
 declare class Head extends WorkerResponse {
     constructor(get: Response);

@@ -119,7 +119,7 @@ export class ClonedResponse extends WorkerResponse {
 }
 
 /**
- * Represents a successful response with customizable body and status.
+ * Represents a successful response with customizable body, cache and status.
  */
 export class SuccessResponse extends WorkerResponse {
     constructor(
@@ -163,7 +163,8 @@ export class TextResponse extends SuccessResponse {
 }
 
 /**
- * Response for HEAD requests. Copy headers and status but no body.
+ * Response for HEAD requests. Copy headers and status from a GET response
+ * without the body.
  */
 export class Head extends WorkerResponse {
     constructor(get: Response) {
