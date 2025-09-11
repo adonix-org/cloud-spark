@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export * from "./url";
-export * from "./header";
 export * from "./compare";
+export * from "./header";
 export * from "./request";
+export * from "./url";
