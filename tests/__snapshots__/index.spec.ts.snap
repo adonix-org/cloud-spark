@@ -254,6 +254,91 @@ declare function lexCompare(a: string, b: string): number;
 declare function getOrigin(request: Request): string | null;
 
 /**
+ * Base class for building HTTP responses.
+ * Manages headers, status, and media type.
+ */
+declare abstract class BaseResponse {
+    constructor();
+    /** HTTP headers for the response. */
+    headers: Headers;
+    /** HTTP status code (default 200 OK). */
+    status: StatusCodes;
+    /** Optional status text. Defaults to standard reason phrase. */
+    statusText?: string;
+    /** Default media type of the response body. */
+    mediaType: MediaType;
+    /** Converts current state to ResponseInit for constructing a Response. */
+    protected get responseInit(): ResponseInit;
+    /** Sets a header, overwriting any existing value. */
+    setHeader(key: string, value: string | string[]): void;
+    /** Merges a header with existing values (does not overwrite). */
+    mergeHeader(key: string, value: string | string[]): void;
+    /** Adds a Content-Type header if not already existing (does not overwrite). */
+    addContentType(): void;
+}
+/**
+ * Base response class that adds caching headers.
+ */
+declare abstract class CacheResponse extends BaseResponse {
+    cache?: CacheControl | undefined;
+    constructor(cache?: CacheControl | undefined);
+    /** Adds Cache-Control header if caching is configured. */
+    protected addCacheHeader(): void;
+}
+/**
+ * Core worker response. Combines caching, and security headers.
+ */
+declare abstract class WorkerResponse extends CacheResponse {
+    private readonly body;
+    constructor(body?: BodyInit | null, cache?: CacheControl);
+    /** Builds the Response object with body, headers, and status. */
+    getResponse(): Promise<Response>;
+}
+/**
+ * Wraps an existing Response and clones its body, headers, and status.
+ */
+declare class ClonedResponse extends WorkerResponse {
+    constructor(response: Response, cache?: CacheControl);
+}
+/**
+ * Represents a successful response with customizable body and status.
+ */
+declare class SuccessResponse extends WorkerResponse {
+    constructor(body?: BodyInit | null, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * JSON response. Automatically sets Content-Type to application/json.
+ */
+declare class JsonResponse extends SuccessResponse {
+    constructor(json?: unknown, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * HTML response. Automatically sets Content-Type to text/html.
+ */
+declare class HtmlResponse extends SuccessResponse {
+    constructor(body: string, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * Plain text response. Automatically sets Content-Type to text/plain.
+ */
+declare class TextResponse extends SuccessResponse {
+    constructor(content: string, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * Response for HEAD requests. Clones headers but has no body.
+ */
+declare class Head extends WorkerResponse {
+    constructor(get: Response);
+}
+/**
+ * Response for OPTIONS preflight requests.
+ * Sets CORS headers and returns 204 No Content.
+ */
+declare class Options extends SuccessResponse {
+    constructor();
+}
+
+/**
  * Represents the constructor of a Worker subclass.
  *
  * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
@@ -299,92 +384,6 @@ interface Worker {
 }
 
 /**
- * Base class for building HTTP responses.
- * Manages headers, status, and media type.
- */
-declare abstract class BaseResponse {
-    constructor();
-    /** HTTP headers for the response. */
-    headers: Headers;
-    /** HTTP status code (default 200 OK). */
-    status: StatusCodes;
-    /** Optional status text. Defaults to standard reason phrase. */
-    statusText?: string;
-    /** Default media type of the response body. */
-    mediaType: MediaType;
-    /** Converts current state to ResponseInit for constructing a Response. */
-    protected get responseInit(): ResponseInit;
-    /** Sets a header, overwriting any existing value. */
-    setHeader(key: string, value: string | string[]): void;
-    /** Merges a header with existing values (does not overwrite). */
-    mergeHeader(key: string, value: string | string[]): void;
-    /** Adds a Content-Type header if not already existing (does not overwrite). */
-    addContentType(): void;
-}
-/**
- * Base response class that adds caching headers.
- */
-declare abstract class CacheResponse extends BaseResponse {
-    cache?: CacheControl | undefined;
-    constructor(cache?: CacheControl | undefined);
-    /** Adds Cache-Control header if caching is configured. */
-    protected addCacheHeader(): void;
-}
-/**
- * Core worker response. Combines caching, and security headers.
- */
-declare abstract class WorkerResponse extends CacheResponse {
-    readonly worker: Worker;
-    private readonly body;
-    constructor(worker: Worker, body?: BodyInit | null, cache?: CacheControl);
-    /** Builds the Response object with body, headers, and status. */
-    getResponse(): Promise<Response>;
-}
-/**
- * Wraps an existing Response and clones its body, headers, and status.
- */
-declare class ClonedResponse extends WorkerResponse {
-    constructor(worker: Worker, response: Response, cache?: CacheControl);
-}
-/**
- * Represents a successful response with customizable body and status.
- */
-declare class SuccessResponse extends WorkerResponse {
-    constructor(worker: Worker, body?: BodyInit | null, cache?: CacheControl, status?: StatusCodes);
-}
-/**
- * JSON response. Automatically sets Content-Type to application/json.
- */
-declare class JsonResponse extends SuccessResponse {
-    constructor(worker: Worker, json?: unknown, cache?: CacheControl, status?: StatusCodes);
-}
-/**
- * HTML response. Automatically sets Content-Type to text/html.
- */
-declare class HtmlResponse extends SuccessResponse {
-    constructor(worker: Worker, body: string, cache?: CacheControl, status?: StatusCodes);
-}
-/**
- * Plain text response. Automatically sets Content-Type to text/plain.
- */
-declare class TextResponse extends SuccessResponse {
-    constructor(worker: Worker, content: string, cache?: CacheControl, status?: StatusCodes);
-}
-/**
- * Response for HEAD requests. Clones headers but has no body.
- */
-declare class Head extends WorkerResponse {
-    constructor(worker: Worker, get: Response);
-}
-/**
- * Response for OPTIONS preflight requests.
- * Sets CORS headers and returns 204 No Content.
- */
-declare class Options extends SuccessResponse {
-    constructor(worker: Worker);
-}
-
-/**
  * Generic HTTP error response.
  * Sends a JSON body with status, error message, and details.
  */
@@ -395,23 +394,23 @@ declare class HttpError extends JsonResponse {
      * @param status HTTP status code.
      * @param details Optional detailed error message.
      */
-    constructor(worker: Worker, status: StatusCodes, details?: string | undefined);
+    constructor(status: StatusCodes, details?: string | undefined);
 }
 /** 400 Bad Request error response. */
 declare class BadRequest extends HttpError {
-    constructor(worker: Worker, details?: string);
+    constructor(details?: string);
 }
 /** 401 Unauthorized error response. */
 declare class Unauthorized extends HttpError {
-    constructor(worker: Worker, details?: string);
+    constructor(details?: string);
 }
 /** 403 Forbidden error response. */
 declare class Forbidden extends HttpError {
-    constructor(worker: Worker, details?: string);
+    constructor(details?: string);
 }
 /** 404 Not Found error response. */
 declare class NotFound extends HttpError {
-    constructor(worker: Worker, details?: string);
+    constructor(details?: string);
 }
 /** 405 Method Not Allowed error response. */
 declare class MethodNotAllowed extends HttpError {
@@ -419,11 +418,11 @@ declare class MethodNotAllowed extends HttpError {
 }
 /** 500 Internal Server Error response. */
 declare class InternalServerError extends HttpError {
-    constructor(worker: Worker, details?: string);
+    constructor(details?: string);
 }
 /** 501 Not Implemented error response. */
 declare class NotImplemented extends HttpError {
-    constructor(worker: Worker, details?: string);
+    constructor(details?: string);
 }
 /** 501 Method Not Implemented error response for unsupported HTTP methods. */
 declare class MethodNotImplemented extends NotImplemented {
@@ -431,7 +430,7 @@ declare class MethodNotImplemented extends NotImplemented {
 }
 /** 503 Service Unavailable error response. */
 declare class ServiceUnavailable extends HttpError {
-    constructor(worker: Worker, details?: string);
+    constructor(details?: string);
 }
 
 /**
@@ -805,7 +804,9 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      * @param args Additional constructor arguments
      * @returns A Promise resolving to the {@link Response} object
      */
-    protected getResponse<T extends WorkerResponse, Ctor extends new (worker: Worker, ...args: any[]) => T>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor> extends [Worker, ...infer R] ? R : never): Promise<Response>;
+    protected getResponse<Ctor extends new (...args: any[]) => {
+        getResponse(): Promise<Response>;
+    }>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor>): Promise<Response>;
 }
 
 /**

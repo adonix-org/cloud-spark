@@ -17,8 +17,8 @@
 import { getReasonPhrase } from "http-status-codes";
 import { CacheControl, HttpHeader, StatusCodes } from "./common";
 import { JsonResponse } from "./responses";
-import { Worker } from "./interfaces/worker";
 import { ErrorJson } from "./interfaces/error-json";
+import { Worker } from "./interfaces/worker";
 
 /**
  * Generic HTTP error response.
@@ -31,7 +31,6 @@ export class HttpError extends JsonResponse {
      * @param details Optional detailed error message.
      */
     constructor(
-        worker: Worker,
         status: StatusCodes,
         protected readonly details?: string,
     ) {
@@ -40,74 +39,70 @@ export class HttpError extends JsonResponse {
             error: getReasonPhrase(status),
             details: details ?? "",
         };
-        super(worker, json, CacheControl.DISABLE, status);
+        super(json, CacheControl.DISABLE, status);
     }
 }
 
 /** 400 Bad Request error response. */
 export class BadRequest extends HttpError {
-    constructor(worker: Worker, details?: string) {
-        super(worker, StatusCodes.BAD_REQUEST, details);
+    constructor(details?: string) {
+        super(StatusCodes.BAD_REQUEST, details);
     }
 }
 
 /** 401 Unauthorized error response. */
 export class Unauthorized extends HttpError {
-    constructor(worker: Worker, details?: string) {
-        super(worker, StatusCodes.UNAUTHORIZED, details);
+    constructor(details?: string) {
+        super(StatusCodes.UNAUTHORIZED, details);
     }
 }
 
 /** 403 Forbidden error response. */
 export class Forbidden extends HttpError {
-    constructor(worker: Worker, details?: string) {
-        super(worker, StatusCodes.FORBIDDEN, details);
+    constructor(details?: string) {
+        super(StatusCodes.FORBIDDEN, details);
     }
 }
 
 /** 404 Not Found error response. */
 export class NotFound extends HttpError {
-    constructor(worker: Worker, details?: string) {
-        super(worker, StatusCodes.NOT_FOUND, details);
+    constructor(details?: string) {
+        super(StatusCodes.NOT_FOUND, details);
     }
 }
 
 /** 405 Method Not Allowed error response. */
 export class MethodNotAllowed extends HttpError {
     constructor(worker: Worker) {
-        super(
-            worker,
-            StatusCodes.METHOD_NOT_ALLOWED,
-            `${worker.request.method} method not allowed.`,
-        );
-        this.setHeader(HttpHeader.ALLOW, this.worker.getAllowedMethods());
+        super(StatusCodes.METHOD_NOT_ALLOWED, `${worker.request.method} method not allowed.`);
+        this.setHeader(HttpHeader.ALLOW, worker.getAllowedMethods());
     }
 }
 
 /** 500 Internal Server Error response. */
 export class InternalServerError extends HttpError {
-    constructor(worker: Worker, details?: string) {
-        super(worker, StatusCodes.INTERNAL_SERVER_ERROR, details);
+    constructor(details?: string) {
+        super(StatusCodes.INTERNAL_SERVER_ERROR, details);
     }
 }
 
 /** 501 Not Implemented error response. */
 export class NotImplemented extends HttpError {
-    constructor(worker: Worker, details?: string) {
-        super(worker, StatusCodes.NOT_IMPLEMENTED, details);
+    constructor(details?: string) {
+        super(StatusCodes.NOT_IMPLEMENTED, details);
     }
 }
 
 /** 501 Method Not Implemented error response for unsupported HTTP methods. */
 export class MethodNotImplemented extends NotImplemented {
     constructor(worker: Worker) {
-        super(worker, `${worker.request.method} method not implemented.`);
+        super(`${worker.request.method} method not implemented.`);
     }
 }
 
 /** 503 Service Unavailable error response. */
 export class ServiceUnavailable extends HttpError {
-    constructor(worker: Worker, details?: string) {
-        super(worker, StatusCodes.SERVICE_UNAVAILABLE, details);
+    constructor(details?: string) {
+        super(StatusCodes.SERVICE_UNAVAILABLE, details);
     }
 }

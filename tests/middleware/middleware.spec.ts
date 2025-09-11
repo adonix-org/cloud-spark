@@ -52,8 +52,8 @@ class AuthWorker extends TestWorker {
 }
 
 class AuthHandler extends Middleware {
-    public override handle(worker: Worker): Promise<Response> {
-        return new Unauthorized(worker).getResponse();
+    public override handle(): Promise<Response> {
+        return new Unauthorized().getResponse();
     }
 }
 

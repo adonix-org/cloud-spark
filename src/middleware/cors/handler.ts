@@ -60,14 +60,14 @@ class CorsHandler extends Middleware {
      */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         if (worker.request.method === OPTIONS) {
-            const options = new Options(worker);
+            const options = new Options();
             addCorsHeaders(worker, this.config, options.headers);
             return options.getResponse();
         }
 
         const response = await next();
 
-        const clone = new ClonedResponse(worker, response);
+        const clone = new ClonedResponse(response);
         addCorsHeaders(worker, this.config, clone.headers);
         return clone.getResponse();
     }

@@ -44,7 +44,7 @@ describe("http error unit tests", () => {
         [NotImplemented, StatusCodes.NOT_IMPLEMENTED, "Not Implemented"],
         [ServiceUnavailable, StatusCodes.SERVICE_UNAVAILABLE, "Service Unavailable"],
     ])("should return correct JSON for $2", (Ctor, status, reason) => {
-        const err = new Ctor(worker) as any;
+        const err = new Ctor() as any;
         expect(err.status).toBe(status);
         expect(JSON.parse(err.body)).toEqual<ErrorJson>({
             status,

@@ -23,7 +23,6 @@ import {
     MediaType,
     setHeader,
 } from "./common";
-import { Worker } from "./interfaces/worker";
 
 /**
  * Base class for building HTTP responses.
@@ -92,7 +91,6 @@ abstract class CacheResponse extends BaseResponse {
  */
 export abstract class WorkerResponse extends CacheResponse {
     constructor(
-        public readonly worker: Worker,
         private readonly body: BodyInit | null = null,
         cache?: CacheControl,
     ) {
@@ -114,9 +112,9 @@ export abstract class WorkerResponse extends CacheResponse {
  * Wraps an existing Response and clones its body, headers, and status.
  */
 export class ClonedResponse extends WorkerResponse {
-    constructor(worker: Worker, response: Response, cache?: CacheControl) {
+    constructor(response: Response, cache?: CacheControl) {
         const clone = response.clone();
-        super(worker, clone.body, cache);
+        super(clone.body, cache);
         this.headers = new Headers(clone.headers);
         this.status = clone.status;
         this.statusText = clone.statusText;
@@ -128,12 +126,11 @@ export class ClonedResponse extends WorkerResponse {
  */
 export class SuccessResponse extends WorkerResponse {
     constructor(
-        worker: Worker,
         body: BodyInit | null = null,
         cache?: CacheControl,
         status: StatusCodes = StatusCodes.OK,
     ) {
-        super(worker, body, cache);
+        super(body, cache);
         this.status = status;
     }
 }
@@ -142,13 +139,8 @@ export class SuccessResponse extends WorkerResponse {
  * JSON response. Automatically sets Content-Type to application/json.
  */
 export class JsonResponse extends SuccessResponse {
-    constructor(
-        worker: Worker,
-        json: unknown = {},
-        cache?: CacheControl,
-        status: StatusCodes = StatusCodes.OK,
-    ) {
-        super(worker, JSON.stringify(json), cache, status);
+    constructor(json: unknown = {}, cache?: CacheControl, status: StatusCodes = StatusCodes.OK) {
+        super(JSON.stringify(json), cache, status);
         this.mediaType = MediaType.JSON;
     }
 }
@@ -157,13 +149,8 @@ export class JsonResponse extends SuccessResponse {
  * HTML response. Automatically sets Content-Type to text/html.
  */
 export class HtmlResponse extends SuccessResponse {
-    constructor(
-        worker: Worker,
-        body: string,
-        cache?: CacheControl,
-        status: StatusCodes = StatusCodes.OK,
-    ) {
-        super(worker, body, cache, status);
+    constructor(body: string, cache?: CacheControl, status: StatusCodes = StatusCodes.OK) {
+        super(body, cache, status);
         this.mediaType = MediaType.HTML;
     }
 }
@@ -172,13 +159,8 @@ export class HtmlResponse extends SuccessResponse {
  * Plain text response. Automatically sets Content-Type to text/plain.
  */
 export class TextResponse extends SuccessResponse {
-    constructor(
-        worker: Worker,
-        content: string,
-        cache?: CacheControl,
-        status: StatusCodes = StatusCodes.OK,
-    ) {
-        super(worker, content, cache, status);
+    constructor(content: string, cache?: CacheControl, status: StatusCodes = StatusCodes.OK) {
+        super(content, cache, status);
         this.mediaType = MediaType.PLAIN_TEXT;
     }
 }
@@ -187,8 +169,8 @@ export class TextResponse extends SuccessResponse {
  * Response for HEAD requests. Clones headers but has no body.
  */
 export class Head extends WorkerResponse {
-    constructor(worker: Worker, get: Response) {
-        super(worker);
+    constructor(get: Response) {
+        super();
         this.headers = new Headers(get.headers);
     }
 }
@@ -198,7 +180,7 @@ export class Head extends WorkerResponse {
  * Sets CORS headers and returns 204 No Content.
  */
 export class Options extends SuccessResponse {
-    constructor(worker: Worker) {
-        super(worker, null, undefined, StatusCodes.NO_CONTENT);
+    constructor() {
+        super(null, undefined, StatusCodes.NO_CONTENT);
     }
 }

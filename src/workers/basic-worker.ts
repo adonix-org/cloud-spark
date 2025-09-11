@@ -18,7 +18,6 @@ import { GET, HEAD, isMethod, Method, OPTIONS } from "../common";
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
 import { MiddlewareWorker } from "./middleware-worker";
 import { Head, WorkerResponse } from "../responses";
-import { Worker } from "../interfaces/worker";
 
 /**
  * Basic worker class providing HTTP method dispatching and error handling.
@@ -29,7 +28,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      */
     public override async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
-            return this.getResponse(MethodNotAllowed);
+            return this.getResponse(MethodNotAllowed, this);
         }
 
         try {
@@ -56,7 +55,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
             OPTIONS: () => this.options(),
         };
 
-        return (handler[method] ?? (() => this.getResponse(MethodNotAllowed)))();
+        return (handler[method] ?? (() => this.getResponse(MethodNotAllowed, this)))();
     }
 
     /**
@@ -77,32 +76,32 @@ export abstract class BasicWorker extends MiddlewareWorker {
 
     /** Override and implement this method for GET requests. */
     protected async get(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented);
+        return this.getResponse(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for PUT requests. */
     protected async put(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented);
+        return this.getResponse(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for POST requests. */
     protected async post(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented);
+        return this.getResponse(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for PATCH requests. */
     protected async patch(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented);
+        return this.getResponse(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for DELETE requests. */
     protected async delete(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented);
+        return this.getResponse(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for OPTIONS requests. */
     protected async options(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented);
+        return this.getResponse(MethodNotImplemented, this);
     }
 
     /**
@@ -142,12 +141,8 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * @returns A Promise resolving to the {@link Response} object
      */
     protected async getResponse<
-        T extends WorkerResponse,
-        Ctor extends new (worker: Worker, ...args: any[]) => T,
-    >(
-        ResponseClass: Ctor,
-        ...args: ConstructorParameters<Ctor> extends [Worker, ...infer R] ? R : never
-    ): Promise<Response> {
-        return new ResponseClass(this, ...args).getResponse();
+        Ctor extends new (...args: any[]) => { getResponse(): Promise<Response> },
+    >(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor>): Promise<Response> {
+        return new ResponseClass(...args).getResponse();
     }
 }

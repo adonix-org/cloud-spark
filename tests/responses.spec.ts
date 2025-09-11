@@ -36,14 +36,14 @@ const mockWorker = {
 
 describe("response unit tests", () => {
     it("sets status and body in success response", async () => {
-        const resp = new SuccessResponse(mockWorker, "Hello", undefined, StatusCodes.CREATED);
+        const resp = new SuccessResponse("Hello", undefined, StatusCodes.CREATED);
         const r = await resp.getResponse();
         expect(r.status).toBe(StatusCodes.CREATED);
         expect(r.statusText).toBe(getReasonPhrase(StatusCodes.CREATED));
     });
 
     it("sets json body and content-type in json response", async () => {
-        const resp = new JsonResponse(mockWorker, { foo: "bar" });
+        const resp = new JsonResponse({ foo: "bar" });
         const r = await resp.getResponse();
         expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("application/json; charset=utf-8");
         const json = await r.json();
@@ -51,7 +51,7 @@ describe("response unit tests", () => {
     });
 
     it("sets content type to text/html in html response", async () => {
-        const resp = new HtmlResponse(mockWorker, "<p>Hello</p>");
+        const resp = new HtmlResponse("<p>Hello</p>");
         const r = await resp.getResponse();
         expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("text/html; charset=utf-8");
         const text = await r.text();
@@ -59,7 +59,7 @@ describe("response unit tests", () => {
     });
 
     it("sets content type to text/plain in text response", async () => {
-        const resp = new TextResponse(mockWorker, "Hello");
+        const resp = new TextResponse("Hello");
         const r = await resp.getResponse();
         expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("text/plain; charset=utf-8");
         const text = await r.text();
@@ -71,7 +71,7 @@ describe("response unit tests", () => {
             headers: { "X-Test": "ok" },
             status: StatusCodes.ACCEPTED,
         });
-        const resp = new ClonedResponse(mockWorker, original);
+        const resp = new ClonedResponse(original);
         const r = await resp.getResponse();
         expect(r.status).toBe(StatusCodes.ACCEPTED);
         expect(r.headers.get("X-Test")).toBe("ok");
@@ -80,7 +80,7 @@ describe("response unit tests", () => {
 
     it("returns headers but empty body in head response", async () => {
         const original = new Response("Hello", { headers: { "X-Test": "ok" } });
-        const resp = new Head(mockWorker, original);
+        const resp = new Head(original);
         const r = await resp.getResponse();
         expect(r.headers.get("X-Test")).toBe("ok");
         expect(await r.text()).toBe("");
@@ -88,7 +88,7 @@ describe("response unit tests", () => {
 
     it("sets cache header if defined", async () => {
         const cache: CacheControl = { "max-age": 65 };
-        const resp = new JsonResponse(mockWorker, { foo: "bar" }, cache);
+        const resp = new JsonResponse({ foo: "bar" }, cache);
         const r = await resp.getResponse();
 
         const h = assertDefined(

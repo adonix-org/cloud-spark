@@ -21,6 +21,9 @@ import { BaseWorker } from "@src/workers/base-worker";
 import { Method } from "@src/common";
 
 class TestWorker extends BaseWorker {
+    public getAllowedMethods(): Method[] {
+        return [];
+    }
     protected async dispatch(): Promise<Response> {
         return new Response(BODY_INIT);
     }
@@ -82,6 +85,9 @@ describe("base worker unit tests", () => {
         const instances: BaseWorker[] = [];
 
         class LocalTestWorker extends BaseWorker {
+            public getAllowedMethods(): Method[] {
+                return [];
+            }
             protected dispatch(): Promise<Response> {
                 throw new Error("Method not implemented.");
             }

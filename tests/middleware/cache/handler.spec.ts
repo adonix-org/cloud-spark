@@ -19,8 +19,12 @@ import { GET_REQUEST, VALID_URL } from "@constants";
 import { ctx, defaultCache, env, namedCache } from "@mock";
 import { cache } from "@src/middleware/cache/handler";
 import { MiddlewareWorker } from "@src/workers/middleware-worker";
+import { GET, Method } from "@src/common";
 
 class TestWorker extends MiddlewareWorker {
+    public getAllowedMethods(): Method[] {
+        return [GET];
+    }
     constructor(request: Request, cacheName?: string) {
         super(request, env, ctx);
         this.use(cache(cacheName));
@@ -94,6 +98,9 @@ describe("cache worker unit tests", () => {
         url.searchParams.set("a", "1");
 
         class CacheWorker extends MiddlewareWorker {
+            public getAllowedMethods(): Method[] {
+                return [GET];
+            }
             protected async dispatch(): Promise<Response> {
                 return new Response("from dispatch");
             }
