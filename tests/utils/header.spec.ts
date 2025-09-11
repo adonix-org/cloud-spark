@@ -18,9 +18,9 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { mergeHeader, setHeader } from "@src/utils/header";
 
 describe("header functions unit tests", () => {
-    describe("set header function on empty headers", () => {
-        let headers: Headers;
+    let headers: Headers;
 
+    describe("set header function on empty headers", () => {
         beforeEach(() => {
             headers = new Headers();
         });
@@ -62,8 +62,6 @@ describe("header functions unit tests", () => {
     });
 
     describe("set header function on existing headers", () => {
-        let headers: Headers;
-
         beforeEach(() => {
             headers = new Headers([
                 ["test-key", "1"],
@@ -80,11 +78,27 @@ describe("header functions unit tests", () => {
         });
 
         it("does not add an empty string", () => {
+            setHeader(headers, "new-key", "");
+            expect([...headers.entries()]).toStrictEqual([
+                ["safe-key", "2"],
+                ["test-key", "1"],
+            ]);
+        });
+
+        it("does not add an empty array", () => {
+            setHeader(headers, "new-key", []);
+            expect([...headers.entries()]).toStrictEqual([
+                ["safe-key", "2"],
+                ["test-key", "1"],
+            ]);
+        });
+
+        it("deletes the header if new value is empty", () => {
             setHeader(headers, "test-key", "");
             expect([...headers.entries()]).toStrictEqual([["safe-key", "2"]]);
         });
 
-        it("does not add an empty array", () => {
+        it("deletes the header if new array is empty", () => {
             setHeader(headers, "test-key", []);
             expect([...headers.entries()]).toStrictEqual([["safe-key", "2"]]);
         });
@@ -107,8 +121,6 @@ describe("header functions unit tests", () => {
     });
 
     describe("merge header function on empty headers", () => {
-        let headers: Headers;
-
         beforeEach(() => {
             headers = new Headers();
         });
@@ -150,8 +162,6 @@ describe("header functions unit tests", () => {
     });
 
     describe("merge header function on existing headers", () => {
-        let headers: Headers;
-
         beforeEach(() => {
             headers = new Headers([
                 ["test-key", "1"],
