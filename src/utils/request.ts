@@ -71,15 +71,24 @@ export function getContentType(type: MediaType): string {
 }
 
 /**
- * Extracts the `Origin` header value from a request.
+ * Extracts and normalizes the `Origin` header from a request.
  *
- * The `Origin` header identifies the origin (scheme, host, and port)
- * of the request initiator. It is commonly used for CORS checks.
+ * Returns the origin (scheme + host + port) as a string if present and valid.
+ * Returns `null` if:
+ *   - The `Origin` header is missing
+ *   - The `Origin` header is `"null"` (opaque origin)
+ *   - The `Origin` header is malformed
  *
  * @param request - The incoming {@link Request} object.
- * @returns The origin string if present, otherwise `null`.
+ * @returns The normalized origin string, or `null` if not present or invalid.
  */
 export function getOrigin(request: Request): string | null {
-    const origin = request.headers.get(HttpHeader.ORIGIN);
-    return origin ? origin.trim() : null;
+    const origin = request.headers.get(HttpHeader.ORIGIN)?.trim();
+    if (!origin || origin === "null") return null;
+
+    try {
+        return new URL(origin).origin;
+    } catch {
+        return null;
+    }
 }
