@@ -3,8 +3,8 @@
     "compilerOptions": {
         "paths": {
             "@src/*": ["../src/*"],
-            "@constants": ["./utils/constants.ts"],
-            "@mock": ["./utils/mock.ts"]
+            "@constants": ["./test-utils/constants.ts"],
+            "@mock": ["./test-utils/mock.ts"]
         }
     },
     "include": ["**/*.ts", "../types"]

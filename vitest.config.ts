@@ -19,7 +19,7 @@ import path from "path";
 
 export default defineConfig({
     test: {
-        setupFiles: ["./tests/utils/setup.ts"],
+        setupFiles: ["./tests/test-utils/setup.ts"],
         reporters: "verbose",
         testTimeout: 30000,
         watch: false,
@@ -30,8 +30,8 @@ export default defineConfig({
     resolve: {
         alias: {
             "@src": path.resolve(__dirname, "./src"),
-            "@constants": path.resolve(__dirname, "./tests/utils/constants.ts"), // adjust if vitest.config.ts is in root
-            "@mock": path.resolve(__dirname, "./tests/utils/mock.ts"),
+            "@constants": path.resolve(__dirname, "./tests/test-utils/constants.ts"), // adjust if vitest.config.ts is in root
+            "@mock": path.resolve(__dirname, "./tests/test-utils/mock.ts"),
         },
     },
 });
