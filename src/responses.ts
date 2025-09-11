@@ -26,8 +26,6 @@ import { HttpHeader } from "./constants/http";
  * Manages headers, status, and media type.
  */
 abstract class BaseResponse {
-    constructor() {}
-
     /** HTTP headers for the response. */
     public headers: Headers = new Headers();
 
