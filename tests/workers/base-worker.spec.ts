@@ -24,6 +24,7 @@ class TestWorker extends BaseWorker {
     public getAllowedMethods(): Method[] {
         return [];
     }
+
     protected async dispatch(): Promise<Response> {
         return new Response(BODY_INIT);
     }
