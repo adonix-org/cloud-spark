@@ -47,6 +47,7 @@ export function setHeader(headers: Headers, key: string, value: string | string[
  * - Preserves any existing values and adds new ones.
  * - Removes duplicates and trims all values.
  * - If the header does not exist, it is created.
+ * - If the resulting value array is empty, the header is deleted.
  *
  * @param headers - The Headers object to modify.
  * @param key - The header name to merge into.

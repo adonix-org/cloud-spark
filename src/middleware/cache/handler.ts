@@ -32,7 +32,6 @@ import { normalizeUrl } from "../../utils/url";
  * @param cacheName - Optional name of the cache to use. Defaults to `caches.default`.
  * @param getKey - Optional function to generate a cache key from a request.
  * @returns A {@link Middleware} instance that can be added to your middleware chain.
- * ```
  */
 export function cache(
     cacheName?: string,

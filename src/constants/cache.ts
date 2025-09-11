@@ -24,7 +24,7 @@ export const CacheControl = {
     parse: CacheLib.parse,
     stringify: CacheLib.stringify,
 
-    /** A Cache-Control directive that disables all caching. */
+    /** A CacheControl directive that disables all caching. */
     DISABLE: Object.freeze({
         "no-cache": true,
         "no-store": true,

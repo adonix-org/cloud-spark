@@ -65,7 +65,7 @@ export interface Worker {
     /**
      * Returns the list of HTTP methods that are allowed for this worker.
      *
-     * @returns {Method[]} An array of allowed HTTP methods.
+     * @returns An array of allowed HTTP methods.
      */
     getAllowedMethods(): Method[];
 }

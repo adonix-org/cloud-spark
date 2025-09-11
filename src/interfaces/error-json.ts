@@ -18,8 +18,8 @@
  * Structure for JSON-formatted error responses.
  *
  * This interface defines the standard shape of error responses returned
- * by middleware or workers when an operation fails. It ensures consistent
- * error reporting and easy parsing by clients.
+ * when an operation fails. It ensures consistent error reporting and easy
+ * parsing by clients.
  */
 export interface ErrorJson {
     /**

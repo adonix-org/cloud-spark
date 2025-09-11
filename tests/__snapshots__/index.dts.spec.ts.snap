@@ -13,7 +13,7 @@ type CacheControl = CacheLib.CacheControl;
 declare const CacheControl: {
     parse: (cacheControlHeader: string) => CacheLib.CacheControl;
     stringify: (cacheControl: CacheLib.CacheControl) => string;
-    /** A Cache-Control directive that disables all caching. */
+    /** A CacheControl directive that disables all caching. */
     DISABLE: Readonly<{
         "no-cache": true;
         "no-store": true;
@@ -32,10 +32,10 @@ declare const CacheControl: {
 declare namespace HttpHeader {
     const VARY = "Vary";
     const ALLOW = "Allow";
+    const ORIGIN = "Origin";
     const USER_AGENT = "User-Agent";
     const CONTENT_TYPE = "Content-Type";
     const CACHE_CONTROL = "Cache-Control";
-    const SEC_FETCH_SITE = "Sec-Fetch-Site";
     const X_FRAME_OPTIONS = "X-Frame-Options";
     const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
     const REFERRER_POLICY = "Referrer-Policy";
@@ -48,7 +48,6 @@ declare namespace HttpHeader {
     const ALLOW_METHODS = "Access-Control-Allow-Methods";
     const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
     const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-    const ORIGIN = "Origin";
     const ALLOW_ALL_ORIGINS = "*";
     const CROSS_SITE = "cross-site";
 }
@@ -186,8 +185,8 @@ interface CorsConfig {
  * Structure for JSON-formatted error responses.
  *
  * This interface defines the standard shape of error responses returned
- * by middleware or workers when an operation fails. It ensures consistent
- * error reporting and easy parsing by clients.
+ * when an operation fails. It ensures consistent error reporting and easy
+ * parsing by clients.
  */
 interface ErrorJson {
     /**
@@ -252,7 +251,7 @@ interface Worker {
     /**
      * Returns the list of HTTP methods that are allowed for this worker.
      *
-     * @returns {Method[]} An array of allowed HTTP methods.
+     * @returns An array of allowed HTTP methods.
      */
     getAllowedMethods(): Method[];
 }
@@ -379,7 +378,6 @@ declare abstract class Middleware {
  * @param cacheName - Optional name of the cache to use. Defaults to \`caches.default\`.
  * @param getKey - Optional function to generate a cache key from a request.
  * @returns A {@link Middleware} instance that can be added to your middleware chain.
- * \`\`\`
  */
 declare function cache(cacheName?: string, getKey?: (request: Request) => URL | RequestInfo): Middleware;
 
@@ -425,6 +423,7 @@ declare function setHeader(headers: Headers, key: string, value: string | string
  * - Preserves any existing values and adds new ones.
  * - Removes duplicates and trims all values.
  * - If the header does not exist, it is created.
+ * - If the resulting value array is empty, the header is deleted.
  *
  * @param headers - The Headers object to modify.
  * @param key - The header name to merge into.
@@ -474,21 +473,23 @@ declare function getOrigin(request: Request): string | null;
 declare function normalizeUrl(url: string): URL;
 
 /**
- * A type-safe Cloudflare Worker handler.
+ * A type-safe Cloudflare Worker handler with a guaranteed \`fetch\` method.
  *
- * Extends \`ExportedHandler\` but guarantees that the \`fetch\` method exists
- * and has the correct signature for Cloudflare Worker invocation.
+ * Extends \`ExportedHandler\` but ensures that \`fetch\` exists and has the
+ * correct signature for Cloudflare Worker invocation.
  *
- * @template E - The type of environment bindings passed to the worker. Defaults to \`Env\`.
+ * \`Env\` is a placeholder type for the environment bindings provided by
+ * the user (e.g., KV namespaces, secrets, Durable Objects). This interface
+ * does not constrain the actual type; it only ensures \`fetch\` is present.
  */
 interface FetchHandler extends ExportedHandler<Env> {
     /**
      * Handles an incoming request and produces a response.
      *
      * @param request - The incoming \`Request\` object.
-     * @param env - Environment bindings (e.g., KV namespaces, secrets, Durable Objects).
+     * @param env - User-provided environment bindings (placeholder type).
      * @param ctx - Execution context for background tasks (\`waitUntil\`).
-     * @returns A \`Promise\` that resolves to the response.
+     * @returns A \`Promise\` that resolves to a \`Response\`.
      */
     fetch: (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
 }
