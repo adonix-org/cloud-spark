@@ -32,7 +32,7 @@ export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Header
     if (allowAnyOrigin(cors)) {
         // Allowed Origin: *
         setHeader(headers, HttpHeader.ALLOW_ORIGIN, HttpHeader.ALLOW_ALL_ORIGINS);
-    } else {
+    } else if (cors.allowedOrigins.length > 0) {
         // Allowed Origin: ["https://example.com"]
         // Always add Vary: Origin
         mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
@@ -52,7 +52,7 @@ export function addCorsHeaders(worker: Worker, cors: CorsConfig, headers: Header
 }
 
 /** Returns true if the CORS config allows all origins (`*`). */
-export function allowAnyOrigin(cors: CorsConfig): boolean {
+function allowAnyOrigin(cors: CorsConfig): boolean {
     return cors.allowedOrigins.includes("*");
 }
 
