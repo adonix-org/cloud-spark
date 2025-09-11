@@ -52,7 +52,7 @@ describe("base worker unit tests", () => {
         expect(worker.ctx).toBe(ctx);
     });
 
-    it("creates a worker that is same type", () => {
+    it("creates a worker that is the same type", () => {
         const newWorker = worker.create(GET_REQUEST);
         expect(newWorker).toBeInstanceOf(TestWorker);
     });
