@@ -332,7 +332,6 @@ declare class Head extends WorkerResponse {
 }
 /**
  * Response for OPTIONS preflight requests.
- * Sets CORS headers and returns 204 No Content.
  */
 declare class Options extends SuccessResponse {
     constructor();

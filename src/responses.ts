@@ -171,13 +171,14 @@ export class TextResponse extends SuccessResponse {
 export class Head extends WorkerResponse {
     constructor(get: Response) {
         super();
+        this.status = get.status;
+        this.statusText = get.statusText;
         this.headers = new Headers(get.headers);
     }
 }
 
 /**
  * Response for OPTIONS preflight requests.
- * Sets CORS headers and returns 204 No Content.
  */
 export class Options extends SuccessResponse {
     constructor() {
