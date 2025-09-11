@@ -166,7 +166,7 @@ export class TextResponse extends SuccessResponse {
 }
 
 /**
- * Response for HEAD requests. Clones headers but has no body.
+ * Response for HEAD requests. Copy headers and status but no body.
  */
 export class Head extends WorkerResponse {
     constructor(get: Response) {

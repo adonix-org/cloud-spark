@@ -325,7 +325,7 @@ declare class TextResponse extends SuccessResponse {
     constructor(content: string, cache?: CacheControl, status?: StatusCodes);
 }
 /**
- * Response for HEAD requests. Clones headers but has no body.
+ * Response for HEAD requests. Copy headers and status but no body.
  */
 declare class Head extends WorkerResponse {
     constructor(get: Response);
