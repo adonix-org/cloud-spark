@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { getOrigin, HttpHeader, mergeHeader, setHeader } from "../../common";
+import { HttpHeader } from "../../constants/http";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
+import { mergeHeader, setHeader } from "../../utils/header";
+import { getOrigin } from "../../utils/request";
 
 /**
  * Adds CORS headers to the given Headers object based on the request and config.

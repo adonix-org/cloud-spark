@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { HttpHeader, Time } from "../../common";
+import { HttpHeader } from "../../constants/http";
+import { Time } from "../../constants/time";
 import { CorsConfig } from "../../interfaces/cors-config";
 
 /**

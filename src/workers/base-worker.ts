@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method } from "../common";
+import { Method } from "../constants/http";
 import { FetchHandler } from "../interfaces/fetch-handler";
 import { Worker, WorkerClass } from "../interfaces/worker";
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method } from "../common";
+import { Method } from "../constants/http";
 
 /**
  * Represents the constructor of a Worker subclass.

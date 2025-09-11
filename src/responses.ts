@@ -15,14 +15,11 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import {
-    CacheControl,
-    getContentType,
-    HttpHeader,
-    mergeHeader,
-    MediaType,
-    setHeader,
-} from "./common";
+import { CacheControl } from "./constants/cache";
+import { setHeader, mergeHeader } from "./utils/header";
+import { getContentType } from "./utils/request";
+import { MediaType } from "./constants/media-types";
+import { HttpHeader } from "./constants/http";
 
 /**
  * Base class for building HTTP responses.

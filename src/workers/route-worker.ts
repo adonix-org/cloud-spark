@@ -15,12 +15,12 @@
  */
 
 import { BasicWorker } from "./basic-worker";
-import { Method } from "../common";
 import { NotFound } from "../errors";
 import { Routes } from "../routes";
 import { RouteHandler, RouteTable } from "../interfaces/route";
 import { WorkerClass } from "../interfaces/worker";
 import { BaseWorker } from "./base-worker";
+import { Method } from "../constants/http";
 
 /**
  * Base worker supporting route-based request handling.

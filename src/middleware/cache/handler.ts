@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { GET, normalizeUrl } from "../../common";
 import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
+import { GET } from "../../constants/http";
+import { normalizeUrl } from "../../utils/url";
 
 /**
  * Middleware for caching GET requests.

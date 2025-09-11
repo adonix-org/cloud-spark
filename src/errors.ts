@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { getReasonPhrase } from "http-status-codes";
-import { CacheControl, HttpHeader, StatusCodes } from "./common";
+import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { JsonResponse } from "./responses";
 import { ErrorJson } from "./interfaces/error-json";
 import { Worker } from "./interfaces/worker";
+import { CacheControl } from "./constants/cache";
+import { HttpHeader } from "./constants/http";
 
 /**
  * Generic HTTP error response.

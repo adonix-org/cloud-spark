@@ -19,8 +19,8 @@ import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
 import { defaultCorsConfig } from "./constants";
-import { OPTIONS } from "../../common";
 import { ClonedResponse, Options } from "../../responses";
+import { OPTIONS } from "../../constants/http";
 
 /**
  * Creates a CORS middleware instance.
