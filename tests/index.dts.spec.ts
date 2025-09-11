@@ -15,18 +15,12 @@
  */
 
 import { describe, expect, it } from "vitest";
-import * as IndexExports from "@src/index";
-import { lexCompare } from "@src/utils/compare";
+import { readFileSync } from "fs";
+import { join } from "path";
 
-describe("exported symbols tests", () => {
-    it("ensures that no exported symbol is undefined", () => {
-        Object.entries(IndexExports).forEach(([_key, value]) => {
-            expect(value).not.toBeUndefined();
-        });
-    });
-
-    it("matches the exported symbols snapshot", () => {
-        const keys = Object.keys(IndexExports).sort(lexCompare);
-        expect(keys).toMatchSnapshot();
+describe("library dts test", () => {
+    it("matches the index.d.ts snapshot", () => {
+        const dts = readFileSync(join(__dirname, "../dist/index.d.ts"), "utf-8");
+        expect(dts).toMatchSnapshot();
     });
 });
