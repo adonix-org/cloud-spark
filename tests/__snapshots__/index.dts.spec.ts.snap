@@ -711,7 +711,6 @@ declare abstract class RouteWorker extends BasicWorker {
  * Manages headers, status, and media type.
  */
 declare abstract class BaseResponse {
-    constructor();
     /** HTTP headers for the response. */
     headers: Headers;
     /** HTTP status code (default 200 OK). */
