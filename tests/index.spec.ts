@@ -16,7 +16,7 @@
 
 import { describe, expect, it } from "vitest";
 import * as IndexExports from "@src/index";
-import { lexCompare } from "@src/common";
+import { lexCompare } from "@src/utils/compare";
 import { readFileSync } from "fs";
 import { join } from "path";
 

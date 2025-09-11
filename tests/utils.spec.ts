@@ -16,15 +16,10 @@
 
 import { describe, it, expect, beforeEach } from "vitest";
 import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN } from "@constants";
-import {
-    getContentType,
-    getOrigin,
-    isMethod,
-    MediaType,
-    mergeHeader,
-    normalizeUrl,
-    setHeader,
-} from "@src/common";
+import { getContentType, getOrigin, isMethod } from "@src/utils/request";
+import { MediaType } from "@src/constants/media-types";
+import { mergeHeader, setHeader } from "@src/utils/header";
+import { normalizeUrl } from "@src/utils/url";
 
 describe("common functions unit tests", () => {
     describe("is method function", () => {

@@ -15,7 +15,7 @@
  */
 
 import { expect } from "vitest";
-import { HEAD, Method } from "@src/common";
+import { HEAD, Method } from "@src/constants/http";
 import { MatchedRoute, RouteCallback, RouteTable } from "@src/interfaces/route";
 import { WorkerClass } from "@src/interfaces/worker";
 
@@ -75,7 +75,6 @@ export const GET_REQUEST_WITH_ORIGIN = new Request(VALID_URL, {
     method: Method.GET,
     headers: {
         Origin: VALID_ORIGIN,
-        "Sec-Fetch-Site": "cross-site",
     },
 });
 
@@ -83,7 +82,6 @@ export const GET_REQUEST_INVALID_ORIGIN = new Request(VALID_URL, {
     method: Method.GET,
     headers: {
         Origin: INVALID_ORIGIN,
-        "Sec-Fetch-Site": "cross-site",
     },
 });
 

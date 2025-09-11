@@ -24,9 +24,10 @@ import {
     Head,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
-import { CacheControl, HttpHeader } from "@src/common";
 import { assertDefined, VALID_URL } from "@constants";
 import { MethodNotAllowed } from "@src/errors";
+import { HttpHeader } from "@src/constants/http";
+import { CacheControl } from "@src/constants/cache";
 
 const mockWorker = {
     request: new Request(VALID_URL),

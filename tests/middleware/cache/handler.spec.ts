@@ -19,7 +19,7 @@ import { GET_REQUEST, VALID_URL } from "@constants";
 import { ctx, defaultCache, env, namedCache } from "@mock";
 import { cache } from "@src/middleware/cache/handler";
 import { MiddlewareWorker } from "@src/workers/middleware-worker";
-import { GET, Method } from "@src/common";
+import { GET, Method } from "@src/constants/http";
 
 class TestWorker extends MiddlewareWorker {
     public getAllowedMethods(): Method[] {
