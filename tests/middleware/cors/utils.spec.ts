@@ -30,5 +30,31 @@ describe("cors utils unit tests", () => {
             setAllowOrigin(headers, defaultCorsConfig, null);
             expect([...headers.entries()]).toStrictEqual([]);
         });
+
+        it("adds header for any origin", () => {
+            setAllowOrigin(headers, defaultCorsConfig, "http://localhost");
+            expect([...headers.entries()]).toStrictEqual([["access-control-allow-origin", "*"]]);
+        });
+
+        it("adds header for allowed origin", () => {
+            setAllowOrigin(
+                headers,
+                { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
+                "http://localhost",
+            );
+            expect([...headers.entries()]).toStrictEqual([
+                ["access-control-allow-origin", "http://localhost"],
+                ["vary", "Origin"],
+            ]);
+        });
+
+        it("does not add header for invalid origin", () => {
+            setAllowOrigin(
+                headers,
+                { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
+                "http://localhost.invalid",
+            );
+            expect([...headers.entries()]).toStrictEqual([["vary", "Origin"]]);
+        });
     });
 });
