@@ -35,8 +35,10 @@ export async function options(worker: Worker, cors: CorsConfig): Promise<Respons
     const options = new Options();
     const origin = getOrigin(worker.request);
 
-    setAllowOrigin(options.headers, cors, origin);
-    setAllowCredentials(options.headers, cors, origin);
+    if (origin) {
+        setAllowOrigin(options.headers, cors, origin);
+        setAllowCredentials(options.headers, cors, origin);
+    }
     setAllowMethods(options.headers, worker);
     setMaxAge(options.headers, cors);
     setAllowHeaders(options.headers, worker, cors);
@@ -64,8 +66,11 @@ export async function apply(
     const origin = getOrigin(worker.request);
 
     deleteCorsHeaders(clone.headers);
-    setAllowOrigin(clone.headers, cors, origin);
-    setAllowCredentials(clone.headers, cors, origin);
+
+    if (origin) {
+        setAllowOrigin(clone.headers, cors, origin);
+        setAllowCredentials(clone.headers, cors, origin);
+    }
     setExposedHeaders(clone.headers, cors);
     return clone.getResponse();
 }
@@ -78,9 +83,7 @@ export async function apply(
  * @param cors - The CORS configuration.
  * @param origin - The request's origin, or null if not present.
  */
-export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string | null): void {
-    if (!origin) return;
-
+export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string): void {
     if (allowAnyOrigin(cors)) {
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, HttpHeader.ALLOW_ALL_ORIGINS);
     } else {
@@ -99,11 +102,7 @@ export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: strin
  * @param cors - The CORS configuration.
  * @param origin - The request's origin, or null if not present.
  */
-export function setAllowCredentials(
-    headers: Headers,
-    cors: CorsConfig,
-    origin: string | null,
-): void {
+export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: string): void {
     if (!origin) return;
 
     if (!allowAnyOrigin(cors) && cors.allowCredentials) {
