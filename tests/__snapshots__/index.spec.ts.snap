@@ -41,6 +41,7 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "getContentType",
   "getOrigin",
   "isMethod",
+  "isMethodArray",
   "lexCompare",
   "mergeHeader",
   "normalizeUrl",

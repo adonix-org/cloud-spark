@@ -29,6 +29,18 @@ const METHOD_SET: Set<string> = new Set(Object.values(Method));
  * @param value - The string to test.
  * @returns True if `value` is a recognized HTTP method.
  */
-export function isMethod(value: string): value is Method {
+export function isMethod(value: any): value is Method {
     return METHOD_SET.has(value);
+}
+
+/**
+ * Checks if a value is an array of valid HTTP methods.
+ *
+ * Each element is verified using the `isMethod` type guard.
+ *
+ * @param value - The value to check.
+ * @returns `true` if `value` is an array and every element is a valid `Method`, otherwise `false`.
+ */
+export function isMethodArray(value: any): value is Method[] {
+    return Array.isArray(value) && value.every(isMethod);
 }
