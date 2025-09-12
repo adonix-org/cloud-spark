@@ -105,27 +105,35 @@ export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: strin
 }
 
 /**
- * Sets the Access-Control-Allow-Credentials header if credentials
- * are allowed and the origin is not '*'.
+ * Conditionally sets the `Access-Control-Allow-Credentials` header
+ * for a CORS response.
  *
- * @param headers - The headers object to modify.
+ * This header is only set if:
+ * 1. `cors.allowCredentials` is true,
+ * 2. The configuration does **not** allow any origin (`*`), and
+ * 3. The provided `origin` is explicitly listed in `cors.allowedOrigins`.
+ *
+ * @param headers - The Headers object to modify.
  * @param cors - The CORS configuration.
- * @param origin - The request's origin, or null if not present.
+ * @param origin - The origin of the incoming request.
  */
 export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: string): void {
-    if (!origin) return;
+    if (!cors.allowCredentials) return;
+    if (allowAnyOrigin(cors)) return;
+    if (!cors.allowedOrigins.includes(origin)) return;
 
-    if (!allowAnyOrigin(cors) && cors.allowCredentials) {
-        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
-    }
+    setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
 }
 
 /**
- * Sets the Access-Control-Allow-Methods header based on the Worker's
- * allowed methods.
+ * Sets the `Access-Control-Allow-Methods` header for a CORS response,
+ * but only for non-simple methods.
  *
- * @param headers - The headers object to modify.
- * @param worker - The Worker handling the request.
+ * Simple methods (GET, HEAD, OPTIONS) are automatically allowed by the
+ * CORS spec, so this function only adds methods beyond those.
+ *
+ * @param headers - The Headers object to modify.
+ * @param worker - The Worker instance used to retrieve allowed methods.
  */
 export function setAllowMethods(headers: Headers, worker: Worker): void {
     const methods = worker.getAllowedMethods().filter((method) => !SIMPLE_METHODS.has(method));
