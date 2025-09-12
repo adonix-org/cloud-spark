@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { HttpHeader } from "@src/constants";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import { setAllowOrigin } from "@src/middleware/cors/utils";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -50,6 +51,29 @@ describe("cors utils unit tests", () => {
                 "http://localhost.invalid",
             );
             expect([...headers.entries()]).toStrictEqual([["vary", "Origin"]]);
+        });
+
+        it("correctly merges vary header for a valid origin", () => {
+            headers.set(HttpHeader.VARY, "Accept");
+            setAllowOrigin(
+                headers,
+                { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
+                "http://localhost",
+            );
+            expect([...headers.entries()]).toStrictEqual([
+                ["access-control-allow-origin", "http://localhost"],
+                ["vary", "Accept, Origin"],
+            ]);
+        });
+
+        it("correctly merges vary header for an invalid origin", () => {
+            headers.set(HttpHeader.VARY, "Accept");
+            setAllowOrigin(
+                headers,
+                { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
+                "http://localhost.invalid",
+            );
+            expect([...headers.entries()]).toStrictEqual([["vary", "Accept, Origin"]]);
         });
     });
 });
