@@ -82,7 +82,9 @@ function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string | nul
     if (allowAnyOrigin(cors)) {
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, HttpHeader.ALLOW_ALL_ORIGINS);
     } else {
-        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+        if (cors.allowedOrigins.includes(origin)) {
+            setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
+        }
         mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
     }
 }

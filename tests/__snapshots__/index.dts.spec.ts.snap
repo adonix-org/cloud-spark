@@ -30,26 +30,26 @@ declare const CacheControl: {
  * Standard HTTP header names and common values.
  */
 declare namespace HttpHeader {
-    const VARY = "Vary";
     const ALLOW = "Allow";
     const ORIGIN = "Origin";
-    const USER_AGENT = "User-Agent";
     const CONTENT_TYPE = "Content-Type";
     const CACHE_CONTROL = "Cache-Control";
-    const X_FRAME_OPTIONS = "X-Frame-Options";
-    const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
-    const REFERRER_POLICY = "Referrer-Policy";
-    const PERMISSIONS_POLICY = "Permissions-Policy";
+    const USER_AGENT = "User-Agent";
+    const VARY = "Vary";
     const CONTENT_SECURITY_POLICY = "Content-Security-Policy";
+    const PERMISSIONS_POLICY = "Permissions-Policy";
     const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
-    const MAX_AGE = "Access-Control-Max-Age";
-    const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    const ALLOW_HEADERS = "Access-Control-Allow-Headers";
-    const ALLOW_METHODS = "Access-Control-Allow-Methods";
-    const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
-    const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+    const REFERRER_POLICY = "Referrer-Policy";
+    const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
+    const X_FRAME_OPTIONS = "X-Frame-Options";
+    const ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+    const ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+    const ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
+    const ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    const ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+    const ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age";
+    const ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
     const ALLOW_ALL_ORIGINS = "*";
-    const CROSS_SITE = "cross-site";
 }
 /**
  * Standard HTTP request methods.
@@ -172,6 +172,14 @@ interface CorsConfig {
      * Use this option to explicitly allow certain response headers to be read.
      */
     exposedHeaders: string[];
+    /**
+     * Whether the resource supports user credentials (cookies, HTTP authentication).
+     *
+     * Defaults to false.
+     *
+     * If true, the Access-Control-Allow-Origin response header must not be "*".
+     */
+    allowCredentials: boolean;
     /**
      * Maximum age (in seconds) that the results of a preflight request
      * can be cached by the client.
@@ -409,7 +417,7 @@ declare function lexCompare(a: string, b: string): number;
  * Sets a header on the given Headers object.
  *
  * - If \`value\` is an array, any duplicates and empty strings are removed.
- * - If the resulting value array is empty, the header is deleted.
+ * - If the resulting value is empty, the header is deleted.
  * - Otherwise, values are joined with \`", "\` and set as the header value.
  *
  * @param headers - The Headers object to modify.

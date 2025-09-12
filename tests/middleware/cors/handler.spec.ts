@@ -56,10 +56,7 @@ describe("cors middleware unit tests", () => {
         const worker = new TestWorker(GET_REQUEST_WITH_ORIGIN);
         const response = await worker.fetch();
         expect([...response.headers.entries()]).toStrictEqual([
-            ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "*"],
-            ["access-control-max-age", "604800"],
             ["content-type", "text/plain;charset=UTF-8"],
         ]);
     });
@@ -76,11 +73,7 @@ describe("cors middleware unit tests", () => {
         const worker = new TestOriginWorker(GET_REQUEST_WITH_ORIGIN);
         const response = await worker.fetch();
         expect([...response.headers.entries()]).toStrictEqual([
-            ["access-control-allow-credentials", "true"],
-            ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "https://localhost"],
-            ["access-control-max-age", "604800"],
             ["content-type", "text/plain;charset=UTF-8"],
             ["vary", "Origin"],
         ]);
@@ -90,9 +83,6 @@ describe("cors middleware unit tests", () => {
         const worker = new TestOriginWorker(GET_REQUEST_INVALID_ORIGIN);
         const response = await worker.fetch();
         expect([...response.headers.entries()]).toStrictEqual([
-            ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
-            ["access-control-max-age", "604800"],
             ["content-type", "text/plain;charset=UTF-8"],
             ["vary", "Origin"],
         ]);
@@ -101,16 +91,14 @@ describe("cors middleware unit tests", () => {
     it("initializes the cors provider using config object", async () => {
         class TestInitWorker extends TestWorker {
             protected init(): void {
-                this.use(cors({ allowedHeaders: ["x-test-header"] }));
+                this.use(cors({ exposedHeaders: ["x-test-header"] }));
             }
         }
         const worker = new TestInitWorker(GET_REQUEST_WITH_ORIGIN);
         const response = await worker.fetch();
         expect([...response.headers.entries()]).toStrictEqual([
-            ["access-control-allow-headers", "x-test-header"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "*"],
-            ["access-control-max-age", "604800"],
+            ["access-control-expose-headers", "x-test-header"],
             ["content-type", "text/plain;charset=UTF-8"],
         ]);
     });
