@@ -140,6 +140,14 @@ declare const Time: {
 };
 
 /**
+ * Type guard that checks if a string is a valid HTTP method.
+ *
+ * @param value - The string to test.
+ * @returns True if \`value\` is a recognized HTTP method.
+ */
+declare function isMethod(value: string): value is Method;
+
+/**
  * Override only what is needed from the default CORS configuration.
  */
 type CorsInit = Partial<CorsConfig>;
@@ -439,13 +447,6 @@ declare function setHeader(headers: Headers, key: string, value: string | string
  */
 declare function mergeHeader(headers: Headers, key: string, value: string | string[]): void;
 
-/**
- * Type guard that checks if a string is a valid HTTP method.
- *
- * @param value - The string to test.
- * @returns True if \`value\` is a recognized HTTP method.
- */
-declare function isMethod(value: string): value is Method;
 /**
  * Returns the proper Content-Type string for a given media type.
  * Appends \`charset=utf-8\` for text-based types that require it.

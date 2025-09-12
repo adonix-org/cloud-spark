@@ -16,32 +16,10 @@
 
 import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "@common";
 import { MediaType } from "@src/constants/media-types";
-import { getContentType, getOrigin, isMethod } from "@src/utils/request";
+import { getContentType, getOrigin } from "@src/utils/request";
 import { describe, it, expect } from "vitest";
 
 describe("request functions unit tests", () => {
-    describe("is method function", () => {
-        it("is a method", () => {
-            expect(isMethod("GET")).toBe(true);
-            expect(isMethod("HEAD")).toBe(true);
-            expect(isMethod("DELETE")).toBe(true);
-            expect(isMethod("POST")).toBe(true);
-            expect(isMethod("PUT")).toBe(true);
-            expect(isMethod("PATCH")).toBe(true);
-        });
-
-        it("is not a method", () => {
-            expect(isMethod("")).toBe(false);
-            expect(isMethod(" ")).toBe(false);
-            expect(isMethod("METHOD")).toBe(false);
-            expect(isMethod("\nGET")).toBe(false);
-            expect(isMethod("GET\n")).toBe(false);
-            expect(isMethod("get")).toBe(false);
-            expect(isMethod("Get")).toBe(false);
-            expect(isMethod(" GET")).toBe(false);
-        });
-    });
-
     describe("get content type function", () => {
         it("adds the charset to json", () => {
             expect(getContentType(MediaType.JSON)).toBe("application/json; charset=utf-8");

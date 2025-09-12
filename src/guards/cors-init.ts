@@ -15,7 +15,7 @@
  */
 
 import { CorsInit } from "../interfaces/cors-config";
-import { isStringArray } from "./arrays";
+import { isBoolean, isNumber, isStringArray } from "./basic";
 
 /**
  * Throws if the given value is not a valid CorsInit.
@@ -25,6 +25,8 @@ import { isStringArray } from "./arrays";
  * @param value - The value to check.
  */
 export function assertCorsInit(value: any): asserts value is CorsInit {
+    if (value === undefined) return;
+
     if (typeof value !== "object" || value === null) {
         throw new TypeError("CorsInit must be an object.");
     }
@@ -41,11 +43,11 @@ export function assertCorsInit(value: any): asserts value is CorsInit {
         throw new TypeError("CorsInit.exposedHeaders must be a string array.");
     }
 
-    if (value.allowCredentials !== undefined && typeof value.allowCredentials !== "boolean") {
+    if (value.allowCredentials !== undefined && !isBoolean(value.allowCredentials)) {
         throw new TypeError("CorsInit.allowCredentials must be a boolean.");
     }
 
-    if (value.maxAge !== undefined && (typeof value.maxAge !== "number" || isNaN(value.maxAge))) {
+    if (value.maxAge !== undefined && !isNumber(value.maxAge)) {
         throw new TypeError("CorsInit.maxAge must be a number.");
     }
 }

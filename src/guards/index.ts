@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Checks if the provided value is an array of strings.
- *
- * @param array - The value to check.
- * @returns True if `array` is an array where every item is a string.
- */
-export function isStringArray(array: any): array is string[] {
-    return Array.isArray(array) && array.every((item) => typeof item === "string");
-}
+export * from "./methods";
