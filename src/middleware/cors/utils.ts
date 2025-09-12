@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { HttpHeader } from "../../constants/http";
+import { GET, HEAD, HttpHeader, Method, OPTIONS } from "../../constants/http";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
 import { ClonedResponse, Options } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/header";
 import { getOrigin } from "../../utils/request";
+
+const SIMPLE_METHODS = new Set<Method>([GET, HEAD, OPTIONS]);
 
 /**
  * Handles a CORS preflight OPTIONS request.
@@ -118,7 +120,11 @@ export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: 
  * @param worker - The Worker handling the request.
  */
 export function setAllowMethods(headers: Headers, worker: Worker): void {
-    setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_METHODS, worker.getAllowedMethods());
+    const methods = worker.getAllowedMethods().filter((method) => !SIMPLE_METHODS.has(method));
+
+    if (methods.length > 0) {
+        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_METHODS, methods);
+    }
 }
 
 /**
