@@ -162,37 +162,18 @@ describe("cors utils unit tests", () => {
     });
 
     describe("set allow headers function", () => {
-        const worker = {
-            request: {
-                headers: new Headers({
-                    [HttpHeader.ACCESS_CONTROL_REQUEST_HEADERS]: "X-Top, X-Left",
-                }),
-            },
-        } as any;
-
         it("sets the default allow headers from default cors config", () => {
-            setAllowHeaders(headers, worker, defaultCorsConfig);
+            setAllowHeaders(headers, defaultCorsConfig);
             expectHeadersEqual(headers, [["access-control-allow-headers", "Content-Type"]]);
         });
 
         it("sets the allow headers from cors init config", () => {
-            setAllowHeaders(headers, worker, {
+            setAllowHeaders(headers, {
                 ...defaultCorsConfig,
                 allowedHeaders: ["Allow", "Age", "Connection"],
             });
             expectHeadersEqual(headers, [
                 ["access-control-allow-headers", "Age, Allow, Connection"],
-            ]);
-        });
-
-        it("sets the allow headers from the request when allow headers is empty", () => {
-            setAllowHeaders(headers, worker, {
-                ...defaultCorsConfig,
-                allowedHeaders: [],
-            });
-            expectHeadersEqual(headers, [
-                ["access-control-allow-headers", "X-Top, X-Left"],
-                ["vary", "Access-Control-Allow-Headers"],
             ]);
         });
     });

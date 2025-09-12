@@ -52,7 +52,7 @@ export async function options(worker: Worker, cors: CorsConfig): Promise<Respons
     }
     setAllowMethods(options.headers, worker);
     setMaxAge(options.headers, cors);
-    setAllowHeaders(options.headers, worker, cors);
+    setAllowHeaders(options.headers, cors);
 
     return options.getResponse();
 }
@@ -167,25 +167,17 @@ export function setMaxAge(headers: Headers, cors: CorsConfig): void {
 }
 
 /**
- * Sets the Access-Control-Allow-Headers header.
+ * Sets the Access-Control-Allow-Headers header based on the CORS configuration.
  *
- * If allowedHeaders are explicitly set in the CORS config, those are used.
- * Otherwise, the headers requested by the client are echoed back.
+ * Only the headers explicitly listed in `cors.allowedHeaders` are sent.
+ * If the array is empty, no Access-Control-Allow-Headers header is added.
  *
- * @param headers - The headers object to modify.
- * @param worker - The Worker handling the request.
+ * @param headers - The Headers object to modify.
  * @param cors - The CORS configuration.
  */
-export function setAllowHeaders(headers: Headers, worker: Worker, cors: CorsConfig): void {
+export function setAllowHeaders(headers: Headers, cors: CorsConfig): void {
     if (cors.allowedHeaders.length > 0) {
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_HEADERS, cors.allowedHeaders);
-        return;
-    }
-
-    const requestHeaders = worker.request.headers.get(HttpHeader.ACCESS_CONTROL_REQUEST_HEADERS);
-    if (requestHeaders) {
-        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_HEADERS, requestHeaders);
-        mergeHeader(headers, HttpHeader.VARY, HttpHeader.ACCESS_CONTROL_ALLOW_HEADERS);
     }
 }
 
