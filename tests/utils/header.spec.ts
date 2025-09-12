@@ -16,7 +16,7 @@
 
 import { describe, it, beforeEach } from "vitest";
 import { mergeHeader, setHeader } from "@src/utils/header";
-import { expectHeadersEqual } from "@constants";
+import { expectHeadersEqual } from "@common";
 
 describe("header functions unit tests", () => {
     let headers: Headers;

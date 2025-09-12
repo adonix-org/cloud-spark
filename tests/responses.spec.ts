@@ -24,7 +24,7 @@ import {
     Head,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
-import { assertDefined, VALID_URL } from "@constants";
+import { assertDefined, VALID_URL } from "./test-utils/common";
 import { MethodNotAllowed } from "@src/errors";
 import { HttpHeader } from "@src/constants/http";
 import { CacheControl } from "@src/constants/cache";

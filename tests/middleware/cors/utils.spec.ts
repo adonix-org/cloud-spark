@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { expectHeadersEqual } from "@constants";
+import { expectHeadersEqual } from "@common";
 import { HttpHeader } from "@src/constants";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import { setAllowOrigin } from "@src/middleware/cors/utils";

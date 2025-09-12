@@ -22,7 +22,7 @@ import {
     GET_REQUEST_WITH_ORIGIN,
     VALID_ORIGIN,
     VALID_URL,
-} from "@constants";
+} from "@common";
 import { ctx, env } from "@mock";
 import { cors } from "@src/middleware/cors/handler";
 import { BasicWorker } from "@src/workers/basic-worker";

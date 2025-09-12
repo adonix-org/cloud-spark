@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { GET_REQUEST, VALID_URL } from "@constants";
+import { GET_REQUEST, VALID_URL } from "@common";
 import { ctx, defaultCache, env, namedCache } from "@mock";
 import { cache } from "@src/middleware/cache/handler";
 import { MiddlewareWorker } from "@src/workers/middleware-worker";

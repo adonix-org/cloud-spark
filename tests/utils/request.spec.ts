@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "@constants";
+import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "@common";
 import { MediaType } from "@src/constants/media-types";
 import { getContentType, getOrigin, isMethod } from "@src/utils/request";
 import { describe, it, expect } from "vitest";

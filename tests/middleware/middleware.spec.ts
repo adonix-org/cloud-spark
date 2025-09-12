@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from "vitest";
 import { env, ctx } from "@mock";
-import { BODY_INIT, expectHeadersEqual, GET_REQUEST } from "@constants";
+import { BODY_INIT, expectHeadersEqual, GET_REQUEST } from "@common";
 import { BasicWorker } from "@src/workers/basic-worker";
 import { Middleware } from "@src/middleware/middleware";
 import { Unauthorized } from "@src/errors";

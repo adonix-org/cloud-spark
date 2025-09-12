@@ -30,7 +30,7 @@ export default defineConfig({
     resolve: {
         alias: {
             "@src": path.resolve(__dirname, "./src"),
-            "@constants": path.resolve(__dirname, "./tests/test-utils/constants.ts"), // adjust if vitest.config.ts is in root
+            "@common": path.resolve(__dirname, "./tests/test-utils/common.ts"),
             "@mock": path.resolve(__dirname, "./tests/test-utils/mock.ts"),
         },
     },
