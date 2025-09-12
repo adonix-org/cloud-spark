@@ -95,7 +95,7 @@ export async function apply(
  * @param origin - The request's origin, or null if not present.
  */
 export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string): void {
-    if (allowAnyOrigin(cors)) {
+    if (allowAllOrigins(cors)) {
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, HttpHeader.ALLOW_ALL_ORIGINS);
     } else {
         if (cors.allowedOrigins.includes(origin)) {
@@ -120,7 +120,7 @@ export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: strin
  */
 export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: string): void {
     if (!cors.allowCredentials) return;
-    if (allowAnyOrigin(cors)) return;
+    if (allowAllOrigins(cors)) return;
     if (!cors.allowedOrigins.includes(origin)) return;
 
     setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
@@ -181,6 +181,7 @@ export function setAllowHeaders(headers: Headers, worker: Worker, cors: CorsConf
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_HEADERS, cors.allowedHeaders);
         return;
     }
+
     const requestHeaders = worker.request.headers.get(HttpHeader.ACCESS_CONTROL_REQUEST_HEADERS);
     if (requestHeaders) {
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_HEADERS, requestHeaders);
@@ -203,8 +204,8 @@ export function setExposedHeaders(headers: Headers, cors: CorsConfig): void {
  *
  * @param cors - The CORS configuration.
  */
-export function allowAnyOrigin(cors: CorsConfig): boolean {
-    return cors.allowedOrigins.includes("*");
+export function allowAllOrigins(cors: CorsConfig): boolean {
+    return cors.allowedOrigins.includes(HttpHeader.ALLOW_ALL_ORIGINS);
 }
 
 /**

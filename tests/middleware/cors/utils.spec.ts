@@ -19,8 +19,10 @@ import { DELETE, GET, HEAD, HttpHeader, OPTIONS, POST, PUT } from "@src/constant
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import {
     setAllowCredentials,
+    setAllowHeaders,
     setAllowMethods,
     setAllowOrigin,
+    setExposedHeaders,
     setMaxAge,
 } from "@src/middleware/cors/utils";
 import { beforeEach, describe, it, vi } from "vitest";
@@ -156,6 +158,64 @@ describe("cors utils unit tests", () => {
             } as any;
             setAllowMethods(headers, worker);
             expectHeadersEqual(headers, [["access-control-allow-methods", "DELETE, POST, PUT"]]);
+        });
+    });
+
+    describe("set allow headers function", () => {
+        const worker = {
+            request: {
+                headers: new Headers({
+                    [HttpHeader.ACCESS_CONTROL_REQUEST_HEADERS]: "X-Top, X-Left",
+                }),
+            },
+        } as any;
+
+        it("sets the default allow headers from default cors config", () => {
+            setAllowHeaders(headers, worker, defaultCorsConfig);
+            expectHeadersEqual(headers, [["access-control-allow-headers", "Content-Type"]]);
+        });
+
+        it("sets the allow headers from cors init config", () => {
+            setAllowHeaders(headers, worker, {
+                ...defaultCorsConfig,
+                allowedHeaders: ["Allow", "Age", "Connection"],
+            });
+            expectHeadersEqual(headers, [
+                ["access-control-allow-headers", "Age, Allow, Connection"],
+            ]);
+        });
+
+        it("sets the allow headers from the request when allow headers is empty", () => {
+            setAllowHeaders(headers, worker, {
+                ...defaultCorsConfig,
+                allowedHeaders: [],
+            });
+            expectHeadersEqual(headers, [
+                ["access-control-allow-headers", "X-Top, X-Left"],
+                ["vary", "Access-Control-Allow-Headers"],
+            ]);
+        });
+    });
+
+    describe("set exposed headers function", () => {
+        it("sets the detault exposed headers", () => {
+            setExposedHeaders(headers, defaultCorsConfig);
+            expectHeadersEqual(headers, []);
+        });
+
+        it("sets custom exposed headers", () => {
+            setExposedHeaders(headers, {
+                ...defaultCorsConfig,
+                exposedHeaders: ["X-Test-2", "X-Test-1", "X-Test-3"],
+            });
+            expectHeadersEqual(headers, [
+                ["access-control-expose-headers", "X-Test-1, X-Test-2, X-Test-3"],
+            ]);
+        });
+
+        it("does not set exposed headers when empty", () => {
+            setExposedHeaders(headers, { ...defaultCorsConfig, exposedHeaders: [] });
+            expectHeadersEqual(headers, []);
         });
     });
 
