@@ -15,7 +15,7 @@
  */
 
 import { GET, HEAD, HttpHeader, Method, OPTIONS } from "../../constants/http";
-import { isMethod } from "../../guards/methods";
+import { assertMethods, isMethod } from "../../guards/methods";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
 import { ClonedResponse, Options } from "../../responses";
@@ -137,12 +137,13 @@ export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: 
  * @param worker - The Worker instance used to retrieve allowed methods.
  */
 export function setAllowMethods(headers: Headers, worker: Worker): void {
-    const methods = worker
-        .getAllowedMethods()
-        .filter((method) => isMethod(method) && !SIMPLE_METHODS.has(method));
+    const methods = worker.getAllowedMethods();
+    assertMethods(methods);
 
-    if (methods.length > 0) {
-        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_METHODS, methods);
+    const allowed = methods.filter((method) => isMethod(method) && !SIMPLE_METHODS.has(method));
+
+    if (allowed.length > 0) {
+        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_METHODS, allowed);
     }
 }
 

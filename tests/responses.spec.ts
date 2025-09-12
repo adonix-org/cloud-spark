@@ -32,7 +32,7 @@ import { CacheControl } from "@src/constants/cache";
 const mockWorker = {
     request: new Request(VALID_URL),
     allowAnyOrigin: vi.fn(() => false),
-    getAllowedMethods: vi.fn(() => "GET, HEAD, OPTIONS"),
+    getAllowedMethods: vi.fn(() => ["GET", "HEAD", "OPTIONS"]),
 } as any;
 
 describe("response unit tests", () => {

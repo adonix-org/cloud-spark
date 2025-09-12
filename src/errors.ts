@@ -20,6 +20,7 @@ import { ErrorJson } from "./interfaces/error-json";
 import { Worker } from "./interfaces/worker";
 import { CacheControl } from "./constants/cache";
 import { HttpHeader } from "./constants/http";
+import { assertMethods } from "./guards";
 
 /**
  * Generic HTTP error response.
@@ -75,8 +76,11 @@ export class NotFound extends HttpError {
 /** 405 Method Not Allowed error response. */
 export class MethodNotAllowed extends HttpError {
     constructor(worker: Worker) {
+        const methods = worker.getAllowedMethods();
+        assertMethods(methods);
+
         super(StatusCodes.METHOD_NOT_ALLOWED, `${worker.request.method} method not allowed.`);
-        this.setHeader(HttpHeader.ALLOW, worker.getAllowedMethods());
+        this.setHeader(HttpHeader.ALLOW, methods);
     }
 }
 
