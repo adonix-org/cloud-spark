@@ -28,6 +28,10 @@ describe("is method function", () => {
     });
 
     it("is not a method", () => {
+        expect(isMethod(undefined as any)).toBe(false);
+        expect(isMethod(null as any)).toBe(false);
+        expect(isMethod(42 as any)).toBe(false);
+        expect(isMethod({} as any)).toBe(false);
         expect(isMethod("")).toBe(false);
         expect(isMethod(" ")).toBe(false);
         expect(isMethod("METHOD")).toBe(false);
