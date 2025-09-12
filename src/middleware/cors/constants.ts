@@ -26,7 +26,7 @@ export const defaultCorsConfig: CorsConfig = {
      * By default, allow all origins.
      * Note: This must be overridden if you also enable `allowCredentials`.
      */
-    allowedOrigins: ["*"],
+    allowedOrigins: [HttpHeader.ALLOW_ALL_ORIGINS],
 
     /**
      * Default to allowing only "Content-Type".
