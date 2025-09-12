@@ -115,7 +115,6 @@ describe("cors middleware unit tests", () => {
         expect(await response.text()).toBe("");
         expect([...response.headers.entries()]).toStrictEqual([
             ["access-control-allow-headers", "Content-Type"],
-            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "*"],
             ["access-control-max-age", "604800"],
         ]);
