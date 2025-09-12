@@ -21,6 +21,14 @@ import { ClonedResponse, Options } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/header";
 import { getOrigin } from "../../utils/request";
 
+/**
+ * Set of HTTP methods considered "simple" under the CORS specification.
+ *
+ * Simple methods do not trigger a preflight request:
+ * - GET
+ * - HEAD
+ * - OPTIONS
+ */
 const SIMPLE_METHODS = new Set<Method>([GET, HEAD, OPTIONS]);
 
 /**
