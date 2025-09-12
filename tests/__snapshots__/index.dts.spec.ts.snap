@@ -155,6 +155,18 @@ declare function isMethod(value: any): value is Method;
  * @returns \`true\` if \`value\` is an array and every element is a valid \`Method\`, otherwise \`false\`.
  */
 declare function isMethodArray(value: any): value is Method[];
+/**
+ * Asserts that a value is an array of valid HTTP methods.
+ *
+ * This function uses {@link isMethodArray} to validate the input. If the
+ * value is not an array of \`Method\` elements, it throws a \`TypeError\`.
+ * Otherwise, TypeScript will narrow the type of \`value\` to \`Method[]\`
+ * within the calling scope.
+ *
+ * @param value - The value to check.
+ * @throws {TypeError} If \`value\` is not a valid method array.
+ */
+declare function assertMethods(value: any): asserts value is Method[];
 
 /**
  * Override only what is needed from the default CORS configuration.
@@ -858,6 +870,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, cache, cors, getContentType, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, normalizeUrl, setHeader };
 "
 `;

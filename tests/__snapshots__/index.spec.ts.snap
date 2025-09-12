@@ -36,6 +36,7 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "Time",
   "Unauthorized",
   "WorkerResponse",
+  "assertMethods",
   "cache",
   "cors",
   "getContentType",

@@ -44,3 +44,21 @@ export function isMethod(value: any): value is Method {
 export function isMethodArray(value: any): value is Method[] {
     return Array.isArray(value) && value.every(isMethod);
 }
+
+/**
+ * Asserts that a value is an array of valid HTTP methods.
+ *
+ * This function uses {@link isMethodArray} to validate the input. If the
+ * value is not an array of `Method` elements, it throws a `TypeError`.
+ * Otherwise, TypeScript will narrow the type of `value` to `Method[]`
+ * within the calling scope.
+ *
+ * @param value - The value to check.
+ * @throws {TypeError} If `value` is not a valid method array.
+ */
+export function assertMethods(value: any): asserts value is Method[] {
+    if (!isMethodArray(value)) {
+        const desc = Array.isArray(value) ? JSON.stringify(value) : String(value);
+        throw new TypeError(`Invalid method array: ${desc}`);
+    }
+}

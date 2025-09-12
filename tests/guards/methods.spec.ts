@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isMethod, isMethodArray } from "@src/guards";
+import { assertMethods, isMethod, isMethodArray } from "@src/guards";
 import { describe, expect, it } from "vitest";
 
 describe("method guard unit tests", () => {
@@ -69,6 +69,37 @@ describe("method guard unit tests", () => {
         it("works with mixed valid and invalid types", () => {
             expect(isMethodArray(["GET", "POST", "INVALID"])).toBe(false);
             expect(isMethodArray([true, "OPTIONS"])).toBe(false);
+        });
+    });
+
+    describe("assert methods function", () => {
+        it("does not throw for a valid method array", () => {
+            expect(() => assertMethods(["GET", "POST"])).not.toThrow();
+            expect(() => assertMethods([])).not.toThrow(); // empty array is valid
+        });
+
+        it("throws TypeError for an array with invalid methods", () => {
+            expect(() => assertMethods(["GET", "FOO"])).toThrow(TypeError);
+            expect(() => assertMethods(["POST", 123 as any])).toThrow(TypeError);
+            expect(() => assertMethods(["DELETE", null as any])).toThrow(TypeError);
+        });
+
+        it("throws TypeError for non-array values", () => {
+            expect(() => assertMethods("GET")).toThrow(TypeError);
+            expect(() => assertMethods(123)).toThrow(TypeError);
+            expect(() => assertMethods({})).toThrow(TypeError);
+            expect(() => assertMethods(undefined)).toThrow(TypeError);
+            expect(() => assertMethods(null)).toThrow(TypeError);
+            expect(() => assertMethods(true)).toThrow(TypeError);
+        });
+
+        it("error message contains the invalid value", () => {
+            try {
+                assertMethods(["GET", "FOO"]);
+            } catch (e: any) {
+                expect(e.message).toContain("GET");
+                expect(e.message).toContain("FOO");
+            }
         });
     });
 });
