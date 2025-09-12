@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, beforeEach } from "vitest";
 import { mergeHeader, setHeader } from "@src/utils/header";
+import { expectHeadersEqual } from "@constants";
 
 describe("header functions unit tests", () => {
     let headers: Headers;
@@ -27,37 +28,37 @@ describe("header functions unit tests", () => {
 
         it("adds a string to headers", () => {
             setHeader(headers, "test-key", "1");
-            expect([...headers.entries()]).toStrictEqual([["test-key", "1"]]);
+            expectHeadersEqual(headers, [["test-key", "1"]]);
         });
 
         it("does not add an empty string", () => {
             setHeader(headers, "test-key", "");
-            expect([...headers.entries()]).toStrictEqual([]);
+            expectHeadersEqual(headers, []);
         });
 
         it("adds an array to headers", () => {
             setHeader(headers, "test-key", ["1", "2", "3"]);
-            expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3"]]);
+            expectHeadersEqual(headers, [["test-key", "1, 2, 3"]]);
         });
 
         it("does not add an empty array", () => {
             setHeader(headers, "test-key", []);
-            expect([...headers.entries()]).toStrictEqual([]);
+            expectHeadersEqual(headers, []);
         });
 
         it("adds an array and removes duplicates", () => {
             setHeader(headers, "test-key", ["3", "2", "1", "4", "1", "2", "3"]);
-            expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3, 4"]]);
+            expectHeadersEqual(headers, [["test-key", "1, 2, 3, 4"]]);
         });
 
         it("adds an array and removes any white space elements", () => {
             setHeader(headers, "test-key", ["   ", "3", "2", "1", "4", "3", " "]);
-            expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3, 4"]]);
+            expectHeadersEqual(headers, [["test-key", "1, 2, 3, 4"]]);
         });
 
         it("does not add an array containing only white space elements", () => {
             setHeader(headers, "test-key", [" ", "  ", "   "]);
-            expect([...headers.entries()]).toStrictEqual([]);
+            expectHeadersEqual(headers, []);
         });
     });
 
@@ -71,7 +72,7 @@ describe("header functions unit tests", () => {
 
         it("adds a string to headers", () => {
             setHeader(headers, "test-key", "2");
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "2"],
             ]);
@@ -79,7 +80,7 @@ describe("header functions unit tests", () => {
 
         it("does not add an empty string", () => {
             setHeader(headers, "new-key", "");
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "1"],
             ]);
@@ -87,7 +88,7 @@ describe("header functions unit tests", () => {
 
         it("does not add an empty array", () => {
             setHeader(headers, "new-key", []);
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "1"],
             ]);
@@ -95,17 +96,17 @@ describe("header functions unit tests", () => {
 
         it("deletes the header if new value is empty", () => {
             setHeader(headers, "test-key", "");
-            expect([...headers.entries()]).toStrictEqual([["safe-key", "2"]]);
+            expectHeadersEqual(headers, [["safe-key", "2"]]);
         });
 
         it("deletes the header if new array is empty", () => {
             setHeader(headers, "test-key", []);
-            expect([...headers.entries()]).toStrictEqual([["safe-key", "2"]]);
+            expectHeadersEqual(headers, [["safe-key", "2"]]);
         });
 
         it("adds an array to existing headers (no-merge)", () => {
             setHeader(headers, "test-key", ["2", "3"]);
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "2, 3"],
             ]);
@@ -113,7 +114,7 @@ describe("header functions unit tests", () => {
 
         it("adds an array to existing headers and removes duplicates (no-merge)", () => {
             setHeader(headers, "test-key", ["4", "3", "3", "2", "1"]);
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "1, 2, 3, 4"],
             ]);
@@ -127,37 +128,37 @@ describe("header functions unit tests", () => {
 
         it("adds a string to headers", () => {
             mergeHeader(headers, "test-key", "1");
-            expect([...headers.entries()]).toStrictEqual([["test-key", "1"]]);
+            expectHeadersEqual(headers, [["test-key", "1"]]);
         });
 
         it("does not add an empty string", () => {
             mergeHeader(headers, "test-key", "");
-            expect([...headers.entries()]).toStrictEqual([]);
+            expectHeadersEqual(headers, []);
         });
 
         it("adds an array to headers", () => {
             mergeHeader(headers, "test-key", ["1", "2", "3"]);
-            expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3"]]);
+            expectHeadersEqual(headers, [["test-key", "1, 2, 3"]]);
         });
 
         it("does not add an empty array", () => {
             mergeHeader(headers, "test-key", []);
-            expect([...headers.entries()]).toStrictEqual([]);
+            expectHeadersEqual(headers, []);
         });
 
         it("adds an array and removes any duplicates", () => {
             mergeHeader(headers, "test-key", ["3", "2", "1", "4", "1", "2", "3"]);
-            expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3, 4"]]);
+            expectHeadersEqual(headers, [["test-key", "1, 2, 3, 4"]]);
         });
 
         it("adds an array and removes any white space elements", () => {
             mergeHeader(headers, "test-key", ["   ", "3", "2", "1", "4", "3", " "]);
-            expect([...headers.entries()]).toStrictEqual([["test-key", "1, 2, 3, 4"]]);
+            expectHeadersEqual(headers, [["test-key", "1, 2, 3, 4"]]);
         });
 
         it("does not add an array containing only white space elements", () => {
             mergeHeader(headers, "test-key", [" ", "  ", "   "]);
-            expect([...headers.entries()]).toStrictEqual([]);
+            expectHeadersEqual(headers, []);
         });
     });
 
@@ -171,7 +172,7 @@ describe("header functions unit tests", () => {
 
         it("merges a string to existing header", () => {
             mergeHeader(headers, "test-key", "2");
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "1, 2"],
             ]);
@@ -179,7 +180,7 @@ describe("header functions unit tests", () => {
 
         it("does not merge an empty string", () => {
             mergeHeader(headers, "test-key", "");
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "1"],
             ]);
@@ -187,7 +188,7 @@ describe("header functions unit tests", () => {
 
         it("does not merge an empty array", () => {
             mergeHeader(headers, "test-key", []);
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "1"],
             ]);
@@ -195,7 +196,7 @@ describe("header functions unit tests", () => {
 
         it("merges an array to an existing header", () => {
             mergeHeader(headers, "test-key", ["4", "3", "2"]);
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "1, 2, 3, 4"],
             ]);
@@ -203,7 +204,7 @@ describe("header functions unit tests", () => {
 
         it("merges an array to an existing header and removes duplicates", () => {
             mergeHeader(headers, "test-key", ["4", "3", "3", "2", "1"]);
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["safe-key", "2"],
                 ["test-key", "1, 2, 3, 4"],
             ]);
@@ -211,7 +212,7 @@ describe("header functions unit tests", () => {
 
         it("creates a new header from a string if one does not exist", () => {
             mergeHeader(headers, "new-key", "3");
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["new-key", "3"],
                 ["safe-key", "2"],
                 ["test-key", "1"],
@@ -220,7 +221,7 @@ describe("header functions unit tests", () => {
 
         it("creates a new header from an array if one does not exist", () => {
             mergeHeader(headers, "new-key", ["1", "2", "3"]);
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["new-key", "1, 2, 3"],
                 ["safe-key", "2"],
                 ["test-key", "1"],
@@ -229,7 +230,7 @@ describe("header functions unit tests", () => {
 
         it("creates a new header from an array and removes duplicates and white space", () => {
             mergeHeader(headers, "new-key", ["2", "3", "1", "2", "3", " 1 ", " "]);
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["new-key", "1, 2, 3"],
                 ["safe-key", "2"],
                 ["test-key", "1"],

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { expectHeadersEqual } from "@constants";
 import { HttpHeader } from "@src/constants";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import { setAllowOrigin } from "@src/middleware/cors/utils";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, it } from "vitest";
 
 describe("cors utils unit tests", () => {
     let headers: Headers;
@@ -29,7 +30,7 @@ describe("cors utils unit tests", () => {
     describe("allow origin function", () => {
         it("adds * header when configured for any origin", () => {
             setAllowOrigin(headers, defaultCorsConfig, "http://localhost");
-            expect([...headers.entries()]).toStrictEqual([["access-control-allow-origin", "*"]]);
+            expectHeadersEqual(headers, [["access-control-allow-origin", "*"]]);
         });
 
         it("adds header for specifc allowed origin", () => {
@@ -38,7 +39,7 @@ describe("cors utils unit tests", () => {
                 { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
                 "http://localhost",
             );
-            expect([...headers.entries()]).toStrictEqual([
+            expectHeadersEqual(headers, [
                 ["access-control-allow-origin", "http://localhost"],
                 ["vary", "Origin"],
             ]);
@@ -50,7 +51,7 @@ describe("cors utils unit tests", () => {
                 { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
                 "http://localhost.invalid",
             );
-            expect([...headers.entries()]).toStrictEqual([["vary", "Origin"]]);
+            expectHeadersEqual(headers, [["vary", "Origin"]]);
         });
 
         it("correctly merges vary header for a valid origin", () => {
@@ -60,9 +61,9 @@ describe("cors utils unit tests", () => {
                 { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
                 "http://localhost",
             );
-            expect([...headers.entries()]).toStrictEqual([
-                ["access-control-allow-origin", "http://localhost"],
+            expectHeadersEqual(headers, [
                 ["vary", "Accept, Origin"],
+                ["access-control-allow-origin", "http://localhost"],
             ]);
         });
 
@@ -73,7 +74,7 @@ describe("cors utils unit tests", () => {
                 { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
                 "http://localhost.invalid",
             );
-            expect([...headers.entries()]).toStrictEqual([["vary", "Accept, Origin"]]);
+            expectHeadersEqual(headers, [["vary", "Accept, Origin"]]);
         });
     });
 });

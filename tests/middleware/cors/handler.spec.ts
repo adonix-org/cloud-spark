@@ -16,6 +16,7 @@
 
 import { describe, expect, it } from "vitest";
 import {
+    expectHeadersEqual,
     GET_REQUEST,
     GET_REQUEST_INVALID_ORIGIN,
     GET_REQUEST_WITH_ORIGIN,
@@ -55,7 +56,7 @@ describe("cors middleware unit tests", () => {
     it("returns response with cors headers", async () => {
         const worker = new TestWorker(GET_REQUEST_WITH_ORIGIN);
         const response = await worker.fetch();
-        expect([...response.headers.entries()]).toStrictEqual([
+        expectHeadersEqual(response.headers, [
             ["access-control-allow-origin", "*"],
             ["content-type", "text/plain;charset=UTF-8"],
         ]);
@@ -64,15 +65,13 @@ describe("cors middleware unit tests", () => {
     it("returns response without cors headers", async () => {
         const worker = new TestWorker(GET_REQUEST);
         const response = await worker.fetch();
-        expect([...response.headers.entries()]).toStrictEqual([
-            ["content-type", "text/plain;charset=UTF-8"],
-        ]);
+        expectHeadersEqual(response.headers, [["content-type", "text/plain;charset=UTF-8"]]);
     });
 
     it("adds all headers when allow origin is not *", async () => {
         const worker = new TestOriginWorker(GET_REQUEST_WITH_ORIGIN);
         const response = await worker.fetch();
-        expect([...response.headers.entries()]).toStrictEqual([
+        expectHeadersEqual(response.headers, [
             ["access-control-allow-origin", "https://localhost"],
             ["content-type", "text/plain;charset=UTF-8"],
             ["vary", "Origin"],
@@ -82,7 +81,7 @@ describe("cors middleware unit tests", () => {
     it("adds only select headers when allowed does not contain request origin", async () => {
         const worker = new TestOriginWorker(GET_REQUEST_INVALID_ORIGIN);
         const response = await worker.fetch();
-        expect([...response.headers.entries()]).toStrictEqual([
+        expectHeadersEqual(response.headers, [
             ["content-type", "text/plain;charset=UTF-8"],
             ["vary", "Origin"],
         ]);
@@ -96,7 +95,7 @@ describe("cors middleware unit tests", () => {
         }
         const worker = new TestInitWorker(GET_REQUEST_WITH_ORIGIN);
         const response = await worker.fetch();
-        expect([...response.headers.entries()]).toStrictEqual([
+        expectHeadersEqual(response.headers, [
             ["access-control-allow-origin", "*"],
             ["access-control-expose-headers", "x-test-header"],
             ["content-type", "text/plain;charset=UTF-8"],
@@ -113,7 +112,7 @@ describe("cors middleware unit tests", () => {
         const worker = new TestWorker(request);
         const response = await worker.fetch();
         expect(await response.text()).toBe("");
-        expect([...response.headers.entries()]).toStrictEqual([
+        expectHeadersEqual(response.headers, [
             ["access-control-allow-headers", "Content-Type"],
             ["access-control-allow-origin", "*"],
             ["access-control-max-age", "604800"],

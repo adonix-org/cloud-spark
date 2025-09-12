@@ -18,6 +18,7 @@ import { expect } from "vitest";
 import { HEAD, Method } from "@src/constants/http";
 import { MatchedRoute, RouteCallback, RouteTable } from "@src/interfaces/route";
 import { WorkerClass } from "@src/interfaces/worker";
+import { lexCompare } from "@src/utils";
 
 export const VALID_ORIGIN = "https://localhost";
 export const INVALID_ORIGIN = "https://localhost.invalid";
@@ -64,7 +65,23 @@ export namespace TestRoutes {
 }
 
 function isCallback(handler: RouteCallback | WorkerClass): handler is RouteCallback {
-    return !Boolean((handler as any)?.prototype?.fetch);
+    return !(handler as any)?.prototype?.fetch;
+}
+
+/**
+ * Assert that two Headers (or arrays of entries) are equal
+ * regardless of ordering.
+ */
+export function expectHeadersEqual(headers: Headers, expected: [string, string][]) {
+    const actual = [...headers.entries()];
+
+    const sortFn = (a: [string, string], b: [string, string]) =>
+        a[0] === b[0] ? lexCompare(a[1], b[1]) : lexCompare(a[0], b[0]);
+
+    const actualSorted = [...actual].sort(sortFn);
+    const expectedSorted = [...expected].sort(sortFn);
+
+    expect(actualSorted).toStrictEqual(expectedSorted);
 }
 
 export const GET_REQUEST = new Request(VALID_URL, {

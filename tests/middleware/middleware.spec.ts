@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from "vitest";
 import { env, ctx } from "@mock";
-import { BODY_INIT, GET_REQUEST } from "@constants";
+import { BODY_INIT, expectHeadersEqual, GET_REQUEST } from "@constants";
 import { BasicWorker } from "@src/workers/basic-worker";
 import { Middleware } from "@src/middleware/middleware";
 import { Unauthorized } from "@src/errors";
@@ -62,7 +62,7 @@ describe("middleware unit tests", () => {
         const worker = new TestWorker(GET_REQUEST);
         const response = await worker.fetch();
 
-        expect([...response.headers.entries()]).toStrictEqual([
+        expectHeadersEqual(response.headers, [
             ["content-type", "text/plain;charset=UTF-8"],
             ["x-custom-header", "true"],
         ]);
@@ -78,7 +78,7 @@ describe("middleware unit tests", () => {
             error: "Unauthorized",
             status: 401,
         });
-        expect([...response.headers.entries()]).toStrictEqual([
+        expectHeadersEqual(response.headers, [
             ["cache-control", "no-cache, no-store, must-revalidate, max-age=0"],
             ["content-type", "application/json; charset=utf-8"],
         ]);
