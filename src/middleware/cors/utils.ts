@@ -76,7 +76,7 @@ export async function apply(
  * @param cors - The CORS configuration.
  * @param origin - The request's origin, or null if not present.
  */
-function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string | null): void {
+export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string | null): void {
     if (!origin) return;
 
     if (allowAnyOrigin(cors)) {
@@ -97,7 +97,7 @@ function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string | nul
  * @param cors - The CORS configuration.
  * @param origin - The request's origin, or null if not present.
  */
-function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: string | null): void {
+export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: string | null): void {
     if (!origin) return;
 
     if (!allowAnyOrigin(cors) && cors.allowCredentials) {
@@ -112,7 +112,7 @@ function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: string 
  * @param headers - The headers object to modify.
  * @param worker - The Worker handling the request.
  */
-function setAllowMethods(headers: Headers, worker: Worker): void {
+export function setAllowMethods(headers: Headers, worker: Worker): void {
     setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_METHODS, worker.getAllowedMethods());
 }
 
@@ -122,7 +122,7 @@ function setAllowMethods(headers: Headers, worker: Worker): void {
  * @param headers - The headers object to modify.
  * @param cors - The CORS configuration.
  */
-function setMaxAge(headers: Headers, cors: CorsConfig): void {
+export function setMaxAge(headers: Headers, cors: CorsConfig): void {
     setHeader(headers, HttpHeader.ACCESS_CONTROL_MAX_AGE, String(cors.maxAge));
 }
 
@@ -136,7 +136,7 @@ function setMaxAge(headers: Headers, cors: CorsConfig): void {
  * @param worker - The Worker handling the request.
  * @param cors - The CORS configuration.
  */
-function setAllowHeaders(headers: Headers, worker: Worker, cors: CorsConfig): void {
+export function setAllowHeaders(headers: Headers, worker: Worker, cors: CorsConfig): void {
     if (cors.allowedHeaders.length > 0) {
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_HEADERS, cors.allowedHeaders);
         return;
@@ -154,7 +154,7 @@ function setAllowHeaders(headers: Headers, worker: Worker, cors: CorsConfig): vo
  * @param headers - The headers object to modify.
  * @param cors - The CORS configuration.
  */
-function setExposedHeaders(headers: Headers, cors: CorsConfig): void {
+export function setExposedHeaders(headers: Headers, cors: CorsConfig): void {
     setHeader(headers, HttpHeader.ACCESS_CONTROL_EXPOSE_HEADERS, cors.exposedHeaders);
 }
 
@@ -163,7 +163,7 @@ function setExposedHeaders(headers: Headers, cors: CorsConfig): void {
  *
  * @param cors - The CORS configuration.
  */
-function allowAnyOrigin(cors: CorsConfig): boolean {
+export function allowAnyOrigin(cors: CorsConfig): boolean {
     return cors.allowedOrigins.includes("*");
 }
 
@@ -172,7 +172,7 @@ function allowAnyOrigin(cors: CorsConfig): boolean {
  *
  * @param headers - The headers object to modify.
  */
-function deleteCorsHeaders(headers: Headers): void {
+export function deleteCorsHeaders(headers: Headers): void {
     headers.delete(HttpHeader.ACCESS_CONTROL_MAX_AGE);
     headers.delete(HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN);
     headers.delete(HttpHeader.ACCESS_CONTROL_ALLOW_HEADERS);
