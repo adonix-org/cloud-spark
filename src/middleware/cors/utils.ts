@@ -12,7 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */ import { HttpHeader } from "../../constants/http";
+ */
+
+import { HttpHeader } from "../../constants/http";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
 import { ClonedResponse, Options } from "../../responses";
@@ -97,7 +99,11 @@ export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: strin
  * @param cors - The CORS configuration.
  * @param origin - The request's origin, or null if not present.
  */
-export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: string | null): void {
+export function setAllowCredentials(
+    headers: Headers,
+    cors: CorsConfig,
+    origin: string | null,
+): void {
     if (!origin) return;
 
     if (!allowAnyOrigin(cors) && cors.allowCredentials) {
