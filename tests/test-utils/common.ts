@@ -73,13 +73,14 @@ function isCallback(handler: RouteCallback | WorkerClass): handler is RouteCallb
  * regardless of ordering.
  */
 export function expectHeadersEqual(headers: Headers, expected: [string, string][]) {
-    const actual = [...headers.entries()];
+    const actual = [...headers.entries()].map(([k, v]) => [k.toLowerCase(), v] as [string, string]);
+    const expectedNormalized = expected.map(([k, v]) => [k.toLowerCase(), v] as [string, string]);
 
     const sortFn = (a: [string, string], b: [string, string]) =>
         a[0] === b[0] ? lexCompare(a[1], b[1]) : lexCompare(a[0], b[0]);
 
     const actualSorted = [...actual].sort(sortFn);
-    const expectedSorted = [...expected].sort(sortFn);
+    const expectedSorted = [...expectedNormalized].sort(sortFn);
 
     expect(actualSorted).toStrictEqual(expectedSorted);
 }

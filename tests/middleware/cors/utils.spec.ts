@@ -27,7 +27,7 @@ describe("cors utils unit tests", () => {
         headers = new Headers();
     });
 
-    describe("allow origin function", () => {
+    describe("set allow origin function", () => {
         it("adds * header when configured for any origin", () => {
             setAllowOrigin(headers, defaultCorsConfig, "http://localhost");
             expectHeadersEqual(headers, [["access-control-allow-origin", "*"]]);
