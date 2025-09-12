@@ -14,25 +14,8 @@
  * limitations under the License.
  */
 
-import { HttpHeader, Method } from "../constants/http";
+import { HttpHeader } from "../constants/http";
 import { MediaType } from "../constants/media-types";
-
-/**
- * A set containing all supported HTTP methods.
- *
- * Useful for runtime checks like validating request methods.
- */
-const METHOD_SET: Set<string> = new Set(Object.values(Method));
-
-/**
- * Type guard that checks if a string is a valid HTTP method.
- *
- * @param value - The string to test.
- * @returns True if `value` is a recognized HTTP method.
- */
-export function isMethod(value: string): value is Method {
-    return METHOD_SET.has(value);
-}
 
 /**
  * A set of media types that require a `charset` parameter when setting

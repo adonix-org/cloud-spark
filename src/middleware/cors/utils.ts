@@ -15,6 +15,7 @@
  */
 
 import { GET, HEAD, HttpHeader, Method, OPTIONS } from "../../constants/http";
+import { isMethod } from "../../guards/methods";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
 import { ClonedResponse, Options } from "../../responses";
@@ -136,7 +137,9 @@ export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: 
  * @param worker - The Worker instance used to retrieve allowed methods.
  */
 export function setAllowMethods(headers: Headers, worker: Worker): void {
-    const methods = worker.getAllowedMethods().filter((method) => !SIMPLE_METHODS.has(method));
+    const methods = worker
+        .getAllowedMethods()
+        .filter((method) => isMethod(method) && !SIMPLE_METHODS.has(method));
 
     if (methods.length > 0) {
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_METHODS, methods);
@@ -144,13 +147,22 @@ export function setAllowMethods(headers: Headers, worker: Worker): void {
 }
 
 /**
- * Sets the Access-Control-Max-Age header based on the CORS config.
+ * Sets the `Access-Control-Max-Age` header for a CORS response.
  *
- * @param headers - The headers object to modify.
- * @param cors - The CORS configuration.
+ * This header indicates how long the results of a preflight request
+ * can be cached by the client (in seconds).
+ *
+ * The value is **clamped to a non-negative integer** to comply with
+ * the CORS specification:
+ * - Decimal values are floored to the nearest integer.
+ * - Negative values are treated as `0`.
+ *
+ * @param headers - The Headers object to modify.
+ * @param cors - The CORS configuration containing the `maxAge` value in seconds.
  */
 export function setMaxAge(headers: Headers, cors: CorsConfig): void {
-    setHeader(headers, HttpHeader.ACCESS_CONTROL_MAX_AGE, String(cors.maxAge));
+    const maxAge = Math.max(0, Math.floor(cors.maxAge));
+    setHeader(headers, HttpHeader.ACCESS_CONTROL_MAX_AGE, String(maxAge));
 }
 
 /**

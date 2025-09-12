@@ -20,6 +20,7 @@ import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
 import { defaultCorsConfig } from "./constants";
 import { OPTIONS } from "../../constants/http";
+import { assertCorsInit } from "../../guards/cors-init";
 
 /**
  * Creates a CORS middleware instance.
@@ -32,6 +33,7 @@ import { OPTIONS } from "../../constants/http";
  * @returns A {@link Middleware} instance that can be used in your middleware chain.
  */
 export function cors(init?: CorsInit): Middleware {
+    assertCorsInit(init);
     return new CorsHandler(init);
 }
 

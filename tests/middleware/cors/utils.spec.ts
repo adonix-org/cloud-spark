@@ -15,10 +15,15 @@
  */
 
 import { expectHeadersEqual } from "@common";
-import { HttpHeader } from "@src/constants";
+import { DELETE, GET, HEAD, HttpHeader, OPTIONS, POST, PUT } from "@src/constants/http";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
-import { setAllowCredentials, setAllowOrigin } from "@src/middleware/cors/utils";
-import { beforeEach, describe, it } from "vitest";
+import {
+    setAllowCredentials,
+    setAllowMethods,
+    setAllowOrigin,
+    setMaxAge,
+} from "@src/middleware/cors/utils";
+import { beforeEach, describe, it, vi } from "vitest";
 
 describe("cors utils unit tests", () => {
     let headers: Headers;
@@ -33,7 +38,7 @@ describe("cors utils unit tests", () => {
             expectHeadersEqual(headers, [["access-control-allow-origin", "*"]]);
         });
 
-        it("adds header for specifc allowed origin", () => {
+        it("adds the header for specifc allowed origin", () => {
             setAllowOrigin(
                 headers,
                 { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
@@ -45,7 +50,7 @@ describe("cors utils unit tests", () => {
             ]);
         });
 
-        it("does not add header for invalid origin", () => {
+        it("does not add the header for invalid origin", () => {
             setAllowOrigin(
                 headers,
                 { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
@@ -79,12 +84,12 @@ describe("cors utils unit tests", () => {
     });
 
     describe("set allow credentials function", () => {
-        it("does not add header when allow credenitals is false", () => {
+        it("does not add the header when allow credenitals is false", () => {
             setAllowCredentials(headers, defaultCorsConfig, "http://localhost");
             expectHeadersEqual(headers, []);
         });
 
-        it("does not add header when any origin is allowed", () => {
+        it("does not add the header when any origin is allowed", () => {
             setAllowCredentials(
                 headers,
                 { ...defaultCorsConfig, allowCredentials: true },
@@ -93,7 +98,7 @@ describe("cors utils unit tests", () => {
             expectHeadersEqual(headers, []);
         });
 
-        it("does not add header when origin is not included in allowed origins", () => {
+        it("does not add the header when origin is not included in allowed origins", () => {
             setAllowCredentials(
                 headers,
                 {
@@ -106,7 +111,7 @@ describe("cors utils unit tests", () => {
             expectHeadersEqual(headers, []);
         });
 
-        it("adds header only when all conditions are met", () => {
+        it("adds the header only when all conditions are met", () => {
             setAllowCredentials(
                 headers,
                 {
@@ -117,6 +122,62 @@ describe("cors utils unit tests", () => {
                 "http://localhost",
             );
             expectHeadersEqual(headers, [["access-control-allow-credentials", "true"]]);
+        });
+    });
+
+    describe("set allow methods function", () => {
+        it("does not add the header for simple methods", () => {
+            const worker = {
+                getAllowedMethods: vi.fn(() => [GET, HEAD, OPTIONS]),
+            } as any;
+            setAllowMethods(headers, worker);
+            expectHeadersEqual(headers, []);
+        });
+
+        it("adds the header for non-simple method", () => {
+            const worker = {
+                getAllowedMethods: vi.fn(() => [POST]),
+            } as any;
+            setAllowMethods(headers, worker);
+            expectHeadersEqual(headers, [["access-control-allow-methods", "POST"]]);
+        });
+
+        it("adds the header for non-simple methods", () => {
+            const worker = {
+                getAllowedMethods: vi.fn(() => [POST, PUT, DELETE]),
+            } as any;
+            setAllowMethods(headers, worker);
+            expectHeadersEqual(headers, [["access-control-allow-methods", "DELETE, POST, PUT"]]);
+        });
+
+        it("filters the header values to remove non-simple methods", () => {
+            const worker = {
+                getAllowedMethods: vi.fn(() => [POST, PUT, DELETE, GET, OPTIONS]),
+            } as any;
+            setAllowMethods(headers, worker);
+            expectHeadersEqual(headers, [["access-control-allow-methods", "DELETE, POST, PUT"]]);
+        });
+    });
+
+    describe("set max age function", () => {
+        it("sets the default max age", () => {
+            setMaxAge(headers, defaultCorsConfig);
+            expectHeadersEqual(headers, [["access-control-max-age", "604800"]]);
+        });
+
+        it("sets a non-default max age", () => {
+            setMaxAge(headers, { ...defaultCorsConfig, maxAge: 0 });
+            expectHeadersEqual(headers, [["access-control-max-age", "0"]]);
+        });
+
+        it("sets the max age to 0 for negative values", () => {
+            setMaxAge(headers, { ...defaultCorsConfig, maxAge: -1 });
+            expectHeadersEqual(headers, [["access-control-max-age", "0"]]);
+        });
+
+        it("sets the max age to the nearest lower integer for decimal values", () => {
+            setMaxAge(headers, { ...defaultCorsConfig, maxAge: 100.90987 });
+            expectHeadersEqual(headers, [["access-control-max-age", "100"]]);
         });
     });
 });
