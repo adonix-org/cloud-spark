@@ -17,7 +17,7 @@
 import { expectHeadersEqual } from "@common";
 import { HttpHeader } from "@src/constants";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
-import { setAllowOrigin } from "@src/middleware/cors/utils";
+import { setAllowCredentials, setAllowOrigin } from "@src/middleware/cors/utils";
 import { beforeEach, describe, it } from "vitest";
 
 describe("cors utils unit tests", () => {
@@ -75,6 +75,48 @@ describe("cors utils unit tests", () => {
                 "http://localhost.invalid",
             );
             expectHeadersEqual(headers, [["vary", "Accept, Origin"]]);
+        });
+    });
+
+    describe("set allow credentials function", () => {
+        it("does not add header when allow credenitals is false", () => {
+            setAllowCredentials(headers, defaultCorsConfig, "http://localhost");
+            expectHeadersEqual(headers, []);
+        });
+
+        it("does not add header when any origin is allowed", () => {
+            setAllowCredentials(
+                headers,
+                { ...defaultCorsConfig, allowCredentials: true },
+                "http://localhost",
+            );
+            expectHeadersEqual(headers, []);
+        });
+
+        it("does not add header when origin is not included in allowed origins", () => {
+            setAllowCredentials(
+                headers,
+                {
+                    ...defaultCorsConfig,
+                    allowCredentials: true,
+                    allowedOrigins: ["http://localhost"],
+                },
+                "http://localhost.invalid",
+            );
+            expectHeadersEqual(headers, []);
+        });
+
+        it("adds header only when all conditions are met", () => {
+            setAllowCredentials(
+                headers,
+                {
+                    ...defaultCorsConfig,
+                    allowCredentials: true,
+                    allowedOrigins: ["http://localhost"],
+                },
+                "http://localhost",
+            );
+            expectHeadersEqual(headers, [["access-control-allow-credentials", "true"]]);
         });
     });
 });
