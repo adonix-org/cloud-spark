@@ -14,31 +14,61 @@
  * limitations under the License.
  */
 
-import { isMethod } from "@src/guards";
+import { isMethod, isMethodArray } from "@src/guards";
 import { describe, expect, it } from "vitest";
 
-describe("is method function", () => {
-    it("is a method", () => {
-        expect(isMethod("GET")).toBe(true);
-        expect(isMethod("HEAD")).toBe(true);
-        expect(isMethod("DELETE")).toBe(true);
-        expect(isMethod("POST")).toBe(true);
-        expect(isMethod("PUT")).toBe(true);
-        expect(isMethod("PATCH")).toBe(true);
+describe("method guard unit tests", () => {
+    describe("is method function", () => {
+        it("is a method", () => {
+            expect(isMethod("GET")).toBe(true);
+            expect(isMethod("HEAD")).toBe(true);
+            expect(isMethod("DELETE")).toBe(true);
+            expect(isMethod("POST")).toBe(true);
+            expect(isMethod("PUT")).toBe(true);
+            expect(isMethod("PATCH")).toBe(true);
+            expect(isMethod("OPTIONS")).toBe(true);
+        });
+
+        it("is not a method", () => {
+            expect(isMethod(undefined as any)).toBe(false);
+            expect(isMethod(null as any)).toBe(false);
+            expect(isMethod(42 as any)).toBe(false);
+            expect(isMethod({} as any)).toBe(false);
+            expect(isMethod("")).toBe(false);
+            expect(isMethod(" ")).toBe(false);
+            expect(isMethod("METHOD")).toBe(false);
+            expect(isMethod("\nGET")).toBe(false);
+            expect(isMethod("GET\n")).toBe(false);
+            expect(isMethod("get")).toBe(false);
+            expect(isMethod("Get")).toBe(false);
+            expect(isMethod(" GET")).toBe(false);
+        });
     });
 
-    it("is not a method", () => {
-        expect(isMethod(undefined as any)).toBe(false);
-        expect(isMethod(null as any)).toBe(false);
-        expect(isMethod(42 as any)).toBe(false);
-        expect(isMethod({} as any)).toBe(false);
-        expect(isMethod("")).toBe(false);
-        expect(isMethod(" ")).toBe(false);
-        expect(isMethod("METHOD")).toBe(false);
-        expect(isMethod("\nGET")).toBe(false);
-        expect(isMethod("GET\n")).toBe(false);
-        expect(isMethod("get")).toBe(false);
-        expect(isMethod("Get")).toBe(false);
-        expect(isMethod(" GET")).toBe(false);
+    describe("is method array function", () => {
+        it("returns true for an array of valid methods", () => {
+            expect(isMethodArray(["GET", "POST", "DELETE"])).toBe(true);
+            expect(isMethodArray([])).toBe(true); // empty array is valid
+        });
+
+        it("returns false for an array containing invalid methods", () => {
+            expect(isMethodArray(["GET", "FOO"])).toBe(false);
+            expect(isMethodArray(["POST", 123])).toBe(false);
+            expect(isMethodArray(["PUT", null])).toBe(false);
+        });
+
+        it("returns false for non-array values", () => {
+            expect(isMethodArray("GET")).toBe(false);
+            expect(isMethodArray(123)).toBe(false);
+            expect(isMethodArray({})).toBe(false);
+            expect(isMethodArray(undefined)).toBe(false);
+            expect(isMethodArray(null)).toBe(false);
+            expect(isMethodArray(true)).toBe(false);
+        });
+
+        it("works with mixed valid and invalid types", () => {
+            expect(isMethodArray(["GET", "POST", "INVALID"])).toBe(false);
+            expect(isMethodArray([true, "OPTIONS"])).toBe(false);
+        });
     });
 });

@@ -17,66 +17,68 @@
 import { isBoolean, isNumber, isStringArray } from "@src/guards/basic";
 import { describe, it, expect } from "vitest";
 
-describe("is string array function", () => {
-    it("returns true for an array of strings", () => {
-        expect(isStringArray(["a", "b", "c"])).toBe(true);
+describe("basic guard unit tests", () => {
+    describe("is string array function", () => {
+        it("returns true for an array of strings", () => {
+            expect(isStringArray(["a", "b", "c"])).toBe(true);
+        });
+
+        it("returns true for an empty array", () => {
+            expect(isStringArray([])).toBe(true);
+        });
+
+        it("returns false for an array with non-string items", () => {
+            expect(isStringArray(["a", 1, "c"])).toBe(false);
+            expect(isStringArray([true, "b"])).toBe(false);
+            expect(isStringArray([null])).toBe(false);
+        });
+
+        it("returns false for non-array values", () => {
+            expect(isStringArray("abc")).toBe(false);
+            expect(isStringArray(123)).toBe(false);
+            expect(isStringArray({})).toBe(false);
+            expect(isStringArray(undefined)).toBe(false);
+            expect(isStringArray(null)).toBe(false);
+        });
     });
 
-    it("returns true for an empty array", () => {
-        expect(isStringArray([])).toBe(true);
+    describe("is number function", () => {
+        it("returns true for valid numbers", () => {
+            expect(isNumber(0)).toBe(true);
+            expect(isNumber(42)).toBe(true);
+            expect(isNumber(-5)).toBe(true);
+            expect(isNumber(Infinity)).toBe(true);
+            expect(isNumber(-Infinity)).toBe(true);
+        });
+
+        it("returns false for NaN", () => {
+            expect(isNumber(NaN)).toBe(false);
+        });
+
+        it("returns false for non-number types", () => {
+            expect(isNumber("123")).toBe(false);
+            expect(isNumber(true)).toBe(false);
+            expect(isNumber(null)).toBe(false);
+            expect(isNumber(undefined)).toBe(false);
+            expect(isNumber({})).toBe(false);
+            expect(isNumber([])).toBe(false);
+        });
     });
 
-    it("returns false for an array with non-string items", () => {
-        expect(isStringArray(["a", 1, "c"])).toBe(false);
-        expect(isStringArray([true, "b"])).toBe(false);
-        expect(isStringArray([null])).toBe(false);
-    });
+    describe("is boolean function", () => {
+        it("returns true for true and false", () => {
+            expect(isBoolean(true)).toBe(true);
+            expect(isBoolean(false)).toBe(true);
+        });
 
-    it("returns false for non-array values", () => {
-        expect(isStringArray("abc")).toBe(false);
-        expect(isStringArray(123)).toBe(false);
-        expect(isStringArray({})).toBe(false);
-        expect(isStringArray(undefined)).toBe(false);
-        expect(isStringArray(null)).toBe(false);
-    });
-});
-
-describe("is number function", () => {
-    it("returns true for valid numbers", () => {
-        expect(isNumber(0)).toBe(true);
-        expect(isNumber(42)).toBe(true);
-        expect(isNumber(-5)).toBe(true);
-        expect(isNumber(Infinity)).toBe(true);
-        expect(isNumber(-Infinity)).toBe(true);
-    });
-
-    it("returns false for NaN", () => {
-        expect(isNumber(NaN)).toBe(false);
-    });
-
-    it("returns false for non-number types", () => {
-        expect(isNumber("123")).toBe(false);
-        expect(isNumber(true)).toBe(false);
-        expect(isNumber(null)).toBe(false);
-        expect(isNumber(undefined)).toBe(false);
-        expect(isNumber({})).toBe(false);
-        expect(isNumber([])).toBe(false);
-    });
-});
-
-describe("is boolean function", () => {
-    it("returns true for true and false", () => {
-        expect(isBoolean(true)).toBe(true);
-        expect(isBoolean(false)).toBe(true);
-    });
-
-    it("returns false for non-boolean values", () => {
-        expect(isBoolean(0)).toBe(false);
-        expect(isBoolean(1)).toBe(false);
-        expect(isBoolean("true")).toBe(false);
-        expect(isBoolean(null)).toBe(false);
-        expect(isBoolean(undefined)).toBe(false);
-        expect(isBoolean({})).toBe(false);
-        expect(isBoolean([])).toBe(false);
+        it("returns false for non-boolean values", () => {
+            expect(isBoolean(0)).toBe(false);
+            expect(isBoolean(1)).toBe(false);
+            expect(isBoolean("true")).toBe(false);
+            expect(isBoolean(null)).toBe(false);
+            expect(isBoolean(undefined)).toBe(false);
+            expect(isBoolean({})).toBe(false);
+            expect(isBoolean([])).toBe(false);
+        });
     });
 });
