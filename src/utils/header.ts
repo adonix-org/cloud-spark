@@ -20,7 +20,7 @@ import { lexCompare } from "./compare";
  * Sets a header on the given Headers object.
  *
  * - If `value` is an array, any duplicates and empty strings are removed.
- * - If the resulting value array is empty, the header is deleted.
+ * - If the resulting value is empty, the header is deleted.
  * - Otherwise, values are joined with `", "` and set as the header value.
  *
  * @param headers - The Headers object to modify.

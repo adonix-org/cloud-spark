@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { addCorsHeaders } from "./utils";
+import { apply, options } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
 import { defaultCorsConfig } from "./constants";
-import { ClonedResponse, Options } from "../../responses";
 import { OPTIONS } from "../../constants/http";
 
 /**
@@ -52,23 +51,22 @@ class CorsHandler extends Middleware {
     }
 
     /**
-     * Handle a request by applying CORS headers to the response.
+     * Applies CORS headers to a request.
      *
-     * @param worker - The Worker instance containing the request context.
-     * @param next - Function to invoke the next middleware in the chain.
-     * @returns A Response object with CORS headers applied.
+     * - Returns a preflight response for `OPTIONS` requests.
+     * - For other methods, calls `next()` and applies CORS headers to the result.
+     *
+     * @param worker - The Worker handling the request.
+     * @param next - Function to invoke the next middleware.
+     * @returns Response with CORS headers applied.
      */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         if (worker.request.method === OPTIONS) {
-            const options = new Options();
-            addCorsHeaders(worker, this.config, options.headers);
-            return options.getResponse();
+            return options(worker, this.config);
         }
 
         const response = await next();
 
-        const clone = new ClonedResponse(response);
-        addCorsHeaders(worker, this.config, clone.headers);
-        return clone.getResponse();
+        return apply(response, worker, this.config);
     }
 }

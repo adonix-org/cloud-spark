@@ -23,32 +23,32 @@ export { StatusCodes } from "http-status-codes";
  * Standard HTTP header names and common values.
  */
 export namespace HttpHeader {
-    export const VARY = "Vary";
     export const ALLOW = "Allow";
     export const ORIGIN = "Origin";
-    export const USER_AGENT = "User-Agent";
     export const CONTENT_TYPE = "Content-Type";
     export const CACHE_CONTROL = "Cache-Control";
+    export const USER_AGENT = "User-Agent";
+    export const VARY = "Vary";
 
     // Security Headers
-    export const X_FRAME_OPTIONS = "X-Frame-Options"; // e.g. "DENY" or "SAMEORIGIN"
-    export const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options"; // usually "nosniff"
-    export const REFERRER_POLICY = "Referrer-Policy"; // e.g. "no-referrer", "strict-origin-when-cross-origin"
-    export const PERMISSIONS_POLICY = "Permissions-Policy"; // formerly Feature-Policy, controls APIs like geolocation/camera
     export const CONTENT_SECURITY_POLICY = "Content-Security-Policy"; // fine-grained script/style/image restrictions
+    export const PERMISSIONS_POLICY = "Permissions-Policy"; // formerly Feature-Policy, controls APIs like geolocation/camera
     export const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security"; // e.g. "max-age=63072000; includeSubDomains; preload"
+    export const REFERRER_POLICY = "Referrer-Policy"; // e.g. "no-referrer", "strict-origin-when-cross-origin"
+    export const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options"; // usually "nosniff"
+    export const X_FRAME_OPTIONS = "X-Frame-Options"; // e.g. "DENY" or "SAMEORIGIN"
 
     // Cors Headers
-    export const MAX_AGE = "Access-Control-Max-Age";
-    export const ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    export const ALLOW_HEADERS = "Access-Control-Allow-Headers";
-    export const ALLOW_METHODS = "Access-Control-Allow-Methods";
-    export const EXPOSE_HEADERS = "Access-Control-Expose-Headers";
-    export const ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+    export const ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+    export const ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+    export const ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
+    export const ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+    export const ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
+    export const ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age";
+    export const ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
 
     // Values
     export const ALLOW_ALL_ORIGINS = "*";
-    export const CROSS_SITE = "cross-site";
 }
 
 /**

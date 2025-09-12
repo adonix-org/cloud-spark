@@ -52,6 +52,15 @@ export interface CorsConfig {
     exposedHeaders: string[];
 
     /**
+     * Whether the resource supports user credentials (cookies, HTTP authentication).
+     *
+     * Defaults to false.
+     *
+     * If true, the Access-Control-Allow-Origin response header must not be "*".
+     */
+    allowCredentials: boolean;
+
+    /**
      * Maximum age (in seconds) that the results of a preflight request
      * can be cached by the client.
      *
