@@ -18,6 +18,7 @@ import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
 import { normalizeUrl } from "../../utils/url";
+import { assertCacheName, assertGetKey } from "../../guards/cache";
 
 /**
  * Middleware for caching GET requests.
@@ -37,6 +38,9 @@ export function cache(
     cacheName?: string,
     getKey?: (request: Request) => URL | RequestInfo,
 ): Middleware {
+    assertCacheName(cacheName);
+    assertGetKey(getKey);
+
     return new CacheHandler(cacheName, getKey);
 }
 

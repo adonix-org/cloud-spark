@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { isBoolean, isNumber, isStringArray } from "@src/guards/basic";
+import { isBoolean, isFunction, isNumber, isString, isStringArray } from "@src/guards/basic";
 import { describe, it, expect } from "vitest";
 
 describe("basic guard unit tests", () => {
-    describe("is string array function", () => {
+    describe("is string array", () => {
         it("returns true for an array of strings", () => {
             expect(isStringArray(["a", "b", "c"])).toBe(true);
         });
@@ -42,7 +42,36 @@ describe("basic guard unit tests", () => {
         });
     });
 
-    describe("is number function", () => {
+    describe("is string", () => {
+        it("returns true for strings", () => {
+            expect(isString("hello")).toBe(true);
+        });
+
+        it("returns false for non-strings", () => {
+            expect(isString(123)).toBe(false);
+            expect(isString({})).toBe(false);
+            expect(isString(undefined)).toBe(false);
+            expect(isString(null)).toBe(false);
+            expect(isString(() => {})).toBe(false);
+        });
+    });
+
+    describe("is function", () => {
+        it("returns true for functions", () => {
+            expect(isFunction(() => {})).toBe(true);
+            expect(isFunction(function () {})).toBe(true);
+        });
+
+        it("returns false for non-functions", () => {
+            expect(isFunction(123)).toBe(false);
+            expect(isFunction("hello")).toBe(false);
+            expect(isFunction({})).toBe(false);
+            expect(isFunction(undefined)).toBe(false);
+            expect(isFunction(null)).toBe(false);
+        });
+    });
+
+    describe("is number", () => {
         it("returns true for valid numbers", () => {
             expect(isNumber(0)).toBe(true);
             expect(isNumber(42)).toBe(true);
@@ -65,7 +94,7 @@ describe("basic guard unit tests", () => {
         });
     });
 
-    describe("is boolean function", () => {
+    describe("is boolean", () => {
         it("returns true for true and false", () => {
             expect(isBoolean(true)).toBe(true);
             expect(isBoolean(false)).toBe(true);
