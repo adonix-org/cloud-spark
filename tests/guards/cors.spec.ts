@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertCorsInit } from "@src/guards/cors-init";
+import { assertCorsInit } from "@src/guards/cors";
 import { describe, it, expect } from "vitest";
 
 describe("cors init guard unit tests", () => {

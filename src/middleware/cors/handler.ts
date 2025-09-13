@@ -20,7 +20,7 @@ import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
 import { defaultCorsConfig } from "./constants";
 import { OPTIONS } from "../../constants/http";
-import { assertCorsInit } from "../../guards/cors-init";
+import { assertCorsInit } from "../../guards/cors";
 
 /**
  * Creates a CORS middleware instance.
