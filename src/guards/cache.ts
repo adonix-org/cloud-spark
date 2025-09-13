@@ -23,9 +23,9 @@ import { isFunction, isString } from "./basic";
  * Otherwise, it throws a `TypeError` if the value is not a string.
  *
  * @param value - The value to check.
- * @throws {TypeError} If the value is defined but not a string.
+ * @throws TypeError If the value is defined but not a string.
  */
-export function assertCacheName(value: any): asserts value is string {
+export function assertCacheName(value: unknown): asserts value is string {
     if (value === undefined) return;
     if (!isString(value)) {
         throw new TypeError("Cache name must be a string.");
@@ -39,9 +39,9 @@ export function assertCacheName(value: any): asserts value is string {
  * Otherwise, it throws a `TypeError` if the value is not a function.
  *
  * @param value - The value to check.
- * @throws {TypeError} If the value is defined but not a function.
+ * @throws TypeError If the value is defined but not a function.
  */
-export function assertGetKey(value: any): asserts value is Function {
+export function assertGetKey(value: unknown): asserts value is Function {
     if (value === undefined) return;
     if (!isFunction(value)) {
         throw new TypeError("getKey must be a function.");

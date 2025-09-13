@@ -24,30 +24,32 @@ import { isBoolean, isNumber, isStringArray } from "./basic";
  *
  * @param value - The value to check.
  */
-export function assertCorsInit(value: any): asserts value is CorsInit {
+export function assertCorsInit(value: unknown): asserts value is CorsInit {
     if (value === undefined) return;
 
     if (typeof value !== "object" || value === null) {
         throw new TypeError("CorsInit must be an object.");
     }
 
-    if (value.allowedOrigins !== undefined && !isStringArray(value.allowedOrigins)) {
+    const obj = value as Record<string, unknown>;
+
+    if (obj["allowedOrigins"] !== undefined && !isStringArray(obj["allowedOrigins"])) {
         throw new TypeError("CorsInit.allowedOrigins must be a string array.");
     }
 
-    if (value.allowedHeaders !== undefined && !isStringArray(value.allowedHeaders)) {
+    if (obj["allowedHeaders"] !== undefined && !isStringArray(obj["allowedHeaders"])) {
         throw new TypeError("CorsInit.allowedHeaders must be a string array.");
     }
 
-    if (value.exposedHeaders !== undefined && !isStringArray(value.exposedHeaders)) {
+    if (obj["exposedHeaders"] !== undefined && !isStringArray(obj["exposedHeaders"])) {
         throw new TypeError("CorsInit.exposedHeaders must be a string array.");
     }
 
-    if (value.allowCredentials !== undefined && !isBoolean(value.allowCredentials)) {
+    if (obj["allowCredentials"] !== undefined && !isBoolean(obj["allowCredentials"])) {
         throw new TypeError("CorsInit.allowCredentials must be a boolean.");
     }
 
-    if (value.maxAge !== undefined && !isNumber(value.maxAge)) {
+    if (obj["maxAge"] !== undefined && !isNumber(obj["maxAge"])) {
         throw new TypeError("CorsInit.maxAge must be a number.");
     }
 }

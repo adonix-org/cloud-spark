@@ -20,7 +20,7 @@
  * @param value - The value to check.
  * @returns True if `array` is an array where every item is a string.
  */
-export function isStringArray(value: any): value is string[] {
+export function isStringArray(value: unknown): value is string[] {
     return Array.isArray(value) && value.every((item) => typeof item === "string");
 }
 
@@ -30,7 +30,7 @@ export function isStringArray(value: any): value is string[] {
  * @param value - The value to check.
  * @returns `true` if the value is a string, otherwise `false`.
  */
-export function isString(value: any): value is string {
+export function isString(value: unknown): value is string {
     return typeof value === "string";
 }
 
@@ -40,7 +40,7 @@ export function isString(value: any): value is string {
  * @param value - The value to check.
  * @returns `true` if the value is a function, otherwise `false`.
  */
-export function isFunction(value: any): value is Function {
+export function isFunction(value: unknown): value is Function {
     return typeof value === "function";
 }
 
@@ -53,7 +53,7 @@ export function isFunction(value: any): value is Function {
  * @param value - The value to check.
  * @returns `true` if the value is a number and not `NaN`, otherwise `false`.
  */
-export function isNumber(value: any): value is number {
+export function isNumber(value: unknown): value is number {
     return typeof value === "number" && !Number.isNaN(value);
 }
 
@@ -63,6 +63,6 @@ export function isNumber(value: any): value is number {
  * @param value - The value to check.
  * @returns `true` if the value is a boolean (`true` or `false`), otherwise `false`.
  */
-export function isBoolean(value: any): value is boolean {
+export function isBoolean(value: unknown): value is boolean {
     return typeof value === "boolean";
 }

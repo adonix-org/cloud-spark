@@ -145,7 +145,7 @@ declare const Time: {
  * @param value - The string to test.
  * @returns True if \`value\` is a recognized HTTP method.
  */
-declare function isMethod(value: any): value is Method;
+declare function isMethod(value: unknown): value is Method;
 /**
  * Checks if a value is an array of valid HTTP methods.
  *
@@ -154,7 +154,7 @@ declare function isMethod(value: any): value is Method;
  * @param value - The value to check.
  * @returns \`true\` if \`value\` is an array and every element is a valid \`Method\`, otherwise \`false\`.
  */
-declare function isMethodArray(value: any): value is Method[];
+declare function isMethodArray(value: unknown): value is Method[];
 /**
  * Asserts that a value is an array of valid HTTP methods.
  *
@@ -164,9 +164,9 @@ declare function isMethodArray(value: any): value is Method[];
  * within the calling scope.
  *
  * @param value - The value to check.
- * @throws {TypeError} If \`value\` is not a valid method array.
+ * @throws TypeError If \`value\` is not a valid method array.
  */
-declare function assertMethods(value: any): asserts value is Method[];
+declare function assertMethods(value: unknown): asserts value is Method[];
 
 /**
  * User-supplied options for configuring CORS behavior.

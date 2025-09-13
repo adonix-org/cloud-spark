@@ -15,6 +15,7 @@
  */
 
 import { Method } from "../constants/http";
+import { isString } from "./basic";
 
 /**
  * A set containing all supported HTTP methods.
@@ -29,8 +30,8 @@ const METHOD_SET: Set<string> = new Set(Object.values(Method));
  * @param value - The string to test.
  * @returns True if `value` is a recognized HTTP method.
  */
-export function isMethod(value: any): value is Method {
-    return METHOD_SET.has(value);
+export function isMethod(value: unknown): value is Method {
+    return isString(value) && METHOD_SET.has(value);
 }
 
 /**
@@ -41,7 +42,7 @@ export function isMethod(value: any): value is Method {
  * @param value - The value to check.
  * @returns `true` if `value` is an array and every element is a valid `Method`, otherwise `false`.
  */
-export function isMethodArray(value: any): value is Method[] {
+export function isMethodArray(value: unknown): value is Method[] {
     return Array.isArray(value) && value.every(isMethod);
 }
 
@@ -54,9 +55,9 @@ export function isMethodArray(value: any): value is Method[] {
  * within the calling scope.
  *
  * @param value - The value to check.
- * @throws {TypeError} If `value` is not a valid method array.
+ * @throws TypeError If `value` is not a valid method array.
  */
-export function assertMethods(value: any): asserts value is Method[] {
+export function assertMethods(value: unknown): asserts value is Method[] {
     if (!isMethodArray(value)) {
         const desc = Array.isArray(value) ? JSON.stringify(value) : String(value);
         throw new TypeError(`Invalid method array: ${desc}`);

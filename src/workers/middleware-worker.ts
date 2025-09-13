@@ -16,6 +16,7 @@
 
 import { BaseWorker } from "./base-worker";
 import { Middleware } from "../middleware/middleware";
+import { assertMiddleware } from "../guards/middleware";
 
 /** Internal base worker for handling middleware chains. */
 export abstract class MiddlewareWorker extends BaseWorker {
@@ -32,6 +33,8 @@ export abstract class MiddlewareWorker extends BaseWorker {
      * @returns `this` to allow chaining multiple `.use()` calls.
      */
     public use(handler: Middleware): this {
+        assertMiddleware(handler);
+
         this.middlewares.push(handler);
         return this;
     }
