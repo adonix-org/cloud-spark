@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { GET, HEAD, HttpHeader, Method, OPTIONS } from "../../constants/http";
-import { assertMethods, isMethod } from "../../guards/methods";
+import { HttpHeader, Method, GET, HEAD, OPTIONS } from "../../constants/http";
+import { assertMethods } from "../../guards/methods";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
 import { ClonedResponse, Options } from "../../responses";
@@ -140,7 +140,7 @@ export function setAllowMethods(headers: Headers, worker: Worker): void {
     const methods = worker.getAllowedMethods();
     assertMethods(methods);
 
-    const allowed = methods.filter((method) => isMethod(method) && !SIMPLE_METHODS.has(method));
+    const allowed = methods.filter((method) => !SIMPLE_METHODS.has(method));
 
     if (allowed.length > 0) {
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_METHODS, allowed);
