@@ -17,7 +17,7 @@
 import { assertCorsInit } from "@src/guards/cors";
 import { describe, it, expect } from "vitest";
 
-describe("cors init guard unit tests", () => {
+describe("cors guard unit tests", () => {
     describe("assert cors init", () => {
         it("allows undefined (default config)", () => {
             expect(() => assertCorsInit(undefined)).not.toThrow();
