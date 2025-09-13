@@ -50,6 +50,7 @@ export async function options(worker: Worker, cors: CorsConfig): Promise<Respons
         setAllowOrigin(options.headers, cors, origin);
         setAllowCredentials(options.headers, cors, origin);
     }
+
     setAllowMethods(options.headers, worker);
     setMaxAge(options.headers, cors);
     setAllowHeaders(options.headers, cors);
@@ -82,7 +83,9 @@ export async function apply(
         setAllowOrigin(clone.headers, cors, origin);
         setAllowCredentials(clone.headers, cors, origin);
     }
+
     setExposedHeaders(clone.headers, cors);
+
     return clone.getResponse();
 }
 

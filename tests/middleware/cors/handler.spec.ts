@@ -115,7 +115,7 @@ describe("cors middleware unit tests", () => {
         expectHeadersEqual(response.headers, [
             ["access-control-allow-headers", "Content-Type"],
             ["access-control-allow-origin", "*"],
-            ["access-control-max-age", "604800"],
+            ["access-control-max-age", "300"],
         ]);
     });
 });

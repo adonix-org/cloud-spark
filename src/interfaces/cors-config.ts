@@ -15,7 +15,19 @@
  */
 
 /**
- * Override only what is needed from the default CORS configuration.
+ * User-supplied options for configuring CORS behavior.
+ *
+ * This is a partial form of {@link CorsConfig}, meaning you only need
+ * to provide the options you want to override. Any missing values will
+ * fall back to the {@link defaultCorsConfig}.
+ *
+ * Example:
+ * ```ts
+ * const cors: CorsInit = {
+ *   allowedOrigins: ["https://example.com"],
+ *   allowCredentials: true,
+ * };
+ * ```
  */
 export type CorsInit = Partial<CorsConfig>;
 
@@ -25,6 +37,17 @@ export type CorsInit = Partial<CorsConfig>;
  * Implementations of CORS middleware use this interface to determine
  * how cross-origin requests are validated and which headers are sent
  * in the response.
+ *
+ * @default
+ * ```ts
+ * {
+ *   allowedOrigins: ["*"],
+ *   allowedHeaders: ["Content-Type"],
+ *   exposedHeaders: [],
+ *   allowCredentials: false,
+ *   maxAge: 300, // 5 minutes
+ * }
+ * ```
  */
 export interface CorsConfig {
     /**
@@ -32,14 +55,27 @@ export interface CorsConfig {
      *
      * Use `["*"]` to allow all origins, or provide a list of specific origins.
      * Example: `["https://example.com", "https://api.example.com"]`
+     *
+     * @default ["*"]
      */
     allowedOrigins: string[];
 
     /**
      * HTTP headers allowed in CORS requests.
      *
-     * Requests that include headers not listed here will be blocked
-     * during the preflight check.
+     * Browsers always allow *CORS-safelisted request headers* without preflight:
+     * - `Accept`
+     * - `Accept-Language`
+     * - `Content-Language`
+     * - `Content-Type` (but only if its value is `application/x-www-form-urlencoded`,
+     *   `multipart/form-data`, or `text/plain`)
+     *
+     * Because `Content-Type` is only partially safelisted, it is included in the
+     * default allowed headers.
+     *
+     * Add custom headers here (e.g., `Authorization`) if your clients send them.
+     *
+     * @default ["Content-Type"]
      */
     allowedHeaders: string[];
 
@@ -48,15 +84,17 @@ export interface CorsConfig {
      *
      * By default, most headers are not accessible from client-side JavaScript.
      * Use this option to explicitly allow certain response headers to be read.
+     *
+     * @default []
      */
     exposedHeaders: string[];
 
     /**
      * Whether the resource supports user credentials (cookies, HTTP authentication).
      *
-     * Defaults to false.
-     *
      * If true, the Access-Control-Allow-Origin response header must not be "*".
+     *
+     * @default false
      */
     allowCredentials: boolean;
 
@@ -64,7 +102,10 @@ export interface CorsConfig {
      * Maximum age (in seconds) that the results of a preflight request
      * can be cached by the client.
      *
-     * Example: `60 * 60 * 24 * 7` (1 week).
+     * Increase for production use to reduce preflights, or lower for development
+     * if you frequently adjust CORS rules.
+     *
+     * @default 300 (5 minutes)
      */
     maxAge: number;
 }

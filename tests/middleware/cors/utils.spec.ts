@@ -203,7 +203,7 @@ describe("cors utils unit tests", () => {
     describe("set max age function", () => {
         it("sets the default max age", () => {
             setMaxAge(headers, defaultCorsConfig);
-            expectHeadersEqual(headers, [["access-control-max-age", "604800"]]);
+            expectHeadersEqual(headers, [["access-control-max-age", "300"]]);
         });
 
         it("sets a non-default max age", () => {

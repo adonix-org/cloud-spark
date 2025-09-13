@@ -22,37 +22,9 @@ import { CorsConfig } from "../../interfaces/cors-config";
  * Default configuration for CORS middleware.
  */
 export const defaultCorsConfig: CorsConfig = {
-    /**
-     * By default, allow all origins.
-     * Note: This must be overridden if you also enable `allowCredentials`.
-     */
     allowedOrigins: [HttpHeader.ALLOW_ALL_ORIGINS],
-
-    /**
-     * Default to allowing only "Content-Type".
-     * This permits requests with JSON or form bodies, while blocking
-     * arbitrary custom headers unless explicitly added.
-     */
     allowedHeaders: [HttpHeader.CONTENT_TYPE],
-
-    /**
-     * No response headers are exposed by default.
-     * Client-side code will only be able to read CORS-safelisted headers
-     * (e.g. Cache-Control, Content-Type, Expires, Last-Modified, Pragma).
-     */
     exposedHeaders: [],
-
-    /**
-     * Credentials (cookies, HTTP auth) are disallowed by default.
-     * This avoids the spec restriction that forbids using "*" for origins
-     * when credentials are enabled.
-     */
     allowCredentials: false,
-
-    /**
-     * Default preflight cache duration: 1 week.
-     * Browsers may cache OPTIONS responses for up to this many seconds.
-     * Adjust lower if your CORS rules may change frequently.
-     */
-    maxAge: Time.Week,
+    maxAge: 5 * Time.Minute,
 } as const;
