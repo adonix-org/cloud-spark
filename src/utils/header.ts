@@ -55,14 +55,33 @@ export function setHeader(headers: Headers, key: string, value: string | string[
  */
 export function mergeHeader(headers: Headers, key: string, value: string | string[]): void {
     const values = Array.isArray(value) ? value : [value];
-    if (!values.length) return;
+    if (values.length === 0) return;
 
-    const existing = headers.get(key);
-    if (existing) {
-        const merged = existing.split(",").map((v) => v.trim());
-        values.forEach((v) => merged.push(v.trim()));
-        setHeader(headers, key, merged);
-    } else {
-        setHeader(headers, key, values);
-    }
+    const existing = getValueArray(headers, key);
+    const merged = existing.concat(values.map((v) => v.trim()));
+
+    setHeader(headers, key, merged);
+}
+
+/**
+ * Returns the values of an HTTP header as an array of strings.
+ *
+ * This helper:
+ * - Retrieves the header value by `key`.
+ * - Splits the value on commas.
+ * - Trims surrounding whitespace from each entry.
+ * - Filters out any empty tokens.
+ * - Removes duplicate values (case-sensitive)
+ *
+ * If the header is not present, an empty array is returned.
+ * ```
+ */
+export function getValueArray(headers: Headers, key: string): string[] {
+    const values =
+        headers
+            .get(key)
+            ?.split(",")
+            .map((v) => v.trim())
+            .filter((v) => v.length > 0) ?? [];
+    return Array.from(new Set(values)).sort(lexCompare);
 }

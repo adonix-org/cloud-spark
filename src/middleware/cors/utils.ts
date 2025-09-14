@@ -21,6 +21,7 @@ import { Worker } from "../../interfaces/worker";
 import { ClonedResponse, Options } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/header";
 import { getOrigin } from "../../utils/request";
+import { ALLOW_ALL_ORIGINS } from "./constants";
 
 /**
  * Set of HTTP methods considered "simple" under the CORS specification.
@@ -99,7 +100,7 @@ export async function apply(
  */
 export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string): void {
     if (allowAllOrigins(cors)) {
-        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, HttpHeader.ALLOW_ALL_ORIGINS);
+        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, ALLOW_ALL_ORIGINS);
     } else {
         if (cors.allowedOrigins.includes(origin)) {
             setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
@@ -200,7 +201,7 @@ export function setExposedHeaders(headers: Headers, cors: CorsConfig): void {
  * @param cors - The CORS configuration.
  */
 export function allowAllOrigins(cors: CorsConfig): boolean {
-    return cors.allowedOrigins.includes(HttpHeader.ALLOW_ALL_ORIGINS);
+    return cors.allowedOrigins.includes(ALLOW_ALL_ORIGINS);
 }
 
 /**

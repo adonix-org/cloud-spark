@@ -3,6 +3,7 @@
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
+ *
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
@@ -14,19 +15,16 @@
  * limitations under the License.
  */
 
-import { HttpHeader } from "../../constants/http";
-import { Time } from "../../constants/time";
-import { CorsConfig } from "../../interfaces/cors-config";
-
-export const ALLOW_ALL_ORIGINS = "*";
-
 /**
- * Default configuration for CORS middleware.
+ * Wildcard member (`*`) for the `Vary` header.
+ *
+ * When present, it indicates that the response can vary based on unspecified
+ * request headers. Such a response **MUST NOT be stored by a shared cache**,
+ * since it cannot be reliably reused for any request.
+ *
+ * Example:
+ * ```http
+ * Vary: *
+ * ```
  */
-export const defaultCorsConfig: CorsConfig = {
-    allowedOrigins: [ALLOW_ALL_ORIGINS],
-    allowedHeaders: [HttpHeader.CONTENT_TYPE],
-    exposedHeaders: [],
-    allowCredentials: false,
-    maxAge: 5 * Time.Minute,
-} as const;
+export const VARY_WILDCARD = "*";

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { describe, it, beforeEach } from "vitest";
-import { mergeHeader, setHeader } from "@src/utils/header";
+import { describe, it, beforeEach, expect } from "vitest";
+import { getValueArray, mergeHeader, setHeader } from "@src/utils/header";
 import { expectHeadersEqual } from "@common";
 
 describe("header functions unit tests", () => {
@@ -235,6 +235,63 @@ describe("header functions unit tests", () => {
                 ["safe-key", "2"],
                 ["test-key", "1"],
             ]);
+        });
+    });
+
+    describe("getValueArray", () => {
+        it("returns empty array if header is missing", () => {
+            const headers = new Headers();
+            expect(getValueArray(headers, "x-missing")).toEqual([]);
+        });
+
+        it("splits comma-separated values and trims whitespace", () => {
+            const headers = new Headers({
+                "x-test": " a , b ,c ",
+            });
+            expect(getValueArray(headers, "x-test")).toEqual(["a", "b", "c"]);
+        });
+
+        it("removes empty tokens", () => {
+            const headers = new Headers({
+                "x-test": "a,, ,b",
+            });
+            expect(getValueArray(headers, "x-test")).toEqual(["a", "b"]);
+        });
+
+        it("deduplicates values while preserving case", () => {
+            const headers = new Headers({
+                "x-test": "a,B,a,b",
+            });
+            expect(getValueArray(headers, "x-test")).toEqual(["B", "a", "b"]);
+            // sorted lexically: ["B", "a", "b"]
+        });
+
+        it("sorts values lexicographically", () => {
+            const headers = new Headers({
+                "x-test": "c,b,a",
+            });
+            expect(getValueArray(headers, "x-test")).toEqual(["a", "b", "c"]);
+        });
+
+        it("handles single-value headers correctly", () => {
+            const headers = new Headers({
+                "x-test": "single",
+            });
+            expect(getValueArray(headers, "x-test")).toEqual(["single"]);
+        });
+
+        it("handles values with only whitespace", () => {
+            const headers = new Headers({
+                "x-test": "   ",
+            });
+            expect(getValueArray(headers, "x-test")).toEqual([]);
+        });
+
+        it("handles complex mixed cases", () => {
+            const headers = new Headers({
+                "x-test": "  b , a ,B,, c , , A ",
+            });
+            expect(getValueArray(headers, "x-test")).toEqual(["A", "B", "a", "b", "c"]);
         });
     });
 });
