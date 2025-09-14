@@ -16,7 +16,8 @@
 
 import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "@common";
 import { MediaType } from "@src/constants/media-types";
-import { getContentType, getOrigin } from "@src/utils/request";
+import { getOrigin } from "@src/utils/request";
+import { getContentType } from "@src/utils/response";
 import { describe, it, expect } from "vitest";
 
 describe("request functions unit tests", () => {

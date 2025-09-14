@@ -510,14 +510,6 @@ declare function setHeader(headers: Headers, key: string, value: string | string
 declare function mergeHeader(headers: Headers, key: string, value: string | string[]): void;
 
 /**
- * Returns the proper Content-Type string for a given media type.
- * Appends \`charset=utf-8\` for text-based types that require it.
- *
- * @param type - The media type.
- * @returns A string suitable for the \`Content-Type\` header.
- */
-declare function getContentType(type: MediaType): string;
-/**
  * Extracts and normalizes the \`Origin\` header from a request.
  *
  * Returns the origin (scheme + host + port) as a string if present and valid.
@@ -530,6 +522,15 @@ declare function getContentType(type: MediaType): string;
  * @returns The normalized origin string, or \`null\` if not present or invalid.
  */
 declare function getOrigin(request: Request): string | null;
+
+/**
+ * Returns the proper Content-Type string for a given media type.
+ * Appends \`charset=utf-8\` for text-based types that require it.
+ *
+ * @param type - The media type.
+ * @returns A string suitable for the \`Content-Type\` header.
+ */
+declare function getContentType(type: MediaType): string;
 
 /**
  * Normalizes a URL string for use as a consistent cache key.

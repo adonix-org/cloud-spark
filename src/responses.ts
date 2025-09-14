@@ -17,7 +17,7 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { CacheControl } from "./constants/cache";
 import { setHeader, mergeHeader } from "./utils/header";
-import { getContentType } from "./utils/request";
+import { getContentType } from "./utils/response";
 import { MediaType } from "./constants/media-types";
 import { HttpHeader } from "./constants/http";
 
