@@ -57,7 +57,7 @@ export function mergeHeader(headers: Headers, key: string, value: string | strin
     const values = Array.isArray(value) ? value : [value];
     if (values.length === 0) return;
 
-    const existing = getValueArray(headers, key);
+    const existing = getHeaderValues(headers, key);
     const merged = existing.concat(values.map((v) => v.trim()));
 
     setHeader(headers, key, merged);
@@ -74,9 +74,9 @@ export function mergeHeader(headers: Headers, key: string, value: string | strin
  * - Removes duplicate values (case-sensitive)
  *
  * If the header is not present, an empty array is returned.
- * ```
+ *
  */
-export function getValueArray(headers: Headers, key: string): string[] {
+export function getHeaderValues(headers: Headers, key: string): string[] {
     const values =
         headers
             .get(key)
