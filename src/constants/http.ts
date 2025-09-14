@@ -24,6 +24,7 @@ export { StatusCodes } from "http-status-codes";
  */
 export namespace HttpHeader {
     export const ALLOW = "Allow";
+    export const ACCEPT_ENCODING = "Accept-Encoding";
     export const ORIGIN = "Origin";
     export const CONTENT_TYPE = "Content-Type";
     export const CACHE_CONTROL = "Cache-Control";

@@ -19,21 +19,8 @@ import { Worker } from "../../interfaces/worker";
 import { GET, HttpHeader } from "../../constants/http";
 import { assertCacheName, assertGetKey } from "../../guards/cache";
 import { VARY_WILDCARD } from "./constants";
+import { isCacheable } from "./utils";
 
-/**
- * Middleware for caching GET requests.
- *
- * This middleware checks a cache (either a named cache or the default)
- * before passing the request down the middleware chain. Responses for
- * successful GET requests are automatically stored in the cache.
- *
- * Non-GET requests are never cached. The cache key can be customized
- * via the `getKey` function; otherwise, the request is used.
- *
- * @param cacheName - Optional name of the cache to use. Defaults to `caches.default`.
- * @param getKey - Optional function to generate a cache key from a request.
- * @returns A {@link Middleware} instance that can be added to your middleware chain.
- */
 export function cache(
     cacheName?: string,
     getKey?: (request: Request) => URL | RequestInfo,
@@ -45,12 +32,6 @@ export function cache(
 }
 
 class CacheHandler extends Middleware {
-    /**
-     * @param cacheName - Optional name of the cache to use. If omitted,
-     *                    `caches.default` is used.
-     * @param getKey - Optional function to generate a cache key from a request.
-     *                 Defaults to using the request.
-     */
     constructor(
         protected readonly cacheName?: string,
         protected readonly getKey?: (request: Request) => URL | RequestInfo,
@@ -58,17 +39,6 @@ class CacheHandler extends Middleware {
         super();
     }
 
-    /**
-     * Handle a request in the caching middleware.
-     *
-     * Checks the cache for GET requests and returns the cached response if available.
-     * Otherwise, calls `next()` to continue the middleware chain and caches
-     * the response if successful.
-     *
-     * @param worker - The Worker instance containing the request context.
-     * @param next - Function to invoke the next middleware in the chain.
-     * @returns A Response object, either from cache or the next middleware.
-     */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
 
@@ -92,31 +62,21 @@ class CacheHandler extends Middleware {
 
         const response = await next();
 
-        if (response.ok) {
-            const vary = response.headers.get(HttpHeader.VARY);
-            if (vary && vary !== VARY_WILDCARD) {
-                // Cache the response with the normalied URL, Vary Header
-                worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-                // Cache the response with the generated base64 key
-                worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-            } else {
-                // Cache the response with the normalied URL
-                worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-            }
-        }
+        if (!isCacheable(response)) return response;
 
+        const vary = response.headers.get(HttpHeader.VARY);
+        if (vary && vary !== VARY_WILDCARD) {
+            // Cache the response with the normalied URL, Vary Header
+            worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
+            // Cache the response with the generated base64 key
+            worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
+        } else {
+            // Cache the response with the normalied URL
+            worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
+        }
         return response;
     }
 
-    /**
-     * Generate the cache key for a request.
-     *
-     * @param request - The Request object to generate a cache key for.
-     * @returns A URL or RequestInfo used as the cache key.
-     *
-     * If a custom `getKey` function was provided in the constructor, it is used.
-     * Otherwise, the request is returned.
-     */
     private getCacheKey(request: Request): URL | RequestInfo {
         return this.getKey ? this.getKey(request) : request;
     }
