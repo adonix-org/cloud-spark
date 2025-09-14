@@ -451,7 +451,7 @@ declare abstract class Middleware {
  * successful GET requests are automatically stored in the cache.
  *
  * Non-GET requests are never cached. The cache key can be customized
- * via the \`getKey\` function; otherwise, the URL is normalized and used.
+ * via the \`getKey\` function; otherwise, the request is used.
  *
  * @param cacheName - Optional name of the cache to use. Defaults to \`caches.default\`.
  * @param getKey - Optional function to generate a cache key from a request.

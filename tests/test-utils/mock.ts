@@ -39,23 +39,27 @@ class InMemoryCache {
         return this.size === 0;
     }
 
-    match(key: string): Response | undefined {
-        return this.store[key];
+    match(key: string | Request): Response | undefined {
+        const k = key instanceof Request ? key.url : key;
+        return this.store[k];
     }
 
-    matchAll(key?: string): Response[] {
-        if (!key) return Object.values(this.store);
-        const resp = this.store[key];
+    matchAll(key?: string | Request): Response[] {
+        const k = key instanceof Request ? key.url : key;
+        if (!k) return Object.values(this.store);
+        const resp = this.store[k];
         return resp ? [resp] : [];
     }
 
-    put(key: string, response: Response): void {
-        this.store[key] = response.clone();
+    put(key: string | Request, response: Response): void {
+        const k = key instanceof Request ? key.url : key;
+        this.store[k] = response.clone();
     }
 
-    delete(key: string): boolean {
-        const existed = key in this.store;
-        delete this.store[key];
+    delete(key: string | Request): boolean {
+        const k = key instanceof Request ? key.url : key;
+        const existed = k in this.store;
+        delete this.store[k];
         return existed;
     }
 

@@ -43,7 +43,7 @@ describe("cache worker unit tests", () => {
     });
 
     it("returns response from default cache hit", async () => {
-        defaultCache.put(VALID_URL, new Response("from default cache"));
+        defaultCache.put(GET_REQUEST, new Response("from default cache"));
         const worker = new TestWorker(GET_REQUEST);
         const response = await worker.fetch();
         expect(await response.text()).toBe("from default cache");
@@ -76,19 +76,6 @@ describe("cache worker unit tests", () => {
         expect(defaultCache.size).toBe(0);
         expect(namedCache.size).toBe(1);
         expect(await namedCache.match(VALID_URL)?.text()).toBe("from dispatch");
-    });
-
-    it("uses a normalized cache key by default", async () => {
-        const url = new URL(VALID_URL);
-        url.searchParams.set("b", "2");
-        url.searchParams.set("c", "3");
-        url.searchParams.set("a", "1");
-
-        const worker = new TestWorker(new Request(url));
-        await worker.fetch();
-
-        expect(defaultCache.size).toBe(1);
-        expect(defaultCache.match("https://localhost/?a=1&b=2&c=3")).toBeDefined();
     });
 
     it("allows overriding get cache key", async () => {

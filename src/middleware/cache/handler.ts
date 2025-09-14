@@ -17,7 +17,6 @@
 import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
-import { normalizeUrl } from "../../utils/url";
 import { assertCacheName, assertGetKey } from "../../guards/cache";
 
 /**
@@ -28,7 +27,7 @@ import { assertCacheName, assertGetKey } from "../../guards/cache";
  * successful GET requests are automatically stored in the cache.
  *
  * Non-GET requests are never cached. The cache key can be customized
- * via the `getKey` function; otherwise, the URL is normalized and used.
+ * via the `getKey` function; otherwise, the request is used.
  *
  * @param cacheName - Optional name of the cache to use. Defaults to `caches.default`.
  * @param getKey - Optional function to generate a cache key from a request.
@@ -49,7 +48,7 @@ class CacheHandler extends Middleware {
      * @param cacheName - Optional name of the cache to use. If omitted,
      *                    `caches.default` is used.
      * @param getKey - Optional function to generate a cache key from a request.
-     *                 Defaults to using the normalized request URL.
+     *                 Defaults to using the request.
      */
     constructor(
         protected readonly cacheName?: string,
@@ -92,9 +91,9 @@ class CacheHandler extends Middleware {
      * @returns A URL or RequestInfo used as the cache key.
      *
      * If a custom `getKey` function was provided in the constructor, it is used.
-     * Otherwise, the request URL is normalized.
+     * Otherwise, the request is returned.
      */
     private getCacheKey(request: Request): URL | RequestInfo {
-        return this.getKey ? this.getKey(request) : normalizeUrl(request.url);
+        return this.getKey ? this.getKey(request) : request;
     }
 }
