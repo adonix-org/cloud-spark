@@ -238,8 +238,8 @@ describe("header functions unit tests", () => {
         });
     });
 
-    describe("getValueArray", () => {
-        it("returns empty array if header is missing", () => {
+    describe("get value array function", () => {
+        it("returns empty array if the header is missing", () => {
             const headers = new Headers();
             expect(getValueArray(headers, "x-missing")).toEqual([]);
         });
