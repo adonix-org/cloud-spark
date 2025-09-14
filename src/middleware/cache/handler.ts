@@ -16,10 +16,9 @@
 
 import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
-import { GET, HttpHeader } from "../../constants/http";
+import { GET } from "../../constants/http";
 import { assertCacheName, assertGetKey } from "../../guards/cache";
-import { VARY_WILDCARD } from "./constants";
-import { isCacheable } from "./utils";
+import { getVaryHeader, isCacheable, useCached } from "./utils";
 
 export function cache(
     cacheName?: string,
@@ -47,11 +46,13 @@ class CacheHandler extends Middleware {
         }
 
         const cached = await cache.match(this.getCacheKey(worker.request));
+        if (cached && useCached(cached)) return cached;
+
         if (cached) {
-            const vary = cached.headers.get(HttpHeader.VARY);
+            const vary = getVaryHeader(cached);
             // Check Vary Header from cached response
             // If Vary not present, return response directly from cache
-            if (!vary) {
+            if (vary.length === 0 || vary.length === 1) {
                 return cached;
             }
             // If Vary header present, use cached Vary header to build base64 key from matching Vary
@@ -64,16 +65,12 @@ class CacheHandler extends Middleware {
 
         if (!isCacheable(response)) return response;
 
-        const vary = response.headers.get(HttpHeader.VARY);
-        if (vary && vary !== VARY_WILDCARD) {
-            // Cache the response with the normalied URL, Vary Header
-            worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-            // Cache the response with the generated base64 key
-            worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-        } else {
-            // Cache the response with the normalied URL
-            worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-        }
+        // Always Cache the response with the normalied URL, Vary Header
+        worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
+
+        // If Vary present: Cache the response with the generated base64 key
+        worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
+        
         return response;
     }
 

@@ -30,3 +30,10 @@ export function getVaryHeader(response: Response): string[] {
     const values = getHeaderValues(response.headers, HttpHeader.VARY);
     return Array.from(new Set(values.map((v) => v.toLowerCase()))).sort(lexCompare);
 }
+
+export function useCached(response: Response): boolean {
+    const vary = getVaryHeader(response).filter(
+        (value) => value !== HttpHeader.ACCEPT_ENCODING.toLowerCase(),
+    );
+    return vary.length === 0;
+}
