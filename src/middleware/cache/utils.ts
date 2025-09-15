@@ -16,7 +16,7 @@
  */
 
 import { HttpHeader } from "../../constants/http";
-import { getHeaderValues, lexCompare } from "../../utils";
+import { getHeaderValues, lexCompare, normalizeUrl } from "../../utils";
 import { VARY_WILDCARD } from "./constants";
 
 export function isCacheable(response: Response): boolean {
@@ -31,9 +31,35 @@ export function getVaryHeader(response: Response): string[] {
     return Array.from(new Set(values.map((v) => v.toLowerCase()))).sort(lexCompare);
 }
 
-export function useCached(response: Response): boolean {
-    const vary = getVaryHeader(response).filter(
-        (value) => value !== HttpHeader.ACCEPT_ENCODING.toLowerCase(),
-    );
-    return vary.length === 0;
+export function getVaryFiltered(vary: string[]): string[] {
+    return vary
+        .map((h) => h.toLowerCase())
+        .filter((value) => value !== HttpHeader.ACCEPT_ENCODING.toLowerCase());
+}
+
+export function getVaryKey(request: Request, vary: string[]): string {
+    const url = normalizeUrl(request.url);
+    const baseUrl = url.origin + url.pathname;
+
+    const varyPairs: [string, string][] = [];
+    const filtered = getVaryFiltered(vary);
+    filtered.sort(lexCompare);
+    filtered.forEach((header) => {
+        const value = request.headers.get(header);
+        if (value !== null) {
+            varyPairs.push([header, value]);
+        }
+    });
+
+    const encoded = base64UrlEncode(JSON.stringify([baseUrl, varyPairs]));
+    const search = url.searchParams.toString();
+
+    const encodedUrl = new URL(`${encoded}?${search}`, "http://cache");
+    return encodedUrl.href;
+}
+
+function base64UrlEncode(str: string): string {
+    const utf8 = new TextEncoder().encode(str);
+    let base64 = btoa(String.fromCharCode(...utf8));
+    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }

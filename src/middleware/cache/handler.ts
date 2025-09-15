@@ -18,7 +18,7 @@ import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
 import { assertCacheName, assertGetKey } from "../../guards/cache";
-import { getVaryHeader, isCacheable, useCached } from "./utils";
+import { getVaryHeader, isCacheable } from "./utils";
 
 export function cache(
     cacheName?: string,
@@ -46,7 +46,6 @@ class CacheHandler extends Middleware {
         }
 
         const cached = await cache.match(this.getCacheKey(worker.request));
-        if (cached && useCached(cached)) return cached;
 
         if (cached) {
             const vary = getVaryHeader(cached);
@@ -65,12 +64,12 @@ class CacheHandler extends Middleware {
 
         if (!isCacheable(response)) return response;
 
-        // Always Cache the response with the normalied URL, Vary Header
+        // Always Cache the response with the normalized URL, Vary Header
         worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
 
         // If Vary present: Cache the response with the generated base64 key
         worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-        
+
         return response;
     }
 
