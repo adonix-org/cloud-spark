@@ -15,10 +15,54 @@
  */
 
 import { HttpHeader } from "@src/constants/http";
-import { getVaryKey } from "@src/middleware/cache/utils";
+import { getVaryKey, isCacheable } from "@src/middleware/cache/utils";
 import { describe, expect, it } from "vitest";
 
 describe("cache utils unit tests ", () => {
+    describe("is cacheable function", () => {
+        it("returns false if response.ok is false", () => {
+            const response = new Response(null, { status: 500 });
+            expect(isCacheable(response)).toBe(false);
+        });
+
+        it("returns false if vary header is '*'", () => {
+            const response = new Response(null, {
+                status: 200,
+                headers: { Vary: "*" },
+            });
+            expect(isCacheable(response)).toBe(false);
+        });
+
+        it("returns false if vary header contains '*'", () => {
+            const response = new Response(null, {
+                status: 200,
+                headers: { Vary: "Accept, *, Accept-Encoding" },
+            });
+            expect(isCacheable(response)).toBe(false);
+        });
+
+        it("returns true if response.ok is true and vary header does not contain '*'", () => {
+            const response = new Response(null, {
+                status: 200,
+                headers: { Vary: "Accept-Encoding, Content-Type" },
+            });
+            expect(isCacheable(response)).toBe(true);
+        });
+
+        it("returns true if response.ok is true and vary header is missing", () => {
+            const response = new Response(null, { status: 200 });
+            expect(isCacheable(response)).toBe(true);
+        });
+
+        it("returns true if response.ok is true and vary header is empty", () => {
+            const response = new Response(null, {
+                status: 200,
+                headers: { Vary: "" },
+            });
+            expect(isCacheable(response)).toBe(true);
+        });
+    });
+
     describe("get vary key function", () => {
         it("produces different keys for different header values", () => {
             const url = "https://example.com/foo";

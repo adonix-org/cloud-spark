@@ -18,7 +18,7 @@ import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
 import { assertCacheName, assertGetKey } from "../../guards/cache";
-import { getVaryHeader, isCacheable } from "./utils";
+import { getVaryFiltered, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 
 export function cache(
     cacheName?: string,
@@ -39,38 +39,40 @@ class CacheHandler extends Middleware {
     }
 
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
-
         if (worker.request.method !== GET) {
             return next();
         }
 
-        const cached = await cache.match(this.getCacheKey(worker.request));
-
-        if (cached) {
-            const vary = getVaryHeader(cached);
-            // Check Vary Header from cached response
-            // If Vary not present, return response directly from cache
-            if (vary.length === 0 || vary.length === 1) {
-                return cached;
-            }
-            // If Vary header present, use cached Vary header to build base64 key from matching Vary
-            // request header and values. (Ignore Accept-Encoding)
-            // Look for generated base64 key in cache, if found pass it back immediately
-            // If not found, continue
-        }
+        const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
+        const cached = await this.getCached(cache, worker.request);
+        if (cached) return cached;
 
         const response = await next();
 
-        if (!isCacheable(response)) return response;
-
-        // Always Cache the response with the normalized URL, Vary Header
-        worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-
-        // If Vary present: Cache the response with the generated base64 key
-        worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
-
+        this.setCached(cache, worker, response);
         return response;
+    }
+
+    private async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
+        const response = await cache.match(this.getCacheKey(request));
+        if (!response) return;
+
+        const vary = getVaryFiltered(getVaryHeader(response));
+        if (vary.length === 0) return response;
+
+        const key = getVaryKey(request, vary);
+        return cache.match(key);
+    }
+
+    private async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
+        if (!isCacheable(response)) return;
+
+        worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
+
+        const vary = getVaryFiltered(getVaryHeader(response));
+        if (vary.length !== 0) {
+            worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, vary), response.clone()));
+        }
     }
 
     private getCacheKey(request: Request): URL | RequestInfo {
