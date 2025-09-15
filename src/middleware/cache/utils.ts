@@ -19,6 +19,8 @@ import { HttpHeader } from "../../constants/http";
 import { getHeaderValues, lexCompare, normalizeUrl } from "../../utils";
 import { VARY_WILDCARD } from "./constants";
 
+const BASE_CACHE_URL = "http://cache";
+
 export function isCacheable(response: Response): boolean {
     if (!response.ok) return false;
     if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
@@ -54,11 +56,11 @@ export function getVaryKey(request: Request, vary: string[]): string {
     const encoded = base64UrlEncode(JSON.stringify([baseUrl, varyPairs]));
     const search = url.searchParams.toString();
 
-    const encodedUrl = new URL(`${encoded}?${search}`, "http://cache");
+    const encodedUrl = new URL(`${encoded}?${search}`, BASE_CACHE_URL);
     return encodedUrl.href;
 }
 
-function base64UrlEncode(str: string): string {
+export function base64UrlEncode(str: string): string {
     const utf8 = new TextEncoder().encode(str);
     let base64 = btoa(String.fromCharCode(...utf8));
     return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
