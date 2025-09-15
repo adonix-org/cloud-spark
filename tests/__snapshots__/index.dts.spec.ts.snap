@@ -443,6 +443,21 @@ declare abstract class Middleware {
     abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }
 
+/**
+ * Creates a Vary-aware caching middleware for Workers.
+ *
+ * This middleware:
+ * - Caches **GET requests** only.
+ * - Respects the \`Vary\` header of responses, ensuring that requests
+ *   with different headers (e.g., \`Origin\`) receive the correct cached response.
+ * - Skips caching for non-cacheable responses (e.g., error responses or
+ *   responses with \`Vary: *\`).
+ *
+ * @param cacheName Optional name of the cache to use. If omitted, the default Worker cache is used.
+ * @param getKey Optional function to compute a custom cache key from a request.
+ *               If omitted, the request URL is normalized and used as the key.
+ * @returns A \`Middleware\` instance that can be used in a Worker pipeline.
+ */
 declare function cache(cacheName?: string, getKey?: (request: Request) => URL | RequestInfo): Middleware;
 
 /**

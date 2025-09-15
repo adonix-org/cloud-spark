@@ -92,7 +92,7 @@ class CacheHandler extends Middleware {
      * @param request The request to retrieve a cached response for.
      * @returns A cached Response if available, otherwise `undefined`.
      */
-    private async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
+    public async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
         const response = await cache.match(this.getCacheKey(request));
         if (!response) return;
 
@@ -117,7 +117,7 @@ class CacheHandler extends Middleware {
      * @param worker The Worker instance containing the request and context.
      * @param response The Response to cache.
      */
-    private async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
+    public async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
         if (!isCacheable(response)) return;
 
         // Always store the main cache entry to preserve Vary headers
@@ -138,7 +138,7 @@ class CacheHandler extends Middleware {
      * @param response The Response object to inspect.
      * @returns Array of Vary headers that affect caching.
      */
-    private getFilteredVary(response: Response) {
+    public getFilteredVary(response: Response) {
         return getVaryFiltered(getVaryHeader(response));
     }
 
@@ -150,7 +150,7 @@ class CacheHandler extends Middleware {
      * @param request The request to generate a cache key for.
      * @returns A URL or RequestInfo suitable for `cache.match` and `cache.put`.
      */
-    private getCacheKey(request: Request): URL | RequestInfo {
+    public getCacheKey(request: Request): URL | RequestInfo {
         return this.getKey ? this.getKey(request) : normalizeUrl(request.url);
     }
 }

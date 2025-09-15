@@ -25,6 +25,7 @@ class TestWorker extends MiddlewareWorker {
     public getAllowedMethods(): Method[] {
         return [GET];
     }
+
     constructor(request: Request, cacheName?: string) {
         super(request, env, ctx);
         this.use(cache(cacheName));
@@ -106,5 +107,17 @@ describe("cache worker unit tests", () => {
 
         expect(defaultCache.size).toBe(1);
         expect(defaultCache.match("https://localhost/?b=2&c=3&a=1")).toBeDefined();
+    });
+
+    it("does not return cached responses for non-GET method", async () => {
+        const get = new Request(VALID_URL, { method: "GET" });
+        const post = new Request(VALID_URL, { method: "POST" });
+        defaultCache.put(VALID_URL, new Response("from cache"));
+
+        const response = await new TestWorker(get).fetch();
+        expect(await response.text()).toBe("from cache");
+
+        const response2 = await new TestWorker(post).fetch();
+        expect(await response2.text()).toBe("from dispatch");
     });
 });
