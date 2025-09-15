@@ -94,19 +94,66 @@ describe("cache worker unit tests", () => {
         expect(await namedCache.match(VALID_URL)?.text()).toBe("from dispatch");
     });
 
+    it("normalizes search parameters by default", async () => {
+        const url = new URL(VALID_URL);
+        url.searchParams.set("b", "2");
+        url.searchParams.set("c", "3");
+        url.searchParams.set("a", "1");
+
+        const worker = new TestWorker(new Request(url));
+        await worker.fetch();
+
+        expect(defaultCache.size).toBe(1);
+        expect(defaultCache.match("https://localhost/?a=1&b=2&c=3")).toBeDefined();
+    });
+
+    it("allows users to create cache keys with stripped search parameters", async () => {
+        const url = new URL(VALID_URL);
+        url.searchParams.set("b", "2");
+        url.searchParams.set("c", "3");
+        url.searchParams.set("a", "1");
+
+        class RemoveQueryWorker extends MiddlewareWorker {
+            public getAllowedMethods(): Method[] {
+                return [GET];
+            }
+
+            protected async dispatch(): Promise<Response> {
+                return new Response("from dispatch");
+            }
+
+            constructor(request: Request) {
+                super(request, env, ctx);
+                this.use(
+                    cache(undefined, (): URL => {
+                        return new URL(url.pathname, url.origin);
+                    }),
+                );
+            }
+        }
+
+        const worker = new RemoveQueryWorker(new Request(url));
+        await worker.fetch();
+
+        expect(defaultCache.size).toBe(1);
+        expect(defaultCache.match("https://localhost/")).toBeDefined();
+    });
+
     it("allows overriding get cache key", async () => {
         const url = new URL(VALID_URL);
         url.searchParams.set("b", "2");
         url.searchParams.set("c", "3");
         url.searchParams.set("a", "1");
 
-        class CacheWorker extends MiddlewareWorker {
+        class CacheKeyWorker extends MiddlewareWorker {
             public getAllowedMethods(): Method[] {
                 return [GET];
             }
+
             protected async dispatch(): Promise<Response> {
                 return new Response("from dispatch");
             }
+
             constructor(request: Request) {
                 super(request, env, ctx);
                 this.use(
@@ -117,7 +164,7 @@ describe("cache worker unit tests", () => {
             }
         }
 
-        const worker = new CacheWorker(new Request(url));
+        const worker = new CacheKeyWorker(new Request(url));
         await worker.fetch();
 
         expect(defaultCache.size).toBe(1);
