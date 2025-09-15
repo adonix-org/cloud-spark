@@ -20,7 +20,7 @@ import { getHeaderValues, lexCompare, normalizeUrl } from "../../utils";
 import { VARY_WILDCARD } from "./constants";
 
 /** Base URL used for constructing cache keys. Only used internally. */
-const BASE_CACHE_URL = "http://cache";
+const BASE_CACHE_URL = "https://cache";
 
 /**
  * Determines whether a Response is cacheable.
@@ -108,5 +108,8 @@ export function getVaryKey(request: Request, vary: string[]): string {
 export function base64UrlEncode(str: string): string {
     const utf8 = new TextEncoder().encode(str);
     let base64 = btoa(String.fromCharCode(...utf8));
-    return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    while (base64.endsWith("=")) {
+        base64 = base64.slice(0, -1);
+    }
+    return base64.replace(/\+/g, "-").replace(/\//g, "_");
 }
