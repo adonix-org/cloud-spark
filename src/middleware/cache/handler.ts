@@ -90,13 +90,14 @@ class CacheHandler extends Middleware {
      * @returns A cached Response if available, otherwise `undefined`.
      */
     public async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
-        const response = await cache.match(this.getCacheKey(request));
+        const url = this.getCacheKey(request);
+        const response = await cache.match(url);
         if (!response) return;
 
         const vary = getVaryHeader(response);
         if (vary.length === 0) return response;
 
-        const key = getVaryKey(request, vary);
+        const key = getVaryKey(request, vary, url);
         return cache.match(key);
     }
 
@@ -117,13 +118,17 @@ class CacheHandler extends Middleware {
     public async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
         if (!isCacheable(response)) return;
 
+        const url = this.getCacheKey(worker.request);
+
         // Always store the main cache entry to preserve Vary headers
-        worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
+        worker.ctx.waitUntil(cache.put(url, response.clone()));
 
         // Store request-specific cache entry if the response varies
         const vary = getVaryHeader(response);
         if (vary.length !== 0) {
-            worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, vary), response.clone()));
+            worker.ctx.waitUntil(
+                cache.put(getVaryKey(worker.request, vary, url), response.clone()),
+            );
         }
     }
 

@@ -140,7 +140,7 @@ describe("cache worker unit tests", () => {
         const request = new Request(VALID_URL, { method: GET, headers: { Origin: VALID_ORIGIN } });
 
         const response = await new TestVaryWorker(request, "Origin").fetch();
-        const key = getVaryKey(request, getVaryHeader(response));
+        const key = getVaryKey(request, getVaryHeader(response), new URL(VALID_URL));
 
         expect(defaultCache.size).toBe(2);
 
@@ -151,7 +151,7 @@ describe("cache worker unit tests", () => {
         const request = new Request(VALID_URL, { method: GET, headers: { Origin: VALID_ORIGIN } });
         const main = new Response("main", { headers: { Vary: "Origin" } });
         const vary = new Response("vary", { headers: { Vary: "Origin" } });
-        const key = getVaryKey(request, getVaryHeader(main));
+        const key = getVaryKey(request, getVaryHeader(main), new URL(VALID_URL));
 
         defaultCache.put(VALID_URL, main);
         defaultCache.put(key, vary);
@@ -172,8 +172,8 @@ describe("cache worker unit tests", () => {
         const vary1 = new Response("vary 1", { headers });
         const vary2 = new Response("vary 2", { headers });
 
-        const key1 = getVaryKey(request1, getVaryHeader(vary1));
-        const key2 = getVaryKey(request2, getVaryHeader(vary2));
+        const key1 = getVaryKey(request1, getVaryHeader(vary1), new URL(VALID_URL));
+        const key2 = getVaryKey(request2, getVaryHeader(vary2), new URL(VALID_URL));
 
         defaultCache.put(VALID_URL, resp);
         defaultCache.put(key1, vary1);
@@ -196,7 +196,7 @@ describe("cache worker unit tests", () => {
         const main = new Response("main", { headers });
         const vary = new Response("vary", { headers });
 
-        const key = getVaryKey(existingRequest, getVaryHeader(main));
+        const key = getVaryKey(existingRequest, getVaryHeader(main), new URL(VALID_URL));
         defaultCache.put(VALID_URL, main);
         defaultCache.put(key, vary);
 
@@ -208,7 +208,7 @@ describe("cache worker unit tests", () => {
         expect(await response.text()).toBe("from dispatch");
         expect(defaultCache.size).toBe(3);
 
-        const newkey = getVaryKey(request2, getVaryHeader(main));
+        const newkey = getVaryKey(request2, getVaryHeader(main), new URL(VALID_URL));
         const cached = defaultCache.match(newkey);
         expect(cached).toBeDefined();
 

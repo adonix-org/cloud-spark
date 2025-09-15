@@ -16,7 +16,7 @@
  */
 
 import { HttpHeader } from "../../constants/http";
-import { getHeaderValues, lexCompare, normalizeUrl } from "../../utils";
+import { getHeaderValues, lexCompare } from "../../utils";
 import { VARY_WILDCARD } from "./constants";
 
 /** Base URL used for constructing cache keys. Only used internally. */
@@ -74,10 +74,7 @@ export function getVaryFiltered(vary: string[]): string[] {
  * @param vary Array of headers that affect caching.
  * @returns A string representing a unique cache key for this request.
  */
-export function getVaryKey(request: Request, vary: string[]): string {
-    const url = normalizeUrl(request.url);
-    const baseUrl = url.origin + url.pathname;
-
+export function getVaryKey(request: Request, vary: string[], baseUrl: URL): string {
     const varyPairs: [string, string][] = [];
     const filtered = getVaryFiltered(vary);
     filtered.sort(lexCompare);
@@ -88,11 +85,8 @@ export function getVaryKey(request: Request, vary: string[]): string {
         }
     });
 
-    const encoded = base64UrlEncode(JSON.stringify([baseUrl, varyPairs]));
-    const search = url.searchParams.toString();
-
-    const encodedUrl = new URL(`${encoded}?${search}`, BASE_CACHE_URL);
-    return encodedUrl.href;
+    const encoded = base64UrlEncode(JSON.stringify([baseUrl.toString(), varyPairs]));
+    return new URL(encoded, BASE_CACHE_URL).href;
 }
 
 /**

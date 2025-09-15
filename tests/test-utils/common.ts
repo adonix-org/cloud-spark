@@ -124,10 +124,12 @@ export function decodeVaryKey(key: string): DecodedVary {
         [string, string][],
     ];
 
+    const decodedUrl = new URL(urlStr);
+
     return {
-        url: urlStr,
+        url: decodedUrl.origin + decodedUrl.pathname,
         vary,
-        search: url.searchParams.toString(),
+        search: decodedUrl.searchParams.toString(),
     };
 }
 
