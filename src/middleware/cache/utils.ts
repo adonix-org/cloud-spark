@@ -71,7 +71,7 @@ export function getVaryFiltered(vary: string[]): string[] {
  * - Encodes base path + header values as URL-safe Base64
  *
  * @param request The Request object to generate a key for.
- * @param vary Array of headers that affect caching (usually from `getVaryHeader`).
+ * @param vary Array of headers that affect caching.
  * @returns A string representing a unique cache key for this request.
  */
 export function getVaryKey(request: Request, vary: string[]): string {

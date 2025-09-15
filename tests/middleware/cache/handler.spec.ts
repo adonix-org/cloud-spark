@@ -45,6 +45,7 @@ class TestVaryWorker extends TestWorker {
         super(request);
         this.use(cache());
     }
+
     protected override async dispatch(): Promise<Response> {
         return new Response("from dispatch", { headers: { Vary: this.vary } });
     }
@@ -144,5 +145,31 @@ describe("cache worker unit tests", () => {
         expect(defaultCache.size).toBe(2);
 
         expect(defaultCache.match(key)).toBeDefined();
+    });
+
+    it("retrieves a 'vary aware' response", async () => {
+        const request = new Request(VALID_URL, { method: GET, headers: { Origin: VALID_ORIGIN } });
+        const vary = new Response("vary", { headers: { Vary: "origin" } });
+        const resp = new Response("main", { headers: { Vary: "origin" } });
+        const key = getVaryKey(request, getVaryHeader(resp));
+
+        defaultCache.put(VALID_URL, resp);
+        defaultCache.put(key, vary);
+
+        const response = await new TestWorker(request).fetch();
+        expect(await response.text()).toBe("vary");
+    });
+
+    it("does not cache 'uncacheable' responses", async () => {
+        class BadResponseWorker extends TestWorker {
+            protected async dispatch(): Promise<Response> {
+                return new Response("do not cache", { status: 500 });
+            }
+        }
+
+        const response = await new BadResponseWorker(GET_REQUEST).fetch();
+        expect(response.status).toBe(500);
+        expect(defaultCache.size).toBe(0);
+        expect(namedCache.size).toBe(0);
     });
 });
