@@ -36,10 +36,7 @@ import { normalizeUrl } from "../../utils/url";
  *               If omitted, the request URL is normalized and used as the key.
  * @returns A `Middleware` instance that can be used in a Worker pipeline.
  */
-export function cache(
-    cacheName?: string,
-    getKey?: (request: Request) => URL | RequestInfo,
-): Middleware {
+export function cache(cacheName?: string, getKey?: (request: Request) => URL): Middleware {
     assertCacheName(cacheName);
     assertGetKey(getKey);
 
@@ -53,7 +50,7 @@ export function cache(
 class CacheHandler extends Middleware {
     constructor(
         protected readonly cacheName?: string,
-        protected readonly getKey?: (request: Request) => URL | RequestInfo,
+        protected readonly getKey?: (request: Request) => URL,
     ) {
         super();
     }
@@ -136,9 +133,9 @@ class CacheHandler extends Middleware {
      * - Otherwise, returns a normalized URL for the request.
      *
      * @param request The request to generate a cache key for.
-     * @returns A URL or RequestInfo suitable for `cache.match` and `cache.put`.
+     * @returns A URL suitable for `cache.match` and `cache.put`.
      */
-    public getCacheKey(request: Request): URL | RequestInfo {
+    public getCacheKey(request: Request): URL {
         return this.getKey ? this.getKey(request) : normalizeUrl(request.url);
     }
 }

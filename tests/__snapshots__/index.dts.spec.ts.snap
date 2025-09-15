@@ -458,7 +458,7 @@ declare abstract class Middleware {
  *               If omitted, the request URL is normalized and used as the key.
  * @returns A \`Middleware\` instance that can be used in a Worker pipeline.
  */
-declare function cache(cacheName?: string, getKey?: (request: Request) => URL | RequestInfo): Middleware;
+declare function cache(cacheName?: string, getKey?: (request: Request) => URL): Middleware;
 
 /**
  * Creates a CORS middleware instance.
