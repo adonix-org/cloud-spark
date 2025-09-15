@@ -57,7 +57,7 @@ class CacheHandler extends Middleware {
         const response = await cache.match(this.getCacheKey(request));
         if (!response) return;
 
-        const vary = getVaryFiltered(getVaryHeader(response));
+        const vary = this.getFilteredVary(response);
         if (vary.length === 0) return response;
 
         const key = getVaryKey(request, vary);
@@ -69,10 +69,14 @@ class CacheHandler extends Middleware {
 
         worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
 
-        const vary = getVaryFiltered(getVaryHeader(response));
+        const vary = this.getFilteredVary(response);
         if (vary.length !== 0) {
             worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, vary), response.clone()));
         }
+    }
+
+    private getFilteredVary(response: Response) {
+        return getVaryFiltered(getVaryHeader(response));
     }
 
     private getCacheKey(request: Request): URL | RequestInfo {
