@@ -37,6 +37,10 @@ export function cors(init?: CorsInit): Middleware {
     return new CorsHandler(init);
 }
 
+/**
+ * Cors Middleware Implementation
+ * @see {@link cors}
+ */
 class CorsHandler extends Middleware {
     /** The configuration used for this instance, with all defaults applied. */
     private readonly config: CorsConfig;

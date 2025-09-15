@@ -19,7 +19,23 @@ import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
 import { assertCacheName, assertGetKey } from "../../guards/cache";
 import { getVaryFiltered, getVaryHeader, getVaryKey, isCacheable } from "./utils";
+import { normalizeUrl } from "../../utils/url";
 
+/**
+ * Creates a Vary-aware caching middleware for Workers.
+ *
+ * This middleware:
+ * - Caches **GET requests** only.
+ * - Respects the `Vary` header of responses, ensuring that requests
+ *   with different headers (e.g., `Origin`) receive the correct cached response.
+ * - Skips caching for non-cacheable responses (e.g., error responses or
+ *   responses with `Vary: *`).
+ *
+ * @param cacheName Optional name of the cache to use. If omitted, the default Worker cache is used.
+ * @param getKey Optional function to compute a custom cache key from a request.
+ *               If omitted, the request URL is normalized and used as the key.
+ * @returns A `Middleware` instance that can be used in a Worker pipeline.
+ */
 export function cache(
     cacheName?: string,
     getKey?: (request: Request) => URL | RequestInfo,
@@ -30,6 +46,10 @@ export function cache(
     return new CacheHandler(cacheName, getKey);
 }
 
+/**
+ * Cache Middleware Implementation
+ * @see {@link cache}
+ */
 class CacheHandler extends Middleware {
     constructor(
         protected readonly cacheName?: string,
@@ -38,6 +58,17 @@ class CacheHandler extends Middleware {
         super();
     }
 
+    /**
+     * Handles an incoming request.
+     * - Bypasses caching for non-GET requests.
+     * - Checks the cache for a stored response.
+     * - Calls the next middleware or origin if no cached response exists.
+     * - Caches the response if it is cacheable.
+     *
+     * @param worker The Worker instance containing the request and context.
+     * @param next Function to call the next middleware or origin fetch.
+     * @returns A cached or freshly fetched Response.
+     */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         if (worker.request.method !== GET) {
             return next();
@@ -53,6 +84,14 @@ class CacheHandler extends Middleware {
         return response;
     }
 
+    /**
+     * Retrieves a cached response for a given request.
+     * - Checks both the base cache key and any Vary-specific keys.
+     *
+     * @param cache The Cache object to check.
+     * @param request The request to retrieve a cached response for.
+     * @returns A cached Response if available, otherwise `undefined`.
+     */
     private async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
         const response = await cache.match(this.getCacheKey(request));
         if (!response) return;
@@ -64,22 +103,54 @@ class CacheHandler extends Middleware {
         return cache.match(key);
     }
 
+    /**
+     * Caches a response if it is cacheable.
+     *
+     * Behavior:
+     * - Always stores the response under the main cache key. This ensures that
+     *   the response’s Vary headers are available for later cache lookups.
+     * - If the response varies based on certain request headers (per the Vary header),
+     *   also stores a copy under a Vary-specific cache key so future requests
+     *   with matching headers can retrieve the correct response.
+     *
+     * @param cache The Cache object to store the response in.
+     * @param worker The Worker instance containing the request and context.
+     * @param response The Response to cache.
+     */
     private async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
         if (!isCacheable(response)) return;
 
+        // Always store the main cache entry to preserve Vary headers
         worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
 
+        // Store request-specific cache entry if the response varies
         const vary = this.getFilteredVary(response);
         if (vary.length !== 0) {
             worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, vary), response.clone()));
         }
     }
+    /**
+     * Returns the filtered Vary headers for a response.
 
+     * @see {@link getVaryHeader}
+     * @see {@link getVaryFiltered}
+     *
+     * @param response The Response object to inspect.
+     * @returns Array of Vary headers that affect caching.
+     */
     private getFilteredVary(response: Response) {
         return getVaryFiltered(getVaryHeader(response));
     }
 
+    /**
+     * Returns the cache key for a request.
+     * - If a `getKey` function is provided, uses it to compute the key.
+     * - Otherwise, returns a normalized URL for the request.
+     *
+     * @param request The request to generate a cache key for.
+     * @returns A URL or RequestInfo suitable for `cache.match` and `cache.put`.
+     */
     private getCacheKey(request: Request): URL | RequestInfo {
-        return this.getKey ? this.getKey(request) : request;
+        return this.getKey ? this.getKey(request) : normalizeUrl(request.url);
     }
 }
