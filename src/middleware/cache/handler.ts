@@ -134,11 +134,20 @@ class CacheHandler extends Middleware {
 
     /**
      * Returns the cache key for a request.
-     * - If a `getKey` function is provided, uses it to compute the key.
-     * - Otherwise, returns a normalized URL for the request.
      *
-     * @param request The request to generate a cache key for.
-     * @returns A URL suitable for `cache.match` and `cache.put`.
+     * By default, this is a normalized URL including the path and query string.
+     * However, users can provide a custom `getKey` function when creating the
+     * `cache` middleware to fully control how the cache keys are generated.
+     *
+     * For example, a custom function could:
+     *  - Sort or remove query parameters
+     *  - Exclude the search/query string entirely
+     *  - Modify the path or host
+     *
+     * This allows complete flexibility over cache key generation.
+     *
+     * @param request The Request object to generate a cache key for.
+     * @returns A URL representing the main cache key for this request.
      */
     public getCacheKey(request: Request): URL {
         return this.getKey ? this.getKey(request) : normalizeUrl(request.url);

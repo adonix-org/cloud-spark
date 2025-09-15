@@ -66,17 +66,33 @@ export function getVaryFiltered(vary: string[]): string[] {
 }
 
 /**
- * Generates a unique cache key for a Request, including Vary headers.
- * - Uses `BASE_CACHE_URL` for URL construction
- * - Encodes base path + header values as URL-safe Base64
+ * Generates a Vary-aware cache key for a request.
+ *
+ * The key is based on:
+ * 1. The provided `baseUrl`, which is normalized by default but can be fully customized
+ *    by the caller. For example, users can:
+ *      - Sort query parameters
+ *      - Remove the search/query string entirely
+ *      - Exclude certain query parameters
+ *    This allows full control over how this cache key is generated.
+ * 2. The request headers listed in `vary` (after filtering and lowercasing).
+ *
+ * Behavior:
+ * - Headers in `vary` are sorted and included in the key.
+ * - The combination of URL and header values is base64-encoded to produce
+ *   a safe cache key.
+ * - The resulting string is returned as an absolute URL rooted at `BASE_CACHE_URL`.
  *
  * @param request The Request object to generate a key for.
- * @param vary Array of headers that affect caching.
- * @returns A string representing a unique cache key for this request.
+ * @param vary Array of header names from the `Vary` header that affect caching.
+ * @param baseUrl The base URL to use for the main cache key. Can be modified
+ *                by the caller for custom cache key behavior.
+ * @returns A string URL representing a unique cache key for this request + Vary headers.
  */
 export function getVaryKey(request: Request, vary: string[], baseUrl: URL): string {
     const varyPairs: [string, string][] = [];
     const filtered = getVaryFiltered(vary);
+
     filtered.sort(lexCompare);
     filtered.forEach((header) => {
         const value = request.headers.get(header);
