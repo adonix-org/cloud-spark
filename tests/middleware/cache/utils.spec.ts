@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { decodeVaryKey } from "@common";
 import { HttpHeader } from "@src/constants/http";
 import {
     getVaryFiltered,
@@ -267,27 +268,3 @@ describe("cache utils unit tests ", () => {
     });
 });
 
-export function decodeVaryKey(key: string): DecodedVary {
-    const url = new URL(key);
-    const base64Url = url.pathname.slice(1); // remove leading '/'
-
-    let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    while (base64.length % 4) base64 += "=";
-
-    const [urlStr, vary] = JSON.parse(Buffer.from(base64, "base64").toString("utf-8")) as [
-        string,
-        [string, string][],
-    ];
-
-    return {
-        url: urlStr,
-        vary,
-        search: url.searchParams.toString(),
-    };
-}
-
-export interface DecodedVary {
-    url: string;
-    vary: [string, string][];
-    search: string;
-}

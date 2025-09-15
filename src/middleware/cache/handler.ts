@@ -18,7 +18,7 @@ import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
 import { assertCacheName, assertGetKey } from "../../guards/cache";
-import { getVaryFiltered, getVaryHeader, getVaryKey, isCacheable } from "./utils";
+import { getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { normalizeUrl } from "../../utils/url";
 
 /**
@@ -96,7 +96,7 @@ class CacheHandler extends Middleware {
         const response = await cache.match(this.getCacheKey(request));
         if (!response) return;
 
-        const vary = this.getFilteredVary(response);
+        const vary = getVaryHeader(response);
         if (vary.length === 0) return response;
 
         const key = getVaryKey(request, vary);
@@ -124,22 +124,10 @@ class CacheHandler extends Middleware {
         worker.ctx.waitUntil(cache.put(this.getCacheKey(worker.request), response.clone()));
 
         // Store request-specific cache entry if the response varies
-        const vary = this.getFilteredVary(response);
+        const vary = getVaryHeader(response);
         if (vary.length !== 0) {
             worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, vary), response.clone()));
         }
-    }
-    /**
-     * Returns the filtered Vary headers for a response.
-
-     * @see {@link getVaryHeader}
-     * @see {@link getVaryFiltered}
-     *
-     * @param response The Response object to inspect.
-     * @returns Array of Vary headers that affect caching.
-     */
-    public getFilteredVary(response: Response) {
-        return getVaryFiltered(getVaryHeader(response));
     }
 
     /**

@@ -15,11 +15,12 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { GET_REQUEST, VALID_URL } from "@common";
+import { GET_REQUEST, VALID_ORIGIN, VALID_URL } from "@common";
 import { ctx, defaultCache, env, namedCache } from "@mock";
 import { cache } from "@src/middleware/cache/handler";
 import { MiddlewareWorker } from "@src/workers/middleware-worker";
 import { GET, Method } from "@src/constants/http";
+import { getVaryHeader, getVaryKey } from "@src/middleware/cache/utils";
 
 class TestWorker extends MiddlewareWorker {
     public getAllowedMethods(): Method[] {
@@ -33,6 +34,19 @@ class TestWorker extends MiddlewareWorker {
 
     protected async dispatch(): Promise<Response> {
         return new Response("from dispatch");
+    }
+}
+
+class TestVaryWorker extends TestWorker {
+    constructor(
+        request: Request,
+        public readonly vary: string,
+    ) {
+        super(request);
+        this.use(cache());
+    }
+    protected override async dispatch(): Promise<Response> {
+        return new Response("from dispatch", { headers: { Vary: this.vary } });
     }
 }
 
@@ -119,5 +133,16 @@ describe("cache worker unit tests", () => {
 
         const response2 = await new TestWorker(post).fetch();
         expect(await response2.text()).toBe("from dispatch");
+    });
+
+    it("stores a 'vary aware' response", async () => {
+        const request = new Request(VALID_URL, { method: GET, headers: { Origin: VALID_ORIGIN } });
+
+        const response = await new TestVaryWorker(request, "Origin").fetch();
+        const key = getVaryKey(request, getVaryHeader(response));
+
+        expect(defaultCache.size).toBe(2);
+
+        expect(defaultCache.match(key)).toBeDefined();
     });
 });
