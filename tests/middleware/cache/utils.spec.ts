@@ -15,7 +15,7 @@
  */
 
 import { HttpHeader } from "@src/constants/http";
-import { getVaryKey, isCacheable } from "@src/middleware/cache/utils";
+import { getVaryHeader, getVaryKey, isCacheable } from "@src/middleware/cache/utils";
 import { describe, expect, it } from "vitest";
 
 describe("cache utils unit tests ", () => {
@@ -60,6 +60,45 @@ describe("cache utils unit tests ", () => {
                 headers: { Vary: "" },
             });
             expect(isCacheable(response)).toBe(true);
+        });
+    });
+
+    describe("get vary header function", () => {
+        it("returns single value lowercased", () => {
+            const headers = new Headers({ Vary: "Origin" });
+            const response = new Response(null, { headers });
+
+            expect(getVaryHeader(response)).toEqual(["origin"]);
+        });
+
+        it("splits multiple comma-separated values and sorts them", () => {
+            const headers = new Headers({ Vary: "Origin, Accept-Encoding, " });
+            const response = new Response(null, { headers });
+
+            expect(getVaryHeader(response)).toEqual(["accept-encoding", "origin"]);
+        });
+
+        it("deduplicates repeated values", () => {
+            const headers = new Headers({
+                Vary: "Origin, origin, ACCEPT-ENCODING, accept-encoding",
+            });
+            const response = new Response(null, { headers });
+
+            expect(getVaryHeader(response)).toEqual(["accept-encoding", "origin"]);
+        });
+
+        it("returns empty array if vary header is missing", () => {
+            const headers = new Headers();
+            const response = new Response(null, { headers });
+
+            expect(getVaryHeader(response)).toEqual([]);
+        });
+
+        it("handles mixed whitespace and sorts lexicographically", () => {
+            const headers = new Headers({ Vary: "  zeta , alpha , Beta " });
+            const response = new Response(null, { headers });
+
+            expect(getVaryHeader(response)).toEqual(["alpha", "beta", "zeta"]);
         });
     });
 
