@@ -1,4 +1,4 @@
-# ⚡️ cloud-spark
+# ⚡️ Cloud Spark
 
 [![npm version](https://img.shields.io/npm/v/@adonix.org/cloud-spark.svg?color=blue)](https://www.npmjs.com/package/@adonix.org/cloud-spark)
 [![Apache 2.0 License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/adonix-org/cloud-spark/blob/main/LICENSE)
@@ -8,3 +8,9 @@
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=adonix-org_cloud-spark&metric=coverage)](https://sonarcloud.io/summary/overall?id=adonix-org_cloud-spark&branch=main)
 
 Ignite your Cloudflare Workers with a type-safe library for rapid development.
+
+## :package: Install
+
+```bash
+npm install @adonix.org/cloud-spark
+```
