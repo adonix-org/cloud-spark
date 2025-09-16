@@ -15,11 +15,11 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { GET_REQUEST, VALID_ORIGIN, VALID_URL } from "@common";
+import { decodeVaryKey, GET_REQUEST, VALID_ORIGIN, VALID_URL } from "@common";
 import { ctx, defaultCache, env, namedCache } from "@mock";
 import { cache } from "@src/middleware/cache/handler";
 import { MiddlewareWorker } from "@src/workers/middleware-worker";
-import { GET, Method } from "@src/constants/http";
+import { GET, HttpHeader, Method } from "@src/constants/http";
 import { getVaryHeader, getVaryKey } from "@src/middleware/cache/utils";
 
 class TestWorker extends MiddlewareWorker {
@@ -192,6 +192,38 @@ describe("cache worker unit tests", () => {
         expect(defaultCache.size).toBe(2);
 
         expect(defaultCache.match(key)).toBeDefined();
+    });
+
+    it("does not store vary 'accept-encoding' as a distinct response", async () => {
+        const request = new Request(VALID_URL, {
+            method: GET,
+            headers: { [HttpHeader.ACCEPT_ENCODING]: "gzip, deflate, br" },
+        });
+
+        await new TestVaryWorker(request, HttpHeader.ACCEPT_ENCODING).fetch();
+        expect(defaultCache.size).toBe(1);
+        expect(defaultCache.match(VALID_URL)).toBeDefined();
+    });
+
+    it("does not include vary 'accept-encoding' in the vary cache key", async () => {
+        const request = new Request(VALID_URL, {
+            method: GET,
+            headers: { [HttpHeader.ACCEPT_ENCODING]: "gzip, deflate, br", Origin: VALID_ORIGIN },
+        });
+
+        const response = await new TestVaryWorker(
+            request,
+            `${HttpHeader.ACCEPT_ENCODING}, Origin`,
+        ).fetch();
+
+        const key = getVaryKey(request, getVaryHeader(response), new URL(VALID_URL));
+        expect(defaultCache.size).toBe(2);
+        expect(defaultCache.match(VALID_URL)).toBeDefined();
+        expect(defaultCache.match(key)).toBeDefined();
+
+        const decoded = decodeVaryKey(key);
+        expect(decoded.url).toBe(VALID_URL);
+        expect(decoded.vary).toStrictEqual([["origin", "https://localhost"]]);
     });
 
     it("retrieves a 'vary aware' response", async () => {

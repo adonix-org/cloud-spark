@@ -126,7 +126,7 @@ class CacheHandler extends Middleware {
 
         // Store request-specific cache entry if the response varies
         const vary = this.getFilteredVary(response);
-        if (vary.length !== 0) {
+        if (vary.length > 0) {
             worker.ctx.waitUntil(
                 cache.put(getVaryKey(worker.request, vary, url), response.clone()),
             );
