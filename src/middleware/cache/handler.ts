@@ -49,10 +49,11 @@ export function cache(cacheName?: string, getKey?: (request: Request) => URL): M
  */
 class CacheHandler extends Middleware {
     constructor(
-        protected readonly cacheName?: string,
-        protected readonly getKey?: (request: Request) => URL,
+        private readonly cacheName?: string,
+        private readonly getKey?: (request: Request) => URL,
     ) {
         super();
+        this.cacheName = cacheName?.trim() || undefined;
     }
 
     /**
