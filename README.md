@@ -19,7 +19,7 @@ npm install @adonix.org/cloud-spark
 
 ## :stopwatch: Quickstart
 
-If you are new to Cloudflare Workers, be sure to check out the [Wrangler](#-wrangler) section first.
+If you are new to Cloudflare Workers, be sure to check out the [Wrangler](#cowboy_hat_face-wrangler) section first.
 
 :page_facing_up: hello-world.ts
 
@@ -85,4 +85,4 @@ Initialize a new worker project
 wrangler init
 ```
 
-[Install](#-install) Cloud Spark
+[Install](#package-install) Cloud Spark
