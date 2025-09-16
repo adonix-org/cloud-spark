@@ -17,7 +17,7 @@
 import { decodeVaryKey } from "@common";
 import { HttpHeader } from "@src/constants/http";
 import {
-    getVaryFiltered,
+    filterVaryHeader,
     getVaryHeader,
     getVaryKey,
     isCacheable,
@@ -111,31 +111,31 @@ describe("cache utils unit tests ", () => {
     describe("get vary filtered function", () => {
         it("removes 'accept-encoding' when it is the only header", () => {
             const input = ["Accept-Encoding"];
-            expect(getVaryFiltered(input)).toEqual([]);
+            expect(filterVaryHeader(input)).toEqual([]);
         });
 
         it("removes 'accept-encoding' among other headers", () => {
             const input = ["Origin", "Accept-Encoding", "Content-Type"];
-            expect(getVaryFiltered(input)).toEqual(["origin", "content-type"]);
+            expect(filterVaryHeader(input)).toEqual(["origin", "content-type"]);
         });
 
         it("removes 'accept-encoding' case-insensitively", () => {
             const input = ["origin", "ACCEPT-ENCODING", "content-type"];
-            expect(getVaryFiltered(input)).toEqual(["origin", "content-type"]);
+            expect(filterVaryHeader(input)).toEqual(["origin", "content-type"]);
         });
 
         it("returns lowercased headers if none are 'accept-encoding'", () => {
             const input = ["Origin", "Content-Type"];
-            expect(getVaryFiltered(input)).toEqual(["origin", "content-type"]);
+            expect(filterVaryHeader(input)).toEqual(["origin", "content-type"]);
         });
 
         it("returns empty array if input is empty", () => {
-            expect(getVaryFiltered([])).toEqual([]);
+            expect(filterVaryHeader([])).toEqual([]);
         });
 
         it("works if input has duplicates of 'accept-encoding'", () => {
             const input = ["Accept-Encoding", "ACCEPT-ENCODING"];
-            expect(getVaryFiltered(input)).toEqual([]);
+            expect(filterVaryHeader(input)).toEqual([]);
         });
     });
 

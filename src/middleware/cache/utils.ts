@@ -59,7 +59,7 @@ export function getVaryHeader(response: Response): string[] {
  * @param vary Array of normalized Vary header names.
  * @returns Array of headers used for computing cache variations.
  */
-export function getVaryFiltered(vary: string[]): string[] {
+export function filterVaryHeader(vary: string[]): string[] {
     return vary
         .map((h) => h.toLowerCase())
         .filter((value) => value !== HttpHeader.ACCEPT_ENCODING.toLowerCase());
@@ -91,7 +91,7 @@ export function getVaryFiltered(vary: string[]): string[] {
  */
 export function getVaryKey(request: Request, vary: string[], key: URL): string {
     const varyPairs: [string, string][] = [];
-    const filtered = getVaryFiltered(vary);
+    const filtered = filterVaryHeader(vary);
 
     filtered.sort(lexCompare);
     filtered.forEach((header) => {
