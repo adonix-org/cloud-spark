@@ -7,7 +7,7 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=adonix-org_cloud-spark&metric=security_rating)](https://sonarcloud.io/summary/overall?id=adonix-org_cloud-spark&branch=main)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=adonix-org_cloud-spark&metric=coverage)](https://sonarcloud.io/summary/overall?id=adonix-org_cloud-spark&branch=main)
 
-***Ignite*** your Cloudflare Workers with a type-safe library for rapid development.
+**_Ignite_** your Cloudflare Workers with a type-safe library for rapid development.
 
 ## :package: Install
 
@@ -71,7 +71,7 @@ Install Wrangler
 npm install -g @cloudflare/wrangler
 ```
 
-Login from the command line interface
+Login
 
 ```bash
 wrangler login
