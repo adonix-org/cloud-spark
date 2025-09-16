@@ -17,7 +17,7 @@
 import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
-import { assertCacheName, assertGetKey } from "../../guards/cache";
+import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
 import { getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { normalizeUrl } from "../../utils/url";
 
@@ -150,6 +150,9 @@ class CacheHandler extends Middleware {
      * @returns A URL representing the main cache key for this request.
      */
     public getCacheKey(request: Request): URL {
-        return this.getKey ? this.getKey(request) : normalizeUrl(request.url);
+        const key = this.getKey ? this.getKey(request) : normalizeUrl(request.url);
+        assertKey(key);
+
+        return key;
     }
 }

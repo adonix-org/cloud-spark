@@ -47,3 +47,17 @@ export function assertGetKey(value: unknown): asserts value is Function {
         throw new TypeError("getKey must be a function.");
     }
 }
+
+/**
+ * Asserts that a value is a `URL` instance suitable for use as a cache key.
+ *
+ * If the value is not a `URL`, this function throws a `TypeError`.
+ *
+ * @param value - The value to check.
+ * @throws TypeError If the value is not a `URL`.
+ */
+export function assertKey(value: unknown): asserts value is URL {
+    if (!(value instanceof URL)) {
+        throw new TypeError("getKey must return a URL.");
+    }
+}
