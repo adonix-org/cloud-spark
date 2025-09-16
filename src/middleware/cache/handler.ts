@@ -59,7 +59,7 @@ class CacheHandler extends Middleware {
      * Handles an incoming request.
      * - Bypasses caching for non-GET requests.
      * - Checks the cache for a stored response.
-     * - Calls the next middleware or origin if no cached response exists.
+     * - Calls next if no cached response exists.
      * - Caches the response if it is cacheable.
      *
      * @param worker The Worker instance containing the request and context.
