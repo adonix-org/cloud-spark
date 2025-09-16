@@ -20,7 +20,7 @@ import { getHeaderValues, lexCompare } from "../../utils";
 import { VARY_WILDCARD } from "./constants";
 
 /** Base URL used for constructing cache keys. Only used internally. */
-const BASE_CACHE_URL = "https://cache";
+const VARY_CACHE_URL = "https://vary";
 
 /**
  * Determines whether a Response is cacheable.
@@ -69,7 +69,7 @@ export function getVaryFiltered(vary: string[]): string[] {
  * Generates a Vary-aware cache key for a request.
  *
  * The key is based on:
- * 1. The provided `baseUrl`, which is normalized by default but can be fully customized
+ * 1. The provided `key` URL, which is normalized by default but can be fully customized
  *    by the caller. For example, users can:
  *      - Sort query parameters
  *      - Remove the search/query string entirely
@@ -79,17 +79,17 @@ export function getVaryFiltered(vary: string[]): string[] {
  *
  * Behavior:
  * - Headers in `vary` are sorted and included in the key.
- * - The combination of URL and header values is base64-encoded to produce
+ * - The combination of the key URL and header values is base64-encoded to produce
  *   a safe cache key.
- * - The resulting string is returned as an absolute URL rooted at `BASE_CACHE_URL`.
+ * - The resulting string is returned as an absolute URL rooted at `VARY_CACHE_URL`.
  *
  * @param request The Request object to generate a key for.
  * @param vary Array of header names from the `Vary` header that affect caching.
- * @param baseUrl The base URL to use for the main cache key. Can be modified
- *                by the caller for custom cache key behavior.
+ * @param key The cache key to be used for this request. Can be modified by the caller for
+ *            custom cache key behavior.
  * @returns A string URL representing a unique cache key for this request + Vary headers.
  */
-export function getVaryKey(request: Request, vary: string[], baseUrl: URL): string {
+export function getVaryKey(request: Request, vary: string[], key: URL): string {
     const varyPairs: [string, string][] = [];
     const filtered = getVaryFiltered(vary);
 
@@ -101,8 +101,8 @@ export function getVaryKey(request: Request, vary: string[], baseUrl: URL): stri
         }
     });
 
-    const encoded = base64UrlEncode(JSON.stringify([baseUrl.toString(), varyPairs]));
-    return new URL(encoded, BASE_CACHE_URL).href;
+    const encoded = base64UrlEncode(JSON.stringify([key.toString(), varyPairs]));
+    return new URL(encoded, VARY_CACHE_URL).href;
 }
 
 /**
