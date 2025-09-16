@@ -19,6 +19,8 @@ npm install @adonix.org/cloud-spark
 
 ## :stopwatch: Quickstart
 
+If you are new to Cloudflare Workers, be sure to check out the [Wrangler](#-wrangler) section first.
+
 :page_facing_up: hello-world.ts
 
 ```ts
@@ -26,7 +28,7 @@ import { BasicWorker, TextResponse } from "@adonix.org/cloud-spark";
 
 export class HelloWorld extends BasicWorker {
     protected override async get(): Promise<Response> {
-        return this.getResponse(TextResponse, "Hello from Cloud Spark!");
+        return this.getResponse(TextResponse, "Hi from Cloud Spark!");
     }
 }
 ```
@@ -83,4 +85,4 @@ Initialize a new worker project
 wrangler init
 ```
 
-[Install](#package-install) Cloud Spark
+[Install](#-install) Cloud Spark
