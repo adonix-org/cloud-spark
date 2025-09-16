@@ -31,7 +31,7 @@ import { normalizeUrl } from "../../utils/url";
  * - Skips caching for non-cacheable responses (e.g., error responses or
  *   responses with `Vary: *`).
  *
- * @param cacheName Optional name of the cache to use. If omitted, the default Worker cache is used.
+ * @param cacheName Optional name of the cache to use. If omitted, the default cache is used.
  * @param getKey Optional function to compute a custom cache key from a request.
  *               If omitted, the request URL is normalized and used as the key.
  * @returns A `Middleware` instance that can be used in a Worker pipeline.
