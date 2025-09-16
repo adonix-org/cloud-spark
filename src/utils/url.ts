@@ -20,7 +20,6 @@ import { lexCompare } from "./compare";
  * Normalizes a URL string for use as a consistent cache key.
  *
  * - Sorts query parameters alphabetically so `?b=2&a=1` and `?a=1&b=2` are treated the same.
- * - Strips fragment identifiers (`#...`) since they are not sent in HTTP requests.
  * - Leaves protocol, host, path, and query values intact.
  *
  * @param url The original URL string to normalize.
@@ -28,14 +27,11 @@ import { lexCompare } from "./compare";
  */
 export function normalizeUrl(url: string): URL {
     const u = new URL(url);
-
     const params = [...u.searchParams.entries()];
+
     params.sort(([a], [b]) => lexCompare(a, b));
 
-    u.search = params
-        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-        .join("&");
+    u.search = params.map(([k, v]) => `${k}=${v}`).join("&");
     u.hash = "";
-
     return u;
 }

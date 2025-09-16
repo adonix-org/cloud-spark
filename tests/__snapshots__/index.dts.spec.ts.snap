@@ -551,7 +551,6 @@ declare function getContentType(type: MediaType): string;
  * Normalizes a URL string for use as a consistent cache key.
  *
  * - Sorts query parameters alphabetically so \`?b=2&a=1\` and \`?a=1&b=2\` are treated the same.
- * - Strips fragment identifiers (\`#...\`) since they are not sent in HTTP requests.
  * - Leaves protocol, host, path, and query values intact.
  *
  * @param url The original URL string to normalize.

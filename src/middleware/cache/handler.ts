@@ -164,6 +164,7 @@ class CacheHandler extends Middleware {
         const key = this.getKey ? this.getKey(request) : normalizeUrl(request.url);
         assertKey(key);
 
+        key.hash = "";
         return key;
     }
 }
