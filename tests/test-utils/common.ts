@@ -70,7 +70,7 @@ function isCallback(handler: RouteCallback | WorkerClass): handler is RouteCallb
 
 /**
  * Assert that two Headers (or arrays of entries) are equal
- * regardless of ordering.
+ * regardless of ordering or key case.
  */
 export function expectHeadersEqual(headers: Headers, expected: [string, string][]) {
     const actual = [...headers.entries()].map(([k, v]) => [k.toLowerCase(), v] as [string, string]);
