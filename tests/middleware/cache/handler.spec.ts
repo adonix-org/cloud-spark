@@ -205,7 +205,7 @@ describe("cache worker unit tests", () => {
         expect(defaultCache.match(VALID_URL)).toBeDefined();
     });
 
-    it("does not include vary 'accept-encoding' in the vary cache key", async () => {
+    it("does not include 'accept-encoding' in the vary cache key", async () => {
         const request = new Request(VALID_URL, {
             method: GET,
             headers: { [HttpHeader.ACCEPT_ENCODING]: "gzip, deflate, br", Origin: VALID_ORIGIN },
