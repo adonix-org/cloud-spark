@@ -19,7 +19,9 @@ npm install @adonix.org/cloud-spark
 
 ## :stopwatch: Quickstart
 
-If you are new to Cloudflare Workers, be sure to check out the [Wrangler](#cowboy_hat_face-wrangler) section first.
+If you are new to _Cloudflare Workers_, create a [**_FREE_**](https://dash.cloudflare.com/sign-up) Cloudflare account and install their command line interface [Wrangler](#cowboy_hat_face-wrangler). Detailed worker documentation can also be found [here](https://developers.cloudflare.com/workers/).
+
+Then let's get started!
 
 :page_facing_up: hello-world.ts
 
