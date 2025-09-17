@@ -15,7 +15,7 @@
  */
 
 import { expect } from "vitest";
-import { HEAD, Method } from "@src/constants/http";
+import { HEAD, Method, OPTIONS } from "@src/constants/http";
 import { MatchedRoute, RouteCallback, RouteTable } from "@src/interfaces/route";
 import { WorkerClass } from "@src/interfaces/worker";
 import { lexCompare } from "@src/utils";
@@ -26,7 +26,7 @@ export const INVALID_ORIGIN = "https://localhost.invalid";
 export const VALID_URL = `${VALID_ORIGIN}/`;
 
 export const ALL_METHODS: Method[] = Object.values(Method);
-export const SPECIAL_METHODS: Method[] = [HEAD];
+export const SPECIAL_METHODS: Method[] = [HEAD, OPTIONS];
 export const BASIC_METHODS: Method[] = ALL_METHODS.filter(
     (method) => !SPECIAL_METHODS.includes(method),
 );

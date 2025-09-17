@@ -16,9 +16,11 @@
 
 import { describe, it, expect, vi } from "vitest";
 import { env, ctx } from "@mock";
-import { ALL_METHODS, BASIC_METHODS, GET_REQUEST, VALID_URL } from "@common";
+import { ALL_METHODS, BASIC_METHODS, expectHeadersEqual, GET_REQUEST, VALID_URL } from "@common";
 import { BasicWorker } from "@src/workers/basic-worker";
-import { Method } from "@src/constants/http";
+import { Method, StatusCodes } from "@src/constants/http";
+import { TextResponse } from "@src/responses";
+import { CacheControl } from "@src/constants";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {
@@ -48,11 +50,38 @@ describe("basic worker unit tests", () => {
         expect(json).toStrictEqual(expectedJson(method));
     });
 
-    it("returns HEAD response", async () => {
-        const request = new Request(VALID_URL, { method: Method.HEAD });
+    it("returns empty HEAD response", async () => {
+        class GetWorker extends TestWorker {
+            protected override async get(): Promise<Response> {
+                return this.getResponse(
+                    TextResponse,
+                    "Hello.",
+                    CacheControl.DISABLE,
+                    StatusCodes.ACCEPTED,
+                );
+            }
+        }
+        const getRequest = new Request(VALID_URL);
+        const getWorker = new GetWorker(getRequest);
+        const getResponse = await getWorker.fetch();
+
+        const headRequest = new Request(VALID_URL, { method: Method.HEAD });
+        const headWorker = new GetWorker(headRequest);
+        const headResponse = await headWorker.fetch();
+
+        expect(headResponse).toBeInstanceOf(Response);
+        expect(headResponse.status).toBe(getResponse.status);
+        expect(headResponse.statusText).toBe(getResponse.statusText);
+        expectHeadersEqual(headResponse.headers, [...getResponse.headers.entries()]);
+        expect(await headResponse.text()).toBe("");
+    });
+
+    it("returns epmty OPTIONS response", async () => {
+        const request = new Request(VALID_URL, { method: Method.OPTIONS });
         const worker = new TestWorker(request);
 
         const response = await worker.fetch();
+        expect(response.status).toBe(StatusCodes.NO_CONTENT);
         expect(response).toBeInstanceOf(Response);
         expect(await response.text()).toBe("");
     });

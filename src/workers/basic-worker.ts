@@ -16,7 +16,7 @@
 
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
 import { MiddlewareWorker } from "./middleware-worker";
-import { Head, WorkerResponse } from "../responses";
+import { Head, Options, WorkerResponse } from "../responses";
 import { Method, GET, HEAD, OPTIONS } from "../constants/http";
 import { assertMethods, isMethod } from "../guards/methods";
 
@@ -103,9 +103,9 @@ export abstract class BasicWorker extends MiddlewareWorker {
         return this.getResponse(MethodNotImplemented, this);
     }
 
-    /** Override and implement this method for OPTIONS requests. */
+    /** Returns a default empty OPTIONS response. */
     protected async options(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, this);
+        return this.getResponse(Options);
     }
 
     /**
