@@ -19,7 +19,7 @@ import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
 import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
 import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
-import { sortSearchParams } from "../../utils/url";
+import { sortSearchParams } from "../../utils/request";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.

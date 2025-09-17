@@ -537,16 +537,6 @@ declare function getHeaderValues(headers: Headers, key: string): string[];
  * @returns The normalized origin string, or \`null\` if not present or invalid.
  */
 declare function getOrigin(request: Request): string | null;
-
-/**
- * Returns the proper Content-Type string for a given media type.
- * Appends \`charset=utf-8\` for text-based types that require it.
- *
- * @param type - The media type.
- * @returns A string suitable for the \`Content-Type\` header.
- */
-declare function getContentType(type: MediaType): string;
-
 /**
  * Returns a new URL with its query parameters sorted into a stable order.
  *
@@ -567,6 +557,15 @@ declare function sortSearchParams(request: Request): URL;
  * @returns A new URL with no query parameters.
  */
 declare function stripSearchParams(request: Request): URL;
+
+/**
+ * Returns the proper Content-Type string for a given media type.
+ * Appends \`charset=utf-8\` for text-based types that require it.
+ *
+ * @param type - The media type.
+ * @returns A string suitable for the \`Content-Type\` header.
+ */
+declare function getContentType(type: MediaType): string;
 
 /**
  * A type-safe Cloudflare Worker handler with a guaranteed \`fetch\` method.

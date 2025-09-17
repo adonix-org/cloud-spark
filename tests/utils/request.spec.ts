@@ -15,30 +15,10 @@
  */
 
 import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "@common";
-import { MediaType } from "@src/constants/media-types";
-import { getOrigin } from "@src/utils/request";
-import { getContentType } from "@src/utils/response";
+import { getOrigin, sortSearchParams, stripSearchParams } from "@src/utils/request";
 import { describe, it, expect } from "vitest";
 
 describe("request functions unit tests", () => {
-    describe("get content type function", () => {
-        it("adds the charset to json", () => {
-            expect(getContentType(MediaType.JSON)).toBe("application/json; charset=utf-8");
-        });
-
-        it("adds the charset to plain text", () => {
-            expect(getContentType(MediaType.PLAIN_TEXT)).toBe("text/plain; charset=utf-8");
-        });
-
-        it("adds the charset to html", () => {
-            expect(getContentType(MediaType.HTML)).toBe("text/html; charset=utf-8");
-        });
-
-        it("does not add charset for binary type", () => {
-            expect(getContentType(MediaType.OCTET_STREAM)).toBe("application/octet-stream");
-        });
-    });
-
     describe("get origin function", () => {
         it("returns null for no origin header in the request", () => {
             expect(getOrigin(GET_REQUEST)).toBe(null);
@@ -82,6 +62,77 @@ describe("request functions unit tests", () => {
                 },
             });
             expect(getOrigin(request)).toBe("https://localhot:3000");
+        });
+    });
+
+    describe("sort search params function", () => {
+        it("does not modify a url with no search parameters", () => {
+            const req = new Request(VALID_URL);
+            expect(sortSearchParams(req).toString()).toBe(VALID_URL);
+        });
+
+        it("retains the single search parameter in a url", () => {
+            const url = `${VALID_URL}?a=1`;
+            const req = new Request(url);
+            expect(sortSearchParams(req).toString()).toBe(url);
+        });
+
+        it("does not modify pre-sorted search parameters", () => {
+            const url = `${VALID_URL}?a=1&b=2&c=3`;
+            const req = new Request(url);
+            expect(sortSearchParams(req).toString()).toBe(url);
+        });
+
+        it("sorts the url search parameters", () => {
+            const url = `${VALID_URL}?&b=2&c=3&a=1`;
+            const req = new Request(url);
+            expect(sortSearchParams(req).toString()).toBe(`${VALID_URL}?a=1&b=2&c=3`);
+        });
+
+        it("sorts and retains search parameters containing duplicate keys", () => {
+            const url = `${VALID_URL}?&b=2&a=4&c=3&a=1`;
+            const req = new Request(url);
+
+            // normalizeUrl sorts keys alphabetically, but preserves the order of duplicate keys.
+            expect(sortSearchParams(req).toString()).toBe(`${VALID_URL}?a=4&a=1&b=2&c=3`);
+        });
+
+        it("ignores the request method and body when generating the key", () => {
+            const req = new Request(`${VALID_URL}?z=2&a=1`, {
+                method: "POST",
+                body: "ignored",
+            });
+            expect(sortSearchParams(req).toString()).toBe(`${VALID_URL}?a=1&z=2`);
+        });
+
+        it("removes the hash if present", () => {
+            const req = new Request(`${VALID_URL}?z=2&a=1#section`);
+            expect(sortSearchParams(req).toString()).toBe(`${VALID_URL}?a=1&z=2`);
+        });
+    });
+
+    describe("strip search params function", () => {
+        it("removes search parameters from a url", () => {
+            const url = `${VALID_URL}?a=1&b=2`;
+            const req = new Request(url);
+            expect(stripSearchParams(req).toString()).toBe(VALID_URL);
+        });
+
+        it("leaves a url without search parameters unchanged", () => {
+            const req = new Request(VALID_URL);
+            expect(stripSearchParams(req).toString()).toBe(VALID_URL);
+        });
+
+        it("removes search params but retains path", () => {
+            const url = `${VALID_URL}path/to/resource?a=1&b=2`;
+            const req = new Request(url);
+            expect(stripSearchParams(req).toString()).toBe(`${VALID_URL}path/to/resource`);
+        });
+
+        it("removes search params and hash if present", () => {
+            const url = `${VALID_URL}?a=1#section`;
+            const req = new Request(url);
+            expect(stripSearchParams(req).toString()).toBe(`${VALID_URL}`);
         });
     });
 });
