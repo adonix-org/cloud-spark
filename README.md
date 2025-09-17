@@ -67,7 +67,7 @@ And it's ready on http://localhost:8787
 
 ## :cowboy_hat_face: Wrangler
 
-Create a **FREE** [Cloudflare account](https://dash.cloudflare.com/sign-up).
+First, create a **FREE** [Cloudflare account](https://dash.cloudflare.com/sign-up).
 
 :computer: Install Wrangler
 
