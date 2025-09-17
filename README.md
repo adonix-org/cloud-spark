@@ -19,7 +19,7 @@ npm install @adonix.org/cloud-spark
 
 ## :stopwatch: Quickstart
 
-If you are new to _Cloudflare Workers_, create a [**_FREE_**](https://dash.cloudflare.com/sign-up) Cloudflare account and install their command line interface [Wrangler](#cowboy_hat_face-wrangler). Detailed worker documentation can also be found [here](https://developers.cloudflare.com/workers/).
+If you are new to _Cloudflare Workers_, create a free [Cloudflare account](https://dash.cloudflare.com/sign-up) and install their command line interface [Wrangler](#cowboy_hat_face-wrangler). Detailed worker documentation can also be found [here](https://developers.cloudflare.com/workers/).
 
 Then let's get started!
 
@@ -43,13 +43,13 @@ import { HelloWorld } from "./hello-world";
 export default HelloWorld.ignite();
 ```
 
-:computer: Run locally
+:computer: Now run your worker locally
 
 ```bash
 wrangler dev
 ```
 
-Ready on http://localhost:8787
+And it's ready on http://localhost:8787
 
 <br>
 
