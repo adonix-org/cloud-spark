@@ -19,7 +19,7 @@ import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
 import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
 import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
-import { normalizeUrl } from "../../utils/url";
+import { sortSearchParams } from "../../utils/url";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -161,7 +161,7 @@ class CacheHandler extends Middleware {
      * @returns A URL representing the main cache key for this request.
      */
     public getCacheKey(request: Request): URL {
-        const key = this.getKey ? this.getKey(request) : normalizeUrl(request.url);
+        const key = this.getKey ? this.getKey(request) : sortSearchParams(request);
         assertKey(key);
 
         key.hash = "";

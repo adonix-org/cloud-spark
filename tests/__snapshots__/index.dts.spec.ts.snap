@@ -548,15 +548,25 @@ declare function getOrigin(request: Request): string | null;
 declare function getContentType(type: MediaType): string;
 
 /**
- * Normalizes a URL string for use as a consistent cache key.
+ * Returns a new URL with its query parameters sorted into a stable order.
  *
- * - Sorts query parameters alphabetically so \`?b=2&a=1\` and \`?a=1&b=2\` are treated the same.
- * - Leaves protocol, host, path, and query values intact.
+ * This is useful for cache key generation: URLs that differ only in the
+ * order of their query parameters will normalize to the same key.
  *
- * @param url The original URL string to normalize.
- * @returns A normalized URL string suitable for hashing or direct cache key use.
+ * @param request - The incoming Request whose URL will be normalized.
+ * @returns A new URL with query parameters sorted by name.
  */
-declare function normalizeUrl(url: string): URL;
+declare function sortSearchParams(request: Request): URL;
+/**
+ * Returns a new URL with all query parameters removed.
+ *
+ * This is useful when query parameters are not relevant to cache lookups,
+ * ensuring that variants of the same resource share a single cache entry.
+ *
+ * @param request - The incoming Request whose URL will be normalized.
+ * @returns A new URL with no query parameters.
+ */
+declare function stripSearchParams(request: Request): URL;
 
 /**
  * A type-safe Cloudflare Worker handler with a guaranteed \`fetch\` method.
@@ -926,6 +936,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, normalizeUrl, setHeader };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams };
 "
 `;

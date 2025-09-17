@@ -46,7 +46,8 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "isMethodArray",
   "lexCompare",
   "mergeHeader",
-  "normalizeUrl",
   "setHeader",
+  "sortSearchParams",
+  "stripSearchParams",
 ]
 `;

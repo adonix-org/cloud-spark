@@ -17,21 +17,36 @@
 import { lexCompare } from "./compare";
 
 /**
- * Normalizes a URL string for use as a consistent cache key.
+ * Returns a new URL with its query parameters sorted into a stable order.
  *
- * - Sorts query parameters alphabetically so `?b=2&a=1` and `?a=1&b=2` are treated the same.
- * - Leaves protocol, host, path, and query values intact.
+ * This is useful for cache key generation: URLs that differ only in the
+ * order of their query parameters will normalize to the same key.
  *
- * @param url The original URL string to normalize.
- * @returns A normalized URL string suitable for hashing or direct cache key use.
+ * @param request - The incoming Request whose URL will be normalized.
+ * @returns A new URL with query parameters sorted by name.
  */
-export function normalizeUrl(url: string): URL {
-    const u = new URL(url);
-    const params = [...u.searchParams.entries()];
+export function sortSearchParams(request: Request): URL {
+    const url = new URL(request.url);
+    const sorted = new URLSearchParams(
+        [...url.searchParams.entries()].sort(([a], [b]) => lexCompare(a, b)),
+    );
+    url.search = sorted.toString();
+    url.hash = "";
+    return url;
+}
 
-    params.sort(([a], [b]) => lexCompare(a, b));
-
-    u.search = params.map(([k, v]) => `${k}=${v}`).join("&");
-    u.hash = "";
-    return u;
+/**
+ * Returns a new URL with all query parameters removed.
+ *
+ * This is useful when query parameters are not relevant to cache lookups,
+ * ensuring that variants of the same resource share a single cache entry.
+ *
+ * @param request - The incoming Request whose URL will be normalized.
+ * @returns A new URL with no query parameters.
+ */
+export function stripSearchParams(request: Request): URL {
+    const url = new URL(request.url);
+    url.search = "";
+    url.hash = "";
+    return url;
 }
