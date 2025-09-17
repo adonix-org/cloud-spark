@@ -51,7 +51,7 @@ Ready on http://localhost:8787
 
 <br>
 
-## :construction_worker: Basic Worker
+## :arrow_right: Basic Worker
 
 <br>
 
@@ -70,7 +70,7 @@ Create a **FREE** [Cloudflare account](https://dash.cloudflare.com/sign-up).
 :computer: Install Wrangler
 
 ```bash
-npm install -g @cloudflare/wrangler
+npm install -g wrangler
 ```
 
 :computer: Login
