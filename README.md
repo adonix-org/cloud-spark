@@ -41,7 +41,7 @@ import { HelloWorld } from "./hello-world";
 export default HelloWorld.ignite();
 ```
 
-Run locally
+:computer: Run locally
 
 ```bash
 wrangler dev
@@ -67,19 +67,19 @@ Ready on http://localhost:8787
 
 Create a free [Cloudflare account](https://dash.cloudflare.com/sign-up).
 
-Install Wrangler
+:computer: Install Wrangler
 
 ```bash
 npm install -g @cloudflare/wrangler
 ```
 
-Login
+:computer: Login
 
 ```bash
 wrangler login
 ```
 
-Initialize a new worker project
+:computer: Initialize a new Cloudflare Worker project
 
 ```bash
 wrangler init
