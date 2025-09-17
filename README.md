@@ -9,6 +9,10 @@
 
 **_Ignite_** your Cloudflare Workers with a type-safe library for rapid development.
 
+If you are new to _Cloudflare Workers_, create a free [Cloudflare account](https://dash.cloudflare.com/sign-up) and install their command line interface [Wrangler](#cowboy_hat_face-wrangler). Detailed worker documentation can also be found [here](https://developers.cloudflare.com/workers/).
+
+Then let's get started!
+
 ## :package: Install
 
 ```bash
@@ -18,10 +22,6 @@ npm install @adonix.org/cloud-spark
 <br>
 
 ## :stopwatch: Quickstart
-
-If you are new to _Cloudflare Workers_, create a free [Cloudflare account](https://dash.cloudflare.com/sign-up) and install their command line interface [Wrangler](#cowboy_hat_face-wrangler). Detailed worker documentation can also be found [here](https://developers.cloudflare.com/workers/).
-
-Then let's get started!
 
 :page_facing_up: hello-world.ts
 
