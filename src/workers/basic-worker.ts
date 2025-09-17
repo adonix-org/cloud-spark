@@ -116,7 +116,9 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * standard HEAD requirements.
      */
     protected async head(): Promise<Response> {
-        const worker = this.create(new Request(this.request, { method: GET }));
+        const worker = this.create(
+            new Request(this.request.url, { method: GET, headers: this.request.headers }),
+        );
         return this.getResponse(Head, await worker.fetch());
     }
 
