@@ -43,7 +43,7 @@ import { HelloWorld } from "./hello-world";
 export default HelloWorld.ignite();
 ```
 
-:computer: Now to run your worker locally
+:computer: Now run your worker locally
 
 ```bash
 wrangler dev
