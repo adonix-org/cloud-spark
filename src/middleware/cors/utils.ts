@@ -26,10 +26,8 @@ import { ALLOW_ALL_ORIGINS } from "./constants";
 /**
  * Set of HTTP methods considered "simple" under the CORS specification.
  *
- * Simple methods do not trigger a preflight request:
- * - GET
- * - HEAD
- * - OPTIONS
+ * Simple methods do not trigger a preflight request on their own.
+ * (Other factors like headers can still cause a preflight.)
  */
 const SIMPLE_METHODS = new Set<Method>([GET, HEAD, OPTIONS]);
 
