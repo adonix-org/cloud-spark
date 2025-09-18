@@ -16,7 +16,7 @@
 
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
 import { MiddlewareWorker } from "./middleware-worker";
-import { Head, Options, WorkerResponse } from "../responses";
+import { Head, Options } from "../responses";
 import { Method, GET, HEAD, OPTIONS } from "../constants/http";
 import { assertMethods, isMethod } from "../guards/methods";
 
@@ -130,25 +130,5 @@ export abstract class BasicWorker extends MiddlewareWorker {
      */
     public getAllowedMethods(): Method[] {
         return [GET, HEAD, OPTIONS];
-    }
-
-    /**
-     * Simplify and standardize {@link Response} creation by extending {@link WorkerResponse}
-     * or any of its subclasses and passing to this method.
-     *
-     * Or directly use any of the built-in classes.
-     *
-     * ```ts
-     * this.getResponse(TextResponse, "Hello World!")
-     * ```
-     *
-     * @param ResponseClass The response class to instantiate
-     * @param args Additional constructor arguments
-     * @returns A Promise resolving to the {@link Response} object
-     */
-    protected async getResponse<
-        Ctor extends new (...args: any[]) => { getResponse(): Promise<Response> },
-    >(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor>): Promise<Response> {
-        return new ResponseClass(...args).getResponse();
     }
 }
