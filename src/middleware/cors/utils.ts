@@ -53,8 +53,8 @@ export async function options(worker: Worker, cors: CorsConfig): Promise<Respons
     }
 
     setAllowMethods(options.headers, worker);
-    setMaxAge(options.headers, cors);
     setAllowHeaders(options.headers, cors);
+    setMaxAge(options.headers, cors);
 
     return options.getResponse();
 }
@@ -83,9 +83,8 @@ export async function apply(
     if (origin) {
         setAllowOrigin(clone.headers, cors, origin);
         setAllowCredentials(clone.headers, cors, origin);
+        setExposedHeaders(clone.headers, cors);
     }
-
-    setExposedHeaders(clone.headers, cors);
 
     return clone.getResponse();
 }
