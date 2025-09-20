@@ -18,7 +18,6 @@ import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../
 import { MiddlewareWorker } from "./middleware-worker";
 import { Head, Options } from "../responses";
 import { Method, GET, HEAD, OPTIONS } from "../constants/http";
-import { assertMethods, isMethod } from "../guards/methods";
 
 /**
  * Basic worker class providing HTTP method dispatching and error handling.
@@ -57,25 +56,6 @@ export abstract class BasicWorker extends MiddlewareWorker {
         };
 
         return (handler[method] ?? (() => this.getResponse(MethodNotAllowed, this)))();
-    }
-
-    /**
-     * Hook for subclasses to perform any initialization.
-     */
-    protected init(): void | Promise<void> {
-        return;
-    }
-
-    /**
-     * Checks if the given HTTP method is allowed for this worker.
-     * @param method HTTP method string
-     * @returns true if the method is allowed
-     */
-    public isAllowed(method: string): boolean {
-        const methods = this.getAllowedMethods();
-        assertMethods(methods);
-
-        return isMethod(method) && methods.includes(method);
     }
 
     /** Override and implement this method for GET requests. */

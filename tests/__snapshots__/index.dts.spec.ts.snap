@@ -50,6 +50,9 @@ declare namespace HttpHeader {
     const ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
     const ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age";
     const ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
+    const SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
+    const CONNECTION = "Connection";
+    const UPGRADE = "Upgrade";
 }
 /**
  * Standard HTTP request methods.
@@ -619,6 +622,12 @@ declare abstract class BaseWorker implements Worker {
      * @returns A Promise that resolves to the \`Response\` for the request.
      */
     protected abstract dispatch(): Promise<Response>;
+    /**
+     * Checks if the given HTTP method is allowed for this worker.
+     * @param method HTTP method string
+     * @returns true if the method is allowed
+     */
+    isAllowed(method: string): boolean;
     abstract getAllowedMethods(): Method[];
     /**
      * Creates a new instance of the current Worker subclass.
@@ -667,6 +676,10 @@ declare abstract class MiddlewareWorker extends BaseWorker {
     /** Middleware handlers registered for this worker. */
     protected readonly middlewares: Middleware[];
     /**
+     * Hook for subclasses to perform any initialization.
+     */
+    protected init(): void | Promise<void>;
+    /**
      * Add a middleware instance to this worker.
      *
      * The middleware will run for every request handled by this worker,
@@ -696,16 +709,6 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      * Dispatches the request to the method-specific handler.
      */
     protected dispatch(): Promise<Response>;
-    /**
-     * Hook for subclasses to perform any initialization.
-     */
-    protected init(): void | Promise<void>;
-    /**
-     * Checks if the given HTTP method is allowed for this worker.
-     * @param method HTTP method string
-     * @returns true if the method is allowed
-     */
-    isAllowed(method: string): boolean;
     /** Override and implement this method for GET requests. */
     protected get(): Promise<Response>;
     /** Override and implement this method for PUT requests. */
@@ -811,6 +814,8 @@ declare abstract class BaseResponse {
     status: StatusCodes;
     /** Optional status text. Defaults to standard reason phrase. */
     statusText?: string;
+    /** Enable websocket responses. */
+    webSocket: WebSocket | null;
     /** Default media type of the response body. */
     mediaType: MediaType;
     /** Converts current state to ResponseInit for constructing a Response. */
@@ -871,6 +876,13 @@ declare class TextResponse extends SuccessResponse {
     constructor(content: string, cache?: CacheControl, status?: StatusCodes);
 }
 /**
+ * Response for WebSocket upgrade requests.
+ * Automatically sets status to 101 and attaches the client socket.
+ */
+declare class WebSocketResponse extends WorkerResponse {
+    constructor(client: WebSocket);
+}
+/**
  * Response for HEAD requests. Copy headers and status from a GET response
  * without the body.
  */
@@ -917,6 +929,10 @@ declare class NotFound extends HttpError {
 declare class MethodNotAllowed extends HttpError {
     constructor(worker: Worker);
 }
+/** 426 Upgrade Required error response. */
+declare class UpgradeRequired extends HttpError {
+    constructor();
+}
 /** 500 Internal Server Error response. */
 declare class InternalServerError extends HttpError {
     constructor(details?: string);
@@ -934,6 +950,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketResponse, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams };
 "
 `;

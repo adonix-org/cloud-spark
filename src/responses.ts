@@ -35,6 +35,9 @@ abstract class BaseResponse {
     /** Optional status text. Defaults to standard reason phrase. */
     public statusText?: string;
 
+    /** Enable websocket responses. */
+    public webSocket: WebSocket | null = null;
+
     /** Default media type of the response body. */
     public mediaType: MediaType = MediaType.PLAIN_TEXT;
 
@@ -44,6 +47,8 @@ abstract class BaseResponse {
             headers: this.headers,
             status: this.status,
             statusText: this.statusText ?? getReasonPhrase(this.status),
+            webSocket: this.webSocket,
+            encodeBody: "automatic",
         };
     }
 
@@ -157,6 +162,18 @@ export class TextResponse extends SuccessResponse {
     constructor(content: string, cache?: CacheControl, status: StatusCodes = StatusCodes.OK) {
         super(content, cache, status);
         this.mediaType = MediaType.PLAIN_TEXT;
+    }
+}
+
+/**
+ * Response for WebSocket upgrade requests.
+ * Automatically sets status to 101 and attaches the client socket.
+ */
+export class WebSocketResponse extends WorkerResponse {
+    constructor(client: WebSocket) {
+        super(null);
+        this.status = StatusCodes.SWITCHING_PROTOCOLS;
+        this.webSocket = client;
     }
 }
 

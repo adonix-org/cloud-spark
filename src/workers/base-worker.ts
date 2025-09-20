@@ -15,6 +15,7 @@
  */
 
 import { Method } from "../constants/http";
+import { assertMethods, isMethod } from "../guards/methods";
 import { FetchHandler } from "../interfaces/fetch-handler";
 import { Worker, WorkerClass } from "../interfaces/worker";
 
@@ -59,6 +60,18 @@ export abstract class BaseWorker implements Worker {
      * @returns A Promise that resolves to the `Response` for the request.
      */
     protected abstract dispatch(): Promise<Response>;
+
+    /**
+     * Checks if the given HTTP method is allowed for this worker.
+     * @param method HTTP method string
+     * @returns true if the method is allowed
+     */
+    public isAllowed(method: string): boolean {
+        const methods = this.getAllowedMethods();
+        assertMethods(methods);
+
+        return isMethod(method) && methods.includes(method);
+    }
 
     public abstract getAllowedMethods(): Method[];
 

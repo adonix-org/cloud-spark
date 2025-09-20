@@ -47,6 +47,11 @@ export namespace HttpHeader {
     export const ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
     export const ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age";
     export const ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
+
+    // Websocket Headers
+    export const SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
+    export const CONNECTION = "Connection";
+    export const UPGRADE = "Upgrade";
 }
 
 /**

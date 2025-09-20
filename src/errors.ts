@@ -21,6 +21,7 @@ import { Worker } from "./interfaces/worker";
 import { CacheControl } from "./constants/cache";
 import { HttpHeader } from "./constants/http";
 import { assertMethods } from "./guards";
+import { WS_VERSION } from "./constants/websocket";
 
 /**
  * Generic HTTP error response.
@@ -81,6 +82,14 @@ export class MethodNotAllowed extends HttpError {
 
         super(StatusCodes.METHOD_NOT_ALLOWED, `${worker.request.method} method not allowed.`);
         this.setHeader(HttpHeader.ALLOW, methods);
+    }
+}
+
+/** 426 Upgrade Required error response. */
+export class UpgradeRequired extends HttpError {
+    constructor() {
+        super(StatusCodes.UPGRADE_REQUIRED);
+        this.headers.set(HttpHeader.SEC_WEBSOCKET_VERSION, WS_VERSION);
     }
 }
 

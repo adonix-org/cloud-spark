@@ -24,6 +24,13 @@ export abstract class MiddlewareWorker extends BaseWorker {
     protected readonly middlewares: Middleware[] = [];
 
     /**
+     * Hook for subclasses to perform any initialization.
+     */
+    protected init(): void | Promise<void> {
+        return;
+    }
+
+    /**
      * Add a middleware instance to this worker.
      *
      * The middleware will run for every request handled by this worker,
