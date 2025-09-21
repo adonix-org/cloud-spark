@@ -88,8 +88,8 @@ export abstract class WebSocketWorker extends BasicWorker {
         this.server.removeEventListener("close", this.doClose);
     }
 
-    private warn(message: string, data?: unknown): void {
-        this.ctx.waitUntil(this.onWarn(message, data));
+    private warn(message: string): void {
+        this.ctx.waitUntil(this.onWarn(message));
     }
 
     protected async onOpen(): Promise<void> {}
@@ -102,7 +102,7 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     protected async onClose(_event: CloseEvent): Promise<void> {}
 
-    protected async onWarn(_message: string, _data?: unknown): Promise<void> {}
+    protected async onWarn(_message: string): Promise<void> {}
 
     protected send(data: string | ArrayBuffer | ArrayBufferView): void {
         if (!this.isOpen()) {
@@ -110,7 +110,7 @@ export abstract class WebSocketWorker extends BasicWorker {
             return;
         }
         if (!canSend(data)) {
-            this.warn("Cannot send: empty or invalid data", data);
+            this.warn("Cannot send: empty or invalid data");
             return;
         }
         this.server.send(data);
