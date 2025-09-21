@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { CloseCode } from "../constants/websocket";
 import { isSendable } from "../guards/websocket";
 
-export class SafeWebSocket {
+export class ServerWebSocket {
     readonly #socket: WebSocket;
 
     constructor(
@@ -25,19 +24,20 @@ export class SafeWebSocket {
         private readonly warn: (msg: string) => void = () => {},
     ) {
         this.#socket = server;
-        this.#socket.addEventListener("close", this.onClientClose, { once: true });
-        this.#socket.addEventListener("close", this.onServerClose, { once: true });
+        this.#socket.addEventListener("close", this.#onClose, { once: true });
     }
 
-    private readonly onClientClose = (event: CloseEvent): void => {
-        console.log("Client Initiated");
-        this.#socket.removeEventListener("close", this.onServerClose);
+    readonly #onClose = (event: CloseEvent): void => {
         this.close(event.code, event.reason);
     };
 
-    private readonly onServerClose = (_event: CloseEvent): void => {
-        console.log("Server Initiated");
-    };
+    public addEventListener<K extends keyof WebSocketEventMap>(
+        type: K,
+        listener: (ev: WebSocketEventMap[K]) => any,
+        options?: { once?: boolean },
+    ) {
+        this.#socket.addEventListener(type, listener, options);
+    }
 
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
         if (!this.isState(WebSocket.OPEN)) {
@@ -51,13 +51,8 @@ export class SafeWebSocket {
         this.#socket.send(data);
     }
 
-    public close(code: number = CloseCode.NORMAL, reason?: string): void {
-        this.#socket.removeEventListener("close", this.onClientClose);
-
-        if (this.isState(WebSocket.CLOSED)) {
-            this.warn("Close called, but WebSocket is already closed");
-            return;
-        }
+    public close(code?: number, reason: string = ""): void {
+        this.#socket.removeEventListener("close", this.#onClose);
         this.#socket.close(code, reason);
     }
 

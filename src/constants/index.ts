@@ -18,3 +18,4 @@ export * from "./cache";
 export * from "./http";
 export * from "./media-types";
 export * from "./time";
+export * from "./websocket";

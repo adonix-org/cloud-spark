@@ -27,17 +27,17 @@ import {
     toArrayBuffer,
 } from "../utils/websocket";
 import { BasicWorker } from "./basic-worker";
-import { SafeWebSocket } from "./safe-webocket";
+import { ServerWebSocket } from "./server-webocket";
 
 export abstract class WebSocketWorker extends BasicWorker {
     readonly #client: WebSocket;
     readonly #server: WebSocket;
-    public readonly ws: SafeWebSocket;
+    public readonly ws: ServerWebSocket;
 
     constructor(_request: Request, _env: Env, _ctx: ExecutionContext) {
         super(_request, _env, _ctx);
         [this.#client, this.#server] = createWebSocketPair();
-        this.ws = new SafeWebSocket(this.#server, this.warn);
+        this.ws = new ServerWebSocket(this.#server, this.warn);
     }
 
     protected override async get(): Promise<Response> {
@@ -61,15 +61,9 @@ export abstract class WebSocketWorker extends BasicWorker {
     }
 
     private addEventListeners(): void {
-        this.#server.addEventListener("message", this.doMessage);
-        this.#server.addEventListener("error", this.doError);
-        this.#server.addEventListener("close", this.doClose);
-    }
-
-    private removeEventListeners(): void {
-        this.#server.removeEventListener("message", this.doMessage);
-        this.#server.removeEventListener("error", this.doError);
-        this.#server.removeEventListener("close", this.doClose);
+        this.ws.addEventListener("message", this.doMessage);
+        this.ws.addEventListener("error", this.doError);
+        this.ws.addEventListener("close", this.doClose);
     }
 
     private readonly doMessage = (event: MessageEvent): void => {
@@ -87,7 +81,6 @@ export abstract class WebSocketWorker extends BasicWorker {
     };
 
     private readonly doClose = (event: CloseEvent): void => {
-        this.removeEventListeners();
         this.ctx.waitUntil(this.onClose(event));
     };
 
