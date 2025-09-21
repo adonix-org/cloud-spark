@@ -41,5 +41,8 @@ export function hasWebSocketVersion(headers: Headers): boolean {
 
 export function toArrayBuffer(data: ArrayBuffer | ArrayBufferView): ArrayBuffer {
     const buffer = ArrayBuffer.isView(data) ? data.buffer : data;
-    return buffer as ArrayBuffer;
+    if (buffer instanceof ArrayBuffer) {
+        return buffer;
+    }
+    throw new Error("Unexpected buffer type");
 }
