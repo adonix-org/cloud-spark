@@ -109,7 +109,7 @@ export abstract class WebSocketWorker extends BasicWorker {
         console.warn(message, data ?? "");
     }
 
-    protected send(data: string | ArrayBuffer): void {
+    protected send(data: string | ArrayBuffer | ArrayBufferView): void {
         if (!this.isOpen()) {
             this.onWarn("Cannot send: WebSocket not open");
             return;
