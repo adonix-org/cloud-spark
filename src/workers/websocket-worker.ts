@@ -126,9 +126,8 @@ export abstract class WebSocketWorker extends BasicWorker {
     }
 
     protected close(code?: number, reason?: string): void {
-        if (!this.isClosed()) {
-            this.server.close(code, reason);
-        }
+        if (this.isClosing() || this.isClosed()) return;
+        this.server.close(code, reason);
     }
 
     protected get readyState(): number {
@@ -141,6 +140,10 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     protected isClosed(): boolean {
         return this.server.readyState === WebSocket.CLOSED;
+    }
+
+    protected isClosing(): boolean {
+        return this.server.readyState === WebSocket.CLOSING;
     }
 
     public override getAllowedMethods(): Method[] {
