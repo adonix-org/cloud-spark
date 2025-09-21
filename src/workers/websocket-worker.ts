@@ -17,7 +17,7 @@
 import { Method, GET, OPTIONS } from "../constants";
 import { BadRequest, UpgradeRequired } from "../errors";
 import { isString } from "../guards/basic";
-import { canSend, isBinary } from "../guards/websocket";
+import { isSendable, isBinary } from "../guards/websocket";
 import { WebSocketResponse } from "../responses";
 import {
     createWebSocketPair,
@@ -29,12 +29,14 @@ import {
 import { BasicWorker } from "./basic-worker";
 
 export abstract class WebSocketWorker extends BasicWorker {
-    private readonly client: WebSocket;
-    private readonly server: WebSocket;
+    readonly #client: WebSocket;
+    readonly #server: WebSocket;
+    public readonly ws: SafeWebSocket;
 
     constructor(_request: Request, _env: Env, _ctx: ExecutionContext) {
         super(_request, _env, _ctx);
-        [this.client, this.server] = createWebSocketPair();
+        [this.#client, this.#server] = createWebSocketPair();
+        this.ws = new SafeWebSocket(this.#server, this.warn);
     }
 
     protected override async get(): Promise<Response> {
@@ -51,22 +53,22 @@ export abstract class WebSocketWorker extends BasicWorker {
 
         this.addEventListeners();
 
-        this.server.accept();
+        this.#server.accept();
         this.ctx.waitUntil(this.onOpen());
 
-        return this.getResponse(WebSocketResponse, this.client);
+        return this.getResponse(WebSocketResponse, this.#client);
     }
 
     private addEventListeners(): void {
-        this.server.addEventListener("message", this.doMessage);
-        this.server.addEventListener("error", this.doError);
-        this.server.addEventListener("close", this.doClose);
+        this.#server.addEventListener("message", this.doMessage);
+        this.#server.addEventListener("error", this.doError);
+        this.#server.addEventListener("close", this.doClose);
     }
 
     private removeEventListeners(): void {
-        this.server.removeEventListener("message", this.doMessage);
-        this.server.removeEventListener("error", this.doError);
-        this.server.removeEventListener("close", this.doClose);
+        this.#server.removeEventListener("message", this.doMessage);
+        this.#server.removeEventListener("error", this.doError);
+        this.#server.removeEventListener("close", this.doClose);
     }
 
     private readonly doMessage = (event: MessageEvent): void => {
@@ -85,7 +87,7 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     private readonly doClose = (event: CloseEvent): void => {
         this.removeEventListeners();
-        this.close();
+        this.ws.close(event.code, event.reason);
         this.ctx.waitUntil(this.onClose(event));
     };
 
@@ -105,37 +107,47 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     protected async onClose(_event: CloseEvent): Promise<void> {}
 
-    protected send(data: string | ArrayBuffer | ArrayBufferView): void {
-        if (!this.isOpen()) {
-            this.warn("Cannot send: WebSocket not open");
-            return;
-        }
-        if (!canSend(data)) {
-            this.warn("Cannot send: empty or invalid data");
-            return;
-        }
-        this.server.send(data);
-    }
-
-    protected close(code?: number, reason?: string): void {
-        if (this.isClosed()) return;
-
-        this.server.close(code, reason);
-    }
-
-    protected get readyState(): number {
-        return this.server.readyState;
-    }
-
-    protected isOpen(): boolean {
-        return this.server.readyState === WebSocket.OPEN;
-    }
-
-    protected isClosed(): boolean {
-        return this.server.readyState === WebSocket.CLOSED;
-    }
-
     public override getAllowedMethods(): Method[] {
         return [GET, OPTIONS];
+    }
+}
+
+class SafeWebSocket {
+    readonly #socket: WebSocket;
+
+    constructor(
+        websocket: WebSocket,
+        private readonly onWarn: (msg: string) => void = () => {},
+    ) {
+        this.#socket = websocket;
+    }
+
+    public send(data: string | ArrayBuffer | ArrayBufferView): void {
+        if (!this.isState(WebSocket.OPEN)) {
+            this.onWarn("Cannot send: WebSocket not open");
+            return;
+        }
+        if (!isSendable(data)) {
+            this.onWarn("Cannot send: empty or invalid data");
+            return;
+        }
+        this.#socket.send(data);
+    }
+
+    public close(code?: number, reason?: string): void {
+        if (this.isState(WebSocket.CLOSED)) {
+            this.onWarn("Close called, but WebSocket is already closing or closed");
+            return;
+        }
+
+        this.#socket.close(code, reason);
+    }
+
+    public get readyState(): number {
+        return this.#socket.readyState;
+    }
+
+    public isState(...states: number[]): boolean {
+        return states.includes(this.#socket.readyState);
     }
 }

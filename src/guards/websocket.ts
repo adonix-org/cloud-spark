@@ -20,7 +20,7 @@ export function isBinary(value: unknown): value is ArrayBuffer | ArrayBufferView
     return value instanceof ArrayBuffer || ArrayBuffer.isView(value);
 }
 
-export function canSend(value: unknown): value is string | ArrayBuffer | ArrayBufferView {
+export function isSendable(value: unknown): value is string | ArrayBuffer | ArrayBufferView {
     if (isString(value)) return value.length > 0;
     if (isBinary(value)) return value.byteLength > 0;
     return false;
