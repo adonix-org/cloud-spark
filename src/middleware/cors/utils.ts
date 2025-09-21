@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HttpHeader, Method, GET, HEAD, OPTIONS } from "../../constants/http";
+import { HttpHeader, Method, GET, HEAD, OPTIONS, StatusCodes } from "../../constants/http";
 import { assertMethods } from "../../guards/methods";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
@@ -30,6 +30,16 @@ import { ALLOW_ALL_ORIGINS } from "./constants";
  * (Other factors like headers can still cause a preflight.)
  */
 const SIMPLE_METHODS = new Set<Method>([GET, HEAD, OPTIONS]);
+
+/**
+ * Status codes for which CORS should be skipped.
+ *
+ * Skips CORS for:
+ * - 101 Switching Protocols (WebSocket upgrade)
+ * - 100 Continue
+ * - Responses that already have Upgrade headers
+ */
+const SKIP_CORS_STATUSES = [StatusCodes.SWITCHING_PROTOCOLS, StatusCodes.CONTINUE];
 
 /**
  * Handles a CORS preflight OPTIONS request.
@@ -213,4 +223,18 @@ export function deleteCorsHeaders(headers: Headers): void {
     headers.delete(HttpHeader.ACCESS_CONTROL_ALLOW_METHODS);
     headers.delete(HttpHeader.ACCESS_CONTROL_EXPOSE_HEADERS);
     headers.delete(HttpHeader.ACCESS_CONTROL_ALLOW_CREDENTIALS);
+}
+
+/**
+ * Determines whether CORS headers should be skipped for a response.
+ *
+ * @param response - The Response object to inspect
+ * @returns `true` if CORS should be skipped, `false` otherwise
+ */
+export function skipCors(response: Response): boolean {
+    const { status, headers } = response;
+    if (SKIP_CORS_STATUSES.includes(status)) return true;
+    if (headers.has(HttpHeader.UPGRADE)) return true;
+
+    return false;
 }

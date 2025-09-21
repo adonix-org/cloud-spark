@@ -15,10 +15,10 @@
  */
 
 import { GET, Method, OPTIONS } from "../constants";
-import { BadRequest, InternalServerError, MethodNotAllowed, UpgradeRequired } from "../errors";
+import { BadRequest, UpgradeRequired } from "../errors";
 import { isString } from "../guards/basic";
 import { isBinary } from "../guards/websocket";
-import { Options, WebSocketResponse } from "../responses";
+import { WebSocketResponse } from "../responses";
 import {
     createWebSocketPair,
     hasConnectionHeader,
@@ -26,9 +26,9 @@ import {
     hasWebSocketVersion,
     toArrayBuffer,
 } from "../utils/websocket";
-import { MiddlewareWorker } from "./middleware-worker";
+import { BasicWorker } from "./basic-worker";
 
-export abstract class WebSocketWorker extends MiddlewareWorker {
+export abstract class WebSocketWorker extends BasicWorker {
     private readonly client: WebSocket;
     private readonly server: WebSocket;
 
@@ -37,18 +37,7 @@ export abstract class WebSocketWorker extends MiddlewareWorker {
         [this.client, this.server] = createWebSocketPair();
     }
 
-    public override async fetch(): Promise<Response> {
-        const method = this.request.method;
-        if (!this.isAllowed(method)) {
-            return this.getResponse(MethodNotAllowed, this);
-        }
-        if (method === OPTIONS) {
-            return this.getResponse(Options);
-        }
-        if (method !== GET) {
-            return this.getResponse(MethodNotAllowed, this);
-        }
-
+    protected override async get(): Promise<Response> {
         const headers = this.request.headers;
         if (!hasConnectionHeader(headers)) {
             return this.getResponse(BadRequest, "Missing or invalid Connection header");
@@ -60,23 +49,9 @@ export abstract class WebSocketWorker extends MiddlewareWorker {
             return this.getResponse(UpgradeRequired);
         }
 
-        try {
-            this.addListeners();
-            await this.init();
-            return await super.fetch();
-        } catch (error) {
-            console.error(error);
-            return this.getResponse(InternalServerError);
-        }
-    }
-
-    protected override async dispatch(): Promise<Response> {
-        this.acceptConnection();
-        return this.getResponse(WebSocketResponse, this.client);
-    }
-
-    private acceptConnection(): void {
+        this.addListeners();
         this.server.accept();
+        return this.getResponse(WebSocketResponse, this.client);
     }
 
     private addListeners(): void {

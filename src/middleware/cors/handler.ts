@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { apply, options } from "./utils";
+import { apply, options, skipCors } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
@@ -72,6 +72,8 @@ class CorsHandler extends Middleware {
         }
 
         const response = await next();
+
+        if (skipCors(response)) return response;
 
         return apply(response, worker, this.config);
     }

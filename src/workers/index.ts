@@ -16,3 +16,4 @@
 
 export * from "./basic-worker";
 export * from "./route-worker";
+export * from "./websocket-worker";
