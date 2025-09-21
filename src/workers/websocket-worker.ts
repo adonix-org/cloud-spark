@@ -78,6 +78,7 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     private readonly doClose = (event: CloseEvent): void => {
         this.cleanup();
+        this.close();
         this.ctx.waitUntil(this.onClose(event));
     };
 
@@ -85,14 +86,6 @@ export abstract class WebSocketWorker extends BasicWorker {
         this.server.removeEventListener("message", this.doMessage);
         this.server.removeEventListener("error", this.doError);
         this.server.removeEventListener("close", this.doClose);
-
-        if (!this.isClosed()) {
-            try {
-                this.server.close();
-            } catch (err) {
-                this.warn("WebSocket close failed", err);
-            }
-        }
     }
 
     private warn(message: string, data?: unknown): void {
@@ -126,7 +119,8 @@ export abstract class WebSocketWorker extends BasicWorker {
     }
 
     protected close(code?: number, reason?: string): void {
-        if (this.isClosing() || this.isClosed()) return;
+        if (this.isClosed()) return;
+
         this.server.close(code, reason);
     }
 
@@ -140,10 +134,6 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     protected isClosed(): boolean {
         return this.server.readyState === WebSocket.CLOSED;
-    }
-
-    protected isClosing(): boolean {
-        return this.server.readyState === WebSocket.CLOSING;
     }
 
     public override getAllowedMethods(): Method[] {
