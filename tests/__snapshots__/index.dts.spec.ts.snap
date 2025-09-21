@@ -815,11 +815,14 @@ declare abstract class WebSocketWorker extends BasicWorker {
     protected onOpen(): Promise<void>;
     protected abstract onMessage(message: string): Promise<void>;
     protected onBinary(_data: ArrayBuffer): Promise<void>;
-    protected onError(event: Event): Promise<void>;
-    protected onClose(event: CloseEvent): Promise<void>;
-    protected send(data: string | ArrayBuffer | ArrayBufferView): void;
+    protected onError(_event: Event): Promise<void>;
+    protected onClose(_event: CloseEvent): Promise<void>;
+    protected onWarn(message: string, data?: unknown): void;
+    protected send(data: string | ArrayBuffer): void;
     protected close(code?: number, reason?: string): void;
     protected get readyState(): number;
+    protected isOpen(): boolean;
+    protected isClosed(): boolean;
     getAllowedMethods(): Method[];
 }
 

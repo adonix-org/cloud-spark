@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import { isString } from "./basic";
+
+export function canSend(value: unknown): boolean {
+    return isString(value) || isBinary(value);
+}
+
 export function isBinary(value: unknown): value is ArrayBuffer | ArrayBufferView {
     return value instanceof ArrayBuffer || ArrayBuffer.isView(value);
 }

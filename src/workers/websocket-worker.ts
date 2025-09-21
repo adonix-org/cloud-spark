@@ -17,7 +17,7 @@
 import { GET, Method, OPTIONS } from "../constants";
 import { BadRequest, UpgradeRequired } from "../errors";
 import { isString } from "../guards/basic";
-import { isBinary } from "../guards/websocket";
+import { canSend, isBinary } from "../guards/websocket";
 import { WebSocketResponse } from "../responses";
 import {
     createWebSocketPair,
@@ -51,11 +51,12 @@ export abstract class WebSocketWorker extends BasicWorker {
 
         this.addListeners();
         this.server.accept();
+        this.onOpen();
+
         return this.getResponse(WebSocketResponse, this.client);
     }
 
     private addListeners(): void {
-        this.server.addEventListener("open", () => this.onOpen(), { once: true });
         this.server.addEventListener("message", this.doMessage, { once: false });
         this.server.addEventListener("error", this.doError, { once: false });
         this.server.addEventListener(
@@ -71,6 +72,14 @@ export abstract class WebSocketWorker extends BasicWorker {
     private cleanup(): void {
         this.server.removeEventListener("message", this.doMessage);
         this.server.removeEventListener("error", this.doError);
+
+        if (!this.isClosed()) {
+            try {
+                this.server.close();
+            } catch (err) {
+                this.onWarn("WebSocket close failed", err);
+            }
+        }
     }
 
     private readonly doMessage = (event: MessageEvent): void => {
@@ -79,7 +88,7 @@ export abstract class WebSocketWorker extends BasicWorker {
         } else if (isBinary(event.data)) {
             this.onBinary(toArrayBuffer(event.data));
         } else {
-            console.warn("Unexpected data type in message");
+            this.onWarn("Unexpected data type in message");
         }
     };
 
@@ -87,23 +96,29 @@ export abstract class WebSocketWorker extends BasicWorker {
         this.onError(event);
     };
 
-    protected async onOpen(): Promise<void> {
-        console.info("onOpen");
-    }
+    protected async onOpen(): Promise<void> {}
 
     protected abstract onMessage(message: string): Promise<void>;
 
     protected async onBinary(_data: ArrayBuffer): Promise<void> {}
 
-    protected async onError(event: Event): Promise<void> {
-        console.error("onError", event);
+    protected async onError(_event: Event): Promise<void> {}
+
+    protected async onClose(_event: CloseEvent): Promise<void> {}
+
+    protected onWarn(message: string, data?: unknown): void {
+        console.warn(message, data ?? "");
     }
 
-    protected async onClose(event: CloseEvent): Promise<void> {
-        console.info("onClose", event);
-    }
-
-    protected send(data: string | ArrayBuffer | ArrayBufferView): void {
+    protected send(data: string | ArrayBuffer): void {
+        if (!this.isOpen()) {
+            this.onWarn("Cannot send: WebSocket not open");
+            return;
+        }
+        if (!canSend(data)) {
+            this.onWarn("Cannot send: empty or invalid data", data);
+            return;
+        }
         this.server.send(data);
     }
 
@@ -113,6 +128,14 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     protected get readyState(): number {
         return this.server.readyState;
+    }
+
+    protected isOpen(): boolean {
+        return this.server.readyState === WebSocket.OPEN;
+    }
+
+    protected isClosed(): boolean {
+        return this.server.readyState === WebSocket.CLOSED;
     }
 
     public override getAllowedMethods(): Method[] {
