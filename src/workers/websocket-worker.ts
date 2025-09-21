@@ -63,6 +63,12 @@ export abstract class WebSocketWorker extends BasicWorker {
         this.server.addEventListener("close", this.doClose);
     }
 
+    private removeEventListeners(): void {
+        this.server.removeEventListener("message", this.doMessage);
+        this.server.removeEventListener("error", this.doError);
+        this.server.removeEventListener("close", this.doClose);
+    }
+
     private readonly doMessage = (event: MessageEvent): void => {
         if (isString(event.data)) {
             this.ctx.waitUntil(this.onMessage(event.data));
@@ -78,16 +84,10 @@ export abstract class WebSocketWorker extends BasicWorker {
     };
 
     private readonly doClose = (event: CloseEvent): void => {
-        this.cleanup();
+        this.removeEventListeners();
         this.close();
         this.ctx.waitUntil(this.onClose(event));
     };
-
-    private cleanup(): void {
-        this.server.removeEventListener("message", this.doMessage);
-        this.server.removeEventListener("error", this.doError);
-        this.server.removeEventListener("close", this.doClose);
-    }
 
     private warn(message: string): void {
         this.ctx.waitUntil(this.onWarn(message));
