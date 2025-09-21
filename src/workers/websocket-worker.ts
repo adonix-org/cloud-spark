@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GET, Method, OPTIONS } from "../constants";
+import { Method, GET, OPTIONS } from "../constants";
 import { BadRequest, UpgradeRequired } from "../errors";
 import { isString } from "../guards/basic";
 import { canSend, isBinary } from "../guards/websocket";
@@ -102,9 +102,7 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     protected async onClose(_event: CloseEvent): Promise<void> {}
 
-    protected async onWarn(message: string, data?: unknown): Promise<void> {
-        console.warn(message, data ?? "");
-    }
+    protected async onWarn(_message: string, _data?: unknown): Promise<void> {}
 
     protected send(data: string | ArrayBuffer | ArrayBufferView): void {
         if (!this.isOpen()) {
