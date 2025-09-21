@@ -126,7 +126,9 @@ export abstract class WebSocketWorker extends BasicWorker {
     }
 
     protected close(code?: number, reason?: string): void {
-        this.server.close(code, reason);
+        if (!this.isClosed()) {
+            this.server.close(code, reason);
+        }
     }
 
     protected get readyState(): number {
