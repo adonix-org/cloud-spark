@@ -49,14 +49,15 @@ export abstract class WebSocketWorker extends BasicWorker {
             return this.getResponse(UpgradeRequired);
         }
 
-        this.addListeners();
+        this.addEventListeners();
+
         this.server.accept();
         this.ctx.waitUntil(this.onOpen());
 
         return this.getResponse(WebSocketResponse, this.client);
     }
 
-    private addListeners(): void {
+    private addEventListeners(): void {
         this.server.addEventListener("message", this.doMessage);
         this.server.addEventListener("error", this.doError);
         this.server.addEventListener("close", this.doClose);
@@ -98,11 +99,11 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     protected async onBinary(_data: ArrayBuffer): Promise<void> {}
 
+    protected async onWarn(_message: string): Promise<void> {}
+
     protected async onError(_event: Event): Promise<void> {}
 
     protected async onClose(_event: CloseEvent): Promise<void> {}
-
-    protected async onWarn(_message: string): Promise<void> {}
 
     protected send(data: string | ArrayBuffer | ArrayBufferView): void {
         if (!this.isOpen()) {
