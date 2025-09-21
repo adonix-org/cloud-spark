@@ -803,9 +803,20 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
+declare class SafeWebSocket {
+    #private;
+    private readonly warn;
+    constructor(server: WebSocket, warn?: (msg: string) => void);
+    private readonly onClose;
+    send(data: string | ArrayBuffer | ArrayBufferView): void;
+    close(code?: number, reason?: string): void;
+    get readyState(): number;
+    isState(...states: number[]): boolean;
+}
+
 declare abstract class WebSocketWorker extends BasicWorker {
-    private readonly client;
-    private readonly server;
+    #private;
+    readonly ws: SafeWebSocket;
     constructor(_request: Request, _env: Env, _ctx: ExecutionContext);
     protected get(): Promise<Response>;
     private addEventListeners;
@@ -813,18 +824,13 @@ declare abstract class WebSocketWorker extends BasicWorker {
     private readonly doMessage;
     private readonly doError;
     private readonly doClose;
-    private warn;
+    private readonly warn;
     protected onOpen(): Promise<void>;
     protected onMessage(_message: string): Promise<void>;
     protected onBinary(_data: ArrayBuffer): Promise<void>;
     protected onWarn(_message: string): Promise<void>;
     protected onError(_event: Event): Promise<void>;
     protected onClose(_event: CloseEvent): Promise<void>;
-    protected send(data: string | ArrayBuffer | ArrayBufferView): void;
-    protected close(code?: number, reason?: string): void;
-    protected get readyState(): number;
-    protected isOpen(): boolean;
-    protected isClosed(): boolean;
     getAllowedMethods(): Method[];
 }
 

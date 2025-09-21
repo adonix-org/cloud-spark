@@ -17,7 +17,7 @@
 import { Method, GET, OPTIONS } from "../constants";
 import { BadRequest, UpgradeRequired } from "../errors";
 import { isString } from "../guards/basic";
-import { isSendable, isBinary } from "../guards/websocket";
+import { isBinary } from "../guards/websocket";
 import { WebSocketResponse } from "../responses";
 import {
     createWebSocketPair,
@@ -27,6 +27,7 @@ import {
     toArrayBuffer,
 } from "../utils/websocket";
 import { BasicWorker } from "./basic-worker";
+import { SafeWebSocket } from "./safe-webocket";
 
 export abstract class WebSocketWorker extends BasicWorker {
     readonly #client: WebSocket;
@@ -87,13 +88,12 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     private readonly doClose = (event: CloseEvent): void => {
         this.removeEventListeners();
-        this.ws.close(event.code, event.reason);
         this.ctx.waitUntil(this.onClose(event));
     };
 
-    private warn(message: string): void {
+    private readonly warn = (message: string): void => {
         this.ctx.waitUntil(this.onWarn(message));
-    }
+    };
 
     protected async onOpen(): Promise<void> {}
 
@@ -109,45 +109,5 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     public override getAllowedMethods(): Method[] {
         return [GET, OPTIONS];
-    }
-}
-
-class SafeWebSocket {
-    readonly #socket: WebSocket;
-
-    constructor(
-        websocket: WebSocket,
-        private readonly onWarn: (msg: string) => void = () => {},
-    ) {
-        this.#socket = websocket;
-    }
-
-    public send(data: string | ArrayBuffer | ArrayBufferView): void {
-        if (!this.isState(WebSocket.OPEN)) {
-            this.onWarn("Cannot send: WebSocket not open");
-            return;
-        }
-        if (!isSendable(data)) {
-            this.onWarn("Cannot send: empty or invalid data");
-            return;
-        }
-        this.#socket.send(data);
-    }
-
-    public close(code?: number, reason?: string): void {
-        if (this.isState(WebSocket.CLOSED)) {
-            this.onWarn("Close called, but WebSocket is already closing or closed");
-            return;
-        }
-
-        this.#socket.close(code, reason);
-    }
-
-    public get readyState(): number {
-        return this.#socket.readyState;
-    }
-
-    public isState(...states: number[]): boolean {
-        return states.includes(this.#socket.readyState);
     }
 }
