@@ -51,7 +51,7 @@ export abstract class WebSocketWorker extends BasicWorker {
 
         this.addListeners();
         this.server.accept();
-        this.onOpen();
+        this.ctx.waitUntil(this.onOpen());
 
         return this.getResponse(WebSocketResponse, this.client);
     }
@@ -64,21 +64,21 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     private readonly doMessage = (event: MessageEvent): void => {
         if (isString(event.data)) {
-            void this.onMessage(event.data);
+            this.ctx.waitUntil(this.onMessage(event.data));
         } else if (isBinary(event.data)) {
-            void this.onBinary(toArrayBuffer(event.data));
+            this.ctx.waitUntil(this.onBinary(toArrayBuffer(event.data)));
         } else {
-            this.onWarn("Unexpected data type in message");
+            this.warn("Unexpected data type in message");
         }
     };
 
-    private readonly doError = async (event: Event): Promise<void> => {
-        void this.onError(event);
+    private readonly doError = (event: Event): void => {
+        this.ctx.waitUntil(this.onError(event));
     };
 
-    private readonly doClose = async (event: CloseEvent): Promise<void> => {
-        await this.onClose(event);
+    private readonly doClose = (event: CloseEvent): void => {
         this.cleanup();
+        this.ctx.waitUntil(this.onClose(event));
     };
 
     private cleanup(): void {
@@ -90,14 +90,18 @@ export abstract class WebSocketWorker extends BasicWorker {
             try {
                 this.server.close();
             } catch (err) {
-                this.onWarn("WebSocket close failed", err);
+                this.warn("WebSocket close failed", err);
             }
         }
     }
 
+    private warn(message: string, data?: unknown): void {
+        this.ctx.waitUntil(this.onWarn(message, data));
+    }
+
     protected async onOpen(): Promise<void> {}
 
-    protected abstract onMessage(message: string): Promise<void>;
+    protected async onMessage(_message: string): Promise<void> {}
 
     protected async onBinary(_data: ArrayBuffer): Promise<void> {}
 
@@ -105,17 +109,17 @@ export abstract class WebSocketWorker extends BasicWorker {
 
     protected async onClose(_event: CloseEvent): Promise<void> {}
 
-    protected onWarn(message: string, data?: unknown): void {
+    protected async onWarn(message: string, data?: unknown): Promise<void> {
         console.warn(message, data ?? "");
     }
 
     protected send(data: string | ArrayBuffer | ArrayBufferView): void {
         if (!this.isOpen()) {
-            this.onWarn("Cannot send: WebSocket not open");
+            this.warn("Cannot send: WebSocket not open");
             return;
         }
         if (!canSend(data)) {
-            this.onWarn("Cannot send: empty or invalid data", data);
+            this.warn("Cannot send: empty or invalid data", data);
             return;
         }
         this.server.send(data);
