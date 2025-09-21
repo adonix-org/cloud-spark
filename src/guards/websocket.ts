@@ -17,7 +17,7 @@
 import { isString } from "./basic";
 
 export function canSend(value: unknown): boolean {
-    return isString(value) || isBinary(value);
+    return (isString(value) && value.length > 0) || (isBinary(value) && value.byteLength > 0);
 }
 
 export function isBinary(value: unknown): value is ArrayBuffer | ArrayBufferView {
