@@ -803,6 +803,26 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
+declare abstract class WebSocketWorker extends BasicWorker {
+    private readonly client;
+    private readonly server;
+    constructor(_request: Request, _env: Env, _ctx: ExecutionContext);
+    protected get(): Promise<Response>;
+    private addListeners;
+    private cleanup;
+    private readonly doMessage;
+    private readonly doError;
+    protected onOpen(): Promise<void>;
+    protected abstract onMessage(message: string): Promise<void>;
+    protected onBinary(_data: ArrayBuffer): Promise<void>;
+    protected onError(event: Event): Promise<void>;
+    protected onClose(event: CloseEvent): Promise<void>;
+    protected send(data: string | ArrayBuffer | ArrayBufferView): void;
+    protected close(code?: number, reason?: string): void;
+    protected get readyState(): number;
+    getAllowedMethods(): Method[];
+}
+
 /**
  * Base class for building HTTP responses.
  * Manages headers, status, and media type.
@@ -950,6 +970,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketResponse, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketResponse, WebSocketWorker, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams };
 "
 `;

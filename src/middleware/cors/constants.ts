@@ -14,11 +14,39 @@
  * limitations under the License.
  */
 
-import { HttpHeader } from "../../constants/http";
+import { GET, HEAD, HttpHeader, Method, OPTIONS, StatusCodes } from "../../constants/http";
 import { Time } from "../../constants/time";
 import { CorsConfig } from "../../interfaces/cors-config";
 
 export const ALLOW_ALL_ORIGINS = "*";
+
+/**
+ * Set of HTTP methods considered "simple" under the CORS specification.
+ *
+ * Simple methods do not trigger a preflight request on their own.
+ * (Other factors like headers can still cause a preflight.)
+ */
+export const SIMPLE_METHODS = new Set<Method>([GET, HEAD, OPTIONS]);
+
+/**
+ * Status codes for which CORS should be skipped.
+ *
+ * Skips CORS for:
+ * - 101 Switching Protocols (WebSocket upgrade)
+ * - 100 Continue
+ * - 3xx Redirects (CORS is applied to the final URL only)
+ */
+export const SKIP_CORS_STATUSES = [
+    StatusCodes.SWITCHING_PROTOCOLS,
+    StatusCodes.CONTINUE,
+    StatusCodes.PROCESSING,
+    StatusCodes.EARLY_HINTS,
+    StatusCodes.MOVED_PERMANENTLY,
+    StatusCodes.MOVED_TEMPORARILY,
+    StatusCodes.SEE_OTHER,
+    StatusCodes.TEMPORARY_REDIRECT,
+    StatusCodes.PERMANENT_REDIRECT,
+];
 
 /**
  * Default configuration for CORS middleware.

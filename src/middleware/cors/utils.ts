@@ -14,32 +14,14 @@
  * limitations under the License.
  */
 
-import { HttpHeader, Method, GET, HEAD, OPTIONS, StatusCodes } from "../../constants/http";
+import { HttpHeader } from "../../constants/http";
 import { assertMethods } from "../../guards/methods";
 import { CorsConfig } from "../../interfaces/cors-config";
 import { Worker } from "../../interfaces/worker";
 import { ClonedResponse, Options } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/header";
 import { getOrigin } from "../../utils/request";
-import { ALLOW_ALL_ORIGINS } from "./constants";
-
-/**
- * Set of HTTP methods considered "simple" under the CORS specification.
- *
- * Simple methods do not trigger a preflight request on their own.
- * (Other factors like headers can still cause a preflight.)
- */
-const SIMPLE_METHODS = new Set<Method>([GET, HEAD, OPTIONS]);
-
-/**
- * Status codes for which CORS should be skipped.
- *
- * Skips CORS for:
- * - 101 Switching Protocols (WebSocket upgrade)
- * - 100 Continue
- * - Responses that already have Upgrade headers
- */
-const SKIP_CORS_STATUSES = [StatusCodes.SWITCHING_PROTOCOLS, StatusCodes.CONTINUE];
+import { ALLOW_ALL_ORIGINS, SIMPLE_METHODS, SKIP_CORS_STATUSES } from "./constants";
 
 /**
  * Handles a CORS preflight OPTIONS request.
