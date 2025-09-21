@@ -825,7 +825,6 @@ declare abstract class WebSocketWorker extends BasicWorker {
     protected get readyState(): number;
     protected isOpen(): boolean;
     protected isClosed(): boolean;
-    protected isClosing(): boolean;
     getAllowedMethods(): Method[];
 }
 
