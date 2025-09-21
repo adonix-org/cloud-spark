@@ -57,21 +57,34 @@ export abstract class WebSocketWorker extends BasicWorker {
     }
 
     private addListeners(): void {
-        this.server.addEventListener("message", this.doMessage, { once: false });
-        this.server.addEventListener("error", this.doError, { once: false });
-        this.server.addEventListener(
-            "close",
-            async (event: CloseEvent) => {
-                await this.onClose(event);
-                this.cleanup();
-            },
-            { once: true },
-        );
+        this.server.addEventListener("message", this.doMessage);
+        this.server.addEventListener("error", this.doError);
+        this.server.addEventListener("close", this.doClose);
     }
+
+    private readonly doMessage = (event: MessageEvent): void => {
+        if (isString(event.data)) {
+            void this.onMessage(event.data);
+        } else if (isBinary(event.data)) {
+            void this.onBinary(toArrayBuffer(event.data));
+        } else {
+            this.onWarn("Unexpected data type in message");
+        }
+    };
+
+    private readonly doError = async (event: Event): Promise<void> => {
+        void this.onError(event);
+    };
+
+    private readonly doClose = async (event: CloseEvent): Promise<void> => {
+        await this.onClose(event);
+        this.cleanup();
+    };
 
     private cleanup(): void {
         this.server.removeEventListener("message", this.doMessage);
         this.server.removeEventListener("error", this.doError);
+        this.server.removeEventListener("close", this.doClose);
 
         if (!this.isClosed()) {
             try {
@@ -81,20 +94,6 @@ export abstract class WebSocketWorker extends BasicWorker {
             }
         }
     }
-
-    private readonly doMessage = (event: MessageEvent): void => {
-        if (isString(event.data)) {
-            this.onMessage(event.data);
-        } else if (isBinary(event.data)) {
-            this.onBinary(toArrayBuffer(event.data));
-        } else {
-            this.onWarn("Unexpected data type in message");
-        }
-    };
-
-    private readonly doError = (event: Event): void => {
-        this.onError(event);
-    };
 
     protected async onOpen(): Promise<void> {}
 
