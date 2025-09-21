@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CloseCode } from "../constants/websocket";
 import { isSendable } from "../guards/websocket";
 
 export class SafeWebSocket {
@@ -24,11 +25,18 @@ export class SafeWebSocket {
         private readonly warn: (msg: string) => void = () => {},
     ) {
         this.#socket = server;
-        this.#socket.addEventListener("close", this.onClose, { once: true });
+        this.#socket.addEventListener("close", this.onClientClose, { once: true });
+        this.#socket.addEventListener("close", this.onServerClose, { once: true });
     }
 
-    private readonly onClose = (event: CloseEvent): void => {
+    private readonly onClientClose = (event: CloseEvent): void => {
+        console.log("Client Initiated");
+        this.#socket.removeEventListener("close", this.onServerClose);
         this.close(event.code, event.reason);
+    };
+
+    private readonly onServerClose = (_event: CloseEvent): void => {
+        console.log("Server Initiated");
     };
 
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
@@ -43,8 +51,8 @@ export class SafeWebSocket {
         this.#socket.send(data);
     }
 
-    public close(code?: number, reason?: string): void {
-        this.#socket.removeEventListener("close", this.onClose);
+    public close(code: number = CloseCode.NORMAL, reason?: string): void {
+        this.#socket.removeEventListener("close", this.onClientClose);
 
         if (this.isState(WebSocket.CLOSED)) {
             this.warn("Close called, but WebSocket is already closed");
