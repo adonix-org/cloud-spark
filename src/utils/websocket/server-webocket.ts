@@ -20,6 +20,7 @@ import { createWebSocketPair } from "./websocket";
 
 export class ServerWebSocket extends ServerWebsocketEvents {
     private readonly client: WebSocket;
+
     constructor() {
         const [client, server] = createWebSocketPair();
         super(server);
@@ -33,10 +34,6 @@ export class ServerWebSocket extends ServerWebsocketEvents {
         this.open();
         return this.client;
     }
-
-    private readonly onClose = (event: CloseEvent): void => {
-        this.close(event.code, event.reason);
-    };
 
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
         if (!this.isState(WebSocket.OPEN)) {
@@ -54,6 +51,10 @@ export class ServerWebSocket extends ServerWebsocketEvents {
         this.socket.removeEventListener("close", this.onClose);
         this.socket.close(code, reason);
     }
+
+    private readonly onClose = (event: CloseEvent): void => {
+        this.close(event.code, event.reason);
+    };
 
     public get readyState(): number {
         return this.socket.readyState;
