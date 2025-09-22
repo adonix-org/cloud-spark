@@ -16,27 +16,56 @@
 
 import { isSendable } from "../guards/websocket";
 
+type WarnEvent = { type: "warn"; message: string };
+
 export class ServerWebSocket {
     readonly #socket: WebSocket;
+    readonly #openListeners: (() => void)[] = [];
+    readonly #warnListeners: ((msg: string) => void)[] = [];
 
-    constructor(
-        server: WebSocket,
-        private readonly warn: (msg: string) => void = () => {},
-    ) {
+    constructor(server: WebSocket) {
         this.#socket = server;
         this.#socket.addEventListener("close", this.#onClose, { once: true });
+    }
+
+    public accept() {
+        this.#socket.accept();
+        this.#openListeners.forEach((listener) => listener());
     }
 
     readonly #onClose = (event: CloseEvent): void => {
         this.close(event.code, event.reason);
     };
 
+    private warn(msg: string) {
+        this.#warnListeners.forEach((listener) => listener(msg));
+    }
+
+    public addEventListener(type: "warn", listener: (ev: WarnEvent) => void): void;
+    public addEventListener(
+        type: "open",
+        listener: (ev: Event) => void,
+        options?: { once?: boolean },
+    ): void;
     public addEventListener<K extends keyof WebSocketEventMap>(
         type: K,
-        listener: (ev: WebSocketEventMap[K]) => any,
+        listener: (ev: WebSocketEventMap[K]) => void,
         options?: { once?: boolean },
-    ) {
-        this.#socket.addEventListener(type, listener, options);
+    ): void;
+
+    // Implementation
+    public addEventListener(
+        type: keyof WebSocketEventMap | "warn",
+        listener: (ev: any) => void,
+        options?: { once?: boolean },
+    ): void {
+        if (type === "warn") {
+            this.#warnListeners.push(listener as (msg: string) => void);
+        } else if (type === "open") {
+            this.#openListeners.push(listener as () => void);
+        } else {
+            this.#socket.addEventListener(type, listener as any, options);
+        }
     }
 
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
