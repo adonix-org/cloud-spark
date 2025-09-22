@@ -21,7 +21,7 @@ type WarnEvent = { type: "warn"; message: string };
 export class ServerWebSocket {
     readonly #socket: WebSocket;
     readonly #openListeners: (() => void)[] = [];
-    readonly #warnListeners: ((msg: string) => void)[] = [];
+    readonly #warnListeners: ((ev: WarnEvent) => void)[] = [];
 
     constructor(server: WebSocket) {
         this.#socket = server;
@@ -31,6 +31,7 @@ export class ServerWebSocket {
     public accept() {
         this.#socket.accept();
         this.#openListeners.forEach((listener) => listener());
+        this.warn("testing!");
     }
 
     readonly #onClose = (event: CloseEvent): void => {
@@ -38,7 +39,8 @@ export class ServerWebSocket {
     };
 
     private warn(msg: string) {
-        this.#warnListeners.forEach((listener) => listener(msg));
+        const ev: WarnEvent = { type: "warn", message: msg };
+        this.#warnListeners.forEach((listener) => listener(ev));
     }
 
     public addEventListener(type: "warn", listener: (ev: WarnEvent) => void): void;
@@ -60,7 +62,7 @@ export class ServerWebSocket {
         options?: { once?: boolean },
     ): void {
         if (type === "warn") {
-            this.#warnListeners.push(listener as (msg: string) => void);
+            this.#warnListeners.push(listener as (ev: WarnEvent) => void);
         } else if (type === "open") {
             this.#openListeners.push(listener as () => void);
         } else {
