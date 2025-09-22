@@ -36,7 +36,6 @@
         "forceConsistentCasingInFileNames": true,
         "declaration": true,
         "skipLibCheck": true,
-        "types": ["@cloudflare/workers-types"]
     },
     "include": ["src", "types"]
 }

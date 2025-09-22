@@ -18,4 +18,3 @@ export * from "./compare";
 export * from "./header";
 export * from "./request";
 export * from "./response";
-export * from "./websocket";
