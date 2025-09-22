@@ -85,15 +85,15 @@ export abstract class WebSocketEvents {
         }
     }
 
-    private dipatch<K extends CustomeEventType>(type: K, ev: ExtendedEventMap[K]) {
+    private dispatch<K extends CustomeEventType>(type: K, ev: ExtendedEventMap[K]) {
         this.customListeners[type]?.slice().forEach((listener) => listener(ev));
     }
 
     protected warn(msg: string) {
-        this.dipatch("warn", { type: "warn", message: msg });
+        this.dispatch("warn", { type: "warn", message: msg });
     }
 
     protected open() {
-        this.dipatch("open", new Event("open"));
+        this.dispatch("open", new Event("open"));
     }
 }
