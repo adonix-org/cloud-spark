@@ -19,9 +19,11 @@ import { ServerWebSocketEvents } from "./server-events";
 import { createWebSocketPair } from "./websocket";
 
 export class ServerWebSocket extends ServerWebSocketEvents {
+    private readonly _id = crypto.randomUUID();
+
     readonly #client: WebSocket;
     readonly #server: WebSocket;
-    private accepted = false;
+    #accepted = false;
 
     constructor() {
         const [client, server] = createWebSocketPair();
@@ -32,9 +34,13 @@ export class ServerWebSocket extends ServerWebSocketEvents {
         this.#server.addEventListener("close", this.onClose, { once: true });
     }
 
+    public get id(): string | number {
+        return this._id;
+    }
+
     public accept(): WebSocket {
         this.#server.accept();
-        this.accepted = true;
+        this.#accepted = true;
         this.open();
 
         return this.#client;
@@ -63,7 +69,7 @@ export class ServerWebSocket extends ServerWebSocketEvents {
     };
 
     public get readyState(): number {
-        if (!this.accepted) return WebSocket.CONNECTING;
+        if (!this.#accepted) return WebSocket.CONNECTING;
         return this.#server.readyState;
     }
 

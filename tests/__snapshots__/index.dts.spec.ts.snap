@@ -618,8 +618,9 @@ declare abstract class ServerWebSocketEvents {
 
 declare class ServerWebSocket extends ServerWebSocketEvents {
     #private;
-    private accepted;
+    private readonly _id;
     constructor();
+    get id(): string | number;
     accept(): WebSocket;
     send(data: string | ArrayBuffer | ArrayBufferView): void;
     close(code?: number, reason?: string): void;
