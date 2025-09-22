@@ -592,6 +592,42 @@ declare function stripSearchParams(request: Request): URL;
  */
 declare function getContentType(type: MediaType): string;
 
+type WarnEvent = {
+    type: "warn";
+    message: string;
+};
+type CustomEventMap = {
+    warn: WarnEvent;
+    open: Event;
+};
+type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
+type ExtendedEventType = keyof ExtendedEventMap;
+type EventOptions = {
+    once?: boolean;
+};
+declare abstract class ServerWebSocketEvents {
+    #private;
+    private customListeners;
+    constructor(server: WebSocket);
+    addEventListener<K extends ExtendedEventType>(type: K, listener: (ev: ExtendedEventMap[K]) => void, options?: EventOptions): void;
+    removeEventListener<K extends ExtendedEventType>(type: K, listener: (ev: ExtendedEventMap[K]) => void): void;
+    private dipatch;
+    protected warn(msg: string): void;
+    protected open(): void;
+}
+
+declare class ServerWebSocket extends ServerWebSocketEvents {
+    #private;
+    private accepted;
+    constructor();
+    accept(): WebSocket;
+    send(data: string | ArrayBuffer | ArrayBufferView): void;
+    close(code?: number, reason?: string): void;
+    private readonly onClose;
+    get readyState(): number;
+    isState(...states: number[]): boolean;
+}
+
 /**
  * A type-safe Cloudflare Worker handler with a guaranteed \`fetch\` method.
  *
@@ -825,36 +861,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected delete(): Promise<Response>;
 }
 
-type WarnEvent = {
-    type: "warn";
-    message: string;
-};
-declare class ServerWebSocket {
-    #private;
-    constructor(server: WebSocket);
-    accept(): void;
-    private warn;
-    addEventListener(type: "warn", listener: (ev: WarnEvent) => void): void;
-    addEventListener(type: "open", listener: (ev: Event) => void, options?: {
-        once?: boolean;
-    }): void;
-    addEventListener<K extends keyof WebSocketEventMap>(type: K, listener: (ev: WebSocketEventMap[K]) => void, options?: {
-        once?: boolean;
-    }): void;
-    send(data: string | ArrayBuffer | ArrayBufferView): void;
-    close(code?: number, reason?: string): void;
-    get readyState(): number;
-    isState(...states: number[]): boolean;
-}
-
-declare abstract class WebSocketWorker extends BasicWorker {
-    #private;
-    readonly ws: ServerWebSocket;
-    constructor(_request: Request, _env: Env, _ctx: ExecutionContext);
-    protected get(): Promise<Response>;
-    getAllowedMethods(): Method[];
-}
-
 /**
  * Base class for building HTTP responses.
  * Manages headers, status, and media type.
@@ -1002,6 +1008,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketResponse, WebSocketWorker, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServerWebSocket, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketResponse, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams };
 "
 `;
