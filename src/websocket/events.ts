@@ -25,7 +25,7 @@ type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
 type ExtendedEventType = keyof ExtendedEventMap;
 type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
 
-type NativeEventOptions = { once?: boolean };
+type EventOptions = { once?: boolean };
 
 const CUSTOM_EVENTS: string[] = ["open", "warn"];
 
@@ -47,7 +47,7 @@ export abstract class WebSocketEvents {
     public addEventListener<K extends ExtendedEventType>(
         type: K,
         listener: ExtendedEventListener<K>,
-        options?: NativeEventOptions,
+        options?: EventOptions,
     ): void {
         if (isCustom(type)) {
             let arr = this.customListeners[type];
