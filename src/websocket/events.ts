@@ -20,14 +20,17 @@ type CustomEventMap = {
     warn: WarnEvent;
     open: Event;
 };
+type CustomEventType = keyof CustomEventMap;
 type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
-type CustomeEventType = keyof CustomEventMap;
 type ExtendedEventType = keyof ExtendedEventMap;
+type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
 
-type EventOptions = { once?: boolean };
+type NativeEventOptions = { once?: boolean };
+
+const CUSTOM_EVENTS: string[] = ["open", "warn"];
 
 function isCustom(type: ExtendedEventType): boolean {
-    return type === "warn" || type === "open";
+    return CUSTOM_EVENTS.includes(type);
 }
 
 export abstract class WebSocketEvents {
@@ -43,8 +46,8 @@ export abstract class WebSocketEvents {
 
     public addEventListener<K extends ExtendedEventType>(
         type: K,
-        listener: (ev: ExtendedEventMap[K]) => void,
-        options?: EventOptions,
+        listener: ExtendedEventListener<K>,
+        options?: NativeEventOptions,
     ): void {
         if (isCustom(type)) {
             let arr = this.customListeners[type];
@@ -52,20 +55,11 @@ export abstract class WebSocketEvents {
                 arr = [];
                 this.customListeners[type] = arr;
             }
-
-            if (options?.once) {
-                const wrapped = (ev: ExtendedEventMap[typeof type]) => {
-                    this.removeEventListener(type, wrapped);
-                    listener(ev);
-                };
-                arr.push(wrapped);
-            } else {
-                arr.push(listener);
-            }
+            arr.push(listener);
         } else {
             this.#server.addEventListener(
                 type as keyof WebSocketEventMap,
-                listener as any,
+                listener as EventListener,
                 options,
             );
         }
@@ -73,20 +67,32 @@ export abstract class WebSocketEvents {
 
     public removeEventListener<K extends ExtendedEventType>(
         type: K,
-        listener: (ev: ExtendedEventMap[K]) => void,
+        listener: ExtendedEventListener<K>,
     ): void {
         if (isCustom(type)) {
             const arr = this.customListeners[type];
             if (arr) {
-                this.customListeners[type] = arr.filter((l) => l !== listener) as any;
+                const index = arr.indexOf(listener);
+                if (index !== -1) arr.splice(index, 1);
             }
         } else {
-            this.#server.removeEventListener(type as keyof WebSocketEventMap, listener as any);
+            this.#server.removeEventListener(
+                type as keyof WebSocketEventMap,
+                listener as EventListener,
+            );
         }
     }
 
-    private dispatch<K extends CustomeEventType>(type: K, ev: ExtendedEventMap[K]) {
-        this.customListeners[type]?.slice().forEach((listener) => listener(ev));
+    private dispatch<K extends CustomEventType>(
+        type: K,
+        ev: ExtendedEventMap[K],
+        once: boolean = false,
+    ) {
+        const listeners = this.customListeners[type]?.slice() ?? [];
+        if (once) {
+            this.customListeners[type] = [];
+        }
+        listeners.forEach((listener) => listener(ev));
     }
 
     protected warn(msg: string) {
@@ -94,6 +100,6 @@ export abstract class WebSocketEvents {
     }
 
     protected open() {
-        this.dispatch("open", new Event("open"));
+        this.dispatch("open", new Event("open"), true);
     }
 }

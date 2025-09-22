@@ -602,16 +602,17 @@ type CustomEventMap = {
 };
 type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
 type ExtendedEventType = keyof ExtendedEventMap;
-type EventOptions = {
+type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
+type NativeEventOptions = {
     once?: boolean;
 };
 declare abstract class WebSocketEvents {
     #private;
     private customListeners;
     constructor(server: WebSocket);
-    addEventListener<K extends ExtendedEventType>(type: K, listener: (ev: ExtendedEventMap[K]) => void, options?: EventOptions): void;
-    removeEventListener<K extends ExtendedEventType>(type: K, listener: (ev: ExtendedEventMap[K]) => void): void;
-    private dipatch;
+    addEventListener<K extends ExtendedEventType>(type: K, listener: ExtendedEventListener<K>, options?: NativeEventOptions): void;
+    removeEventListener<K extends ExtendedEventType>(type: K, listener: ExtendedEventListener<K>): void;
+    private dispatch;
     protected warn(msg: string): void;
     protected open(): void;
 }
