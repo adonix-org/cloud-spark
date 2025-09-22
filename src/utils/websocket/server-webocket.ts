@@ -15,24 +15,29 @@
  */
 
 import { isSendable } from "../../guards/websocket";
-import { ServerWebsocketEvents } from "./server-events";
+import { ServerWebSocketEvents } from "./server-events";
 import { createWebSocketPair } from "./websocket";
 
-export class ServerWebSocket extends ServerWebsocketEvents {
-    private readonly client: WebSocket;
+export class ServerWebSocket extends ServerWebSocketEvents {
+    readonly #client: WebSocket;
+    readonly #server: WebSocket;
+    private accepted = false;
 
     constructor() {
         const [client, server] = createWebSocketPair();
         super(server);
-        this.client = client;
+        this.#client = client;
+        this.#server = server;
 
-        this.socket.addEventListener("close", this.onClose, { once: true });
+        this.#server.addEventListener("close", this.onClose, { once: true });
     }
 
     public accept(): WebSocket {
-        this.socket.accept();
+        this.#server.accept();
+        this.accepted = true;
         this.open();
-        return this.client;
+
+        return this.#client;
     }
 
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
@@ -44,12 +49,13 @@ export class ServerWebSocket extends ServerWebsocketEvents {
             this.warn("Cannot send: empty or invalid data");
             return;
         }
-        this.socket.send(data);
+
+        this.#server.send(data);
     }
 
     public close(code?: number, reason: string = ""): void {
-        this.socket.removeEventListener("close", this.onClose);
-        this.socket.close(code, reason);
+        this.#server.removeEventListener("close", this.onClose);
+        this.#server.close(code, reason);
     }
 
     private readonly onClose = (event: CloseEvent): void => {
@@ -57,10 +63,11 @@ export class ServerWebSocket extends ServerWebsocketEvents {
     };
 
     public get readyState(): number {
-        return this.socket.readyState;
+        if (!this.accepted) return WebSocket.CONNECTING;
+        return this.#server.readyState;
     }
 
     public isState(...states: number[]): boolean {
-        return states.includes(this.socket.readyState);
+        return states.includes(this.readyState);
     }
 }

@@ -30,12 +30,16 @@ function isCustom(type: ExtendedEventType): boolean {
     return type === "warn" || type === "open";
 }
 
-export abstract class ServerWebsocketEvents {
+export abstract class ServerWebSocketEvents {
+    readonly #server: WebSocket;
+
     private customListeners: {
         [K in ExtendedEventType]?: ((ev: ExtendedEventMap[K]) => void)[];
     } = {};
 
-    constructor(protected readonly socket: WebSocket) {}
+    constructor(server: WebSocket) {
+        this.#server = server;
+    }
 
     public addEventListener<K extends ExtendedEventType>(
         type: K,
@@ -59,7 +63,11 @@ export abstract class ServerWebsocketEvents {
                 arr.push(listener);
             }
         } else {
-            this.socket.addEventListener(type as keyof WebSocketEventMap, listener as any, options);
+            this.#server.addEventListener(
+                type as keyof WebSocketEventMap,
+                listener as any,
+                options,
+            );
         }
     }
 
@@ -73,7 +81,7 @@ export abstract class ServerWebsocketEvents {
                 this.customListeners[type] = arr.filter((l) => l !== listener) as any;
             }
         } else {
-            this.socket.removeEventListener(type as keyof WebSocketEventMap, listener as any);
+            this.#server.removeEventListener(type as keyof WebSocketEventMap, listener as any);
         }
     }
 
