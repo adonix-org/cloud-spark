@@ -31,14 +31,13 @@ export class ServerWebSocket {
     public accept() {
         this.#socket.accept();
         this.#openListeners.forEach((listener) => listener());
-        this.warn("testing!");
     }
 
     readonly #onClose = (event: CloseEvent): void => {
         this.close(event.code, event.reason);
     };
 
-    private warn(msg: string) {
+    protected warn(msg: string) {
         const ev: WarnEvent = { type: "warn", message: msg };
         this.#warnListeners.forEach((listener) => listener(ev));
     }

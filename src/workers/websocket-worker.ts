@@ -27,14 +27,14 @@ import { BasicWorker } from "./basic-worker";
 import { ServerWebSocket } from "./server-webocket";
 
 export abstract class WebSocketWorker extends BasicWorker {
-    readonly #client: WebSocket;
+    private readonly client: WebSocket;
     public readonly ws: ServerWebSocket;
 
     constructor(_request: Request, _env: Env, _ctx: ExecutionContext) {
         super(_request, _env, _ctx);
 
         const [client, server] = createWebSocketPair();
-        this.#client = client;
+        this.client = client;
         this.ws = new ServerWebSocket(server);
     }
 
@@ -52,7 +52,7 @@ export abstract class WebSocketWorker extends BasicWorker {
 
         this.ws.accept();
 
-        return this.getResponse(WebSocketResponse, this.#client);
+        return this.getResponse(WebSocketResponse, this.client);
     }
 
     public override getAllowedMethods(): Method[] {
