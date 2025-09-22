@@ -18,24 +18,19 @@ import { Method, GET, OPTIONS } from "../constants";
 import { BadRequest, UpgradeRequired } from "../errors";
 import { WebSocketResponse } from "../responses";
 import {
-    createWebSocketPair,
     hasConnectionHeader,
     hasUpgradeHeader,
     hasWebSocketVersion,
-} from "../utils/websocket";
+} from "../utils/websocket/websocket";
 import { BasicWorker } from "./basic-worker";
-import { ServerWebSocket } from "./server-webocket";
+import { ServerWebSocket } from "../utils/websocket/server-webocket";
 
 export abstract class WebSocketWorker extends BasicWorker {
-    private readonly client: WebSocket;
     public readonly ws: ServerWebSocket;
 
     constructor(_request: Request, _env: Env, _ctx: ExecutionContext) {
         super(_request, _env, _ctx);
-
-        const [client, server] = createWebSocketPair();
-        this.client = client;
-        this.ws = new ServerWebSocket(server);
+        this.ws = new ServerWebSocket();
     }
 
     protected override async get(): Promise<Response> {
@@ -50,9 +45,7 @@ export abstract class WebSocketWorker extends BasicWorker {
             return this.getResponse(UpgradeRequired);
         }
 
-        this.ws.accept();
-
-        return this.getResponse(WebSocketResponse, this.client);
+        return this.getResponse(WebSocketResponse, this.ws.accept());
     }
 
     public override getAllowedMethods(): Method[] {

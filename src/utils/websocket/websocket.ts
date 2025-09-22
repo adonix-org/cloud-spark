@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { HttpHeader } from "../constants";
-import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "../constants/websocket";
-import { getHeaderValues } from "./header";
+import { HttpHeader } from "../../constants";
+import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "../../constants/websocket";
+import { getHeaderValues } from "../header";
 
 export function createWebSocketPair(): [WebSocket, WebSocket] {
     const pair = new WebSocketPair() as { 0: WebSocket; 1: WebSocket };
