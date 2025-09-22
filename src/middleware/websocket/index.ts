@@ -14,15 +14,4 @@
  * limitations under the License.
  */
 
-export function createWebSocketPair(): [WebSocket, WebSocket] {
-    const pair = new WebSocketPair() as { 0: WebSocket; 1: WebSocket };
-    return [pair[0], pair[1]];
-}
-
-export function toArrayBuffer(data: ArrayBuffer | ArrayBufferView): ArrayBuffer {
-    const buffer = ArrayBuffer.isView(data) ? data.buffer : data;
-    if (buffer instanceof ArrayBuffer) {
-        return buffer;
-    }
-    throw new Error("Unexpected buffer type");
-}
+export * from "./handler";
