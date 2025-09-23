@@ -35,6 +35,11 @@ export class WebSocketRegistry {
         return Array.from(this.registry.values());
     }
 
+    public close(ws: WebSocket, code?: number, reason?: string) {
+        this.unregister(ws);
+        ws.close(code, reason);
+    }
+
     public register(ws: WebSocket, con: WebSocketConnection) {
         this.registry.set(ws, con);
     }
