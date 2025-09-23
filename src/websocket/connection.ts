@@ -24,6 +24,7 @@ export class WebSocketConnection extends BasicWebSocket {
     constructor(restore?: WebSocket) {
         if (restore) {
             super(restore);
+            this.accepted = true;
             this._id = restore.deserializeAttachment();
             this.accept = () => {
                 throw Error("Do not call accept() on restore");
@@ -34,8 +35,8 @@ export class WebSocketConnection extends BasicWebSocket {
         } else {
             const pair = new WebSocketPair();
             const [client, server] = [pair[0], pair[1]];
-
             super(server);
+
             this._id = crypto.randomUUID();
             server.serializeAttachment(this.id);
 
