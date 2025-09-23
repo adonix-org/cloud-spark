@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { isSendable } from "../guards/websocket";
-import { WebSocketEvents } from "./events";
+import { BasicWebSocket } from "./basic";
 
-export class WebSocketConnection extends WebSocketEvents {
+export class WebSocketConnection extends BasicWebSocket {
     private readonly _id = crypto.randomUUID();
 
     readonly #client: WebSocket;
     readonly #server: WebSocket;
-    #accepted = false;
 
     constructor() {
         const pair = new WebSocketPair();
@@ -32,7 +30,7 @@ export class WebSocketConnection extends WebSocketEvents {
         this.#client = client;
         this.#server = server;
 
-        this.#server.addEventListener("close", this.onClose, { once: true });
+        this.#server.serializeAttachment(this.id);
     }
 
     public get id(): string {
@@ -41,40 +39,17 @@ export class WebSocketConnection extends WebSocketEvents {
 
     public accept(): WebSocket {
         this.#server.accept();
-        this.#accepted = true;
+        this.accepted = true;
         this.open();
 
         return this.#client;
     }
 
-    public send(data: string | ArrayBuffer | ArrayBufferView): void {
-        if (!this.isState(WebSocket.OPEN)) {
-            this.warn("Cannot send: WebSocket not open");
-            return;
-        }
-        if (!isSendable(data)) {
-            this.warn("Cannot send: empty or invalid data");
-            return;
-        }
+    public acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket {
+        ctx.acceptWebSocket(this.#server, tags);
+        this.accepted = true;
+        this.open();
 
-        this.#server.send(data);
-    }
-
-    public close(code?: number, reason: string = ""): void {
-        this.#server.removeEventListener("close", this.onClose);
-        this.#server.close(code, reason);
-    }
-
-    private readonly onClose = (event: CloseEvent): void => {
-        this.close(event.code, event.reason);
-    };
-
-    public get readyState(): number {
-        if (!this.#accepted) return WebSocket.CONNECTING;
-        return this.#server.readyState;
-    }
-
-    public isState(...states: number[]): boolean {
-        return states.includes(this.readyState);
+        return this.#client;
     }
 }
