@@ -15,17 +15,21 @@
  */
 
 import { BasicWebSocket } from "./basic";
+import { WebSocketRegistry } from "./registry";
 
 export class WebSocketConnection extends BasicWebSocket {
     private readonly _id: string;
     public readonly accept: () => WebSocket;
     public readonly acceptWebSocket: (ctx: DurableObjectState, tags?: string[]) => WebSocket;
 
-    constructor(restore?: WebSocket) {
+    public constructor(registry?: WebSocketRegistry, restore?: WebSocket) {
         if (restore) {
             super(restore);
             this.accepted = true;
             this._id = restore.deserializeAttachment();
+
+            registry?.register(restore, this);
+
             this.accept = () => {
                 throw Error("Do not call accept() on restore");
             };
@@ -39,6 +43,8 @@ export class WebSocketConnection extends BasicWebSocket {
 
             this._id = crypto.randomUUID();
             server.serializeAttachment(this.id);
+
+            registry?.register(server, this);
 
             this.accept = (): WebSocket => {
                 server.accept();

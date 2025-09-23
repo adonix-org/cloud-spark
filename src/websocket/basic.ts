@@ -42,14 +42,10 @@ export abstract class BasicWebSocket extends WebSocketEvents {
         this.#server.send(data);
     }
 
-    public close(code?: number, reason: string = ""): void {
+    public close(code?: number, reason?: string): void {
         this.#server.removeEventListener("close", this.onClose);
         this.#server.close(code, reason);
     }
-
-    private readonly onClose = (event: CloseEvent): void => {
-        this.close(event.code, event.reason);
-    };
 
     public get readyState(): number {
         if (!this.accepted) return WebSocket.CONNECTING;
@@ -59,4 +55,8 @@ export abstract class BasicWebSocket extends WebSocketEvents {
     public isState(...states: number[]): boolean {
         return states.includes(this.readyState);
     }
+
+    private readonly onClose = (event: CloseEvent): void => {
+        this.close(event.code, event.reason);
+    };
 }
