@@ -30,7 +30,7 @@ export abstract class BasicWebSocket extends WebSocketEvents {
     public abstract get id(): string;
 
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
-        if (!this.isState(WebSocket.OPEN)) {
+        if (this.isState(WebSocket.CONNECTING, WebSocket.CLOSED)) {
             this.warn("Cannot send: WebSocket not open");
             return;
         }

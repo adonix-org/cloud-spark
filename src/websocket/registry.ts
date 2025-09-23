@@ -47,4 +47,8 @@ export class WebSocketRegistry {
     public unregister(ws: WebSocket) {
         this.registry.delete(ws);
     }
+
+    public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
+        yield* this.registry.values();
+    }
 }
