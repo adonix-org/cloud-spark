@@ -61,6 +61,10 @@ And it's ready on http://localhost:8787
 
 <br>
 
+## :left_right_arrow: Web Sockets
+
+<br>
+
 ## :gear: Middleware
 
 <br>
