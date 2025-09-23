@@ -47,7 +47,7 @@ export abstract class BasicWebSocket extends WebSocketEvents {
         this.#server.close(code, reason);
     }
 
-    protected readonly onClose = (event: CloseEvent): void => {
+    private readonly onClose = (event: CloseEvent): void => {
         this.close(event.code, event.reason);
     };
 
