@@ -17,39 +17,47 @@
 import { BasicWebSocket } from "./basic";
 
 export class WebSocketConnection extends BasicWebSocket {
-    private readonly _id = crypto.randomUUID();
+    private readonly _id: string;
+    public readonly accept: () => WebSocket;
+    public readonly acceptWebSocket: (ctx: DurableObjectState, tags?: string[]) => WebSocket;
 
-    readonly #client: WebSocket;
-    readonly #server: WebSocket;
+    constructor(restore?: WebSocket) {
+        if (restore) {
+            super(restore);
+            this._id = restore.deserializeAttachment();
+            this.accept = () => {
+                throw Error("Do not call accept() on restore");
+            };
+            this.acceptWebSocket = () => {
+                throw Error("Do not call acceptWebSocket() on restore");
+            };
+        } else {
+            const pair = new WebSocketPair();
+            const [client, server] = [pair[0], pair[1]];
 
-    constructor() {
-        const pair = new WebSocketPair();
-        const [client, server] = [pair[0], pair[1]];
+            super(server);
+            this._id = crypto.randomUUID();
+            server.serializeAttachment(this.id);
 
-        super(server);
-        this.#client = client;
-        this.#server = server;
+            this.accept = (): WebSocket => {
+                server.accept();
+                this.accepted = true;
+                this.open();
 
-        this.#server.serializeAttachment(this.id);
+                return client;
+            };
+
+            this.acceptWebSocket = (ctx: DurableObjectState, tags?: string[]) => {
+                ctx.acceptWebSocket(server, tags);
+                this.accepted = true;
+                this.open();
+
+                return client;
+            };
+        }
     }
 
     public get id(): string {
         return this._id;
-    }
-
-    public accept(): WebSocket {
-        this.#server.accept();
-        this.accepted = true;
-        this.open();
-
-        return this.#client;
-    }
-
-    public acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket {
-        ctx.acceptWebSocket(this.#server, tags);
-        this.accepted = true;
-        this.open();
-
-        return this.#client;
     }
 }
