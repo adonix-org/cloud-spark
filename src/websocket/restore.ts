@@ -15,9 +15,9 @@
  */
 
 import { WebSocketConnection } from "../interfaces/websocket";
-import { BasicWebSocket } from "./basic";
+import { BaseWebSocket } from "./base";
 
-export abstract class RestoredConnectionBase extends BasicWebSocket implements WebSocketConnection {
+export abstract class RestoredConnectionBase extends BaseWebSocket implements WebSocketConnection {
     constructor(ws: WebSocket) {
         super(ws);
         this.accepted = true;

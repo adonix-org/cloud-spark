@@ -17,7 +17,7 @@
 import { isSendable, safeCloseCode } from "../guards/websocket";
 import { WebSocketEvents } from "./events";
 
-export abstract class BasicWebSocket extends WebSocketEvents {
+export abstract class BaseWebSocket extends WebSocketEvents {
     protected accepted = false;
     protected readonly server: WebSocket;
 

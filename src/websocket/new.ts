@@ -15,9 +15,9 @@
  */
 
 import { WebSocketConnection } from "../interfaces/websocket";
-import { BasicWebSocket } from "./basic";
+import { BaseWebSocket } from "./base";
 
-export abstract class NewConnectionBase extends BasicWebSocket implements WebSocketConnection {
+export abstract class NewConnectionBase extends BaseWebSocket implements WebSocketConnection {
     public readonly accept: () => WebSocket;
     public readonly acceptWebSocket: (ctx: DurableObjectState, tags?: string[]) => WebSocket;
 
