@@ -21,7 +21,6 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "Method",
   "MethodNotAllowed",
   "MethodNotImplemented",
-  "Middleware",
   "NotFound",
   "NotImplemented",
   "OPTIONS",
@@ -59,5 +58,6 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "setHeader",
   "sortSearchParams",
   "stripSearchParams",
+  "websocket",
 ]
 `;
