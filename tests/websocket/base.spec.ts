@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createMockWebSocketPair } from "@mock";
+
 import { BaseWebSocket } from "@src/websocket/base";
 import { describe, it, expect } from "vitest";
 
@@ -26,8 +26,9 @@ class TestWebSocket extends BaseWebSocket {
 
 describe("BaseWebSocket (smoke test)", () => {
     it("can send a message", () => {
-        const [client, server] = createMockWebSocketPair();
-        const ws = new TestWebSocket(server as any);
+        const pair = new WebSocketPair();
+        const [client, server] = [pair[0], pair[1]];
+        const ws = new TestWebSocket(server);
 
         const messages: string[] = [];
         client.addEventListener("message", (ev: MessageEvent) => messages.push(ev.data));

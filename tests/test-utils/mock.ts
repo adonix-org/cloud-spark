@@ -152,3 +152,5 @@ export function createMockWebSocketPair(): [MockWebSocket, MockWebSocket] {
 
     return [a, b];
 }
+
+(globalThis as any).WebSocketPair = createMockWebSocketPair;
