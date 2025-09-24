@@ -40,16 +40,16 @@ export class WebSocketRegistry {
         ws.close(code, reason);
     }
 
+    public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
+        yield* this.registry.values();
+    }
+
     private register(ws: WebSocket, con: WebSocketConnection) {
         this.registry.set(ws, con);
     }
 
     private unregister(ws: WebSocket) {
         this.registry.delete(ws);
-    }
-
-    public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
-        yield* this.registry.values();
     }
 
     private static readonly DurableWebSocketConnection = class extends WebSocketConnection {
