@@ -15,17 +15,16 @@
  */
 
 import { WebSocketConnection } from "./connection";
-import { DurableWebSocketConnection } from "./durable";
 
 export class WebSocketRegistry {
     private readonly registry = new Map<WebSocket, WebSocketConnection>();
 
     public create(): WebSocketConnection {
-        return new DurableWebSocketConnection(this);
+        return new WebSocketRegistry.DurableWebSocketConnection(this);
     }
 
     public restore(ws: WebSocket): WebSocketConnection {
-        return new DurableWebSocketConnection(this, ws);
+        return new WebSocketRegistry.DurableWebSocketConnection(this, ws);
     }
 
     public lookup(ws: WebSocket): WebSocketConnection | undefined {
@@ -41,7 +40,7 @@ export class WebSocketRegistry {
         ws.close(code, reason);
     }
 
-    public register(ws: WebSocket, con: WebSocketConnection) {
+    private register(ws: WebSocket, con: WebSocketConnection) {
         this.registry.set(ws, con);
     }
 
@@ -52,4 +51,11 @@ export class WebSocketRegistry {
     public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
         yield* this.registry.values();
     }
+
+    private static readonly DurableWebSocketConnection = class extends WebSocketConnection {
+        constructor(registry: WebSocketRegistry, restore?: WebSocket) {
+            super(restore);
+            registry.register(this.server, this);
+        }
+    };
 }
