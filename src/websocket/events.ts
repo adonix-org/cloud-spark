@@ -24,7 +24,7 @@ import {
 
 const CUSTOM_EVENTS: string[] = ["open", "warn"];
 
-function isCustom(type: ExtendedEventType): boolean {
+function isCustomEvent(type: ExtendedEventType): boolean {
     return CUSTOM_EVENTS.includes(type);
 }
 
@@ -44,7 +44,7 @@ export abstract class WebSocketEvents {
         listener: ExtendedEventListener<K>,
         options?: EventOptions,
     ): void {
-        if (isCustom(type)) {
+        if (isCustomEvent(type)) {
             let arr = this.customListeners[type];
             if (!arr) {
                 arr = [];
@@ -64,7 +64,7 @@ export abstract class WebSocketEvents {
         type: K,
         listener: ExtendedEventListener<K>,
     ): void {
-        if (isCustom(type)) {
+        if (isCustomEvent(type)) {
             const arr = this.customListeners[type];
             if (arr) {
                 const index = arr.indexOf(listener);

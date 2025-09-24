@@ -30,17 +30,29 @@ export class WebSocketSessions {
         return new WebSocketSessions.RestoredConnection(this, ws);
     }
 
-    public lookup(ws: WebSocket): WebSocketConnection | undefined {
+    public restoreAll(websockets: WebSocket[]): ReadonlyArray<WebSocketConnection> {
+        const restored: WebSocketConnection[] = [];
+        for (const ws of websockets) {
+            restored.push(new WebSocketSessions.RestoredConnection(this, ws));
+        }
+        return restored;
+    }
+
+    public get(ws: WebSocket): WebSocketConnection | undefined {
         return this.map.get(ws);
     }
 
-    public all(): ReadonlyArray<WebSocketConnection> {
-        return Array.from(this.map.values());
+    public values(): IterableIterator<WebSocketConnection> {
+        return this.map.values();
     }
 
-    public close(ws: WebSocket, code?: number, reason?: string) {
-        this.unregister(ws);
+    public keys(): IterableIterator<WebSocket> {
+        return this.map.keys();
+    }
+
+    public close(ws: WebSocket, code?: number, reason?: string): boolean {
         ws.close(safeCloseCode(code), safeReason(reason));
+        return this.unregister(ws);
     }
 
     public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
@@ -51,8 +63,9 @@ export class WebSocketSessions {
         this.map.set(ws, con);
     }
 
-    private unregister(ws: WebSocket): void {
-        this.map.delete(ws);
+    private unregister(ws: WebSocket): boolean {
+        console.log(`Sessions: ${this.map.size - 1}`);
+        return this.map.delete(ws);
     }
 
     private static readonly NewConnection = class extends NewConnectionBase {
@@ -69,7 +82,6 @@ export class WebSocketSessions {
             super(restore);
 
             sessions.register(this.server, this);
-            this.addEventListener("close", () => sessions.unregister(this.server), { once: true });
         }
     };
 }
