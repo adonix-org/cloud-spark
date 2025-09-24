@@ -26,6 +26,7 @@ import {
     NotImplemented,
     MethodNotImplemented,
     ServiceUnavailable,
+    UpgradeRequired,
 } from "@src/errors";
 import { ErrorJson } from "@src/interfaces/error-json";
 
@@ -40,6 +41,7 @@ describe("http error unit tests", () => {
         [Unauthorized, StatusCodes.UNAUTHORIZED, "Unauthorized"],
         [Forbidden, StatusCodes.FORBIDDEN, "Forbidden"],
         [NotFound, StatusCodes.NOT_FOUND, "Not Found"],
+        [UpgradeRequired, StatusCodes.UPGRADE_REQUIRED, "Upgrade Required"],
         [InternalServerError, StatusCodes.INTERNAL_SERVER_ERROR, "Internal Server Error"],
         [NotImplemented, StatusCodes.NOT_IMPLEMENTED, "Not Implemented"],
         [ServiceUnavailable, StatusCodes.SERVICE_UNAVAILABLE, "Service Unavailable"],

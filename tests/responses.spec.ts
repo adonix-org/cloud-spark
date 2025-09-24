@@ -22,6 +22,7 @@ import {
     TextResponse,
     ClonedResponse,
     Head,
+    WebSocketResponse,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { assertDefined, VALID_URL } from "./test-utils/common";
@@ -104,5 +105,15 @@ describe("response unit tests", () => {
         const resp = new MethodNotAllowed(mockWorker);
         resp.mergeHeader(HttpHeader.ALLOW, "DELETE");
         expect(resp.headers.get(HttpHeader.ALLOW)).toBe("DELETE, GET, HEAD, OPTIONS");
+    });
+
+    it("sets the status to 101 in web socket response", async () => {
+        class DummyWebSocket {
+            dummy = true;
+        }
+        const ws = new DummyWebSocket() as any;
+        const resp = new WebSocketResponse(ws);
+        expect(resp.status).toBe(StatusCodes.SWITCHING_PROTOCOLS);
+        expect(resp.webSocket).toBe(ws);
     });
 });
