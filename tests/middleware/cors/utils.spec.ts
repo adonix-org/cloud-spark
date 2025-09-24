@@ -253,7 +253,7 @@ describe("cors utils unit tests", () => {
 
         it("returns true if both status and upgrade header are non-cors", () => {
             const headers = new Headers();
-            headers.set(HttpHeader.UPGRADE, "websocket");
+            headers.set(HttpHeader.UPGRADE, WS_WEBSOCKET);
             const response = new Response(null, {
                 status: StatusCodes.PERMANENT_REDIRECT,
                 headers,
