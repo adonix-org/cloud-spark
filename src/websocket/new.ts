@@ -17,8 +17,7 @@
 import { WebSocketConnection } from "../interfaces/websocket";
 import { BasicWebSocket } from "./basic";
 
-export class NewWebSocketConnection extends BasicWebSocket implements WebSocketConnection {
-    private readonly _id: string;
+export abstract class NewWebSocketConnection extends BasicWebSocket implements WebSocketConnection {
     public readonly accept: () => WebSocket;
     public readonly acceptWebSocket: (ctx: DurableObjectState, tags?: string[]) => WebSocket;
 
@@ -27,8 +26,7 @@ export class NewWebSocketConnection extends BasicWebSocket implements WebSocketC
         const [client, server] = [pair[0], pair[1]];
         super(server);
 
-        this._id = crypto.randomUUID();
-        server.serializeAttachment(this.id);
+        this.setAttachment({ id: crypto.randomUUID() });
 
         this.accept = (): WebSocket => {
             server.accept();
@@ -45,9 +43,5 @@ export class NewWebSocketConnection extends BasicWebSocket implements WebSocketC
 
             return client;
         };
-    }
-
-    public get id(): string {
-        return this._id;
     }
 }

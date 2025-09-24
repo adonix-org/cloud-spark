@@ -24,25 +24,28 @@ export type CustomEventType = keyof CustomEventMap;
 export type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
 export type ExtendedEventType = keyof ExtendedEventMap;
 export type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
+export interface WebSocketAttachment {
+    id: string;
+}
 
 export interface WebSocketConnection {
     readonly id: string;
 
     get readyState(): number;
     isState(...states: number[]): boolean;
-
     accept(): WebSocket;
     acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket;
-
+    getAttachment<T extends WebSocketAttachment>(): T;
+    setAttachment<T extends WebSocketAttachment>(attachment: Partial<T>): void;
     send(message: string | ArrayBuffer): void;
     close(code?: number, reason?: string): void;
 
+    // Events
     addEventListener<K extends ExtendedEventType>(
         type: K,
         listener: ExtendedEventListener<K>,
         options?: EventOptions,
     ): void;
-
     removeEventListener<K extends ExtendedEventType>(
         type: K,
         listener: ExtendedEventListener<K>,

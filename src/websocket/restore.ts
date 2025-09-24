@@ -17,24 +17,20 @@
 import { WebSocketConnection } from "../interfaces/websocket";
 import { BasicWebSocket } from "./basic";
 
-export class RestoredWebSocketConnection extends BasicWebSocket implements WebSocketConnection {
-    private readonly _id: string;
-
+export abstract class RestoredWebSocketConnection
+    extends BasicWebSocket
+    implements WebSocketConnection
+{
     constructor(ws: WebSocket) {
         super(ws);
         this.accepted = true;
-        this._id = ws.deserializeAttachment();
     }
 
-    get id() {
-        return this._id;
-    }
-
-    accept(): WebSocket {
+    public accept(): WebSocket {
         throw new Error("Do not call accept() on restore");
     }
 
-    acceptWebSocket(): WebSocket {
+    public acceptWebSocket(): WebSocket {
         throw new Error("Do not call acceptWebSocket() on restore");
     }
 }
