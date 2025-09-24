@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-type WarnEvent = { type: "warn"; message: string };
-
-type CustomEventMap = {
-    warn: WarnEvent;
-    open: Event;
-};
-type CustomEventType = keyof CustomEventMap;
-type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
-type ExtendedEventType = keyof ExtendedEventMap;
-type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
-
-type EventOptions = { once?: boolean };
+import {
+    CustomEventType,
+    EventOptions,
+    ExtendedEventListener,
+    ExtendedEventMap,
+    ExtendedEventType,
+} from "../interfaces/websocket";
 
 const CUSTOM_EVENTS: string[] = ["open", "warn"];
 

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { WebSocketConnection } from "./connection";
+import { WebSocketConnection } from "../interfaces/websocket";
+import { NewWebSocketConnection } from "./new";
+import { RestoredWebSocketConnection } from "./restore";
 
 export class WebSocketRegistry {
     private readonly registry = new Map<WebSocket, WebSocketConnection>();
 
     public create(): WebSocketConnection {
-        return new WebSocketRegistry.DurableWebSocketConnection(this);
+        return new WebSocketRegistry.NewWebSocketConnection(this);
     }
 
     public restore(ws: WebSocket): WebSocketConnection {
-        return new WebSocketRegistry.DurableWebSocketConnection(this, ws);
+        return new WebSocketRegistry.RestoredWebSocketConnection(this, ws);
     }
 
     public lookup(ws: WebSocket): WebSocketConnection | undefined {
@@ -53,15 +55,21 @@ export class WebSocketRegistry {
         console.info(this.registry.size);
     }
 
-    private static readonly DurableWebSocketConnection = class extends WebSocketConnection {
-        constructor(registry: WebSocketRegistry, restore?: WebSocket) {
+    private static readonly NewWebSocketConnection = class extends NewWebSocketConnection {
+        constructor(registry: WebSocketRegistry) {
+            super();
+
+            registry.register(this.server, this);
+            this.addEventListener("close", () => registry.unregister(this.server));
+        }
+    };
+
+    private static readonly RestoredWebSocketConnection = class extends RestoredWebSocketConnection {
+        constructor(registry: WebSocketRegistry, restore: WebSocket) {
             super(restore);
 
             registry.register(this.server, this);
-
-            this.addEventListener("close", () => {
-                registry.unregister(this.server);
-            });
+            this.addEventListener("close", () => registry.unregister(this.server));
         }
     };
 }

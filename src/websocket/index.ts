@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./connection";
+export * from "./new";
 export * from "./registry";
