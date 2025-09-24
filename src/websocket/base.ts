@@ -27,14 +27,6 @@ export abstract class BaseWebSocket extends WebSocketEvents {
         this.server.addEventListener("close", this.onclose, { once: true });
     }
 
-    public getAttachment<T extends object>(): T {
-        return this.server.deserializeAttachment() as T;
-    }
-
-    public setAttachment<T extends object>(attachment: T): void {
-        this.server.serializeAttachment(attachment);
-    }
-
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
         if (this.isState(WebSocket.CONNECTING, WebSocket.CLOSED)) {
             this.warn("Cannot send: WebSocket not open");
@@ -48,9 +40,12 @@ export abstract class BaseWebSocket extends WebSocketEvents {
         this.server.send(data);
     }
 
-    public close(code?: number, reason?: string): void {
-        this.server.removeEventListener("close", this.onclose);
-        this.server.close(safeCloseCode(code), safeReason(reason));
+    public getAttachment<T extends object>(): T {
+        return this.server.deserializeAttachment() as T;
+    }
+
+    public setAttachment<T extends object>(attachment: T): void {
+        this.server.serializeAttachment(attachment);
     }
 
     public get readyState(): number {
@@ -60,6 +55,11 @@ export abstract class BaseWebSocket extends WebSocketEvents {
 
     public isState(...states: number[]): boolean {
         return states.includes(this.readyState);
+    }
+
+    public close(code?: number, reason?: string): void {
+        this.server.removeEventListener("close", this.onclose);
+        this.server.close(safeCloseCode(code), safeReason(reason));
     }
 
     private readonly onclose = (event: CloseEvent): void => {

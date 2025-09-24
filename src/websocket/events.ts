@@ -82,7 +82,7 @@ export abstract class WebSocketEvents {
         type: K,
         ev: ExtendedEventMap[K],
         once: boolean = false,
-    ) {
+    ): void {
         const listeners = this.customListeners[type]?.slice() ?? [];
         if (once) {
             this.customListeners[type] = [];

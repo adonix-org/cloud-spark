@@ -56,7 +56,7 @@ export class WebSocketSessions {
     }
 
     public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
-        yield* this.map.values();
+        yield* this.values();
     }
 
     private register(ws: WebSocket, con: WebSocketConnection): void {

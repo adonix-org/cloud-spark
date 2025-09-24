@@ -18,28 +18,29 @@ import { WebSocketConnection } from "../interfaces/websocket";
 import { BaseWebSocket } from "./base";
 
 export abstract class NewConnectionBase extends BaseWebSocket implements WebSocketConnection {
-    public readonly accept: () => WebSocket;
-    public readonly acceptWebSocket: (ctx: DurableObjectState, tags?: string[]) => WebSocket;
+    private readonly client: WebSocket;
 
     public constructor() {
         const pair = new WebSocketPair();
         const [client, server] = [pair[0], pair[1]];
         super(server);
+        this.client = client;
+    }
 
-        this.accept = (): WebSocket => {
-            server.accept();
-            this.accepted = true;
-            this.open();
+    public acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket {
+        ctx.acceptWebSocket(this.server, tags);
+        return this.ready();
+    }
 
-            return client;
-        };
+    public accept(): WebSocket {
+        this.server.accept();
+        return this.ready();
+    }
 
-        this.acceptWebSocket = (ctx: DurableObjectState, tags?: string[]) => {
-            ctx.acceptWebSocket(server, tags);
-            this.accepted = true;
-            this.open();
+    private ready(): WebSocket {
+        this.accepted = true;
+        this.open();
 
-            return client;
-        };
+        return this.client;
     }
 }
