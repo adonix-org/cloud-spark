@@ -20,7 +20,7 @@ import { NewConnectionBase } from "./new";
 import { RestoredConnectionBase } from "./restore";
 
 export class WebSocketSessions {
-    private readonly sessions = new Map<WebSocket, WebSocketConnection>();
+    private readonly map = new Map<WebSocket, WebSocketConnection>();
 
     public create(): WebSocketConnection {
         return new WebSocketSessions.NewConnection(this);
@@ -31,11 +31,11 @@ export class WebSocketSessions {
     }
 
     public lookup(ws: WebSocket): WebSocketConnection | undefined {
-        return this.sessions.get(ws);
+        return this.map.get(ws);
     }
 
     public all(): ReadonlyArray<WebSocketConnection> {
-        return Array.from(this.sessions.values());
+        return Array.from(this.map.values());
     }
 
     public close(ws: WebSocket, code?: number, reason?: string) {
@@ -44,16 +44,16 @@ export class WebSocketSessions {
     }
 
     public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
-        yield* this.sessions.values();
+        yield* this.map.values();
     }
 
     private register(ws: WebSocket, con: WebSocketConnection): void {
-        this.sessions.set(ws, con);
+        this.map.set(ws, con);
     }
 
     private unregister(ws: WebSocket): void {
-        this.sessions.delete(ws);
-        console.log(this.sessions.size);
+        this.map.delete(ws);
+        console.log(this.map.size);
     }
 
     private static readonly NewConnection = class extends NewConnectionBase {
