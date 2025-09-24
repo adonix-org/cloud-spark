@@ -18,15 +18,15 @@ import { WebSocketConnection } from "../interfaces/websocket";
 import { NewConnectionBase } from "./new";
 import { RestoredConnectionBase } from "./restore";
 
-export class WebSocketSession {
+export class WebSocketSessions {
     private readonly sessions = new Map<WebSocket, WebSocketConnection>();
 
     public create(): WebSocketConnection {
-        return new WebSocketSession.NewConnection(this);
+        return new WebSocketSessions.NewConnection(this);
     }
 
     public restore(ws: WebSocket): WebSocketConnection {
-        return new WebSocketSession.RestoredConnection(this, ws);
+        return new WebSocketSessions.RestoredConnection(this, ws);
     }
 
     public lookup(ws: WebSocket): WebSocketConnection | undefined {
@@ -55,7 +55,7 @@ export class WebSocketSession {
     }
 
     private static readonly NewConnection = class extends NewConnectionBase {
-        constructor(registry: WebSocketSession) {
+        constructor(registry: WebSocketSessions) {
             super();
 
             registry.register(this.server, this);
@@ -64,7 +64,7 @@ export class WebSocketSession {
     };
 
     private static readonly RestoredConnection = class extends RestoredConnectionBase {
-        constructor(registry: WebSocketSession, restore: WebSocket) {
+        constructor(registry: WebSocketSessions, restore: WebSocket) {
             super(restore);
 
             registry.register(this.server, this);
