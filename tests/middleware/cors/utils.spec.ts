@@ -15,7 +15,16 @@
  */
 
 import { expectHeadersEqual } from "@common";
-import { DELETE, GET, HEAD, HttpHeader, OPTIONS, POST, PUT } from "@src/constants/http";
+import {
+    DELETE,
+    GET,
+    HEAD,
+    HttpHeader,
+    OPTIONS,
+    POST,
+    PUT,
+    StatusCodes,
+} from "@src/constants/http";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import {
     setAllowCredentials,
@@ -24,8 +33,9 @@ import {
     setAllowOrigin,
     setExposedHeaders,
     setMaxAge,
+    skipCors,
 } from "@src/middleware/cors/utils";
-import { beforeEach, describe, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("cors utils unit tests", () => {
     let headers: Headers;
@@ -219,6 +229,35 @@ describe("cors utils unit tests", () => {
         it("sets the max age to the nearest lower integer for decimal values", () => {
             setMaxAge(headers, { ...defaultCorsConfig, maxAge: 100.90987 });
             expectHeadersEqual(headers, [["access-control-max-age", "100"]]);
+        });
+    });
+
+    describe("skipCors", () => {
+        it("returns true if status is in SKIP_CORS_STATUSES", () => {
+            const response = new Response(null, { status: StatusCodes.PERMANENT_REDIRECT });
+            expect(skipCors(response)).toBe(true);
+        });
+
+        it("returns true if headers contain upgrade", () => {
+            const headers = new Headers();
+            headers.set(HttpHeader.UPGRADE, "websocket");
+            const response = new Response(null, { status: StatusCodes.OK, headers });
+            expect(skipCors(response)).toBe(true);
+        });
+
+        it("returns false if status is not in SKIP_CORS_STATUSES and headers do not contain UPGRADE", () => {
+            const response = new Response(null, { status: StatusCodes.OK });
+            expect(skipCors(response)).toBe(false);
+        });
+
+        it("returns true if both status is in SKIP_CORS_STATUSES and headers contain UPGRADE", () => {
+            const headers = new Headers();
+            headers.set(HttpHeader.UPGRADE, "websocket");
+            const response = new Response(null, {
+                status: StatusCodes.PERMANENT_REDIRECT,
+                headers,
+            });
+            expect(skipCors(response)).toBe(true);
         });
     });
 });

@@ -25,6 +25,8 @@ export default defineConfig({
         watch: false,
         coverage: {
             reporter: ["text", "lcov"],
+            include: ["src/**"],
+            exclude: ["src/debug/**"],
         },
     },
     resolve: {
