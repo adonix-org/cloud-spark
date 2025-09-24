@@ -19,15 +19,13 @@ import { WebSocketEvents } from "./events";
 
 export abstract class BasicWebSocket extends WebSocketEvents {
     protected accepted = false;
-    readonly #server: WebSocket;
+    protected readonly server: WebSocket;
 
     constructor(server: WebSocket) {
         super(server);
-        this.#server = server;
-        this.#server.addEventListener("close", this.onClose, { once: true });
+        this.server = server;
+        this.server.addEventListener("close", this.onClose, { once: true });
     }
-
-    public abstract get id(): string;
 
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
         if (this.isState(WebSocket.CONNECTING, WebSocket.CLOSED)) {
@@ -39,17 +37,17 @@ export abstract class BasicWebSocket extends WebSocketEvents {
             return;
         }
 
-        this.#server.send(data);
+        this.server.send(data);
     }
 
     public close(code?: number, reason?: string): void {
-        this.#server.removeEventListener("close", this.onClose);
-        this.#server.close(code, reason);
+        this.server.removeEventListener("close", this.onClose);
+        this.server.close(code, reason);
     }
 
     public get readyState(): number {
         if (!this.accepted) return WebSocket.CONNECTING;
-        return this.#server.readyState;
+        return this.server.readyState;
     }
 
     public isState(...states: number[]): boolean {

@@ -34,14 +34,14 @@ function isCustom(type: ExtendedEventType): boolean {
 }
 
 export abstract class WebSocketEvents {
-    readonly #server: WebSocket;
+    protected readonly server: WebSocket;
 
     private customListeners: {
         [K in ExtendedEventType]?: ((ev: ExtendedEventMap[K]) => void)[];
     } = {};
 
     constructor(server: WebSocket) {
-        this.#server = server;
+        this.server = server;
     }
 
     public addEventListener<K extends ExtendedEventType>(
@@ -57,7 +57,7 @@ export abstract class WebSocketEvents {
             }
             arr.push(listener);
         } else {
-            this.#server.addEventListener(
+            this.server.addEventListener(
                 type as keyof WebSocketEventMap,
                 listener as EventListener,
                 options,
@@ -76,7 +76,7 @@ export abstract class WebSocketEvents {
                 if (index !== -1) arr.splice(index, 1);
             }
         } else {
-            this.#server.removeEventListener(
+            this.server.removeEventListener(
                 type as keyof WebSocketEventMap,
                 listener as EventListener,
             );

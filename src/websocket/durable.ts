@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-export * from "./connection";
-export * from "./registry";
+import { WebSocketConnection } from "./connection";
+import { WebSocketRegistry } from "./registry";
+
+export class DurableWebSocketConnection extends WebSocketConnection {
+    public constructor(registry: WebSocketRegistry, restore?: WebSocket) {
+        super(restore);
+        registry.register(this.server, this);
+    }
+}

@@ -15,16 +15,17 @@
  */
 
 import { WebSocketConnection } from "./connection";
+import { DurableWebSocketConnection } from "./durable";
 
 export class WebSocketRegistry {
     private readonly registry = new Map<WebSocket, WebSocketConnection>();
 
     public create(): WebSocketConnection {
-        return new WebSocketConnection(this);
+        return new DurableWebSocketConnection(this);
     }
 
     public restore(ws: WebSocket): WebSocketConnection {
-        return new WebSocketConnection(this, ws);
+        return new DurableWebSocketConnection(this, ws);
     }
 
     public lookup(ws: WebSocket): WebSocketConnection | undefined {
@@ -44,7 +45,7 @@ export class WebSocketRegistry {
         this.registry.set(ws, con);
     }
 
-    public unregister(ws: WebSocket) {
+    private unregister(ws: WebSocket) {
         this.registry.delete(ws);
     }
 
