@@ -18,7 +18,7 @@ import { describe, it, expect } from "vitest";
 import { assertMiddleware } from "@src/guards/middleware";
 import { Middleware } from "@src/middleware/middleware";
 
-describe("assertMiddleware", () => {
+describe("middleware guard unit tests", () => {
     class TestMiddleware extends Middleware {
         async handle(_worker: any, next: () => Promise<Response>): Promise<Response> {
             return next();
