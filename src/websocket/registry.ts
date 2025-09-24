@@ -50,12 +50,18 @@ export class WebSocketRegistry {
 
     private unregister(ws: WebSocket) {
         this.registry.delete(ws);
+        console.info(this.registry.size);
     }
 
     private static readonly DurableWebSocketConnection = class extends WebSocketConnection {
         constructor(registry: WebSocketRegistry, restore?: WebSocket) {
             super(restore);
+
             registry.register(this.server, this);
+
+            this.addEventListener("close", () => {
+                registry.unregister(this.server);
+            });
         }
     };
 }
