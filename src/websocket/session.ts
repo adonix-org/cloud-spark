@@ -15,26 +15,26 @@
  */
 
 import { WebSocketConnection } from "../interfaces/websocket";
-import { NewWebSocketConnection } from "./new";
-import { RestoredWebSocketConnection } from "./restore";
+import { NewConnectionBase } from "./new";
+import { RestoredConnectionBase } from "./restore";
 
-export class WebSocketRegistry {
-    private readonly registry = new Map<WebSocket, WebSocketConnection>();
+export class WebSocketSession {
+    private readonly sessions = new Map<WebSocket, WebSocketConnection>();
 
     public create(): WebSocketConnection {
-        return new WebSocketRegistry.NewWebSocketConnection(this);
+        return new WebSocketSession.NewConnection(this);
     }
 
     public restore(ws: WebSocket): WebSocketConnection {
-        return new WebSocketRegistry.RestoredWebSocketConnection(this, ws);
+        return new WebSocketSession.RestoredConnection(this, ws);
     }
 
     public lookup(ws: WebSocket): WebSocketConnection | undefined {
-        return this.registry.get(ws);
+        return this.sessions.get(ws);
     }
 
     public all(): ReadonlyArray<WebSocketConnection> {
-        return Array.from(this.registry.values());
+        return Array.from(this.sessions.values());
     }
 
     public close(ws: WebSocket, code?: number, reason?: string) {
@@ -43,19 +43,19 @@ export class WebSocketRegistry {
     }
 
     public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
-        yield* this.registry.values();
+        yield* this.sessions.values();
     }
 
-    private register(ws: WebSocket, con: WebSocketConnection) {
-        this.registry.set(ws, con);
+    private register(ws: WebSocket, con: WebSocketConnection): void {
+        this.sessions.set(ws, con);
     }
 
-    private unregister(ws: WebSocket) {
-        this.registry.delete(ws);
+    private unregister(ws: WebSocket): boolean {
+        return this.sessions.delete(ws);
     }
 
-    private static readonly NewWebSocketConnection = class extends NewWebSocketConnection {
-        constructor(registry: WebSocketRegistry) {
+    private static readonly NewConnection = class extends NewConnectionBase {
+        constructor(registry: WebSocketSession) {
             super();
 
             registry.register(this.server, this);
@@ -63,8 +63,8 @@ export class WebSocketRegistry {
         }
     };
 
-    private static readonly RestoredWebSocketConnection = class extends RestoredWebSocketConnection {
-        constructor(registry: WebSocketRegistry, restore: WebSocket) {
+    private static readonly RestoredConnection = class extends RestoredConnectionBase {
+        constructor(registry: WebSocketSession, restore: WebSocket) {
             super(restore);
 
             registry.register(this.server, this);
