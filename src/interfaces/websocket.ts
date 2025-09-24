@@ -24,9 +24,16 @@ export type CustomEventType = keyof CustomEventMap;
 export type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
 export type ExtendedEventType = keyof ExtendedEventMap;
 export type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
-export interface WebSocketAttachment {
+
+export interface BaseWebSocketAttachment {
     id: string;
 }
+
+export type AttachmentInput<T extends BaseWebSocketAttachment> = Omit<
+    T,
+    keyof BaseWebSocketAttachment
+> &
+    Partial<Pick<T, keyof BaseWebSocketAttachment>>;
 
 export interface WebSocketConnection {
     readonly id: string;
@@ -35,8 +42,8 @@ export interface WebSocketConnection {
     isState(...states: number[]): boolean;
     accept(): WebSocket;
     acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket;
-    getAttachment<T extends WebSocketAttachment>(): T;
-    setAttachment<T extends WebSocketAttachment>(attachment: Partial<T>): void;
+    getAttachment<T extends BaseWebSocketAttachment>(): T;
+    setAttachment<T extends BaseWebSocketAttachment>(attachment: AttachmentInput<T>): void;
     send(message: string | ArrayBuffer): void;
     close(code?: number, reason?: string): void;
 

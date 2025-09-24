@@ -15,7 +15,7 @@
  */
 
 import { isSendable } from "../guards/websocket";
-import { WebSocketAttachment } from "../interfaces/websocket";
+import { AttachmentInput, BaseWebSocketAttachment } from "../interfaces/websocket";
 import { EventWebSocket } from "./events";
 
 export abstract class BasicWebSocket extends EventWebSocket {
@@ -32,11 +32,11 @@ export abstract class BasicWebSocket extends EventWebSocket {
         return this.getAttachment().id;
     }
 
-    public getAttachment<T extends WebSocketAttachment>(): T {
+    public getAttachment<T extends BaseWebSocketAttachment>(): T {
         return this.server.deserializeAttachment() as T;
     }
 
-    public setAttachment<T extends WebSocketAttachment>(attachment: Partial<T>): void {
+    public setAttachment<T extends BaseWebSocketAttachment>(attachment: AttachmentInput<T>): void {
         const current = this.getAttachment<T>();
         this.server.serializeAttachment({ ...current, ...attachment });
     }
