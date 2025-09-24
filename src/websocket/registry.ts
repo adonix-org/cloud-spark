@@ -52,7 +52,6 @@ export class WebSocketRegistry {
 
     private unregister(ws: WebSocket) {
         this.registry.delete(ws);
-        console.info(this.registry.size);
     }
 
     private static readonly NewWebSocketConnection = class extends NewWebSocketConnection {
