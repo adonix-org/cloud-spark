@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BaseWorker } from "./base-worker";
+import { BaseWorker } from "./base";
 import { Middleware } from "../middleware/middleware";
 import { assertMiddleware } from "../guards/middleware";
 

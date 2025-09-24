@@ -42,7 +42,7 @@
         "dev": "tsup --watch",
         "test": "npm run build && vitest",
         "coverage": "vitest run --coverage",
-        "types": "wrangler types ./types/wrangler.d.ts"
+        "types": "wrangler types ./types/wrangler.d.ts --no-include-env"
     },
     "devDependencies": {
         "@types/node": "^24.4.0",

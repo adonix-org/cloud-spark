@@ -18,7 +18,7 @@ import { describe, it, expect } from "vitest";
 import { ALL_METHODS, BASIC_METHODS, TestRoutes, VALID_URL } from "@common";
 import { Method } from "@src/constants/http";
 import { RouteHandler } from "@src/interfaces/route";
-import { RouteWorker } from "@src/workers/route-worker";
+import { RouteWorker } from "@src/workers/route";
 import { ctx, env } from "@mock";
 
 class TestWorker extends RouteWorker {

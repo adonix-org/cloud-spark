@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./basic-worker";
-export * from "./route-worker";
+export * from "./basic";
+export * from "./route";

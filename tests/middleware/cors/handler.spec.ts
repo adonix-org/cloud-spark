@@ -25,7 +25,7 @@ import {
 } from "@common";
 import { ctx, env } from "@mock";
 import { cors } from "@src/middleware/cors/handler";
-import { BasicWorker } from "@src/workers/basic-worker";
+import { BasicWorker } from "@src/workers/basic";
 import { GET, HEAD, Method, OPTIONS } from "@src/constants/http";
 
 class TestWorker extends BasicWorker {
