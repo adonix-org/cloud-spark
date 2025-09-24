@@ -77,3 +77,78 @@ const caches = {
 };
 
 (globalThis as any).caches = caches;
+
+class MockWebSocket {
+    readyState = WebSocket.OPEN;
+    sent: any[] = [];
+    listeners: Record<string, Function[]> = {};
+    attachment: any = null;
+
+    addEventListener(event: string, cb: Function) {
+        let array = this.listeners[event];
+        if (!array) {
+            array = [];
+            this.listeners[event] = array;
+        }
+        array.push(cb);
+    }
+
+    removeEventListener(event: string, cb: Function) {
+        const arr = this.listeners[event];
+        if (!arr) return;
+
+        const index = arr.indexOf(cb);
+        if (index !== -1) {
+            arr.splice(index, 1);
+        }
+    }
+
+    send(data: any) {
+        this.sent.push(data);
+        this.listeners["message"]?.forEach((f) => f({ data }));
+    }
+
+    accept(): void {
+        // no-op for testing
+    }
+
+    close(code?: number, reason?: string) {
+        this.readyState = WebSocket.CLOSED;
+        this.listeners["close"]?.forEach((f) => f({ code, reason }));
+    }
+
+    serializeAttachment(obj: any) {
+        this.attachment = obj;
+    }
+    deserializeAttachment() {
+        return this.attachment;
+    }
+}
+
+export function createMockWebSocketPair(): [MockWebSocket, MockWebSocket] {
+    const a = new MockWebSocket();
+    const b = new MockWebSocket();
+
+    // link send to the other side
+    a.send = (data: any) => {
+        a.sent.push(data);
+        b.listeners["message"]?.forEach((f) => f({ data }));
+    };
+    b.send = (data: any) => {
+        b.sent.push(data);
+        a.listeners["message"]?.forEach((f) => f({ data }));
+    };
+
+    a.close = (code?: number, reason?: string) => {
+        a.readyState = WebSocket.CLOSED;
+        a.listeners["close"]?.forEach((f) => f({ code, reason }));
+        b.listeners["close"]?.forEach((f) => f({ code, reason }));
+    };
+    b.close = (code?: number, reason?: string) => {
+        b.readyState = WebSocket.CLOSED;
+        b.listeners["close"]?.forEach((f) => f({ code, reason }));
+        a.listeners["close"]?.forEach((f) => f({ code, reason }));
+    };
+
+    return [a, b];
+}
