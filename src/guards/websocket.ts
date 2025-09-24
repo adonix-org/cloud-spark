@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CloseCode, WS_MAX_CLOSE_CODE, WS_RESERVED_CODES } from "../constants";
+import { CloseCode, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES } from "../constants";
 import { isNumber, isString } from "./basic";
 
 export function isBinary(value: unknown): value is ArrayBuffer | ArrayBufferView {
@@ -39,4 +39,9 @@ export function isCodeInRange(code: number): boolean {
 
 export function isReservedCode(code: number): boolean {
     return WS_RESERVED_CODES.has(code);
+}
+
+export function safeReason(reason?: string): string | undefined {
+    if (!isString(reason)) return;
+    return reason.replace(/[^\x20-\x7E]/g, "").slice(0, WS_MAX_REASON_CHARS);
 }

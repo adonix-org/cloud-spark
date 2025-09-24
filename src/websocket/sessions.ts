@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { safeCloseCode } from "../guards/websocket";
+import { safeCloseCode, safeReason } from "../guards/websocket";
 import { WebSocketConnection } from "../interfaces/websocket";
 import { NewConnectionBase } from "./new";
 import { RestoredConnectionBase } from "./restore";
@@ -40,7 +40,7 @@ export class WebSocketSessions {
 
     public close(ws: WebSocket, code?: number, reason?: string) {
         this.unregister(ws);
-        ws.close(safeCloseCode(code), reason);
+        ws.close(safeCloseCode(code), safeReason(reason));
     }
 
     public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
@@ -53,7 +53,6 @@ export class WebSocketSessions {
 
     private unregister(ws: WebSocket): void {
         this.map.delete(ws);
-        console.log(this.map.size);
     }
 
     private static readonly NewConnection = class extends NewConnectionBase {

@@ -22,6 +22,8 @@ export const WS_WEBSOCKET = "websocket";
 export const WS_VERSION = "13";
 /** Max close code a user can send */
 export const WS_MAX_CLOSE_CODE = 4999;
+/** Max number of reason chars a user can send */
+export const WS_MAX_REASON_CHARS = 123;
 
 /** WebSocket close codes */
 export const CloseCode = {
@@ -39,6 +41,7 @@ export const CloseCode = {
     TLS_HANDSHAKE: 1015,
 } as const;
 
+/** WebSocket RESERVED close codes */
 export const WS_RESERVED_CODES = new Set<number>([
     CloseCode.NO_STATUS,
     CloseCode.ABNORMAL,
