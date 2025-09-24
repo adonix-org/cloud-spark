@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { isString } from "./basic";
+import { CloseCode, WS_MAX_CLOSE_CODE, WS_RESERVED_CODES } from "../constants";
+import { isNumber, isString } from "./basic";
 
 export function isBinary(value: unknown): value is ArrayBuffer | ArrayBufferView {
     return value instanceof ArrayBuffer || ArrayBuffer.isView(value);
@@ -24,4 +25,18 @@ export function isSendable(value: unknown): value is string | ArrayBuffer | Arra
     if (isString(value)) return value.length > 0;
     if (isBinary(value)) return value.byteLength > 0;
     return false;
+}
+
+export function safeCloseCode(code?: number): number {
+    if (!isNumber(code)) return CloseCode.NORMAL;
+    if (isCodeInRange(code) && !isReservedCode(code)) return code;
+    return CloseCode.NORMAL;
+}
+
+export function isCodeInRange(code: number): boolean {
+    return code >= CloseCode.NORMAL && code <= WS_MAX_CLOSE_CODE;
+}
+
+export function isReservedCode(code: number): boolean {
+    return WS_RESERVED_CODES.has(code);
 }

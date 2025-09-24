@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isSendable } from "../guards/websocket";
+import { isSendable, safeCloseCode } from "../guards/websocket";
 import { WebSocketEvents } from "./events";
 
 export abstract class BasicWebSocket extends WebSocketEvents {
@@ -50,7 +50,7 @@ export abstract class BasicWebSocket extends WebSocketEvents {
 
     public close(code?: number, reason?: string): void {
         this.server.removeEventListener("close", this.onclose);
-        this.server.close(code, reason);
+        this.server.close(safeCloseCode(code), reason);
     }
 
     public get readyState(): number {

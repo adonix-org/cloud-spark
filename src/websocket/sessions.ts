@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { safeCloseCode } from "../guards/websocket";
 import { WebSocketConnection } from "../interfaces/websocket";
 import { NewConnectionBase } from "./new";
 import { RestoredConnectionBase } from "./restore";
@@ -39,7 +40,7 @@ export class WebSocketSessions {
 
     public close(ws: WebSocket, code?: number, reason?: string) {
         this.unregister(ws);
-        ws.close(code, reason);
+        ws.close(safeCloseCode(code), reason);
     }
 
     public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
@@ -50,25 +51,26 @@ export class WebSocketSessions {
         this.sessions.set(ws, con);
     }
 
-    private unregister(ws: WebSocket): boolean {
-        return this.sessions.delete(ws);
+    private unregister(ws: WebSocket): void {
+        this.sessions.delete(ws);
+        console.log(this.sessions.size);
     }
 
     private static readonly NewConnection = class extends NewConnectionBase {
-        constructor(registry: WebSocketSessions) {
+        constructor(sessions: WebSocketSessions) {
             super();
 
-            registry.register(this.server, this);
-            this.addEventListener("close", () => registry.unregister(this.server));
+            sessions.register(this.server, this);
+            this.addEventListener("close", () => sessions.unregister(this.server), { once: true });
         }
     };
 
     private static readonly RestoredConnection = class extends RestoredConnectionBase {
-        constructor(registry: WebSocketSessions, restore: WebSocket) {
+        constructor(sessions: WebSocketSessions, restore: WebSocket) {
             super(restore);
 
-            registry.register(this.server, this);
-            this.addEventListener("close", () => registry.unregister(this.server));
+            sessions.register(this.server, this);
+            this.addEventListener("close", () => sessions.unregister(this.server), { once: true });
         }
     };
 }
