@@ -64,7 +64,6 @@ export class WebSocketSessions {
     }
 
     private unregister(ws: WebSocket): boolean {
-        console.log(`Sessions: ${this.map.size - 1}`);
         return this.map.delete(ws);
     }
 
