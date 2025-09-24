@@ -15,6 +15,7 @@
  */
 
 import { expectHeadersEqual } from "@common";
+import { WS_WEBSOCKET } from "@src/constants";
 import {
     DELETE,
     GET,
@@ -232,25 +233,25 @@ describe("cors utils unit tests", () => {
         });
     });
 
-    describe("skipCors", () => {
-        it("returns true if status is in SKIP_CORS_STATUSES", () => {
+    describe("skip cors function", () => {
+        it("returns false if cors should not be skipped for status and no headers", () => {
+            const response = new Response(null, { status: StatusCodes.OK });
+            expect(skipCors(response)).toBe(false);
+        });
+
+        it("returns true if status should be skipped", () => {
             const response = new Response(null, { status: StatusCodes.PERMANENT_REDIRECT });
             expect(skipCors(response)).toBe(true);
         });
 
         it("returns true if headers contain upgrade", () => {
             const headers = new Headers();
-            headers.set(HttpHeader.UPGRADE, "websocket");
+            headers.set(HttpHeader.UPGRADE, WS_WEBSOCKET);
             const response = new Response(null, { status: StatusCodes.OK, headers });
             expect(skipCors(response)).toBe(true);
         });
 
-        it("returns false if status is not in SKIP_CORS_STATUSES and headers do not contain UPGRADE", () => {
-            const response = new Response(null, { status: StatusCodes.OK });
-            expect(skipCors(response)).toBe(false);
-        });
-
-        it("returns true if both status is in SKIP_CORS_STATUSES and headers contain UPGRADE", () => {
+        it("returns true if both status and upgrade header are non-cors", () => {
             const headers = new Headers();
             headers.set(HttpHeader.UPGRADE, "websocket");
             const response = new Response(null, {
