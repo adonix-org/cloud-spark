@@ -28,7 +28,7 @@ function isCustom(type: ExtendedEventType): boolean {
     return CUSTOM_EVENTS.includes(type);
 }
 
-export abstract class EventWebSocket {
+export abstract class WebSocketEvents {
     protected readonly server: WebSocket;
 
     private customListeners: {

@@ -15,16 +15,16 @@
  */
 
 import { isSendable } from "../guards/websocket";
-import { EventWebSocket } from "./events";
+import { WebSocketEvents } from "./events";
 
-export abstract class BasicWebSocket extends EventWebSocket {
+export abstract class BasicWebSocket extends WebSocketEvents {
     protected accepted = false;
     protected readonly server: WebSocket;
 
     constructor(server: WebSocket) {
         super(server);
         this.server = server;
-        this.server.addEventListener("close", this.onClose, { once: true });
+        this.server.addEventListener("close", this.onclose, { once: true });
     }
 
     public getAttachment<T extends object>(): T {
@@ -32,8 +32,7 @@ export abstract class BasicWebSocket extends EventWebSocket {
     }
 
     public setAttachment<T extends object>(attachment: T): void {
-        const current = this.getAttachment<T>();
-        this.server.serializeAttachment({ ...current, ...attachment });
+        this.server.serializeAttachment(attachment);
     }
 
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
@@ -50,7 +49,7 @@ export abstract class BasicWebSocket extends EventWebSocket {
     }
 
     public close(code?: number, reason?: string): void {
-        this.server.removeEventListener("close", this.onClose);
+        this.server.removeEventListener("close", this.onclose);
         this.server.close(code, reason);
     }
 
@@ -63,7 +62,7 @@ export abstract class BasicWebSocket extends EventWebSocket {
         return states.includes(this.readyState);
     }
 
-    private readonly onClose = (event: CloseEvent): void => {
+    private readonly onclose = (event: CloseEvent): void => {
         this.close(event.code, event.reason);
     };
 }

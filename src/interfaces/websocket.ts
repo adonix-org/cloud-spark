@@ -15,11 +15,12 @@
  */
 
 export type WarnEvent = { type: "warn"; message: string };
-export type EventOptions = { once?: boolean };
 export type CustomEventMap = {
     warn: WarnEvent;
     open: Event;
 };
+
+export type EventOptions = { once?: boolean };
 export type CustomEventType = keyof CustomEventMap;
 export type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
 export type ExtendedEventType = keyof ExtendedEventMap;
