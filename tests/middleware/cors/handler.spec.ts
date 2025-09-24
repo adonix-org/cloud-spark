@@ -26,7 +26,7 @@ import {
 import { ctx, env } from "@mock";
 import { cors } from "@src/middleware/cors/handler";
 import { BasicWorker } from "@src/workers/basic";
-import { GET, HEAD, Method, OPTIONS } from "@src/constants/http";
+import { GET, HEAD, Method, OPTIONS, StatusCodes } from "@src/constants/http";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {
@@ -100,6 +100,17 @@ describe("cors middleware unit tests", () => {
             ["access-control-expose-headers", "x-test-header"],
             ["content-type", "text/plain;charset=UTF-8"],
         ]);
+    });
+
+    it("skips cors for no-cors response 3xx", async () => {
+        class TestSkipWorker extends TestWorker {
+            protected override async get(): Promise<Response> {
+                return new Response(null, { status: StatusCodes.PERMANENT_REDIRECT });
+            }
+        }
+        const worker = new TestSkipWorker(GET_REQUEST_WITH_ORIGIN);
+        const response = await worker.fetch();
+        expectHeadersEqual(response.headers, []);
     });
 
     it("intercepts the options preflight request and returns the response", async () => {
