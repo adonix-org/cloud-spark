@@ -78,43 +78,55 @@ const caches = {
 
 (globalThis as any).caches = caches;
 
-class MockWebSocket {
+// At the top of your mock file or in setup file
+class CloseEvent extends Event {
+    code: number;
+    reason: string;
+    constructor(type: string, init: { code?: number; reason?: string } = {}) {
+        super(type);
+        this.code = init.code ?? 1000;
+        this.reason = init.reason ?? "";
+    }
+}
+
+class MessageEvent extends Event {
+    data: any;
+    constructor(type: string, init: { data: any }) {
+        super(type);
+        this.data = init.data;
+    }
+}
+
+export class MockWebSocket extends EventTarget implements WebSocket {
+    binaryType: string = "arraybuffer";
+    bufferedAmount = 0;
+    extensions = "";
+    protocol = "";
     readyState = WebSocket.OPEN;
+    url = "";
+
+    onclose: ((ev: CloseEvent) => any) | null = null;
+    onerror: ((ev: Event) => any) | null = null;
+    onmessage: ((ev: MessageEvent) => any) | null = null;
+    onopen: ((ev: Event) => any) | null = null;
+
     sent: any[] = [];
-    listeners: Record<string, Function[]> = {};
     attachment: any = null;
+    paired?: MockWebSocket;
 
-    addEventListener(event: string, cb: Function) {
-        let array = this.listeners[event];
-        if (!array) {
-            array = [];
-            this.listeners[event] = array;
-        }
-        array.push(cb);
-    }
-
-    removeEventListener(event: string, cb: Function) {
-        const arr = this.listeners[event];
-        if (!arr) return;
-
-        const index = arr.indexOf(cb);
-        if (index !== -1) {
-            arr.splice(index, 1);
-        }
-    }
-
-    send(data: any) {
+    send(data: string | ArrayBuffer) {
         this.sent.push(data);
-        this.listeners["message"]?.forEach((f) => f({ data }));
-    }
-
-    accept(): void {
-        // no-op for testing
+        // dispatch a MessageEvent to the paired WebSocket
+        this.paired?.dispatchEvent(new MessageEvent("message", { data }));
     }
 
     close(code?: number, reason?: string) {
         this.readyState = WebSocket.CLOSED;
-        this.listeners["close"]?.forEach((f) => f({ code, reason }));
+        this.dispatchEvent(new CloseEvent("close", { code, reason }));
+        if (this.paired) {
+            this.paired.readyState = WebSocket.CLOSED;
+            this.paired.dispatchEvent(new CloseEvent("close", { code, reason }));
+        }
     }
 
     serializeAttachment(obj: any) {
@@ -123,34 +135,18 @@ class MockWebSocket {
     deserializeAttachment() {
         return this.attachment;
     }
+
+    accept(): void {
+        // no-op for testing
+    }
 }
 
-export function createMockWebSocketPair(): [MockWebSocket, MockWebSocket] {
+export function WebSocketPair(): [MockWebSocket, MockWebSocket] {
     const a = new MockWebSocket();
     const b = new MockWebSocket();
-
-    // link send to the other side
-    a.send = (data: any) => {
-        a.sent.push(data);
-        b.listeners["message"]?.forEach((f) => f({ data }));
-    };
-    b.send = (data: any) => {
-        b.sent.push(data);
-        a.listeners["message"]?.forEach((f) => f({ data }));
-    };
-
-    a.close = (code?: number, reason?: string) => {
-        a.readyState = WebSocket.CLOSED;
-        a.listeners["close"]?.forEach((f) => f({ code, reason }));
-        b.listeners["close"]?.forEach((f) => f({ code, reason }));
-    };
-    b.close = (code?: number, reason?: string) => {
-        b.readyState = WebSocket.CLOSED;
-        b.listeners["close"]?.forEach((f) => f({ code, reason }));
-        a.listeners["close"]?.forEach((f) => f({ code, reason }));
-    };
-
+    a.paired = b;
+    b.paired = a;
     return [a, b];
 }
 
-(globalThis as any).WebSocketPair = createMockWebSocketPair;
+(global as any).WebSocketPair = WebSocketPair;
