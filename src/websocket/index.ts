@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./new";
 export * from "./registry";
