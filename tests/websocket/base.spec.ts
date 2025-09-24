@@ -17,7 +17,7 @@
 import { BaseWebSocket } from "@src/websocket/base";
 import { describe, it, expect } from "vitest";
 
-class TestWebSocket extends BaseWebSocket {
+class TestConnection extends BaseWebSocket {
     constructor(ws: WebSocket) {
         super(ws);
         this.accepted = true;
@@ -28,7 +28,16 @@ describe("BaseWebSocket (smoke test)", () => {
     it("can send a message", () => {
         const pair = new WebSocketPair();
         const [client, server] = [pair[0], pair[1]];
-        const ws = new TestWebSocket(server);
+        const ws = new TestConnection(server);
+
+        ws.addEventListener("warn", (event) => {
+            console.warn(event.message);
+        });
+
+        const warnings: string[] = [];
+        ws.addEventListener("warn", (event) => {
+            warnings.push(event.message);
+        });
 
         const messages: string[] = [];
         client.addEventListener("message", (ev: MessageEvent) => messages.push(ev.data));
@@ -38,5 +47,9 @@ describe("BaseWebSocket (smoke test)", () => {
         expect(messages).toEqual(["hello world"]);
 
         ws.close(1000);
+
+        ws.send("After close.");
+
+        expect(warnings).toEqual(["Cannot send: WebSocket not open"]);
     });
 });
