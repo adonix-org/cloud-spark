@@ -154,4 +154,10 @@ describe("WebSocketEvents unit tests", () => {
     it("removes non-existent listener without error", () => {
         expect(() => con.removeEventListener("warn", () => {})).not.toThrow();
     });
+
+    it("handles empty listeners without error", () => {
+        expect(() => {
+            con.triggerWarn("nothing");
+        }).not.toThrow();
+    });
 });
