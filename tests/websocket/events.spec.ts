@@ -41,8 +41,8 @@ describe("WebSocketEvents unit tests", () => {
             expect(ev.type).toBe("warn");
             expect(ev.message).toBe("something");
         });
-
         con.addEventListener("warn", listener);
+
         con.triggerWarn("something");
 
         expect(listener).toHaveBeenCalledOnce();
@@ -51,8 +51,10 @@ describe("WebSocketEvents unit tests", () => {
     it("fires the 'open' event only once", () => {
         const listener = vi.fn();
         con.addEventListener("open", listener);
+
         con.triggerOpen();
         con.triggerOpen();
+
         expect(listener).toHaveBeenCalledOnce();
     });
 
@@ -60,7 +62,9 @@ describe("WebSocketEvents unit tests", () => {
         const listener = vi.fn();
         con.addEventListener("warn", listener);
         con.removeEventListener("warn", listener);
+
         con.triggerWarn("ignored");
+
         expect(listener).not.toHaveBeenCalled();
     });
 
@@ -74,7 +78,7 @@ describe("WebSocketEvents unit tests", () => {
         expect(listener).toHaveBeenCalledOnce();
     });
 
-    it("removes server listeners correctly", () => {
+    it("correctly removes server listeners", () => {
         const listener = vi.fn();
         con.addEventListener("close", listener);
         con.removeEventListener("close", listener);
@@ -84,15 +88,17 @@ describe("WebSocketEvents unit tests", () => {
         expect(listener).not.toHaveBeenCalled();
     });
 
-    it("multiple custom listeners all fire", () => {
+    it("fires multiple custom listeners", () => {
         const called: string[] = [];
         con.addEventListener("warn", () => called.push("a"));
         con.addEventListener("warn", () => called.push("b"));
+
         con.triggerWarn("msg");
+
         expect(called).toEqual(["a", "b"]);
     });
 
-    it("removing non-existent listener is safe", () => {
+    it("removes non-existent listener without error", () => {
         expect(() => con.removeEventListener("warn", () => {})).not.toThrow();
     });
 });
