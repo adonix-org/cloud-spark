@@ -72,14 +72,52 @@ describe("base websocket unit tests", () => {
     });
 
     it("sets an attachment on the wrapped websocket", () => {
-        con.setAttachment({
+        con.attach({
             id: "123",
             value: 456,
         });
 
-        const attachment = con.getAttachment();
-        expect(attachment.id).toBe("123");
-        expect(attachment.value).toBe(456);
+        expect(con.attachment.id).toBe("123");
+        expect(con.attachment.value).toBe(456);
+    });
+
+    it("returns a empty attachment if not set", () => {
+        expect(con.attachment).toStrictEqual({});
+    });
+
+    it("does nothing when attaching undefined", () => {
+        con.attach({
+            id: "123",
+            value: 456,
+        });
+        expect(con.attachment).toStrictEqual({
+            id: "123",
+            value: 456,
+        });
+
+        con.attach();
+
+        expect(con.attachment).toStrictEqual({
+            id: "123",
+            value: 456,
+        });
+    });
+
+    it("clears the attachment if null", () => {
+        con.attach({
+            id: "123",
+            value: 456,
+        });
+        expect(con.attachment).toStrictEqual({
+            id: "123",
+            value: 456,
+        });
+
+        con.attach(null);
+
+        expect(con.attachment).toStrictEqual({});
+        expect(con.attachment.id).toBeUndefined();
+        expect(con.attachment.value).toBeUndefined();
     });
 
     it("returns 'connecting' for ready state when accepted = false", () => {

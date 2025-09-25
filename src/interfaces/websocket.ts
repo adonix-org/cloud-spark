@@ -33,8 +33,8 @@ export interface WebSocketConnection<A extends WSAttachment> {
     isState(...states: number[]): boolean;
     accept(): WebSocket;
     acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket;
-    getAttachment(): A;
-    setAttachment(attachment: A): void;
+    get attachment(): A;
+    attach(attachment: A): void;
     send(message: string | ArrayBuffer): void;
     close(code?: number, reason?: string): void;
 

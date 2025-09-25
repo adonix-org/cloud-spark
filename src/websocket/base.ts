@@ -41,12 +41,17 @@ export abstract class BaseWebSocket<A extends WSAttachment> extends WebSocketEve
         this.server.send(data);
     }
 
-    public getAttachment(): A {
-        return this.server.deserializeAttachment() as A;
+    public get attachment(): A {
+        return (this.server.deserializeAttachment() ?? {}) as A;
     }
 
-    public setAttachment(attachment: A): void {
-        this.server.serializeAttachment(attachment);
+    public attach(attachment?: A | null): void {
+        if (attachment === undefined) return;
+        if (attachment === null) {
+            this.server.serializeAttachment({});
+        } else {
+            this.server.serializeAttachment(attachment);
+        }
     }
 
     public get readyState(): number {
