@@ -23,6 +23,7 @@ interface Id {
 }
 
 class TestConnection extends BaseWebSocket {
+    public closeSpy = vi.fn();
     public readonly client: WebSocket;
 
     constructor() {
@@ -32,9 +33,8 @@ class TestConnection extends BaseWebSocket {
         this.client = client;
     }
 
-    public closeCount = 0;
     public override close(code?: number, reason?: string): void {
-        this.closeCount++;
+        this.closeSpy();
         super.close(code, reason);
     }
 
@@ -157,29 +157,30 @@ describe("base websocket unit tests", () => {
     });
 
     it("only fires close event once on client close", async () => {
-        con.accept();
-
         const listener = vi.fn();
         con.addEventListener("close", listener);
+
+        con.accept();
         con.client.close();
 
         expect(listener).toHaveBeenCalledOnce();
     });
 
     it("only fires close event once on server close", async () => {
-        con.accept();
-
         const listener = vi.fn();
         con.addEventListener("close", listener);
+
+        con.accept();
         con.close();
 
         expect(listener).toHaveBeenCalledOnce();
+        expect(con.closeSpy).toHaveBeenCalledOnce();
     });
 
     it("only calls close once on client close", async () => {
         con.accept();
 
         con.client.close();
-        expect(con.closeCount).toBe(1);
+        expect(con.closeSpy).toHaveBeenCalledOnce();
     });
 });

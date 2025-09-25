@@ -78,12 +78,22 @@ describe("WebSocketEvents unit tests", () => {
         expect(listener).toHaveBeenCalledOnce();
     });
 
+    it("adds 'close' listener with once=true if no options provided", () => {
+        const listener = vi.fn();
+        con.addEventListener("close", listener);
+
+        server.close();
+        server.close();
+
+        expect(listener).toHaveBeenCalledOnce();
+    });
+
     it("correctly removes server listeners", () => {
         const listener = vi.fn();
         con.addEventListener("close", listener);
         con.removeEventListener("close", listener);
 
-        server.close(1000);
+        server.close();
 
         expect(listener).not.toHaveBeenCalled();
     });
