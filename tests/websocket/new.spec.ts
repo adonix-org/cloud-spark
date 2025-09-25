@@ -17,14 +17,75 @@
 import { NewConnectionBase } from "@src/websocket/new";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-class TestConnection extends NewConnectionBase<{}> {}
+class TestConnection extends NewConnectionBase<{}> {
+    getAccepted() {
+        return this.accepted;
+    }
+
+    getServer() {
+        return this.server;
+    }
+}
+
+const mockCtx: DurableObjectState = {
+    acceptWebSocket: vi.fn((ws, tags?) => [ws, tags]),
+} as unknown as DurableObjectState;
 
 describe("WebSocketEvents unit tests", () => {
     let con: TestConnection;
 
     beforeEach(() => {
         con = new TestConnection();
+        vi.clearAllMocks();
     });
 
-    it("", () => {});
+    it("opens the connection on accept", () => {
+        const listener = vi.fn();
+        con.addEventListener("open", listener);
+
+        const client = con.accept();
+
+        expect(client).toBeDefined();
+        expect(con.getAccepted()).toBe(true);
+        expect(listener).toHaveBeenCalledOnce();
+    });
+
+    it("opens the connection on accept web socket", () => {
+        const listener = vi.fn();
+        con.addEventListener("open", listener);
+
+        const client = con.acceptWebSocket(mockCtx);
+
+        expect(client).toBeDefined();
+        expect(con.getAccepted()).toBe(true);
+        expect(listener).toHaveBeenCalledOnce();
+        expect(mockCtx.acceptWebSocket).toHaveBeenCalledExactlyOnceWith(con.getServer(), undefined);
+    });
+
+    it("opens the connection on accept web socket and empty tag array", () => {
+        const listener = vi.fn();
+        con.addEventListener("open", listener);
+
+        const client = con.acceptWebSocket(mockCtx, []);
+
+        expect(client).toBeDefined();
+        expect(con.getAccepted()).toBe(true);
+        expect(listener).toHaveBeenCalledOnce();
+        expect(mockCtx.acceptWebSocket).toHaveBeenCalledExactlyOnceWith(con.getServer(), []);
+    });
+
+    it("opens the connection on accept web socket and tags", () => {
+        const listener = vi.fn();
+        con.addEventListener("open", listener);
+
+        const client = con.acceptWebSocket(mockCtx, ["tag1", "tag2"]);
+
+        expect(client).toBeDefined();
+        expect(con.getAccepted()).toBe(true);
+        expect(listener).toHaveBeenCalledOnce();
+        expect(mockCtx.acceptWebSocket).toHaveBeenCalledExactlyOnceWith(con.getServer(), [
+            "tag1",
+            "tag2",
+        ]);
+    });
 });
