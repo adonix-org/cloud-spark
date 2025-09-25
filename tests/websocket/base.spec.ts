@@ -30,10 +30,6 @@ describe("BaseWebSocket (smoke test)", () => {
         const [client, server] = [pair[0], pair[1]];
         const ws = new TestConnection(server);
 
-        ws.addEventListener("warn", (event) => {
-            console.warn(event.message);
-        });
-
         const warnings: string[] = [];
         ws.addEventListener("warn", (event) => {
             warnings.push(event.message);
