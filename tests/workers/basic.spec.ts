@@ -53,7 +53,7 @@ describe("basic worker unit tests", () => {
     it("returns empty HEAD response", async () => {
         class GetWorker extends TestWorker {
             protected override async get(): Promise<Response> {
-                return this.getResponse(
+                return this.response(
                     TextResponse,
                     "Hello.",
                     CacheControl.DISABLE,

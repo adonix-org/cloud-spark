@@ -103,22 +103,22 @@ export abstract class RouteWorker extends BasicWorker {
     }
 
     protected override async get(): Promise<Response> {
-        return this.getResponse(NotFound);
+        return this.response(NotFound);
     }
 
     protected override async put(): Promise<Response> {
-        return this.getResponse(NotFound);
+        return this.response(NotFound);
     }
 
     protected override async post(): Promise<Response> {
-        return this.getResponse(NotFound);
+        return this.response(NotFound);
     }
 
     protected override async patch(): Promise<Response> {
-        return this.getResponse(NotFound);
+        return this.response(NotFound);
     }
 
     protected override async delete(): Promise<Response> {
-        return this.getResponse(NotFound);
+        return this.response(NotFound);
     }
 }

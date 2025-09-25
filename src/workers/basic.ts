@@ -28,7 +28,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
      */
     public override async fetch(): Promise<Response> {
         if (!this.isAllowed(this.request.method)) {
-            return this.getResponse(MethodNotAllowed, this);
+            return this.response(MethodNotAllowed, this);
         }
 
         try {
@@ -36,7 +36,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
             return await super.fetch();
         } catch (error) {
             console.error(error);
-            return this.getResponse(InternalServerError);
+            return this.response(InternalServerError);
         }
     }
 
@@ -55,37 +55,37 @@ export abstract class BasicWorker extends MiddlewareWorker {
             OPTIONS: () => this.options(),
         };
 
-        return (handler[method] ?? (() => this.getResponse(MethodNotAllowed, this)))();
+        return (handler[method] ?? (() => this.response(MethodNotAllowed, this)))();
     }
 
     /** Override and implement this method for GET requests. */
     protected async get(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, this);
+        return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for PUT requests. */
     protected async put(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, this);
+        return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for POST requests. */
     protected async post(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, this);
+        return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for PATCH requests. */
     protected async patch(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, this);
+        return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for DELETE requests. */
     protected async delete(): Promise<Response> {
-        return this.getResponse(MethodNotImplemented, this);
+        return this.response(MethodNotImplemented, this);
     }
 
     /** Returns a default empty OPTIONS response. */
     protected async options(): Promise<Response> {
-        return this.getResponse(Options);
+        return this.response(Options);
     }
 
     /**
@@ -99,7 +99,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
         const worker = this.create(
             new Request(this.request.url, { method: GET, headers: this.request.headers }),
         );
-        return this.getResponse(Head, await worker.fetch());
+        return this.response(Head, await worker.fetch());
     }
 
     /**

@@ -40,13 +40,13 @@ class WebSocketHandler extends Middleware {
 
         const headers = worker.request.headers;
         if (!hasConnectionHeader(headers)) {
-            return new BadRequest("Missing or invalid Connection header").getResponse();
+            return new BadRequest("Missing or invalid Connection header").create();
         }
         if (!hasUpgradeHeader(headers)) {
-            return new BadRequest("Missing or invalid Upgrade header").getResponse();
+            return new BadRequest("Missing or invalid Upgrade header").create();
         }
         if (!hasWebSocketVersion(headers)) {
-            return new UpgradeRequired().getResponse();
+            return new UpgradeRequired().create();
         }
 
         return next();

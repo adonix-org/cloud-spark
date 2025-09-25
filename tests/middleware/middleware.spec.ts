@@ -53,7 +53,7 @@ class AuthWorker extends TestWorker {
 
 class AuthHandler extends Middleware {
     public override handle(): Promise<Response> {
-        return new Unauthorized().getResponse();
+        return new Unauthorized().create();
     }
 }
 

@@ -4,6 +4,7 @@ wrangler.jsonc
 artifacts/
 debug/
 dist/
+types/wrangler.d.ts
 
 
 # Logs
