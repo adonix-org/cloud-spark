@@ -17,7 +17,7 @@
 import { NewConnectionBase } from "@src/websocket/new";
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-class TestConnection extends NewConnectionBase {}
+class TestConnection extends NewConnectionBase<{}> {}
 
 describe("WebSocketEvents unit tests", () => {
     let con: TestConnection;

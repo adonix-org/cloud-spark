@@ -614,33 +614,32 @@ type EventOptions = {
 type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
 type ExtendedEventType = keyof ExtendedEventMap;
 type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
-interface WebSocketConnection {
+type WSAttachment = object;
+interface WebSocketConnection<A extends WSAttachment> {
     get readyState(): number;
     isState(...states: number[]): boolean;
     accept(): WebSocket;
     acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket;
-    getAttachment<T extends object>(): T;
-    setAttachment<T extends object>(attachment: T): void;
+    getAttachment(): A;
+    setAttachment(attachment: A): void;
     send(message: string | ArrayBuffer): void;
     close(code?: number, reason?: string): void;
     addEventListener<K extends ExtendedEventType>(type: K, listener: ExtendedEventListener<K>, options?: EventOptions): void;
     removeEventListener<K extends ExtendedEventType>(type: K, listener: ExtendedEventListener<K>): void;
 }
 
-declare class WebSocketSessions {
+declare class WebSocketSessions<A extends WSAttachment = WSAttachment> {
     private readonly map;
-    create(): WebSocketConnection;
-    restore(ws: WebSocket): WebSocketConnection;
-    restoreAll(websockets: WebSocket[]): ReadonlyArray<WebSocketConnection>;
-    get(ws: WebSocket): WebSocketConnection | undefined;
-    values(): IterableIterator<WebSocketConnection>;
+    create(attachment?: A): WebSocketConnection<A>;
+    restore(ws: WebSocket): WebSocketConnection<A>;
+    restoreAll(websockets: WebSocket[]): ReadonlyArray<WebSocketConnection<A>>;
+    get(ws: WebSocket): WebSocketConnection<A> | undefined;
+    values(): IterableIterator<WebSocketConnection<A>>;
     keys(): IterableIterator<WebSocket>;
     close(ws: WebSocket, code?: number, reason?: string): boolean;
-    [Symbol.iterator](): IterableIterator<WebSocketConnection>;
+    [Symbol.iterator](): IterableIterator<WebSocketConnection<A>>;
     private register;
     private unregister;
-    private static readonly NewConnection;
-    private static readonly RestoredConnection;
 }
 
 /**

@@ -26,13 +26,15 @@ export type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
 export type ExtendedEventType = keyof ExtendedEventMap;
 export type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
 
-export interface WebSocketConnection {
+export type WSAttachment = object;
+
+export interface WebSocketConnection<A extends WSAttachment> {
     get readyState(): number;
     isState(...states: number[]): boolean;
     accept(): WebSocket;
     acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket;
-    getAttachment<T extends object>(): T;
-    setAttachment<T extends object>(attachment: T): void;
+    getAttachment(): A;
+    setAttachment(attachment: A): void;
     send(message: string | ArrayBuffer): void;
     close(code?: number, reason?: string): void;
 

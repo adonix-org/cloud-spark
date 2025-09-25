@@ -22,7 +22,7 @@ interface Id {
     value: number;
 }
 
-class TestConnection extends BaseWebSocket {
+class TestConnection extends BaseWebSocket<Id> {
     public closeSpy = vi.fn();
     public readonly client: WebSocket;
 
@@ -72,12 +72,12 @@ describe("base websocket unit tests", () => {
     });
 
     it("sets an attachment on the wrapped websocket", () => {
-        con.setAttachment<Id>({
+        con.setAttachment({
             id: "123",
             value: 456,
         });
 
-        const attachment = con.getAttachment<Id>();
+        const attachment = con.getAttachment();
         expect(attachment.id).toBe("123");
         expect(attachment.value).toBe(456);
     });

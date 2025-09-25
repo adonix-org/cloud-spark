@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { WebSocketConnection } from "../interfaces/websocket";
+import { WSAttachment, WebSocketConnection } from "../interfaces/websocket";
 import { BaseWebSocket } from "./base";
 
-export abstract class RestoredConnectionBase extends BaseWebSocket implements WebSocketConnection {
+export abstract class RestoredConnectionBase<A extends WSAttachment>
+    extends BaseWebSocket<A>
+    implements WebSocketConnection<A>
+{
     constructor(ws: WebSocket) {
         super(ws);
         this.accepted = true;

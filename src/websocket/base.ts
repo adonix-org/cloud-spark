@@ -15,9 +15,10 @@
  */
 
 import { isSendable, safeCloseCode, safeReason } from "../guards/websocket";
+import { WSAttachment } from "../interfaces/websocket";
 import { WebSocketEvents } from "./events";
 
-export abstract class BaseWebSocket extends WebSocketEvents {
+export abstract class BaseWebSocket<A extends WSAttachment> extends WebSocketEvents {
     protected accepted = false;
     protected readonly server: WebSocket;
 
@@ -40,11 +41,11 @@ export abstract class BaseWebSocket extends WebSocketEvents {
         this.server.send(data);
     }
 
-    public getAttachment<T extends object>(): T {
-        return this.server.deserializeAttachment() as T;
+    public getAttachment(): A {
+        return this.server.deserializeAttachment() as A;
     }
 
-    public setAttachment<T extends object>(attachment: T): void {
+    public setAttachment(attachment: A): void {
         this.server.serializeAttachment(attachment);
     }
 

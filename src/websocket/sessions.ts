@@ -15,34 +15,55 @@
  */
 
 import { safeCloseCode, safeReason } from "../guards/websocket";
-import { WebSocketConnection } from "../interfaces/websocket";
+import { WSAttachment, WebSocketConnection } from "../interfaces/websocket";
 import { NewConnectionBase } from "./new";
 import { RestoredConnectionBase } from "./restore";
 
-export class WebSocketSessions {
-    private readonly map = new Map<WebSocket, WebSocketConnection>();
+export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
+    private readonly map = new Map<WebSocket, WebSocketConnection<A>>();
 
-    public create(): WebSocketConnection {
-        return new WebSocketSessions.NewConnection(this);
+    public create(attachment?: A): WebSocketConnection<A> {
+        class NewConnection extends NewConnectionBase<A> {
+            constructor(sessions: WebSocketSessions<A>) {
+                super();
+
+                sessions.register(this.server, this);
+                this.addEventListener("close", () => sessions.unregister(this.server), {
+                    once: true,
+                });
+            }
+        }
+        const connection = new NewConnection(this);
+        if (attachment) {
+            connection.setAttachment(attachment);
+        }
+        return connection;
     }
 
-    public restore(ws: WebSocket): WebSocketConnection {
-        return new WebSocketSessions.RestoredConnection(this, ws);
+    public restore(ws: WebSocket): WebSocketConnection<A> {
+        class RestoredConnection extends RestoredConnectionBase<A> {
+            constructor(sessions: WebSocketSessions<A>, restore: WebSocket) {
+                super(restore);
+
+                sessions.register(this.server, this);
+            }
+        }
+        return new RestoredConnection(this, ws);
     }
 
-    public restoreAll(websockets: WebSocket[]): ReadonlyArray<WebSocketConnection> {
-        const restored: WebSocketConnection[] = [];
+    public restoreAll(websockets: WebSocket[]): ReadonlyArray<WebSocketConnection<A>> {
+        const restored: WebSocketConnection<A>[] = [];
         for (const ws of websockets) {
-            restored.push(new WebSocketSessions.RestoredConnection(this, ws));
+            restored.push(this.restore(ws));
         }
         return restored;
     }
 
-    public get(ws: WebSocket): WebSocketConnection | undefined {
+    public get(ws: WebSocket): WebSocketConnection<A> | undefined {
         return this.map.get(ws);
     }
 
-    public values(): IterableIterator<WebSocketConnection> {
+    public values(): IterableIterator<WebSocketConnection<A>> {
         return this.map.values();
     }
 
@@ -55,32 +76,15 @@ export class WebSocketSessions {
         return this.unregister(ws);
     }
 
-    public *[Symbol.iterator](): IterableIterator<WebSocketConnection> {
+    public *[Symbol.iterator](): IterableIterator<WebSocketConnection<A>> {
         yield* this.values();
     }
 
-    private register(ws: WebSocket, con: WebSocketConnection): void {
+    private register(ws: WebSocket, con: WebSocketConnection<A>): void {
         this.map.set(ws, con);
     }
 
     private unregister(ws: WebSocket): boolean {
         return this.map.delete(ws);
     }
-
-    private static readonly NewConnection = class extends NewConnectionBase {
-        constructor(sessions: WebSocketSessions) {
-            super();
-
-            sessions.register(this.server, this);
-            this.addEventListener("close", () => sessions.unregister(this.server), { once: true });
-        }
-    };
-
-    private static readonly RestoredConnection = class extends RestoredConnectionBase {
-        constructor(sessions: WebSocketSessions, restore: WebSocket) {
-            super(restore);
-
-            sessions.register(this.server, this);
-        }
-    };
 }

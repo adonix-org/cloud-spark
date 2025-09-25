@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { WebSocketConnection } from "../interfaces/websocket";
+import { WSAttachment, WebSocketConnection } from "../interfaces/websocket";
 import { BaseWebSocket } from "./base";
 
-export abstract class NewConnectionBase extends BaseWebSocket implements WebSocketConnection {
+export abstract class NewConnectionBase<A extends WSAttachment>
+    extends BaseWebSocket<A>
+    implements WebSocketConnection<A>
+{
     private readonly client: WebSocket;
 
     public constructor() {
