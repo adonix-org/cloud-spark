@@ -32,9 +32,9 @@ class TestConnection extends BaseWebSocket {
         this.client = client;
     }
 
-    public count = 0;
+    public closeCount = 0;
     public override close(code?: number, reason?: string): void {
-        this.count++;
+        this.closeCount++;
         super.close(code, reason);
     }
 
@@ -121,6 +121,7 @@ describe("base websocket unit tests", () => {
 
     it("warns when sending an invalid type", () => {
         con.accept();
+
         con.send({} as any);
         expect(warnings).toStrictEqual(["Cannot send: empty or invalid data"]);
     });
@@ -147,27 +148,20 @@ describe("base websocket unit tests", () => {
     it("passes close code and reason from client close", async () => {
         con.accept();
 
-        await new Promise<void>((resolve) => {
-            con.addEventListener("close", (event) => {
-                expect(event.code).toBe(1001);
-                expect(event.reason).toBe("a reason");
-                resolve();
-            });
-            con.client.close(1001, "a reason");
+        con.addEventListener("close", (event) => {
+            expect(event.code).toBe(1001);
+            expect(event.reason).toBe("a reason");
         });
+
+        con.client.close(1001, "a reason");
     });
 
     it("only fires close event once on client close", async () => {
         con.accept();
 
         let count = 0;
-        await new Promise<void>((resolve) => {
-            con.addEventListener("close", () => {
-                count++;
-                resolve();
-            });
-            con.client.close();
-        });
+        con.addEventListener("close", () => count++);
+        con.client.close();
 
         expect(count).toBe(1);
     });
@@ -176,20 +170,16 @@ describe("base websocket unit tests", () => {
         con.accept();
 
         let count = 0;
-        await new Promise<void>((resolve) => {
-            con.addEventListener("close", () => {
-                count++;
-                resolve();
-            });
-            con.close();
-        });
+        con.addEventListener("close", () => count++);
+        con.close();
 
         expect(count).toBe(1);
     });
 
     it("only calls close once on client close", async () => {
         con.accept();
+
         con.client.close();
-        expect(con.count).toBe(1);
+        expect(con.closeCount).toBe(1);
     });
 });
