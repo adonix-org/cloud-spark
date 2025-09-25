@@ -37,22 +37,23 @@ describe("WebSocketEvents unit tests", () => {
     });
 
     it("fires 'warn' event with correct payload", () => {
-        let called = false;
-        con.addEventListener("warn", (ev) => {
+        const listener = vi.fn((ev) => {
             expect(ev.type).toBe("warn");
             expect(ev.message).toBe("something");
-            called = true;
         });
+
+        con.addEventListener("warn", listener);
         con.triggerWarn("something");
-        expect(called).toBe(true);
+
+        expect(listener).toHaveBeenCalledOnce();
     });
 
     it("fires the 'open' event only once", () => {
-        let count = 0;
-        con.addEventListener("open", () => count++);
+        const listener = vi.fn();
+        con.addEventListener("open", listener);
         con.triggerOpen();
         con.triggerOpen();
-        expect(count).toBe(1);
+        expect(listener).toHaveBeenCalledOnce();
     });
 
     it("removes custom listeners correctly", () => {
@@ -64,13 +65,13 @@ describe("WebSocketEvents unit tests", () => {
     });
 
     it("delegates server 'close' event and enforces once", () => {
-        let count = 0;
-        con.addEventListener("close", () => count++);
+        const listener = vi.fn();
+        con.addEventListener("close", listener);
 
         server.close(1001, "first");
         server.close(1001, "second");
 
-        expect(count).toBe(1);
+        expect(listener).toHaveBeenCalledOnce();
     });
 
     it("removes server listeners correctly", () => {
@@ -82,7 +83,6 @@ describe("WebSocketEvents unit tests", () => {
 
         expect(listener).not.toHaveBeenCalled();
     });
-
 
     it("multiple custom listeners all fire", () => {
         const called: string[] = [];
