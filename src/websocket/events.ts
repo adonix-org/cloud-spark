@@ -22,14 +22,12 @@ import {
     ExtendedEventType,
 } from "../interfaces/websocket";
 
-const CUSTOM_EVENTS: string[] = ["open", "warn"];
-
-function isCustomEvent(type: ExtendedEventType): boolean {
-    return CUSTOM_EVENTS.includes(type);
-}
-
 export abstract class WebSocketEvents {
     protected readonly server: WebSocket;
+
+    private static isCustomEvent(type: ExtendedEventType): boolean {
+        return ["open", "warn"].includes(type);
+    }
 
     private customListeners: {
         [K in ExtendedEventType]?: ((ev: ExtendedEventMap[K]) => void)[];
@@ -44,7 +42,7 @@ export abstract class WebSocketEvents {
         listener: ExtendedEventListener<K>,
         options?: EventOptions,
     ): void {
-        if (isCustomEvent(type)) {
+        if (WebSocketEvents.isCustomEvent(type)) {
             let arr = this.customListeners[type];
             if (!arr) {
                 arr = [];
@@ -65,7 +63,7 @@ export abstract class WebSocketEvents {
         type: K,
         listener: ExtendedEventListener<K>,
     ): void {
-        if (isCustomEvent(type)) {
+        if (WebSocketEvents.isCustomEvent(type)) {
             const arr = this.customListeners[type];
             if (arr) {
                 const index = arr.indexOf(listener);
