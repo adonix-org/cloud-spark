@@ -52,10 +52,11 @@ export abstract class WebSocketEvents {
             }
             arr.push(listener);
         } else {
+            const finalOptions = type === "close" ? { ...options, once: true } : options;
             this.server.addEventListener(
                 type as keyof WebSocketEventMap,
                 listener as EventListener,
-                options,
+                finalOptions,
             );
         }
     }
