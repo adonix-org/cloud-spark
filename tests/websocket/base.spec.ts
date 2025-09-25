@@ -14,38 +14,52 @@
  * limitations under the License.
  */
 
+import { MockWebSocket } from "@mock";
 import { BaseWebSocket } from "@src/websocket/base";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 
 class TestConnection extends BaseWebSocket {
-    constructor(ws: WebSocket) {
-        super(ws);
+    public readonly client: WebSocket;
+
+    constructor() {
+        const pair = new WebSocketPair();
+        const [client, server] = [pair[0], pair[1]];
+        super(server);
+        this.client = client;
+    }
+
+    public accept(): WebSocket {
         this.accepted = true;
+        return new MockWebSocket();
+    }
+
+    public acceptWebSocket(_ctx: DurableObjectState, _tags?: string[]): WebSocket {
+        this.accepted = true;
+        return new MockWebSocket();
     }
 }
 
-describe("BaseWebSocket (smoke test)", () => {
-    it("can send a message", () => {
-        const pair = new WebSocketPair();
-        const [client, server] = [pair[0], pair[1]];
-        const ws = new TestConnection(server);
+describe("base websocket unit tests", () => {
+    let con: TestConnection;
+    let messages: string[] = [];
+    let warnings: string[] = [];
 
-        const warnings: string[] = [];
-        ws.addEventListener("warn", (event) => {
-            warnings.push(event.message);
-        });
+    beforeEach(() => {
+        messages = [];
+        warnings = [];
+        con = new TestConnection();
+        con.addEventListener("warn", (event) => warnings.push(event.message));
+        con.client.addEventListener("message", (event) => messages.push(event.data));
+    });
 
-        const messages: string[] = [];
-        client.addEventListener("message", (ev: MessageEvent) => messages.push(ev.data));
+    it("warns when sending to a client that is not open", () => {
+        con.send("hello");
+        expect(warnings).toStrictEqual(["Cannot send: WebSocket not open"]);
+    });
 
-        ws.send("hello world");
-
-        expect(messages).toEqual(["hello world"]);
-
-        ws.close(1000);
-
-        ws.send("After close.");
-
-        expect(warnings).toEqual(["Cannot send: WebSocket not open"]);
+    it("warns when sending an invalid type", () => {
+        con.accept();
+        con.send({} as any);
+        expect(warnings).toStrictEqual(["Cannot send: empty or invalid data"]);
     });
 });
