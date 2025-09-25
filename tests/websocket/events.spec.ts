@@ -88,6 +88,49 @@ describe("WebSocketEvents unit tests", () => {
         expect(listener).toHaveBeenCalledOnce();
     });
 
+    it("overrides options with once=true for close event", () => {
+        const listener = vi.fn();
+        con.addEventListener("close", listener, { once: false });
+
+        server.close();
+        server.close();
+
+        expect(listener).toHaveBeenCalledOnce();
+    });
+
+    it("does not override undefined options for native message event", () => {
+        const listener = vi.fn();
+        const ev = new MessageEvent("message", { data: "hi" });
+        con.addEventListener("message", listener);
+
+        server.dispatchEvent(ev);
+        server.dispatchEvent(ev);
+
+        expect(listener).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not override provided options once=false for native message event", () => {
+        const listener = vi.fn();
+        const ev = new MessageEvent("message", { data: "hi" });
+        con.addEventListener("message", listener, { once: false });
+
+        server.dispatchEvent(ev);
+        server.dispatchEvent(ev);
+
+        expect(listener).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not override provided options once=true for native message event", () => {
+        const listener = vi.fn();
+        const ev = new MessageEvent("message", { data: "hi" });
+        con.addEventListener("message", listener, { once: true });
+
+        server.dispatchEvent(ev);
+        server.dispatchEvent(ev);
+
+        expect(listener).toHaveBeenCalledOnce();
+    });
+
     it("correctly removes server listeners", () => {
         const listener = vi.fn();
         con.addEventListener("close", listener);
