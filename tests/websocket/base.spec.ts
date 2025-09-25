@@ -15,7 +15,7 @@
  */
 
 import { BaseWebSocket } from "@src/websocket/base";
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 interface Id {
     id: string;
@@ -159,21 +159,21 @@ describe("base websocket unit tests", () => {
     it("only fires close event once on client close", async () => {
         con.accept();
 
-        let count = 0;
-        con.addEventListener("close", () => count++);
+        const listener = vi.fn();
+        con.addEventListener("close", listener);
         con.client.close();
 
-        expect(count).toBe(1);
+        expect(listener).toHaveBeenCalledOnce();
     });
 
     it("only fires close event once on server close", async () => {
         con.accept();
 
-        let count = 0;
-        con.addEventListener("close", () => count++);
+        const listener = vi.fn();
+        con.addEventListener("close", listener);
         con.close();
 
-        expect(count).toBe(1);
+        expect(listener).toHaveBeenCalledOnce();
     });
 
     it("only calls close once on client close", async () => {
