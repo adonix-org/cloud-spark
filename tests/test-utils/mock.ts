@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * Env
+ */
 export const env = {
     MY_KV: {
         get: async (key: string) => `mock-value-for-${key}`,
@@ -22,12 +25,18 @@ export const env = {
     MY_SECRET: "mock-secret",
 } as const;
 
+/**
+ * ExecutionContext
+ */
 export const ctx: ExecutionContext = {
     waitUntil: () => {},
     passThroughOnException: () => {},
     props: () => {},
 } as const;
 
+/**
+ * Cache
+ */
 class InMemoryCache {
     public store: Record<string, Response> = {};
 
@@ -78,7 +87,9 @@ const caches = {
 
 (globalThis as any).caches = caches;
 
-// At the top of your mock file or in setup file
+/**
+ * WebSockets
+ */
 class CloseEvent extends Event {
     code: number;
     reason: string;
@@ -116,7 +127,6 @@ export class MockWebSocket extends EventTarget implements WebSocket {
 
     send(data: string | ArrayBuffer) {
         this.sent.push(data);
-        // dispatch a MessageEvent to the paired WebSocket
         this.paired?.dispatchEvent(new MessageEvent("message", { data }));
     }
 
