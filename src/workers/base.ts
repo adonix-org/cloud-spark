@@ -100,7 +100,7 @@ export abstract class BaseWorker implements Worker {
      * Or directly use any of the built-in classes.
      *
      * ```ts
-     * this.getResponse(TextResponse, "Hello World!")
+     * this.response(TextResponse, "Hello World!")
      * ```
      *
      * @param ResponseClass The response class to instantiate
