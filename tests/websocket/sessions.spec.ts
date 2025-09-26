@@ -16,7 +16,7 @@
 
 import { MockWebSocket } from "@mock";
 import { WebSocketSessions } from "@src/websocket/sessions";
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 describe("websocket sessions unit tests", () => {
     let sessions: WebSocketSessions;
@@ -34,6 +34,25 @@ describe("websocket sessions unit tests", () => {
 
         expect(allValues).toContain(con);
         expect(allKeys).toHaveLength(1);
+
+        const ws = allKeys[0];
+        expect(sessions.get(ws!)).toBe(con);
+    });
+
+    it("creates and registers a new hibernate connection", () => {
+        const mockCtx: DurableObjectState = {
+            acceptWebSocket: vi.fn(() => 0),
+        } as unknown as DurableObjectState;
+
+        const con = sessions.create();
+        con.acceptWebSocket(mockCtx);
+
+        const allKeys = [...sessions.keys()];
+        const allValues = [...sessions.values()];
+
+        expect(allValues).toContain(con);
+        expect(allKeys).toHaveLength(1);
+        expect(mockCtx.acceptWebSocket).toHaveBeenCalledOnce();
 
         const ws = allKeys[0];
         expect(sessions.get(ws!)).toBe(con);
