@@ -45,3 +45,14 @@ export function safeReason(reason?: string): string | undefined {
     if (!isString(reason)) return;
     return reason.replace(/[^\x20-\x7E]/g, "").slice(0, WS_MAX_REASON_CHARS);
 }
+
+export function assertSerializable(value: unknown): asserts value is object {
+    if (value === null || typeof value !== "object") {
+        throw new TypeError("WebSocket attachment must be a non-null object");
+    }
+    try {
+        JSON.stringify(value);
+    } catch {
+        throw new TypeError("WebSocket attachment is non-serializable");
+    }
+}

@@ -721,7 +721,7 @@ declare abstract class BaseWorker implements Worker {
      * Or directly use any of the built-in classes.
      *
      * \`\`\`ts
-     * this.getResponse(TextResponse, "Hello World!")
+     * this.response(TextResponse, "Hello World!")
      * \`\`\`
      *
      * @param ResponseClass The response class to instantiate
@@ -914,7 +914,7 @@ declare abstract class CacheResponse extends BaseResponse {
 declare abstract class WorkerResponse extends CacheResponse {
     private readonly body;
     constructor(body?: BodyInit | null, cache?: CacheControl);
-    /** Builds the Response object with body, headers, and status. */
+    /** Builds the Response with body, headers, and status. */
     create(): Promise<Response>;
 }
 /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isSendable, safeCloseCode, safeReason } from "../guards/websocket";
+import { assertSerializable, isSendable, safeCloseCode, safeReason } from "../guards/websocket";
 import { WSAttachment } from "../interfaces/websocket";
 import { WebSocketEvents } from "./events";
 
@@ -50,6 +50,7 @@ export abstract class BaseWebSocket<A extends WSAttachment> extends WebSocketEve
         if (attachment === null) {
             this.server.serializeAttachment({});
         } else {
+            assertSerializable(attachment);
             this.server.serializeAttachment(attachment);
         }
     }
