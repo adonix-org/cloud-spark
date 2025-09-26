@@ -28,7 +28,7 @@ class TestConnection extends NewConnectionBase<{}> {
 }
 
 const mockCtx: DurableObjectState = {
-    acceptWebSocket: vi.fn((ws, tags?) => [ws, tags]),
+    acceptWebSocket: vi.fn(() => 0),
 } as unknown as DurableObjectState;
 
 describe("new connection base unit tests", () => {
