@@ -121,5 +121,8 @@ export function base64UrlEncode(str: string): string {
     for (const byte of utf8) {
         binary += String.fromCodePoint(byte);
     }
-    return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
+    return btoa(binary)
+        .replaceAll("+", "-")
+        .replaceAll("/", "_")
+        .replace(/={1,2}$/, "");
 }

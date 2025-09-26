@@ -243,22 +243,21 @@ describe("cache utils unit tests ", () => {
         });
 
         it("replaces + and / with - and _", () => {
-            // craft a string that produces + and / in Base64
             const input = String.fromCharCode(251, 255, 254);
             const encoded = base64UrlEncode(input);
             expect(encoded).not.toContain("+");
             expect(encoded).not.toContain("/");
-            expect(encoded).toMatch(/^[A-Za-z0-9_-]+$/); // only URL-safe chars
+            expect(encoded).toMatch(/^[A-Za-z0-9_-]+$/);
         });
 
         it("removes trailing padding = characters", () => {
-            const input = "any"; // 'YW55' in Base64, no padding
+            const input = "any";
             expect(base64UrlEncode(input)).toBe("YW55");
 
-            const input2 = "a"; // 'YQ==' in Base64 → should remove ==
+            const input2 = "a";
             expect(base64UrlEncode(input2)).toBe("YQ");
 
-            const input3 = "ab"; // 'YWI=' → should remove =
+            const input3 = "ab";
             expect(base64UrlEncode(input3)).toBe("YWI");
         });
 
