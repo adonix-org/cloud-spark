@@ -24,13 +24,18 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
 
     public create(attachment?: A): WebSocketConnection<A> {
         class NewConnection extends NewConnectionBase<A> {
-            constructor(sessions: WebSocketSessions<A>) {
+            constructor(private readonly sessions: WebSocketSessions<A>) {
                 super();
-
                 sessions.register(this.server, this);
-                this.addEventListener("close", () => sessions.unregister(this.server), {
+            }
+
+            // Only add the close (unregister) event if not using hibernation which dispatches
+            // its own events and uses alternate acceptWebSockets method
+            public override accept(): WebSocket {
+                this.addEventListener("close", () => this.sessions.unregister(this.server), {
                     once: true,
                 });
+                return super.accept();
             }
         }
 
@@ -43,16 +48,15 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
         class RestoredConnection extends RestoredConnectionBase<A> {
             constructor(sessions: WebSocketSessions<A>, restore: WebSocket) {
                 super(restore);
-
                 sessions.register(this.server, this);
             }
         }
         return new RestoredConnection(this, ws);
     }
 
-    public restoreAll(websockets: WebSocket[]): ReadonlyArray<WebSocketConnection<A>> {
+    public restoreAll(all: WebSocket[]): ReadonlyArray<WebSocketConnection<A>> {
         const restored: WebSocketConnection<A>[] = [];
-        for (const ws of websockets) {
+        for (const ws of all) {
             restored.push(this.restore(ws));
         }
         return restored;

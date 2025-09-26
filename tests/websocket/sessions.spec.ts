@@ -46,7 +46,7 @@ describe("websocket sessions unit tests", () => {
         expect(sessions.get(ws)).toBe(con);
     });
 
-    it("restores multiple websockets with restoreAll()", () => {
+    it("restores multiple websockets with restore-all", () => {
         const ws1 = new MockWebSocket();
         const ws2 = new MockWebSocket();
 
@@ -61,30 +61,30 @@ describe("websocket sessions unit tests", () => {
         expect([...sessions.keys()]).toEqual(expect.arrayContaining([ws1, ws2]));
     });
 
-    it("closes a new websocket and unregisters it", () => {
+    it("closes a 'new' websocket and unregisters it", () => {
         const con = sessions.create();
         con.accept();
 
         expect([...sessions.values()].length).toBe(1);
 
-        con.close(1000, "Goodbye");
+        con.close(1000, "goodbye");
 
         expect([...sessions.values()].length).toBe(0);
     });
 
-    it("closes a restored websocket and unregisters it", () => {
+    it("closes a 'restored' websocket and unregisters it", () => {
         const ws = new MockWebSocket();
         const con = sessions.restore(ws);
 
         expect(sessions.get(ws)).toBe(con);
 
-        const result = sessions.close(ws, 1000, "shutting down");
+        const result = sessions.close(ws, 1000, "goodbye");
 
         expect(result).toBe(true);
         expect(sessions.get(ws)).toBeUndefined();
     });
 
-    it("iterates over connections using Symbol.iterator", () => {
+    it("iterates over connections using symbol.iterator", () => {
         const con1 = sessions.create();
         const con2 = sessions.create();
         const iterated = [...sessions];

@@ -632,7 +632,7 @@ declare class WebSocketSessions<A extends WSAttachment = WSAttachment> {
     private readonly map;
     create(attachment?: A): WebSocketConnection<A>;
     restore(ws: WebSocket): WebSocketConnection<A>;
-    restoreAll(websockets: WebSocket[]): ReadonlyArray<WebSocketConnection<A>>;
+    restoreAll(all: WebSocket[]): ReadonlyArray<WebSocketConnection<A>>;
     get(ws: WebSocket): WebSocketConnection<A> | undefined;
     values(): IterableIterator<WebSocketConnection<A>>;
     keys(): IterableIterator<WebSocket>;
