@@ -46,7 +46,7 @@ export async function options(worker: Worker, cors: CorsConfig): Promise<Respons
     setAllowHeaders(options.headers, cors);
     setMaxAge(options.headers, cors);
 
-    return options.create();
+    return options.response();
 }
 
 /**
@@ -76,7 +76,7 @@ export async function apply(
         setExposedHeaders(clone.headers, cors);
     }
 
-    return clone.create();
+    return clone.response();
 }
 
 /**

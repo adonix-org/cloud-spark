@@ -729,7 +729,7 @@ declare abstract class BaseWorker implements Worker {
      * @returns A Promise resolving to the {@link Response} object
      */
     protected response<Ctor extends new (...args: any[]) => {
-        create(): Promise<Response>;
+        response(): Promise<Response>;
     }>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor>): Promise<Response>;
     /**
      * **Ignite** your \`Worker\` implementation into a Cloudflare handler.
@@ -915,7 +915,7 @@ declare abstract class WorkerResponse extends CacheResponse {
     private readonly body;
     constructor(body?: BodyInit | null, cache?: CacheControl);
     /** Builds the Response with body, headers, and status. */
-    create(): Promise<Response>;
+    response(): Promise<Response>;
 }
 /**
  * Wraps an existing Response and clones its body, headers, and status.

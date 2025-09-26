@@ -107,11 +107,11 @@ export abstract class BaseWorker implements Worker {
      * @param args Additional constructor arguments
      * @returns A Promise resolving to the {@link Response} object
      */
-    protected async response<Ctor extends new (...args: any[]) => { create(): Promise<Response> }>(
+    protected async response<Ctor extends new (...args: any[]) => { response(): Promise<Response> }>(
         ResponseClass: Ctor,
         ...args: ConstructorParameters<Ctor>
     ): Promise<Response> {
-        return new ResponseClass(...args).create();
+        return new ResponseClass(...args).response();
     }
 
     /**

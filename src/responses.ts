@@ -98,7 +98,7 @@ export abstract class WorkerResponse extends CacheResponse {
     }
 
     /** Builds the Response with body, headers, and status. */
-    public async create(): Promise<Response> {
+    public async response(): Promise<Response> {
         this.addCacheHeader();
 
         const body = this.status === StatusCodes.NO_CONTENT ? null : this.body;
