@@ -38,12 +38,13 @@
         "url": "https://github.com/adonix-org/cloud-spark/issues"
     },
     "scripts": {
+        "types": "wrangler types --config wrangler.jsonc ./types/wrangler.d.ts",
+        "prebuild": "mkdir -p ./types",
         "build": "npm run types && tsup",
         "dev-types": "wrangler types --config wrangler.local.jsonc ./types/wrangler.d.ts",
         "dev": "npm run dev-types && wrangler dev --config wrangler.local.jsonc",
         "test": "npm run build && vitest",
-        "coverage": "vitest run --coverage",
-        "types": "wrangler types ./types/wrangler.d.ts"
+        "coverage": "vitest run --coverage"
     },
     "devDependencies": {
         "@types/node": "^24.4.0",
@@ -52,7 +53,7 @@
         "tsup": "^8.5.0",
         "typescript": "^5.9.2",
         "vitest": "^3.2.4",
-        "wrangler": "^4.40.1"
+        "wrangler": "^4.40.2"
     },
     "dependencies": {
         "cache-control-parser": "^2.0.6",
