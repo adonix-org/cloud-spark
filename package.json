@@ -43,7 +43,7 @@
         "test": "npm run build && vitest",
         "coverage": "vitest run --coverage",
         "types": "wrangler types ./types/wrangler.d.ts --no-include-env",
-        "debug": "wrangler types ./types/wrangler.d.ts"
+        "debug": "wrangler types ./types/wrangler.d.ts && wrangler dev --config wrangler.local.jsonc"
     },
     "devDependencies": {
         "@types/node": "^24.4.0",
