@@ -30,7 +30,7 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
             }
 
             // Only add a close (unregister) listener if not using hibernation
-            // which dispatches its own events.
+            // which dispatches all events.
             public override accept(): WebSocket {
                 this.addEventListener("close", () => this.sessions.unregister(this.server));
                 return super.accept();
