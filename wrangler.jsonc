@@ -1,0 +1,27 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "cloud-spark-debug",
+    "main": "src/debug/index.ts",
+    "compatibility_date": "2025-09-13",
+    "observability": {
+        "enabled": true,
+    },
+    "durable_objects": {
+        "bindings": [
+            {
+                "name": "WEBSOCKET_SERVER",
+                "class_name": "HibernatingWebSockets",
+            },
+        ],
+    },
+    "migrations": [
+        {
+            "tag": "v1",
+            "new_sqlite_classes": ["HibernatingWebSockets"],
+        },
+    ],
+}

@@ -1,6 +1,5 @@
 .vscode
 .DS_Store
-wrangler.jsonc
 artifacts/
 debug/
 dist/
