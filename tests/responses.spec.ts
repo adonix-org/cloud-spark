@@ -22,7 +22,7 @@ import {
     TextResponse,
     ClonedResponse,
     Head,
-    WebSocketResponse,
+    WebSocketUpgrade,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { assertDefined, VALID_URL } from "./test-utils/common";
@@ -112,7 +112,7 @@ describe("response unit tests", () => {
             dummy = true;
         }
         const ws = new DummyWebSocket() as any;
-        const resp = new WebSocketResponse(ws);
+        const resp = new WebSocketUpgrade(ws);
         expect(resp.status).toBe(StatusCodes.SWITCHING_PROTOCOLS);
         expect(resp.webSocket).toBe(ws);
     });

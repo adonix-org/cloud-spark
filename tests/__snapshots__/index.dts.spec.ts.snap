@@ -951,7 +951,7 @@ declare class TextResponse extends SuccessResponse {
  * Response for WebSocket upgrade requests.
  * Automatically sets status to 101 and attaches the client socket.
  */
-declare class WebSocketResponse extends WorkerResponse {
+declare class WebSocketUpgrade extends WorkerResponse {
     constructor(client: WebSocket);
 }
 /**
@@ -1022,6 +1022,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketResponse, WebSocketSessions, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams, websocket };
 "
 `;

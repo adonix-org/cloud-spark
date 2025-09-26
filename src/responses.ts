@@ -169,7 +169,7 @@ export class TextResponse extends SuccessResponse {
  * Response for WebSocket upgrade requests.
  * Automatically sets status to 101 and attaches the client socket.
  */
-export class WebSocketResponse extends WorkerResponse {
+export class WebSocketUpgrade extends WorkerResponse {
     constructor(client: WebSocket) {
         super(null);
         this.status = StatusCodes.SWITCHING_PROTOCOLS;
