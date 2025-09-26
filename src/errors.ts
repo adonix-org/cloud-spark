@@ -16,7 +16,7 @@
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { JsonResponse } from "./responses";
-import { ErrorJson } from "./interfaces/error-json";
+import { ErrorJson } from "./interfaces/error";
 import { Worker } from "./interfaces/worker";
 import { CacheControl } from "./constants/cache";
 import { HttpHeader } from "./constants/http";

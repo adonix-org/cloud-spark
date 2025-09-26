@@ -28,7 +28,7 @@ import {
     ServiceUnavailable,
     UpgradeRequired,
 } from "@src/errors";
-import { ErrorJson } from "@src/interfaces/error-json";
+import { ErrorJson } from "@src/interfaces/error";
 
 const worker = {
     request: { method: "POST" },

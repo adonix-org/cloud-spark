@@ -16,7 +16,7 @@
 
 import { GET, HEAD, HttpHeader, Method, OPTIONS, StatusCodes } from "../../constants/http";
 import { Time } from "../../constants/time";
-import { CorsConfig } from "../../interfaces/cors-config";
+import { CorsConfig } from "../../interfaces/cors";
 
 export const ALLOW_ALL_ORIGINS = "*";
 

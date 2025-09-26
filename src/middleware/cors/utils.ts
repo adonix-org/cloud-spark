@@ -16,7 +16,7 @@
 
 import { HttpHeader } from "../../constants/http";
 import { assertMethods } from "../../guards/methods";
-import { CorsConfig } from "../../interfaces/cors-config";
+import { CorsConfig } from "../../interfaces/cors";
 import { Worker } from "../../interfaces/worker";
 import { ClonedResponse, Options } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/header";

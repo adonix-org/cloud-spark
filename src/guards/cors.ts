@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CorsInit } from "../interfaces/cors-config";
+import { CorsInit } from "../interfaces/cors";
 import { isBoolean, isNumber, isStringArray } from "./basic";
 
 /**

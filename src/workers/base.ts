@@ -16,7 +16,7 @@
 
 import { Method } from "../constants/http";
 import { assertMethods, isMethod } from "../guards/methods";
-import { FetchHandler } from "../interfaces/fetch-handler";
+import { FetchHandler } from "../interfaces/fetch";
 import { Worker, WorkerClass } from "../interfaces/worker";
 
 /**

@@ -17,7 +17,7 @@
 import { apply, options, skipCors } from "./utils";
 import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
-import { CorsConfig, CorsInit } from "../../interfaces/cors-config";
+import { CorsConfig, CorsInit } from "../../interfaces/cors";
 import { defaultCorsConfig } from "./constants";
 import { OPTIONS } from "../../constants/http";
 import { assertCorsInit } from "../../guards/cors";

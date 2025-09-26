@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export * from "./cors-config";
-export * from "./error-json";
+export * from "./cors";
+export * from "./error";
 export * from "./route";
 export * from "./worker";
