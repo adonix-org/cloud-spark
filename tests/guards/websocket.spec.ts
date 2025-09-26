@@ -22,6 +22,7 @@ import {
     isCodeInRange,
     isReservedCode,
     safeReason,
+    assertSerializable,
 } from "@src/guards/websocket";
 import {
     CloseCode,
@@ -146,6 +147,52 @@ describe("websocket guard unit tests", () => {
         it("leaves valid strings unchanged", () => {
             const input = "Hello World!";
             expect(safeReason(input)).toBe(input);
+        });
+    });
+
+    describe("assert serializable function", () => {
+        it("allows plain objects", () => {
+            const obj = { a: 1, b: { c: 2 } };
+            expect(() => assertSerializable(obj)).not.toThrow();
+        });
+
+        it("throws for null", () => {
+            expect(() => assertSerializable(null)).toThrow(
+                "WebSocket attachment must be a non-null object",
+            );
+        });
+
+        it("throws for primitives", () => {
+            expect(() => assertSerializable("hello")).toThrow(
+                "WebSocket attachment must be a non-null object",
+            );
+            expect(() => assertSerializable(42)).toThrow(
+                "WebSocket attachment must be a non-null object",
+            );
+            expect(() => assertSerializable(true)).toThrow(
+                "WebSocket attachment must be a non-null object",
+            );
+        });
+
+        it("throws for circular objects", () => {
+            const obj: any = {};
+            obj.self = obj;
+            expect(() => assertSerializable(obj)).toThrow(
+                "WebSocket attachment is non-serializable",
+            );
+        });
+
+        it("strips functions and symbols when stringify is called", () => {
+            const obj: any = { a: 1, fn: () => {}, sym: Symbol("x") };
+            expect(() => assertSerializable(obj)).not.toThrow();
+
+            const json = JSON.stringify(obj);
+            expect(json).toBe(JSON.stringify({ a: 1 }));
+        });
+
+        it("allows arrays", () => {
+            const arr = [1, 2, 3, { a: 4 }];
+            expect(() => assertSerializable(arr)).not.toThrow();
         });
     });
 });
