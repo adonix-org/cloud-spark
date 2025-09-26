@@ -88,9 +88,9 @@ describe("websocket middleware unit tests", () => {
         expect(await response.text()).toBe(POST_DISPATCH);
     });
 
-    it("allows a non-upgrade get request to pass through default path", async () => {
-        const request = new Request(VALID_ORIGIN + "/connect");
-        const worker = new TestWorker(request);
+    it("allows a get request to pass through if path does not match", async () => {
+        const request = new Request(VALID_ORIGIN + "/fetch");
+        const worker = new TestWorker(request, "/connect");
         const response = await worker.fetch();
         expect(response.status).toBe(StatusCodes.OK);
         expect(await response.text()).toBe(GET_DISPATCH);
