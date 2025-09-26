@@ -29,7 +29,7 @@ npm install @adonix.org/cloud-spark
 import { BasicWorker, TextResponse } from "@adonix.org/cloud-spark";
 
 export class HelloWorld extends BasicWorker {
-    async get(): Promise<Response> {
+    get() {
         return this.response(TextResponse, "Hi from Cloud Spark!");
     }
 }
