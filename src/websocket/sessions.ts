@@ -26,12 +26,17 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
         class NewConnection extends NewConnectionBase<A> {
             constructor(private readonly sessions: WebSocketSessions<A>) {
                 super();
-                sessions.register(this.server, this);
             }
 
             public override accept(): WebSocket {
                 this.addEventListener("close", () => this.sessions.unregister(this.server));
+                this.sessions.register(this.server, this);
                 return super.accept();
+            }
+
+            public override acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket {
+                this.sessions.register(this.server, this);
+                return super.acceptWebSocket(ctx, tags);
             }
         }
 

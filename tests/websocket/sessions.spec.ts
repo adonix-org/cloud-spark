@@ -27,6 +27,8 @@ describe("websocket sessions unit tests", () => {
 
     it("creates and registers a new connection", () => {
         const con = sessions.create();
+        con.accept();
+
         const allKeys = [...sessions.keys()];
         const allValues = [...sessions.values()];
 
@@ -46,7 +48,7 @@ describe("websocket sessions unit tests", () => {
         expect(sessions.get(ws)).toBe(con);
     });
 
-    it("restores multiple websockets with restore-all", () => {
+    it("restores multiple websockets with restore all", () => {
         const ws1 = new MockWebSocket();
         const ws2 = new MockWebSocket();
 
@@ -87,6 +89,10 @@ describe("websocket sessions unit tests", () => {
     it("iterates over connections using symbol.iterator", () => {
         const con1 = sessions.create();
         const con2 = sessions.create();
+
+        con1.accept();
+        con2.accept();
+
         const iterated = [...sessions];
 
         expect(iterated).toHaveLength(2);
