@@ -38,7 +38,7 @@
         "url": "https://github.com/adonix-org/cloud-spark/issues"
     },
     "scripts": {
-        "build": "tsup",
+        "build": "npm run types && tsup",
         "dev": "tsup --watch",
         "test": "npm run build && vitest",
         "coverage": "vitest run --coverage",
