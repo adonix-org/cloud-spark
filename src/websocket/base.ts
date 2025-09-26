@@ -25,7 +25,7 @@ export abstract class BaseWebSocket<A extends WSAttachment> extends WebSocketEve
     constructor(server: WebSocket) {
         super(server);
         this.server = server;
-        this.server.addEventListener("close", this.onclose, { once: true });
+        this.server.addEventListener("close", this.onclose);
     }
 
     public send(data: string | ArrayBuffer | ArrayBufferView): void {
