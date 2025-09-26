@@ -31,7 +31,7 @@ const mockCtx: DurableObjectState = {
     acceptWebSocket: vi.fn((ws, tags?) => [ws, tags]),
 } as unknown as DurableObjectState;
 
-describe("WebSocketEvents unit tests", () => {
+describe("new connection base unit tests", () => {
     let con: TestConnection;
 
     beforeEach(() => {
