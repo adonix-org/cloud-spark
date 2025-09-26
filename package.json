@@ -42,7 +42,7 @@
         "dev": "wrangler types --config wrangler.local.jsonc ./types/wrangler.d.ts && wrangler dev --config wrangler.local.jsonc",
         "test": "npm run build && vitest",
         "coverage": "vitest run --coverage",
-        "types": "wrangler types ./types/wrangler.d.ts --no-include-env"
+        "types": "wrangler types ./types/wrangler.d.ts"
     },
     "devDependencies": {
         "@types/node": "^24.4.0",
