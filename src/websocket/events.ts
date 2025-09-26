@@ -86,7 +86,9 @@ export abstract class WebSocketEvents {
         if (once) {
             this.customListeners[type] = [];
         }
-        listeners.forEach((listener) => listener(ev));
+        for (const listener of listeners) {
+            listener(ev);
+        }
     }
 
     protected warn(msg: string) {

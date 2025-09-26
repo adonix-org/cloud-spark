@@ -43,7 +43,7 @@ export function isReservedCode(code: number): boolean {
 
 export function safeReason(reason?: string): string | undefined {
     if (!isString(reason)) return;
-    return reason.replace(/[^\x20-\x7E]/g, "").slice(0, WS_MAX_REASON_CHARS);
+    return reason.replaceAll(/[^\x20-\x7E]/g, "").slice(0, WS_MAX_REASON_CHARS);
 }
 
 export function assertSerializable(value: unknown): asserts value is object {

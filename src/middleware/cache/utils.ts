@@ -94,12 +94,12 @@ export function getVaryKey(request: Request, vary: string[], key: URL): string {
     const filtered = filterVaryHeader(vary);
 
     filtered.sort(lexCompare);
-    filtered.forEach((header) => {
+    for (const header of filtered) {
         const value = request.headers.get(header);
         if (value !== null) {
             varyPairs.push([header, value]);
         }
-    });
+    }
 
     const encoded = base64UrlEncode(JSON.stringify([key.toString(), varyPairs]));
     return new URL(encoded, VARY_CACHE_URL).href;
@@ -117,9 +117,9 @@ export function getVaryKey(request: Request, vary: string[], key: URL): string {
  */
 export function base64UrlEncode(str: string): string {
     const utf8 = new TextEncoder().encode(str);
-    let base64 = btoa(String.fromCharCode(...utf8));
-    while (base64.endsWith("=")) {
-        base64 = base64.slice(0, -1);
+    let binary = "";
+    for (const byte of utf8) {
+        binary += String.fromCodePoint(byte);
     }
-    return base64.replace(/\+/g, "-").replace(/\//g, "_");
+    return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/, "");
 }
