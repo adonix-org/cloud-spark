@@ -33,6 +33,7 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
                 });
             }
         }
+
         const connection = new NewConnection(this);
         connection.attach(attachment);
         return connection;
