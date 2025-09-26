@@ -1,0 +1,97 @@
+/*
+ * Copyright (C) 2025 Ty Busby
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { MockWebSocket } from "@mock";
+import { WebSocketSessions } from "@src/websocket/sessions";
+import { describe, it, expect, beforeEach } from "vitest";
+
+describe("websocket sessions unit tests", () => {
+    let sessions: WebSocketSessions;
+
+    beforeEach(() => {
+        sessions = new WebSocketSessions();
+    });
+
+    it("creates and registers a new connection", () => {
+        const con = sessions.create();
+        const allKeys = [...sessions.keys()];
+        const allValues = [...sessions.values()];
+
+        expect(allValues).toContain(con);
+        expect(allKeys).toHaveLength(1);
+
+        const ws = allKeys[0];
+        expect(sessions.get(ws!)).toBe(con);
+    });
+
+    it("restores an existing websocket", () => {
+        const ws = new MockWebSocket();
+        const con = sessions.restore(ws);
+
+        expect([...sessions.values()]).toContain(con);
+        expect([...sessions.keys()]).toContain(ws);
+        expect(sessions.get(ws)).toBe(con);
+    });
+
+    it("restores multiple websockets with restoreAll()", () => {
+        const ws1 = new MockWebSocket();
+        const ws2 = new MockWebSocket();
+
+        const restored = sessions.restoreAll([ws1, ws2]);
+
+        expect(restored).toHaveLength(2);
+        for (const con of restored) {
+            expect([...sessions.values()]).toContain(con);
+        }
+        expect(sessions.get(ws1)).toBe(restored[0]);
+        expect(sessions.get(ws2)).toBe(restored[1]);
+        expect([...sessions.keys()]).toEqual(expect.arrayContaining([ws1, ws2]));
+    });
+
+    it("closes the new websocket and unregisters it", () => {
+        const con = sessions.create();
+        con.accept();
+
+        expect([...sessions.values()].length).toBe(1);
+
+        con.close(1000, "Goodbye");
+
+        expect([...sessions.values()].length).toBe(0);
+    });
+
+    it("closes the restored websocket and unregisters it", () => {
+        const ws = new MockWebSocket();
+        const con = sessions.restore(ws);
+
+        expect(sessions.get(ws)).toBe(con);
+
+        const result = sessions.close(ws, 1000, "shutting down");
+
+        expect(result).toBe(true);
+        expect(sessions.get(ws)).toBeUndefined();
+    });
+
+    it("iterates over connections using Symbol.iterator", () => {
+        const con1 = sessions.create();
+        const con2 = sessions.create();
+        const iterated = [...sessions];
+
+        expect(iterated).toHaveLength(2);
+        expect(iterated).toContain(con1);
+        expect(iterated).toContain(con2);
+        expect(iterated).toEqual([...sessions.values()]);
+    });
+});
