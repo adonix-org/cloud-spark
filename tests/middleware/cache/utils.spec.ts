@@ -17,6 +17,7 @@
 import { decodeVaryKey } from "@common";
 import { HttpHeader } from "@src/constants/http";
 import {
+    base64UrlEncode,
     filterVaryHeader,
     getVaryHeader,
     getVaryKey,
@@ -108,7 +109,7 @@ describe("cache utils unit tests ", () => {
         });
     });
 
-    describe("get vary filtered function", () => {
+    describe("filter vary header function", () => {
         it("removes 'accept-encoding' when it is the only header", () => {
             const input = ["Accept-Encoding"];
             expect(filterVaryHeader(input)).toEqual([]);
@@ -227,6 +228,42 @@ describe("cache utils unit tests ", () => {
             const decoded = decodeVaryKey(key);
 
             expect(decoded.search).toBe("");
+        });
+    });
+
+    describe("base64 url encode function", () => {
+        it("encodes ASCII strings correctly", () => {
+            expect(base64UrlEncode("hello")).toBe("aGVsbG8");
+            expect(base64UrlEncode("test123")).toBe("dGVzdDEyMw");
+        });
+
+        it("encodes strings with non-ASCII characters", () => {
+            expect(base64UrlEncode("🌍")).toBe("8J-MjQ");
+            expect(base64UrlEncode("こんにちは")).toBe("44GT44KT44Gr44Gh44Gv");
+        });
+
+        it("replaces + and / with - and _", () => {
+            // craft a string that produces + and / in Base64
+            const input = String.fromCharCode(251, 255, 254);
+            const encoded = base64UrlEncode(input);
+            expect(encoded).not.toContain("+");
+            expect(encoded).not.toContain("/");
+            expect(encoded).toMatch(/^[A-Za-z0-9_-]+$/); // only URL-safe chars
+        });
+
+        it("removes trailing padding = characters", () => {
+            const input = "any"; // 'YW55' in Base64, no padding
+            expect(base64UrlEncode(input)).toBe("YW55");
+
+            const input2 = "a"; // 'YQ==' in Base64 → should remove ==
+            expect(base64UrlEncode(input2)).toBe("YQ");
+
+            const input3 = "ab"; // 'YWI=' → should remove =
+            expect(base64UrlEncode(input3)).toBe("YWI");
+        });
+
+        it("handles empty string", () => {
+            expect(base64UrlEncode("")).toBe("");
         });
     });
 });
