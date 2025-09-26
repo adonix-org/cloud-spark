@@ -97,7 +97,7 @@ export abstract class WorkerResponse extends CacheResponse {
         super(cache);
     }
 
-    /** Builds the Response object with body, headers, and status. */
+    /** Builds the Response with body, headers, and status. */
     public async create(): Promise<Response> {
         this.addCacheHeader();
 
