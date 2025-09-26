@@ -23,6 +23,7 @@ describe("websocket sessions unit tests", () => {
 
     beforeEach(() => {
         sessions = new WebSocketSessions();
+        vi.clearAllMocks();
     });
 
     it("creates and registers a new connection", () => {
@@ -39,7 +40,7 @@ describe("websocket sessions unit tests", () => {
         expect(sessions.get(ws!)).toBe(con);
     });
 
-    it("creates and registers a new hibernate connection", () => {
+    it("creates and registers a new hibernate-enabled connection", () => {
         const mockCtx: DurableObjectState = {
             acceptWebSocket: vi.fn(() => 0),
         } as unknown as DurableObjectState;
@@ -58,7 +59,7 @@ describe("websocket sessions unit tests", () => {
         expect(sessions.get(ws!)).toBe(con);
     });
 
-    it("restores an existing websocket", () => {
+    it("restores a single websocket with restore", () => {
         const ws = new MockWebSocket();
         const con = sessions.restore(ws);
 

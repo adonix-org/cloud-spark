@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { safeCloseCode, safeReason } from "../guards/websocket";
 import { WSAttachment, WebSocketConnection } from "../interfaces/websocket";
 import { NewConnectionBase } from "./new";
 import { RestoredConnectionBase } from "./restore";
@@ -76,7 +75,9 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
     }
 
     public close(ws: WebSocket, code?: number, reason?: string): boolean {
-        ws.close(safeCloseCode(code), safeReason(reason));
+        const con = this.get(ws);
+        if (con) con.close(code, reason);
+
         return this.unregister(ws);
     }
 

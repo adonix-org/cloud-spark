@@ -16,6 +16,7 @@
 
 import { BaseWebSocket } from "@src/websocket/base";
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import * as safe from "@src/guards/websocket";
 
 interface Id {
     id: string;
@@ -220,5 +221,31 @@ describe("base websocket unit tests", () => {
 
         con.client.close();
         expect(con.closeSpy).toHaveBeenCalledOnce();
+    });
+
+    it("uses safe functions to sanitize code and reason on server close", () => {
+        const spyCode = vi.spyOn(safe, "safeCloseCode");
+        const spyReason = vi.spyOn(safe, "safeReason");
+
+        con.close(1050, "goodbye");
+
+        expect(spyCode).toHaveBeenCalledOnce();
+        expect(spyCode).toHaveBeenCalledWith(1050);
+
+        expect(spyReason).toHaveBeenCalledOnce();
+        expect(spyReason).toHaveBeenCalledWith("goodbye");
+    });
+
+    it("uses safe functions to sanitize code and reason on client close", () => {
+        const spyCode = vi.spyOn(safe, "safeCloseCode");
+        const spyReason = vi.spyOn(safe, "safeReason");
+
+        con.client.close(1060, "bye bye");
+
+        expect(spyCode).toHaveBeenCalledOnce();
+        expect(spyCode).toHaveBeenCalledWith(1060);
+
+        expect(spyReason).toHaveBeenCalledOnce();
+        expect(spyReason).toHaveBeenCalledWith("bye bye");
     });
 });
