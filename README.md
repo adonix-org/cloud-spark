@@ -30,7 +30,7 @@ import { BasicWorker, TextResponse } from "@adonix.org/cloud-spark";
 
 export class HelloWorld extends BasicWorker {
     async get(): Promise<Response> {
-        return this.getResponse(TextResponse, "Hi from Cloud Spark!");
+        return this.response(TextResponse, "Hi from Cloud Spark!");
     }
 }
 ```
