@@ -39,7 +39,8 @@
     },
     "scripts": {
         "build": "npm run types && tsup",
-        "dev": "wrangler types --config wrangler.local.jsonc ./types/wrangler.d.ts && wrangler dev --config wrangler.local.jsonc",
+        "dev-types": "wrangler types --config wrangler.local.jsonc ./types/wrangler.d.ts",
+        "dev": "npm run dev-types && wrangler dev --config wrangler.local.jsonc",
         "test": "npm run build && vitest",
         "coverage": "vitest run --coverage",
         "types": "wrangler types ./types/wrangler.d.ts"
