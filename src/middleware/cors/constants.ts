@@ -21,7 +21,7 @@ import { CorsConfig } from "../../interfaces/cors";
 export const ALLOW_ALL_ORIGINS = "*";
 
 /**
- * Set of HTTP methods considered "simple" under the CORS specification.
+ * Set of HTTP methods considered "simple" under the `CORS` specification.
  *
  * Simple methods do not trigger a preflight request on their own.
  * (Other factors like headers can still cause a preflight.)
@@ -29,12 +29,12 @@ export const ALLOW_ALL_ORIGINS = "*";
 export const SIMPLE_METHODS = new Set<Method>([GET, HEAD, OPTIONS]);
 
 /**
- * Status codes for which CORS should be skipped.
+ * Status codes for which `CORS` should be skipped.
  *
- * Skips CORS for:
+ * Skips `CORS` for:
  * - 101 Switching Protocols (WebSocket upgrade)
  * - 100 Continue
- * - 3xx Redirects (CORS is applied to the final URL only)
+ * - 3xx Redirects (`CORS` is applied to the final URL only)
  */
 export const SKIP_CORS_STATUSES = [
     StatusCodes.SWITCHING_PROTOCOLS,
@@ -49,7 +49,7 @@ export const SKIP_CORS_STATUSES = [
 ];
 
 /**
- * Default configuration for CORS middleware.
+ * Default configuration for`CORS`middleware.
  */
 export const defaultCorsConfig: CorsConfig = {
     allowedOrigins: [ALLOW_ALL_ORIGINS],

@@ -191,7 +191,7 @@ export class Head extends WorkerResponse {
 }
 
 /**
- * Response for OPTIONS preflight requests.
+ * Response for `OPTIONS` preflight requests.
  */
 export class Options extends SuccessResponse {
     constructor() {

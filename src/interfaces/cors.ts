@@ -15,7 +15,7 @@
  */
 
 /**
- * User-supplied options for configuring CORS behavior.
+ * User-supplied options for configuring`CORS`behavior.
  *
  * This is a partial form of {@link CorsConfig}, meaning you only need
  * to provide the options you want to override. Any missing values will
@@ -32,9 +32,9 @@
 export type CorsInit = Partial<CorsConfig>;
 
 /**
- * Configuration options for Cross-Origin Resource Sharing (CORS).
+ * Configuration options for Cross-Origin Resource Sharing `CORS`.
  *
- * Implementations of CORS middleware use this interface to determine
+ * Implementations of `CORS` middleware use this interface to determine
  * how cross-origin requests are validated and which headers are sent
  * in the response.
  *
@@ -51,7 +51,7 @@ export type CorsInit = Partial<CorsConfig>;
  */
 export interface CorsConfig {
     /**
-     * Origins allowed for CORS requests.
+     * Origins allowed for `CORS` requests.
      *
      * Use `["*"]` to allow all origins, or provide a list of specific origins.
      * Example: `["https://example.com", "https://api.example.com"]`
@@ -61,9 +61,9 @@ export interface CorsConfig {
     allowedOrigins: string[];
 
     /**
-     * HTTP headers allowed in CORS requests.
+     * HTTP headers allowed in `CORS` requests.
      *
-     * Browsers always allow *CORS-safelisted request headers* without preflight:
+     * Browsers always allow `CORS`-safelisted request headers* without preflight:
      * - `Accept`
      * - `Accept-Language`
      * - `Content-Language`
@@ -103,7 +103,7 @@ export interface CorsConfig {
      * can be cached by the client.
      *
      * Increase for production use to reduce preflights, or lower for development
-     * if you frequently adjust CORS rules.
+     * if you frequently adjust `CORS` rules.
      *
      * @default 300 (5 minutes)
      */

@@ -200,7 +200,7 @@ declare function isMethodArray(value: unknown): value is Method[];
 declare function assertMethods(value: unknown): asserts value is Method[];
 
 /**
- * User-supplied options for configuring CORS behavior.
+ * User-supplied options for configuring\`CORS\`behavior.
  *
  * This is a partial form of {@link CorsConfig}, meaning you only need
  * to provide the options you want to override. Any missing values will
@@ -216,9 +216,9 @@ declare function assertMethods(value: unknown): asserts value is Method[];
  */
 type CorsInit = Partial<CorsConfig>;
 /**
- * Configuration options for Cross-Origin Resource Sharing (CORS).
+ * Configuration options for Cross-Origin Resource Sharing \`CORS\`.
  *
- * Implementations of CORS middleware use this interface to determine
+ * Implementations of \`CORS\` middleware use this interface to determine
  * how cross-origin requests are validated and which headers are sent
  * in the response.
  *
@@ -235,7 +235,7 @@ type CorsInit = Partial<CorsConfig>;
  */
 interface CorsConfig {
     /**
-     * Origins allowed for CORS requests.
+     * Origins allowed for \`CORS\` requests.
      *
      * Use \`["*"]\` to allow all origins, or provide a list of specific origins.
      * Example: \`["https://example.com", "https://api.example.com"]\`
@@ -244,9 +244,9 @@ interface CorsConfig {
      */
     allowedOrigins: string[];
     /**
-     * HTTP headers allowed in CORS requests.
+     * HTTP headers allowed in \`CORS\` requests.
      *
-     * Browsers always allow *CORS-safelisted request headers* without preflight:
+     * Browsers always allow \`CORS\`-safelisted request headers* without preflight:
      * - \`Accept\`
      * - \`Accept-Language\`
      * - \`Content-Language\`
@@ -283,7 +283,7 @@ interface CorsConfig {
      * can be cached by the client.
      *
      * Increase for production use to reduce preflights, or lower for development
-     * if you frequently adjust CORS rules.
+     * if you frequently adjust \`CORS\` rules.
      *
      * @default 300 (5 minutes)
      */
@@ -405,7 +405,7 @@ type RouteHandler = RouteCallback | WorkerClass;
  * pass to the registered handler.
  */
 interface Route {
-    /** HTTP method for the route (e.g., GET, POST, etc.) */
+    /** HTTP method for the route (e.g., \`GET\`, \`POST\`, etc.) */
     method: Method;
     /** Path-to-regexp matcher function for this route */
     matcher: MatchFunction<PathParams>;
@@ -426,7 +426,7 @@ interface MatchedRoute {
 /**
  * A route tuple. Each tuple consists of:
  *
- * 1. HTTP method (e.g., "GET", "POST")
+ * 1. HTTP method (e.g., \`GET\`, \`POST\`)
  * 2. Path string (supports parameters, e.g., "/users/:id")
  * 3. Callback function or Worker class to handle matched requests
  * */
@@ -478,7 +478,7 @@ declare abstract class Middleware {
  * Creates a Vary-aware caching middleware for Workers.
  *
  * This middleware:
- * - Caches **GET requests** only.
+ * - Caches \`GET\` requests **only**.
  * - Respects the \`Vary\` header of responses, ensuring that requests
  *   with different headers (e.g., \`Origin\`) receive the correct cached response.
  * - Skips caching for non-cacheable responses (e.g., error responses or
@@ -492,13 +492,13 @@ declare abstract class Middleware {
 declare function cache(cacheName?: string, getKey?: (request: Request) => URL): Middleware;
 
 /**
- * Creates a CORS middleware instance.
+ * Creates a\`CORS\`middleware instance.
  *
  * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
- * for incoming requests, including preflight OPTIONS requests, and adds
+ * for incoming requests, including preflight \`OPTIONS\` requests, and adds
  * appropriate headers to responses.
  *
- * @param init - Optional configuration for CORS behavior. See {@link CorsConfig}.
+ * @param init - Optional configuration for \`CORS\` behavior. See {@link CorsConfig}.
  * @returns A {@link Middleware} instance that can be used in your middleware chain.
  */
 declare function cors(init?: CorsInit): Middleware;
@@ -781,31 +781,31 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      * Dispatches the request to the method-specific handler.
      */
     protected dispatch(): Promise<Response>;
-    /** Override and implement this method for GET requests. */
+    /** Override and implement this method for \`GET\` requests. */
     protected get(): Promise<Response>;
-    /** Override and implement this method for PUT requests. */
+    /** Override and implement this method for \`PUT\` requests. */
     protected put(): Promise<Response>;
-    /** Override and implement this method for POST requests. */
+    /** Override and implement this method for \`POST\` requests. */
     protected post(): Promise<Response>;
-    /** Override and implement this method for PATCH requests. */
+    /** Override and implement this method for \`PATCH\` requests. */
     protected patch(): Promise<Response>;
-    /** Override and implement this method for DELETE requests. */
+    /** Override and implement this method for \`DELETE\` requests. */
     protected delete(): Promise<Response>;
-    /** Returns a default empty OPTIONS response. */
+    /** Returns a default empty \`OPTIONS\` response. */
     protected options(): Promise<Response>;
     /**
-     * Default handler for HEAD requests.
-     * Performs a GET request and removes the body for HEAD semantics.
+     * Default handler for \`HEAD\` requests.
+     * Performs a \`GET\` request and removes the body for \`HEAD\` semantics.
      *
      * Usually does not need to be overridden as this behavior covers
-     * standard HEAD requirements.
+     * standard \`HEAD\` requirements.
      */
     protected head(): Promise<Response>;
     /**
-     * DEFAULT allowed HTTP methods for subclasses.
+     * The DEFAULT allowed HTTP methods for subclasses are \`GET\`, \`HEAD\`, \`OPTIONS\`.
      *
-     * These defaults were selected for getting started quickly and should be
-     * overridden for each specific worker.
+     * These defaults were selected for getting started quickly and can be
+     * overridden for each worker subclass.
      */
     getAllowedMethods(): Method[];
 }
@@ -828,7 +828,7 @@ declare abstract class RouteWorker extends BasicWorker {
      * - A function that receives URL parameters, or
      * - A Worker subclass that will handle the request.
      *
-     * @param method  - HTTP method for the route (GET, POST, etc.).
+     * @param method  - HTTP method for the route (\`GET\`, \`POST\`, etc.).
      * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
      * @param handler - The function or Worker class to run when the route matches.
      * @returns The current worker instance, allowing method chaining.
@@ -838,7 +838,7 @@ declare abstract class RouteWorker extends BasicWorker {
      * Registers multiple routes at once in the worker.
      *
      * Each route should be a tuple \`[method, path, handler]\` where:
-     * - \`method\`  - HTTP method for the route (GET, POST, etc.).
+     * - \`method\`  - HTTP method for the route (\`GET\`, \`POST\`, etc.).
      * - \`path\`    - URL path pattern (Express-style, e.g., "/users/:id").
      * - \`handler\` - A function that receives URL parameters or a Worker subclass
      *               that will handle the request.
@@ -955,14 +955,14 @@ declare class WebSocketUpgrade extends WorkerResponse {
     constructor(client: WebSocket);
 }
 /**
- * Response for HEAD requests. Copy headers and status from a GET response
+ * Response for \`HEAD\` requests. Copy headers and status from a \`GET\` response
  * without the body.
  */
 declare class Head extends WorkerResponse {
     constructor(get: Response);
 }
 /**
- * Response for OPTIONS preflight requests.
+ * Response for \`OPTIONS\` preflight requests.
  */
 declare class Options extends SuccessResponse {
     constructor();

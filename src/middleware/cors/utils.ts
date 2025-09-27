@@ -24,13 +24,13 @@ import { getOrigin } from "../../utils/request";
 import { ALLOW_ALL_ORIGINS, SIMPLE_METHODS, SKIP_CORS_STATUSES } from "./constants";
 
 /**
- * Handles a CORS preflight OPTIONS request.
+ * Handles a `CORS` preflight `OPTIONS` request.
  *
- * Sets the appropriate CORS headers based on the provided configuration
+ * Sets the appropriate`CORS`headers based on the provided configuration
  * and the origin of the request.
  *
  * @param worker - The Worker handling the request.
- * @param cors - The CORS configuration.
+ * @param cors - The `CORS` configuration.
  * @returns A Response object for the preflight request.
  */
 export async function options(worker: Worker, cors: CorsConfig): Promise<Response> {
@@ -50,15 +50,15 @@ export async function options(worker: Worker, cors: CorsConfig): Promise<Respons
 }
 
 /**
- * Applies CORS headers to an existing response.
+ * Applies`CORS`headers to an existing response.
  *
  * Useful for normal (non-preflight) responses where the response
- * should include CORS headers based on the request origin.
+ * should include`CORS`headers based on the request origin.
  *
  * @param response - The original Response object.
  * @param worker - The Worker handling the request.
- * @param cors - The CORS configuration.
- * @returns A new Response object with CORS headers applied.
+ * @param cors - The`CORS`configuration.
+ * @returns A new Response object with`CORS`headers applied.
  */
 export async function apply(
     response: Response,
@@ -80,11 +80,11 @@ export async function apply(
 }
 
 /**
- * Sets the Access-Control-Allow-Origin header based on the CORS config
+ * Sets the Access-Control-Allow-Origin header based on the`CORS`config
  * and request origin.
  *
  * @param headers - The headers object to modify.
- * @param cors - The CORS configuration.
+ * @param cors - The`CORS`configuration.
  * @param origin - The request's origin, or null if not present.
  */
 export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string): void {
@@ -100,7 +100,7 @@ export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: strin
 
 /**
  * Conditionally sets the `Access-Control-Allow-Credentials` header
- * for a CORS response.
+ * for a`CORS`response.
  *
  * This header is only set if:
  * 1. `cors.allowCredentials` is true,
@@ -108,7 +108,7 @@ export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: strin
  * 3. The provided `origin` is explicitly listed in `cors.allowedOrigins`.
  *
  * @param headers - The Headers object to modify.
- * @param cors - The CORS configuration.
+ * @param cors - The`CORS`configuration.
  * @param origin - The origin of the incoming request.
  */
 export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: string): void {
@@ -120,11 +120,11 @@ export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: 
 }
 
 /**
- * Sets the `Access-Control-Allow-Methods` header for a CORS response,
+ * Sets the `Access-Control-Allow-Methods` header for a`CORS`response,
  * but only for non-simple methods.
  *
  * Simple methods (`GET`, `HEAD`, `OPTIONS`) are automatically allowed by the
- * CORS spec, so this function only adds methods beyond those.
+ *`CORS`spec, so this function only adds methods beyond those.
  *
  * @param headers - The Headers object to modify.
  * @param worker - The Worker instance used to retrieve allowed methods.
@@ -141,18 +141,18 @@ export function setAllowMethods(headers: Headers, worker: Worker): void {
 }
 
 /**
- * Sets the `Access-Control-Max-Age` header for a CORS response.
+ * Sets the `Access-Control-Max-Age` header for a`CORS`response.
  *
  * This header indicates how long the results of a preflight request
  * can be cached by the client (in seconds).
  *
  * The value is **clamped to a non-negative integer** to comply with
- * the CORS specification:
+ * the`CORS`specification:
  * - Decimal values are floored to the nearest integer.
  * - Negative values are treated as `0`.
  *
  * @param headers - The Headers object to modify.
- * @param cors - The CORS configuration containing the `maxAge` value in seconds.
+ * @param cors - The`CORS`configuration containing the `maxAge` value in seconds.
  */
 export function setMaxAge(headers: Headers, cors: CorsConfig): void {
     const maxAge = Math.max(0, Math.floor(cors.maxAge));
@@ -160,13 +160,13 @@ export function setMaxAge(headers: Headers, cors: CorsConfig): void {
 }
 
 /**
- * Sets the Access-Control-Allow-Headers header based on the CORS configuration.
+ * Sets the Access-Control-Allow-Headers header based on the`CORS`configuration.
  *
  * Only the headers explicitly listed in `cors.allowedHeaders` are sent.
  * If the array is empty, no Access-Control-Allow-Headers header is added.
  *
  * @param headers - The Headers object to modify.
- * @param cors - The CORS configuration.
+ * @param cors - The`CORS`configuration.
  */
 export function setAllowHeaders(headers: Headers, cors: CorsConfig): void {
     if (cors.allowedHeaders.length > 0) {
@@ -178,23 +178,23 @@ export function setAllowHeaders(headers: Headers, cors: CorsConfig): void {
  * Sets the Access-Control-Expose-Headers header for a response.
  *
  * @param headers - The headers object to modify.
- * @param cors - The CORS configuration.
+ * @param cors - The`CORS`configuration.
  */
 export function setExposedHeaders(headers: Headers, cors: CorsConfig): void {
     setHeader(headers, HttpHeader.ACCESS_CONTROL_EXPOSE_HEADERS, cors.exposedHeaders);
 }
 
 /**
- * Returns true if the CORS config allows all origins ('*').
+ * Returns true if the`CORS`config allows all origins ('*').
  *
- * @param cors - The CORS configuration.
+ * @param cors - The`CORS`configuration.
  */
 export function allowAllOrigins(cors: CorsConfig): boolean {
     return cors.allowedOrigins.includes(ALLOW_ALL_ORIGINS);
 }
 
 /**
- * Deletes any existing CORS headers from the provided headers object.
+ * Deletes any existing`CORS`headers from the provided headers object.
  *
  * @param headers - The headers object to modify.
  */
@@ -208,10 +208,10 @@ export function deleteCorsHeaders(headers: Headers): void {
 }
 
 /**
- * Determines whether CORS headers should be skipped for a response.
+ * Determines whether`CORS`headers should be skipped for a response.
  *
  * @param response - The Response object to inspect
- * @returns `true` if CORS should be skipped, `false` otherwise
+ * @returns `true` if`CORS`should be skipped, `false` otherwise
  */
 export function skipCors(response: Response): boolean {
     const { status, headers } = response;

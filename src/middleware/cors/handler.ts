@@ -23,13 +23,13 @@ import { OPTIONS } from "../../constants/http";
 import { assertCorsInit } from "../../guards/cors";
 
 /**
- * Creates a CORS middleware instance.
+ * Creates a`CORS`middleware instance.
  *
  * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
- * for incoming requests, including preflight OPTIONS requests, and adds
+ * for incoming requests, including preflight `OPTIONS` requests, and adds
  * appropriate headers to responses.
  *
- * @param init - Optional configuration for CORS behavior. See {@link CorsConfig}.
+ * @param init - Optional configuration for `CORS` behavior. See {@link CorsConfig}.
  * @returns A {@link Middleware} instance that can be used in your middleware chain.
  */
 export function cors(init?: CorsInit): Middleware {
@@ -46,7 +46,7 @@ class CorsHandler extends Middleware {
     private readonly config: CorsConfig;
 
     /**
-     * Create a new CORS middleware instance.
+     * Create a new`CORS`middleware instance.
      *
      * @param init - Partial configuration to override the defaults. Any values
      *               not provided will use `defaultCorsConfig`.
@@ -57,14 +57,14 @@ class CorsHandler extends Middleware {
     }
 
     /**
-     * Applies CORS headers to a request.
+     * Applies`CORS`headers to a request.
      *
      * - Returns a preflight response for `OPTIONS` requests.
-     * - For other methods, calls `next()` and applies CORS headers to the result.
+     * - For other methods, calls `next()` and applies`CORS`headers to the result.
      *
      * @param worker - The Worker handling the request.
      * @param next - Function to invoke the next middleware.
-     * @returns Response with CORS headers applied.
+     * @returns Response with`CORS`headers applied.
      */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         if (worker.request.method === OPTIONS) {
