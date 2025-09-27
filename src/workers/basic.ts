@@ -103,10 +103,10 @@ export abstract class BasicWorker extends MiddlewareWorker {
     }
 
     /**
-     * DEFAULT allowed HTTP methods for subclasses.
+     * The DEFAULT allowed HTTP methods for subclasses are `GET`, `HEAD`, `OPTIONS`.
      *
-     * These defaults were selected for getting started quickly and should be
-     * overridden for each specific worker.
+     * These defaults were selected for getting started quickly and can be
+     * overridden for each worker subclass.
      */
     public getAllowedMethods(): Method[] {
         return [GET, HEAD, OPTIONS];
