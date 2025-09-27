@@ -16,20 +16,13 @@
 
 /**
  * A type-safe Cloudflare Worker handler with a guaranteed `fetch` method.
- *
- * Extends `ExportedHandler` but ensures that `fetch` exists and has the
- * correct signature for Cloudflare Worker invocation.
- *
- * `Env` is a placeholder type for the environment bindings provided by
- * the user (e.g., KV namespaces, secrets, Durable Objects). This interface
- * does not constrain the actual type; it only ensures `fetch` is present.
  */
-export interface FetchHandler extends ExportedHandler<Env> {
+export interface FetchHandler {
     /**
      * Handles an incoming request and produces a response.
      *
      * @param request - The incoming `Request` object.
-     * @param env - User-provided environment bindings (placeholder type).
+     * @param env - User-provided environment bindings.
      * @param ctx - Execution context for background tasks (`waitUntil`).
      * @returns A `Promise` that resolves to a `Response`.
      */
