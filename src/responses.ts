@@ -178,7 +178,7 @@ export class WebSocketUpgrade extends WorkerResponse {
 }
 
 /**
- * Response for HEAD requests. Copy headers and status from a GET response
+ * Response for `HEAD` requests. Copy headers and status from a `GET` response
  * without the body.
  */
 export class Head extends WorkerResponse {

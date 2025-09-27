@@ -123,7 +123,7 @@ export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: 
  * Sets the `Access-Control-Allow-Methods` header for a CORS response,
  * but only for non-simple methods.
  *
- * Simple methods (GET, HEAD, OPTIONS) are automatically allowed by the
+ * Simple methods (`GET`, `HEAD`, `OPTIONS`) are automatically allowed by the
  * CORS spec, so this function only adds methods beyond those.
  *
  * @param headers - The Headers object to modify.

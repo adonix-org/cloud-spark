@@ -61,7 +61,7 @@ export type RouteHandler = RouteCallback | WorkerClass;
  * pass to the registered handler.
  */
 export interface Route {
-    /** HTTP method for the route (e.g., GET, POST, etc.) */
+    /** HTTP method for the route (e.g., `GET`, `POST`, etc.) */
     method: Method;
 
     /** Path-to-regexp matcher function for this route */
@@ -87,7 +87,7 @@ export interface MatchedRoute {
 /**
  * A route tuple. Each tuple consists of:
  *
- * 1. HTTP method (e.g., "GET", "POST")
+ * 1. HTTP method (e.g., `GET`, `POST`)
  * 2. Path string (supports parameters, e.g., "/users/:id")
  * 3. Callback function or Worker class to handle matched requests
  * */

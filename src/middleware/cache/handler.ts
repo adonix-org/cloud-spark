@@ -25,7 +25,7 @@ import { sortSearchParams } from "../../utils/request";
  * Creates a Vary-aware caching middleware for Workers.
  *
  * This middleware:
- * - Caches **GET requests** only.
+ * - Caches `GET` requests **only**.
  * - Respects the `Vary` header of responses, ensuring that requests
  *   with different headers (e.g., `Origin`) receive the correct cached response.
  * - Skips caching for non-cacheable responses (e.g., error responses or
@@ -58,7 +58,7 @@ class CacheHandler extends Middleware {
 
     /**
      * Handles an incoming request.
-     * - Bypasses caching for non-GET requests.
+     * - Bypasses caching for non-`GET` requests.
      * - Checks the cache for a stored response.
      * - Calls next if no cached response exists.
      * - Caches the response if it is cacheable.

@@ -58,42 +58,42 @@ export abstract class BasicWorker extends MiddlewareWorker {
         return (handler[method] ?? (() => this.response(MethodNotAllowed, this)))();
     }
 
-    /** Override and implement this method for GET requests. */
+    /** Override and implement this method for `GET` requests. */
     protected async get(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
-    /** Override and implement this method for PUT requests. */
+    /** Override and implement this method for `PUT` requests. */
     protected async put(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
-    /** Override and implement this method for POST requests. */
+    /** Override and implement this method for `POST` requests. */
     protected async post(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
-    /** Override and implement this method for PATCH requests. */
+    /** Override and implement this method for `PATCH` requests. */
     protected async patch(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
-    /** Override and implement this method for DELETE requests. */
+    /** Override and implement this method for `DELETE` requests. */
     protected async delete(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
-    /** Returns a default empty OPTIONS response. */
+    /** Returns a default empty `OPTIONS` response. */
     protected async options(): Promise<Response> {
         return this.response(Options);
     }
 
     /**
-     * Default handler for HEAD requests.
-     * Performs a GET request and removes the body for HEAD semantics.
+     * Default handler for `HEAD` requests.
+     * Performs a `GET` request and removes the body for `HEAD` semantics.
      *
      * Usually does not need to be overridden as this behavior covers
-     * standard HEAD requirements.
+     * standard `HEAD` requirements.
      */
     protected async head(): Promise<Response> {
         const worker = this.create(
