@@ -21,7 +21,7 @@ npm install @adonix.org/cloud-spark
 
 <br>
 
-## :stopwatch: Quickstart
+## :rocket: Quickstart
 
 :page_facing_up: hello-world.ts
 
