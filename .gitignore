@@ -3,7 +3,7 @@
 artifacts/
 debug/
 dist/
-types/wrangler.d.ts
+types/
 wrangler.local.jsonc
 
 
