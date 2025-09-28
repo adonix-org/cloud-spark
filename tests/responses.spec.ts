@@ -24,6 +24,7 @@ import {
     Head,
     WebSocketUpgrade,
     OctetStream,
+    R2ObjectStream,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { assertDefined, VALID_URL } from "./test-utils/common";
@@ -183,6 +184,82 @@ describe("response unit tests", () => {
             const octet = new OctetStream(stream, { size: 3 }, dummyCache);
 
             expect(octet.cache).toBe(dummyCache);
+        });
+    });
+
+    describe("R2ObjectStream unit tests", () => {
+        function createDummyStream(): ReadableStream {
+            return new ReadableStream({
+                start(controller) {
+                    controller.enqueue(new Uint8Array([1, 2, 3]));
+                    controller.close();
+                },
+            });
+        }
+
+        it("should set full content headers for a complete object with no range", () => {
+            const stream = createDummyStream();
+            const obj = { body: stream, size: 3 } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.status).toBe(StatusCodes.OK);
+            expect(r2stream.mediaType).toBe(MediaType.OCTET_STREAM);
+            expect(r2stream.headers.get(HttpHeader.ACCEPT_RANGES)).toBe("bytes");
+            expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("3");
+            expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBeNull();
+        });
+
+        it("should set partial content headers for a standard offset/length range", () => {
+            const stream = createDummyStream();
+            const obj = { body: stream, size: 10, range: { offset: 2, length: 5 } } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("5");
+            expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 2-6/10");
+        });
+
+        it("should set partial content headers for a suffix range", () => {
+            const stream = createDummyStream();
+            const obj = { body: stream, size: 10, range: { suffix: 4 } } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("4");
+            expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 6-9/10");
+        });
+
+        it("should set mediaType from object.httpMetadata if present", () => {
+            const stream = createDummyStream();
+            const obj = {
+                body: stream,
+                size: 5,
+                httpMetadata: { contentType: "audio/mpeg" },
+            } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.mediaType).toBe("audio/mpeg");
+        });
+
+        it("should handle offset 0 but length < size as partial content", () => {
+            const stream = createDummyStream();
+            const obj = { body: stream, size: 10, range: { length: 5 } } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("5");
+            expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 0-4/10");
+        });
+
+        it("should handle empty objects correctly", () => {
+            const emptyStream = new ReadableStream();
+            const obj = { body: emptyStream, size: 0 } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.status).toBe(StatusCodes.OK);
+            expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("0");
+            expect(r2stream.headers.get(HttpHeader.ACCEPT_RANGES)).toBe("bytes");
+            expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBeNull();
         });
     });
 });
