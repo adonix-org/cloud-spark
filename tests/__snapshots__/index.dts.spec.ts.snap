@@ -979,6 +979,26 @@ declare class OctetStream extends WorkerResponse {
     constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl);
 }
 /**
+ * A streaming response for Cloudflare R2 objects.
+ *
+ * @param object - The R2 object to stream.
+ * @param cache - Optional caching information.
+ */
+declare class R2ObjectStream extends OctetStream {
+    constructor(object: R2ObjectBody, cache?: CacheControl);
+    /**
+     * Computes the byte range for an R2 object.
+     *
+     * Handles two types of ranges:
+     * 1. Standard offset/length range — returned as-is.
+     * 2. Suffix range (e.g., last N bytes) — computes the offset
+     *    as \`size - suffix\` so it can be used with OctetStream.
+     *
+     * Returns an object suitable for OctetStream ({ offset, length }).
+     */
+    private static computeRange;
+}
+/**
  * Response for WebSocket upgrade requests.
  * Automatically sets status to 101 and attaches the client socket.
  */
@@ -1053,6 +1073,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams, websocket };
 "
 `;

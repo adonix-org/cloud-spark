@@ -206,6 +206,43 @@ export class OctetStream extends WorkerResponse {
 }
 
 /**
+ * A streaming response for Cloudflare R2 objects.
+ *
+ * @param object - The R2 object to stream.
+ * @param cache - Optional caching information.
+ */
+export class R2ObjectStream extends OctetStream {
+    constructor(object: R2ObjectBody, cache?: CacheControl) {
+        const { offset, length } = R2ObjectStream.computeRange(object);
+        super(object.body, { size: object.size, offset, length }, cache);
+
+        if (object.httpMetadata?.contentType) {
+            this.mediaType = object.httpMetadata.contentType;
+        }
+    }
+
+    /**
+     * Computes the byte range for an R2 object.
+     *
+     * Handles two types of ranges:
+     * 1. Standard offset/length range — returned as-is.
+     * 2. Suffix range (e.g., last N bytes) — computes the offset
+     *    as `size - suffix` so it can be used with OctetStream.
+     *
+     * Returns an object suitable for OctetStream ({ offset, length }).
+     */
+    private static computeRange(object: R2ObjectBody): { offset?: number; length?: number } {
+        if (!object.range) return {};
+
+        if ("suffix" in object.range) {
+            return { offset: Math.max(0, object.size - object.range.suffix) };
+        }
+
+        return { ...object.range };
+    }
+}
+
+/**
  * Response for WebSocket upgrade requests.
  * Automatically sets status to 101 and attaches the client socket.
  */

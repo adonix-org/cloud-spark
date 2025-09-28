@@ -29,6 +29,7 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "PATCH",
   "POST",
   "PUT",
+  "R2ObjectStream",
   "RouteWorker",
   "ServiceUnavailable",
   "StatusCodes",
