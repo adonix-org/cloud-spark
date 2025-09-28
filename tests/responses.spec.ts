@@ -23,12 +23,14 @@ import {
     ClonedResponse,
     Head,
     WebSocketUpgrade,
+    OctetStream,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { assertDefined, VALID_URL } from "./test-utils/common";
 import { MethodNotAllowed } from "@src/errors";
 import { HttpHeader } from "@src/constants/http";
 import { CacheControl } from "@src/constants/cache";
+import { MediaType } from "@src/constants/media-types";
 
 const mockWorker = {
     request: new Request(VALID_URL),
@@ -115,5 +117,45 @@ describe("response unit tests", () => {
         const resp = new WebSocketUpgrade(ws);
         expect(resp.status).toBe(StatusCodes.SWITCHING_PROTOCOLS);
         expect(resp.webSocket).toBe(ws);
+    });
+
+    describe("octet stream unit tests", () => {
+        function createDummyStream(): ReadableStream {
+            return new ReadableStream({
+                start(controller) {
+                    controller.enqueue(new Uint8Array([1, 2, 3]));
+                    controller.close();
+                },
+            });
+        }
+
+        it("should set full content headers for a complete stream", () => {
+            const stream = createDummyStream();
+            const octet = new OctetStream(stream, { size: 3 });
+
+            expect(octet.status).toBe(StatusCodes.OK);
+            expect(octet.mediaType).toBe(MediaType.OCTET_STREAM);
+            expect(octet.headers.get(HttpHeader.ACCEPT_RANGES)).toBe("bytes");
+            expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("3");
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBeNull();
+        });
+
+        it("should set partial content headers when offset and length are provided", () => {
+            const stream = createDummyStream();
+            const octet = new OctetStream(stream, { size: 10, offset: 2, length: 5 });
+
+            expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(octet.headers.get(HttpHeader.ACCEPT_RANGES)).toBe("bytes");
+            expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("5");
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 2-6/10");
+        });
+
+        it("should default offset to 0 and length to size when not provided", () => {
+            const stream = createDummyStream();
+            const octet = new OctetStream(stream, { size: 7 });
+
+            expect(octet.status).toBe(StatusCodes.OK);
+            expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("7");
+        });
     });
 });
