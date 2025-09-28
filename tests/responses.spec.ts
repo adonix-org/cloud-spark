@@ -157,5 +157,32 @@ describe("response unit tests", () => {
             expect(octet.status).toBe(StatusCodes.OK);
             expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("7");
         });
+
+        it("should set partial content when offset is 0 but length < size", () => {
+            const stream = createDummyStream();
+            const octet = new OctetStream(stream, { size: 10, length: 5 });
+
+            expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("5");
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 0-4/10");
+        });
+
+        it("should handle empty streams correctly", () => {
+            const emptyStream = new ReadableStream();
+            const octet = new OctetStream(emptyStream, { size: 0 });
+
+            expect(octet.status).toBe(StatusCodes.OK);
+            expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("0");
+            expect(octet.headers.get(HttpHeader.ACCEPT_RANGES)).toBe("bytes");
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBeNull();
+        });
+
+        it("should store cache object in WorkerResponse", () => {
+            const dummyCache: CacheControl = { "max-age": 60 };
+            const stream = createDummyStream();
+            const octet = new OctetStream(stream, { size: 3 }, dummyCache);
+
+            expect(octet.cache).toBe(dummyCache);
+        });
     });
 });
