@@ -45,13 +45,15 @@ export abstract class BaseWebSocket<A extends WSAttachment> extends WebSocketEve
         return (this.server.deserializeAttachment() ?? {}) as A;
     }
 
-    public attach(attachment?: A | null): void {
+    public attach(attachment?: Partial<A> | null): void {
         if (attachment === undefined) return;
         if (attachment === null) {
             this.server.serializeAttachment({});
         } else {
-            assertSerializable(attachment);
-            this.server.serializeAttachment(attachment);
+            const current = this.attachment;
+            const merged = { ...current, ...attachment };
+            assertSerializable(merged);
+            this.server.serializeAttachment(merged);
         }
     }
 

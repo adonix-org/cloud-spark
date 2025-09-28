@@ -104,6 +104,32 @@ describe("base websocket unit tests", () => {
         });
     });
 
+    it("merges a partial attachment", () => {
+        con.attach({ id: "123" });
+        expect(con.attachment).toStrictEqual({ id: "123" });
+        expect(con.attachment.id).toBe("123");
+        expect(con.attachment.value).toBeUndefined();
+
+        con.attach({ value: 456 });
+        expect(con.attachment).toStrictEqual({ id: "123", value: 456 });
+        expect(con.attachment.id).toBe("123");
+        expect(con.attachment.value).toBe(456);
+    });
+
+    it("attaching an empty object retains existing attachment", () => {
+        con.attach({ id: "123", value: 456 });
+        expect(con.attachment).toStrictEqual({ id: "123", value: 456 });
+
+        con.attach({});
+        expect(con.attachment).toStrictEqual({ id: "123", value: 456 });
+    });
+
+    it("overwrites existing keys when merging partial attachment", () => {
+        con.attach({ id: "123", value: 456 });
+        con.attach({ value: 789 }); // overwrite value
+        expect(con.attachment).toStrictEqual({ id: "123", value: 789 });
+    });
+
     it("clears the attachment if null", () => {
         con.attach({
             id: "123",
