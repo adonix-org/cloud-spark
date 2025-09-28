@@ -187,7 +187,7 @@ describe("response unit tests", () => {
         });
     });
 
-    describe("R2ObjectStream unit tests", () => {
+    describe("r2 object stream unit tests", () => {
         function createDummyStream(): ReadableStream {
             return new ReadableStream({
                 start(controller) {
