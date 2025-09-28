@@ -158,19 +158,17 @@ describe("websocket guard unit tests", () => {
 
         it("throws for null", () => {
             expect(() => assertSerializable(null)).toThrow(
-                "WebSocket attachment must be a non-null object",
+                "WebSocket attachment must be an object",
             );
         });
 
         it("throws for primitives", () => {
             expect(() => assertSerializable("hello")).toThrow(
-                "WebSocket attachment must be a non-null object",
+                "WebSocket attachment must be an object",
             );
-            expect(() => assertSerializable(42)).toThrow(
-                "WebSocket attachment must be a non-null object",
-            );
+            expect(() => assertSerializable(42)).toThrow("WebSocket attachment must be an object");
             expect(() => assertSerializable(true)).toThrow(
-                "WebSocket attachment must be a non-null object",
+                "WebSocket attachment must be an object",
             );
         });
 
@@ -178,7 +176,7 @@ describe("websocket guard unit tests", () => {
             const obj: any = {};
             obj.self = obj;
             expect(() => assertSerializable(obj)).toThrow(
-                "WebSocket attachment is non-serializable",
+                "WebSocket attachment is not serializable",
             );
         });
 

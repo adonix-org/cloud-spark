@@ -23,7 +23,7 @@ import { Middleware } from "../middleware/middleware";
  * @throws TypeError If `handler` is not a `Middleware` subclass instance.
  */
 export function assertMiddleware(handler: unknown): asserts handler is Middleware {
-    if (!(handler instanceof Middleware)) {
-        throw new TypeError("Handler must be a subclass of Middleware.");
-    }
+    if (handler instanceof Middleware) return;
+
+    throw new TypeError("Handler must be a subclass of Middleware.");
 }

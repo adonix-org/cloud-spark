@@ -48,11 +48,11 @@ export function safeReason(reason?: string): string | undefined {
 
 export function assertSerializable(value: unknown): asserts value is object {
     if (value === null || typeof value !== "object") {
-        throw new TypeError("WebSocket attachment must be a non-null object");
+        throw new TypeError("WebSocket attachment must be an object");
     }
     try {
         JSON.stringify(value);
     } catch {
-        throw new TypeError("WebSocket attachment is non-serializable");
+        throw new TypeError("WebSocket attachment is not serializable");
     }
 }
