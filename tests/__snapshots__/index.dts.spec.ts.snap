@@ -646,7 +646,7 @@ interface WebSocketConnection<A extends WSAttachment> {
 
 declare class WebSocketSessions<A extends WSAttachment = WSAttachment> {
     private readonly map;
-    create(attachment?: A): WebSocketConnection<A>;
+    create(attachment?: Partial<A>): WebSocketConnection<A>;
     restore(ws: WebSocket): WebSocketConnection<A>;
     restoreAll(all: WebSocket[]): ReadonlyArray<WebSocketConnection<A>>;
     get(ws: WebSocket): WebSocketConnection<A> | undefined;

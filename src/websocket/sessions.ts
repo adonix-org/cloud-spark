@@ -21,7 +21,7 @@ import { RestoredConnectionBase } from "./restore";
 export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
     private readonly map = new Map<WebSocket, WebSocketConnection<A>>();
 
-    public create(attachment?: A): WebSocketConnection<A> {
+    public create(attachment?: Partial<A>): WebSocketConnection<A> {
         class NewConnection extends NewConnectionBase<A> {
             constructor(private readonly sessions: WebSocketSessions<A>) {
                 super();
