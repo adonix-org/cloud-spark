@@ -126,7 +126,7 @@ describe("base websocket unit tests", () => {
 
     it("overwrites existing keys when merging partial attachment", () => {
         con.attach({ id: "123", value: 456 });
-        con.attach({ value: 789 }); // overwrite value
+        con.attach({ value: 789 });
         expect(con.attachment).toStrictEqual({ id: "123", value: 789 });
     });
 
