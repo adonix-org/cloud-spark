@@ -213,8 +213,7 @@ export class OctetStream extends WorkerResponse {
  */
 export class R2ObjectStream extends OctetStream {
     constructor(object: R2ObjectBody, cache?: CacheControl) {
-        const { offset, length } = R2ObjectStream.computeRange(object);
-        super(object.body, { size: object.size, offset, length }, cache);
+        super(object.body, R2ObjectStream.computeRange(object), cache);
 
         if (object.httpMetadata?.contentType) {
             this.mediaType = object.httpMetadata.contentType;
@@ -222,23 +221,41 @@ export class R2ObjectStream extends OctetStream {
     }
 
     /**
-     * Computes the byte range for an R2 object.
+     * Computes the byte range for an R2 object, returning all values needed
+     * to construct a proper streaming response.
      *
-     * Handles two types of ranges:
-     * 1. Standard offset/length range — returned as-is.
-     * 2. Suffix range (e.g., last N bytes) — computes the offset
-     *    as `size - suffix` so it can be used with OctetStream.
+     * Handles three cases:
+     * 1. **No range specified** — returns the full object.
+     * 2. **Suffix range** (e.g., last N bytes) — calculates offset and length
+     *    so that only the requested suffix is returned.
+     * 3. **Standard offset/length range** — returns the requested range,
+     *    applying defaults if offset or length are missing.
      *
-     * Returns an object suitable for OctetStream ({ offset, length }).
+     * @param object - The R2 object containing optional range information.
+     * @returns An object containing:
+     *   - `size` — total size of the object in bytes
+     *   - `offset` — starting byte of the range
+     *   - `length` — number of bytes in the range
      */
-    private static computeRange(object: R2ObjectBody): { offset?: number; length?: number } {
-        if (!object.range) return {};
+    private static computeRange(object: R2ObjectBody): {
+        size: number;
+        offset: number;
+        length: number;
+    } {
+        const size = object.size;
 
-        if ("suffix" in object.range) {
-            return { offset: Math.max(0, object.size - object.range.suffix) };
+        if (!object.range) {
+            return { size, offset: 0, length: size };
         }
 
-        return { ...object.range };
+        if ("suffix" in object.range) {
+            const offset = Math.max(0, size - object.range.suffix);
+            const length = size - offset;
+            return { size, offset, length };
+        }
+
+        const { offset = 0, length = size } = object.range;
+        return { size, offset, length };
     }
 }
 

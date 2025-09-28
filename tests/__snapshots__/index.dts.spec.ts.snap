@@ -987,14 +987,21 @@ declare class OctetStream extends WorkerResponse {
 declare class R2ObjectStream extends OctetStream {
     constructor(object: R2ObjectBody, cache?: CacheControl);
     /**
-     * Computes the byte range for an R2 object.
+     * Computes the byte range for an R2 object, returning all values needed
+     * to construct a proper streaming response.
      *
-     * Handles two types of ranges:
-     * 1. Standard offset/length range — returned as-is.
-     * 2. Suffix range (e.g., last N bytes) — computes the offset
-     *    as \`size - suffix\` so it can be used with OctetStream.
+     * Handles three cases:
+     * 1. **No range specified** — returns the full object.
+     * 2. **Suffix range** (e.g., last N bytes) — calculates offset and length
+     *    so that only the requested suffix is returned.
+     * 3. **Standard offset/length range** — returns the requested range,
+     *    applying defaults if offset or length are missing.
      *
-     * Returns an object suitable for OctetStream ({ offset, length }).
+     * @param object - The R2 object containing optional range information.
+     * @returns An object containing:
+     *   - \`size\` — total size of the object in bytes
+     *   - \`offset\` — starting byte of the range
+     *   - \`length\` — number of bytes in the range
      */
     private static computeRange;
 }
