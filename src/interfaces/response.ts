@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-export * from "./cors";
-export * from "./error";
-export * from "./response";
-export * from "./route";
-export * from "./worker";
+/**
+ * Initialization options for an OctetStream response.
+ *
+ * @property size - Total size of the data (required).
+ * @property offset - Start of the byte range (optional, defaults to 0).
+ * @property length - Length of the byte range (optional, defaults to size).
+ */
+export interface OctetStreamInit {
+    size: number;
+    offset?: number;
+    length?: number;
+}

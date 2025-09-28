@@ -20,6 +20,7 @@ import { setHeader, mergeHeader } from "./utils/header";
 import { getContentType } from "./utils/response";
 import { MediaType } from "./constants/media-types";
 import { HttpHeader } from "./constants/http";
+import { OctetStreamInit } from "./interfaces/response";
 
 /**
  * Base class for building HTTP responses.
@@ -162,6 +163,45 @@ export class TextResponse extends SuccessResponse {
     constructor(content: string, cache?: CacheControl, status: StatusCodes = StatusCodes.OK) {
         super(content, cache, status);
         this.mediaType = MediaType.PLAIN_TEXT;
+    }
+}
+
+/**
+ * A response class for streaming binary data.
+ *
+ * Automatically sets headers for:
+ * - Accept-Ranges: bytes
+ * - Content-Length
+ * - Content-Range (for partial content)
+ *
+ * The status code is handled internally:
+ * - 200 OK for full content
+ * - 206 Partial Content for range responses
+ *
+ * @param stream - The ReadableStream containing the data to send.
+ * @param init - Options for the response:
+ *   - size: Total size of the data (required)
+ *   - offset: Start of the byte range (defaults to 0)
+ *   - length: Length of the byte range (defaults to size)
+ * @param cache: Optional caching information
+ */
+export class OctetStream extends WorkerResponse {
+    constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl) {
+        const { size, offset = 0, length = size } = init;
+
+        super(stream, cache);
+        this.mediaType = MediaType.OCTET_STREAM;
+
+        this.setHeader(HttpHeader.ACCEPT_RANGES, "bytes");
+        this.setHeader(HttpHeader.CONTENT_LENGTH, `${length}`);
+
+        if (offset > 0 || length < size) {
+            this.setHeader(
+                HttpHeader.CONTENT_RANGE,
+                `bytes ${offset}-${offset + length - 1}/${size}`,
+            );
+            this.status = StatusCodes.PARTIAL_CONTENT;
+        }
     }
 }
 

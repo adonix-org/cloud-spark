@@ -23,11 +23,14 @@ export { StatusCodes } from "http-status-codes";
  * Standard HTTP header names and common values.
  */
 export namespace HttpHeader {
-    export const ALLOW = "Allow";
     export const ACCEPT_ENCODING = "Accept-Encoding";
-    export const ORIGIN = "Origin";
+    export const ACCEPT_RANGES = "Accept-Ranges";
+    export const ALLOW = "Allow";
+    export const CONTENT_LENGTH = "Content-Length";
+    export const CONTENT_RANGE = "Content-Range";
     export const CONTENT_TYPE = "Content-Type";
     export const CACHE_CONTROL = "Cache-Control";
+    export const ORIGIN = "Origin";
     export const USER_AGENT = "User-Agent";
     export const VARY = "Vary";
 

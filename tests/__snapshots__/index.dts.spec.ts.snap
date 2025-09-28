@@ -30,11 +30,14 @@ declare const CacheControl: {
  * Standard HTTP header names and common values.
  */
 declare namespace HttpHeader {
-    const ALLOW = "Allow";
     const ACCEPT_ENCODING = "Accept-Encoding";
-    const ORIGIN = "Origin";
+    const ACCEPT_RANGES = "Accept-Ranges";
+    const ALLOW = "Allow";
+    const CONTENT_LENGTH = "Content-Length";
+    const CONTENT_RANGE = "Content-Range";
     const CONTENT_TYPE = "Content-Type";
     const CACHE_CONTROL = "Cache-Control";
+    const ORIGIN = "Origin";
     const USER_AGENT = "User-Agent";
     const VARY = "Vary";
     const CONTENT_SECURITY_POLICY = "Content-Security-Policy";
@@ -318,6 +321,19 @@ interface ErrorJson {
      * if no details are provided.
      */
     details: string;
+}
+
+/**
+ * Initialization options for an OctetStream response.
+ *
+ * @property size - Total size of the data (required).
+ * @property offset - Start of the byte range (optional, defaults to 0).
+ * @property length - Length of the byte range (optional, defaults to size).
+ */
+interface OctetStreamInit {
+    size: number;
+    offset?: number;
+    length?: number;
 }
 
 /**
@@ -941,6 +957,28 @@ declare class TextResponse extends SuccessResponse {
     constructor(content: string, cache?: CacheControl, status?: StatusCodes);
 }
 /**
+ * A response class for streaming binary data.
+ *
+ * Automatically sets headers for:
+ * - Accept-Ranges: bytes
+ * - Content-Length
+ * - Content-Range (for partial content)
+ *
+ * The status code is handled internally:
+ * - 200 OK for full content
+ * - 206 Partial Content for range responses
+ *
+ * @param stream - The ReadableStream containing the data to send.
+ * @param init - Options for the response:
+ *   - size: Total size of the data (required)
+ *   - offset: Start of the byte range (defaults to 0)
+ *   - length: Length of the byte range (defaults to size)
+ * @param cache: Optional caching information
+ */
+declare class OctetStream extends WorkerResponse {
+    constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl);
+}
+/**
  * Response for WebSocket upgrade requests.
  * Automatically sets status to 101 and attaches the client socket.
  */
@@ -1015,6 +1053,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams, websocket };
 "
 `;
