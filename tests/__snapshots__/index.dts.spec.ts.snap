@@ -1015,7 +1015,7 @@ declare class Head extends WorkerResponse {
 /**
  * Response for \`OPTIONS\` preflight requests.
  */
-declare class Options extends SuccessResponse {
+declare class Options extends WorkerResponse {
     constructor();
 }
 

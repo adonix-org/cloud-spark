@@ -270,8 +270,9 @@ export class Head extends WorkerResponse {
 /**
  * Response for `OPTIONS` preflight requests.
  */
-export class Options extends SuccessResponse {
+export class Options extends WorkerResponse {
     constructor() {
-        super(null, undefined, StatusCodes.NO_CONTENT);
+        super();
+        this.status = StatusCodes.NO_CONTENT;
     }
 }
