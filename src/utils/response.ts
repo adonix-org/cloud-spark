@@ -45,8 +45,8 @@ const ADD_CHARSET: Set<MediaType> = new Set([
  * @param type - The media type.
  * @returns A string suitable for the `Content-Type` header.
  */
-export function getContentType(type: MediaType): string {
-    if (ADD_CHARSET.has(type)) {
+export function getContentType(type: MediaType | string): string {
+    if (ADD_CHARSET.has(type as MediaType)) {
         return `${type}; charset=utf-8`;
     }
     return type;

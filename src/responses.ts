@@ -39,7 +39,7 @@ abstract class BaseResponse {
     public webSocket: WebSocket | null = null;
 
     /** Default media type of the response body. */
-    public mediaType: MediaType = MediaType.PLAIN_TEXT;
+    public mediaType: MediaType | string = MediaType.PLAIN_TEXT;
 
     /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit {

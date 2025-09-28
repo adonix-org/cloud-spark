@@ -598,7 +598,7 @@ declare function stripSearchParams(request: Request): URL;
  * @param type - The media type.
  * @returns A string suitable for the \`Content-Type\` header.
  */
-declare function getContentType(type: MediaType): string;
+declare function getContentType(type: MediaType | string): string;
 
 type WarnEvent = {
     type: "warn";
@@ -882,7 +882,7 @@ declare abstract class BaseResponse {
     /** Enable websocket responses. */
     webSocket: WebSocket | null;
     /** Default media type of the response body. */
-    mediaType: MediaType;
+    mediaType: MediaType | string;
     /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit;
     /** Sets a header, overwriting any existing value. */
