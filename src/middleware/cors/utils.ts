@@ -20,7 +20,6 @@ import { CorsConfig } from "../../interfaces/cors";
 import { Worker } from "../../interfaces/worker";
 import { ClonedResponse, Options } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/header";
-import { getOrigin } from "../../utils/request";
 import { ALLOW_ALL_ORIGINS, SIMPLE_METHODS, SKIP_CORS_STATUSES } from "./constants";
 
 /**
@@ -219,4 +218,27 @@ export function skipCors(response: Response): boolean {
     if (headers.has(HttpHeader.UPGRADE)) return true;
 
     return false;
+}
+
+/**
+ * Extracts and normalizes the `Origin` header from a request.
+ *
+ * Returns the origin (scheme + host + port) as a string if present and valid.
+ * Returns `null` if:
+ *   - The `Origin` header is missing
+ *   - The `Origin` header is `"null"` (opaque origin)
+ *   - The `Origin` header is malformed
+ *
+ * @param request - The incoming {@link Request} object.
+ * @returns The normalized origin string, or `null` if not present or invalid.
+ */
+export function getOrigin(request: Request): string | null {
+    const origin = request.headers.get(HttpHeader.ORIGIN)?.trim();
+    if (!origin || origin === "null") return null;
+
+    try {
+        return new URL(origin).origin;
+    } catch {
+        return null;
+    }
 }

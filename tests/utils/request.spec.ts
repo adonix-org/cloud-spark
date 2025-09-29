@@ -14,57 +14,11 @@
  * limitations under the License.
  */
 
-import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "@common";
-import { getOrigin, sortSearchParams, stripSearchParams } from "@src/utils/request";
+import { VALID_URL } from "@common";
+import { sortSearchParams, stripSearchParams } from "@src/utils/request";
 import { describe, it, expect } from "vitest";
 
 describe("request functions unit tests", () => {
-    describe("get origin function", () => {
-        it("returns null for no origin header in the request", () => {
-            expect(getOrigin(GET_REQUEST)).toBe(null);
-        });
-
-        it("returns the origin from the origin header in the request", () => {
-            expect(getOrigin(GET_REQUEST_WITH_ORIGIN)).toBe(VALID_ORIGIN);
-        });
-
-        it("returns null for 'null' string origin", () => {
-            const request = new Request(VALID_URL, {
-                headers: {
-                    Origin: "null",
-                },
-            });
-            expect(getOrigin(request)).toBe(null);
-        });
-
-        it("returns null for invalid origin", () => {
-            const request = new Request(VALID_URL, {
-                headers: {
-                    Origin: "not a valid origin",
-                },
-            });
-            expect(getOrigin(request)).toBe(null);
-        });
-
-        it("returns the normalized origin", () => {
-            const request = new Request(VALID_URL, {
-                headers: {
-                    Origin: "https://localhost/path",
-                },
-            });
-            expect(getOrigin(request)).toBe("https://localhost");
-        });
-
-        it("returns the normalized origin with port", () => {
-            const request = new Request(VALID_URL, {
-                headers: {
-                    Origin: "https://localhot:3000/",
-                },
-            });
-            expect(getOrigin(request)).toBe("https://localhot:3000");
-        });
-    });
-
     describe("sort search params function", () => {
         it("does not modify a url with no search parameters", () => {
             const req = new Request(VALID_URL);

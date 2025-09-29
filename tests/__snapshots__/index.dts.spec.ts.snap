@@ -574,19 +574,6 @@ declare function mergeHeader(headers: Headers, key: string, value: string | stri
 declare function getHeaderValues(headers: Headers, key: string): string[];
 
 /**
- * Extracts and normalizes the \`Origin\` header from a request.
- *
- * Returns the origin (scheme + host + port) as a string if present and valid.
- * Returns \`null\` if:
- *   - The \`Origin\` header is missing
- *   - The \`Origin\` header is \`"null"\` (opaque origin)
- *   - The \`Origin\` header is malformed
- *
- * @param request - The incoming {@link Request} object.
- * @returns The normalized origin string, or \`null\` if not present or invalid.
- */
-declare function getOrigin(request: Request): string | null;
-/**
  * Returns a new URL with its query parameters sorted into a stable order.
  *
  * This is useful for cache key generation: URLs that differ only in the
@@ -1080,6 +1067,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, getOrigin, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams, websocket };
 "
 `;
