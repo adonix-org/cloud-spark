@@ -61,22 +61,6 @@ declare const Time: {
     readonly Year: 31536000;
 };
 
-/** WebSocket close codes */
-declare const CloseCode: {
-    readonly NORMAL: 1000;
-    readonly GOING_AWAY: 1001;
-    readonly PROTOCOL_ERROR: 1002;
-    readonly UNSUPPORTED_DATA: 1003;
-    readonly NO_STATUS: 1005;
-    readonly ABNORMAL: 1006;
-    readonly INVALID_PAYLOAD: 1007;
-    readonly POLICY_VIOLATION: 1008;
-    readonly MESSAGE_TOO_BIG: 1009;
-    readonly MISSING_EXTENSION: 1010;
-    readonly INTERNAL_ERROR: 1011;
-    readonly TLS_HANDSHAKE: 1015;
-};
-
 /**
  * Type guard that checks if a string is a valid HTTP method.
  *
@@ -919,6 +903,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, isMethod, isMethodArray, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, isMethod, isMethodArray, sortSearchParams, stripSearchParams, websocket };
 "
 `;

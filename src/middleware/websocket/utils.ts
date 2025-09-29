@@ -15,8 +15,8 @@
  */
 
 import { HttpHeader } from "../../constants/headers";
+import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "../../constants/websocket";
 import { getHeaderValues } from "../../utils/header";
-import { WS_UPGRADE, WS_WEBSOCKET, WS_VERSION } from "./constants";
 
 export function hasConnectionHeader(headers: Headers): boolean {
     return getHeaderValues(headers, HttpHeader.CONNECTION).some(

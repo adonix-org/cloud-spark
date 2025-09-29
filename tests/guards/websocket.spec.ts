@@ -29,7 +29,7 @@ import {
     WS_RESERVED_CODES,
     WS_MAX_CLOSE_CODE,
     WS_MAX_REASON_CHARS,
-} from "@src/middleware/websocket/constants";
+} from "@src/constants/websocket";
 
 const bufferView = new Uint8Array([1, 2, 3]);
 

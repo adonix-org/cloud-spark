@@ -22,4 +22,3 @@ export { StatusCodes } from "http-status-codes";
 export * from "./cache";
 export * from "./methods";
 export * from "./time";
-export * from "./websocket";

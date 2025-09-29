@@ -21,7 +21,7 @@ import { Worker } from "./interfaces/worker";
 import { CacheControl } from "./constants/cache";
 import { HttpHeader } from "./constants/headers";
 import { assertMethods } from "./guards";
-import { WS_VERSION } from "./middleware/websocket/constants";
+import { WS_VERSION } from "./constants/websocket";
 
 /**
  * Generic HTTP error response.
