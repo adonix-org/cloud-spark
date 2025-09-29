@@ -17,13 +17,7 @@
 /**
  * Env
  */
-export const env = {
-    MY_KV: {
-        get: async (key: string) => `mock-value-for-${key}`,
-        put: async (_key: string, _value: string) => {},
-    },
-    MY_SECRET: "mock-secret",
-} as const;
+export const env: any = {} as const;
 
 /**
  * ExecutionContext
