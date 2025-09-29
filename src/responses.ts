@@ -311,3 +311,13 @@ export class Options extends WorkerResponse {
         this.status = StatusCodes.NO_CONTENT;
     }
 }
+
+/**
+ * 304 Not Modified response.
+ */
+export class NotModified extends WorkerResponse {
+    constructor() {
+        super();
+        this.status = StatusCodes.NOT_MODIFIED;
+    }
+}

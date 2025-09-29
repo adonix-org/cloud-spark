@@ -25,6 +25,7 @@ import {
     WebSocketUpgrade,
     OctetStream,
     R2ObjectStream,
+    NotModified,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { assertDefined, VALID_URL } from "./test-utils/common";
@@ -118,6 +119,13 @@ describe("response unit tests", () => {
         const resp = new WebSocketUpgrade(ws);
         expect(resp.status).toBe(StatusCodes.SWITCHING_PROTOCOLS);
         expect(resp.webSocket).toBe(ws);
+    });
+
+    it("sets the status to 304 in not modified response", async () => {
+        const resp = await new NotModified().response();
+        expect(resp.status).toBe(StatusCodes.NOT_MODIFIED);
+        expect(resp.statusText).toBe("Not Modified");
+        expect(resp.body).toBeNull();
     });
 
     describe("octet stream unit tests", () => {
