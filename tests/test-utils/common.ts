@@ -18,7 +18,7 @@ import { expect } from "vitest";
 import { HEAD, Method, OPTIONS } from "@src/constants/http";
 import { MatchedRoute, RouteCallback, RouteTable } from "@src/interfaces/route";
 import { WorkerClass } from "@src/interfaces/worker";
-import { lexCompare } from "@src/utils";
+import { lexCompare } from "@src/utils/compare";
 
 export const VALID_ORIGIN = "https://localhost";
 export const INVALID_ORIGIN = "https://localhost.invalid";

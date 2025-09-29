@@ -522,58 +522,6 @@ declare function cors(init?: CorsInit): Middleware;
 declare function websocket(path?: string): Middleware;
 
 /**
- * Lexicographically compares two strings.
- *
- * This comparator can be used in \`Array.prototype.sort()\` to produce a
- * consistent, stable ordering of string arrays.
- *
- * @param a - The first string to compare.
- * @param b - The second string to compare.
- * @returns A number indicating the relative order of \`a\` and \`b\`.
- */
-declare function lexCompare(a: string, b: string): number;
-
-/**
- * Sets a header on the given Headers object.
- *
- * - If \`value\` is an array, any duplicates and empty strings are removed.
- * - If the resulting value is empty, the header is deleted.
- * - Otherwise, values are joined with \`", "\` and set as the header value.
- *
- * @param headers - The Headers object to modify.
- * @param key - The header name to set.
- * @param value - The header value(s) to set. Can be a string or array of strings.
- */
-declare function setHeader(headers: Headers, key: string, value: string | string[]): void;
-/**
- * Merges new value(s) into an existing header on the given Headers object.
- *
- * - Preserves any existing values and adds new ones.
- * - Removes duplicates and trims all values.
- * - If the header does not exist, it is created.
- * - If the resulting value array is empty, the header is deleted.
- *
- * @param headers - The Headers object to modify.
- * @param key - The header name to merge into.
- * @param value - The new header value(s) to add. Can be a string or array of strings.
- */
-declare function mergeHeader(headers: Headers, key: string, value: string | string[]): void;
-/**
- * Returns the values of an HTTP header as an array of strings.
- *
- * This helper:
- * - Retrieves the header value by \`key\`.
- * - Splits the value on commas.
- * - Trims surrounding whitespace from each entry.
- * - Filters out any empty tokens.
- * - Removes duplicate values (case-sensitive)
- *
- * If the header is not present, an empty array is returned.
- *
- */
-declare function getHeaderValues(headers: Headers, key: string): string[];
-
-/**
  * Returns a new URL with its query parameters sorted into a stable order.
  *
  * This is useful for cache key generation: URLs that differ only in the
@@ -1067,6 +1015,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, getHeaderValues, isMethod, isMethodArray, lexCompare, mergeHeader, setHeader, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, isMethod, isMethodArray, sortSearchParams, stripSearchParams, websocket };
 "
 `;
