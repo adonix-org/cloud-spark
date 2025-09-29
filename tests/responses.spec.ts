@@ -199,7 +199,7 @@ describe("response unit tests", () => {
 
         it("should set full content headers for a complete object with no range", () => {
             const stream = createDummyStream();
-            const obj = { body: stream, size: 3 } as any;
+            const obj = { body: stream, size: 3, httpEtag: "123" } as any;
             const r2stream = new R2ObjectStream(obj);
 
             expect(r2stream.status).toBe(StatusCodes.OK);
@@ -211,30 +211,38 @@ describe("response unit tests", () => {
 
         it("should set partial content headers for a standard offset/length range", () => {
             const stream = createDummyStream();
-            const obj = { body: stream, size: 10, range: { offset: 2, length: 5 } } as any;
+            const obj = {
+                body: stream,
+                size: 10,
+                range: { offset: 2, length: 5 },
+                httpEtag: "123",
+            } as any;
             const r2stream = new R2ObjectStream(obj);
 
             expect(r2stream.status).toBe(StatusCodes.PARTIAL_CONTENT);
             expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("5");
             expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 2-6/10");
+            expect(r2stream.headers.get(HttpHeader.ETAG)).toBe("123");
         });
 
         it("should set partial content headers for a suffix range", () => {
             const stream = createDummyStream();
-            const obj = { body: stream, size: 10, range: { suffix: 4 } } as any;
+            const obj = { body: stream, size: 10, range: { suffix: 4 }, httpEtag: "123" } as any;
             const r2stream = new R2ObjectStream(obj);
 
             expect(r2stream.status).toBe(StatusCodes.PARTIAL_CONTENT);
             expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("4");
             expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 6-9/10");
+            expect(r2stream.headers.get(HttpHeader.ETAG)).toBe("123");
         });
 
-        it("should set mediaType from object.httpMetadata if present", () => {
+        it("should set media type from object.httpMetadata if present", () => {
             const stream = createDummyStream();
             const obj = {
                 body: stream,
                 size: 5,
                 httpMetadata: { contentType: "audio/mpeg" },
+                httpEtag: "123",
             } as any;
             const r2stream = new R2ObjectStream(obj);
 
@@ -243,23 +251,69 @@ describe("response unit tests", () => {
 
         it("should handle offset 0 but length < size as partial content", () => {
             const stream = createDummyStream();
-            const obj = { body: stream, size: 10, range: { length: 5 } } as any;
+            const obj = { body: stream, size: 10, range: { length: 5 }, httpEtag: "123" } as any;
             const r2stream = new R2ObjectStream(obj);
 
             expect(r2stream.status).toBe(StatusCodes.PARTIAL_CONTENT);
             expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("5");
             expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 0-4/10");
+            expect(r2stream.headers.get(HttpHeader.ETAG)).toBe("123");
         });
 
         it("should handle empty objects correctly", () => {
             const emptyStream = new ReadableStream();
-            const obj = { body: emptyStream, size: 0 } as any;
+            const obj = { body: emptyStream, size: 0, httpEtag: "123" } as any;
             const r2stream = new R2ObjectStream(obj);
 
             expect(r2stream.status).toBe(StatusCodes.OK);
             expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("0");
             expect(r2stream.headers.get(HttpHeader.ACCEPT_RANGES)).toBe("bytes");
             expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBeNull();
+            expect(r2stream.headers.get(HttpHeader.ETAG)).toBe("123");
+        });
+
+        it("should use the constructor cache if present", () => {
+            const stream = createDummyStream();
+            const obj = {
+                body: stream,
+                size: 5,
+                httpMetadata: { cacheControl: "public, max-age=3600" },
+                httpEtag: "123",
+            } as any;
+            const r2stream = new R2ObjectStream(obj, { private: true, "max-age": 0 });
+
+            expect(r2stream.cache).toStrictEqual({
+                "max-age": 0,
+                private: true,
+            });
+        });
+
+        it("should use the r2 cache if present", () => {
+            const stream = createDummyStream();
+            const obj = {
+                body: stream,
+                size: 5,
+                httpMetadata: { cacheControl: "public, max-age=3600" },
+                httpEtag: "123",
+            } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.cache).toStrictEqual({
+                "max-age": 3600,
+                public: true,
+            });
+        });
+
+        it("does not use cache if none are present", () => {
+            const stream = createDummyStream();
+            const obj = {
+                body: stream,
+                size: 5,
+                httpEtag: "123",
+            } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.cache).toBeUndefined();
         });
     });
 });

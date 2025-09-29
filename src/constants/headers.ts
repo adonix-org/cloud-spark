@@ -25,6 +25,7 @@ export namespace HttpHeader {
     export const CONTENT_LENGTH = "Content-Length";
     export const CONTENT_RANGE = "Content-Range";
     export const CONTENT_TYPE = "Content-Type";
+    export const ETAG = "ETag";
     export const ORIGIN = "Origin";
     export const VARY = "Vary";
 

@@ -223,7 +223,19 @@ export class OctetStream extends WorkerResponse {
  */
 export class R2ObjectStream extends OctetStream {
     constructor(source: R2ObjectBody, cache?: CacheControl) {
-        super(source.body, R2ObjectStream.computeRange(source), cache);
+        /**
+         * If a cache was passed into the constructor, use that.
+         * Otherwise use the R2 object's cache.  Any of which can
+         * be undefined.
+         */
+        let useCache = cache;
+        if (!useCache && source.httpMetadata?.cacheControl) {
+            useCache = CacheControl.parse(source.httpMetadata.cacheControl);
+        }
+
+        super(source.body, R2ObjectStream.computeRange(source), useCache);
+
+        this.setHeader(HttpHeader.ETAG, source.httpEtag);
 
         if (source.httpMetadata?.contentType) {
             this.mediaType = source.httpMetadata.contentType;
