@@ -16,7 +16,6 @@
 
 // src/folder/index.ts
 export * from "./constants";
-export * from "./guards";
 export * from "./interfaces";
 export * from "./middleware";
 export * from "./websocket";

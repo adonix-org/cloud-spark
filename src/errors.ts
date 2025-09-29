@@ -20,7 +20,7 @@ import { ErrorJson } from "./interfaces/error";
 import { Worker } from "./interfaces/worker";
 import { CacheControl } from "./constants/cache";
 import { HttpHeader } from "./constants/headers";
-import { assertMethods } from "./guards";
+import { assertMethods } from "./guards/methods";
 import { WS_VERSION } from "./constants/websocket";
 
 /**

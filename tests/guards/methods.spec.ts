@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assertMethods, isMethod, isMethodArray } from "@src/guards";
+import { assertMethods, isMethod, isMethodArray } from "@src/guards/methods";
 import { describe, expect, it } from "vitest";
 
 describe("method guard unit tests", () => {
