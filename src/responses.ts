@@ -208,15 +208,15 @@ export class OctetStream extends WorkerResponse {
 /**
  * A streaming response for Cloudflare R2 objects.
  *
- * @param object - The R2 object to stream.
+ * @param source - The R2 object to stream.
  * @param cache - Optional caching information.
  */
 export class R2ObjectStream extends OctetStream {
-    constructor(object: R2ObjectBody, cache?: CacheControl) {
-        super(object.body, R2ObjectStream.computeRange(object), cache);
+    constructor(source: R2ObjectBody, cache?: CacheControl) {
+        super(source.body, R2ObjectStream.computeRange(source), cache);
 
-        if (object.httpMetadata?.contentType) {
-            this.mediaType = object.httpMetadata.contentType;
+        if (source.httpMetadata?.contentType) {
+            this.mediaType = source.httpMetadata.contentType;
         }
     }
 
@@ -231,30 +231,26 @@ export class R2ObjectStream extends OctetStream {
      * 3. **Standard offset/length range** — returns the requested range,
      *    applying defaults if offset or length are missing.
      *
-     * @param object - The R2 object containing optional range information.
+     * @param source - The R2 object containing optional range information.
      * @returns An object containing:
      *   - `size` — total size of the object in bytes
      *   - `offset` — starting byte of the range
      *   - `length` — number of bytes in the range
      */
-    private static computeRange(object: R2ObjectBody): {
-        size: number;
-        offset: number;
-        length: number;
-    } {
-        const size = object.size;
+    private static computeRange(source: R2ObjectBody): OctetStreamInit {
+        const size = source.size;
 
-        if (!object.range) {
+        if (!source.range) {
             return { size, offset: 0, length: size };
         }
 
-        if ("suffix" in object.range) {
-            const offset = Math.max(0, size - object.range.suffix);
+        if ("suffix" in source.range) {
+            const offset = Math.max(0, size - source.range.suffix);
             const length = size - offset;
             return { size, offset, length };
         }
 
-        const { offset = 0, length = size } = object.range;
+        const { offset = 0, length = size } = source.range;
         return { size, offset, length };
     }
 }

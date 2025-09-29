@@ -981,11 +981,11 @@ declare class OctetStream extends WorkerResponse {
 /**
  * A streaming response for Cloudflare R2 objects.
  *
- * @param object - The R2 object to stream.
+ * @param source - The R2 object to stream.
  * @param cache - Optional caching information.
  */
 declare class R2ObjectStream extends OctetStream {
-    constructor(object: R2ObjectBody, cache?: CacheControl);
+    constructor(source: R2ObjectBody, cache?: CacheControl);
     /**
      * Computes the byte range for an R2 object, returning all values needed
      * to construct a proper streaming response.
@@ -997,7 +997,7 @@ declare class R2ObjectStream extends OctetStream {
      * 3. **Standard offset/length range** — returns the requested range,
      *    applying defaults if offset or length are missing.
      *
-     * @param object - The R2 object containing optional range information.
+     * @param source - The R2 object containing optional range information.
      * @returns An object containing:
      *   - \`size\` — total size of the object in bytes
      *   - \`offset\` — starting byte of the range
