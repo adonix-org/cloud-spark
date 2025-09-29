@@ -726,7 +726,7 @@ declare abstract class RouteWorker extends BasicWorker {
 }
 
 /**
- * Common media types used for HTTP headers.
+ * Internal media types.
  */
 declare enum MediaType {
     PLAIN_TEXT = "text/plain",

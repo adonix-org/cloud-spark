@@ -15,7 +15,7 @@
  */
 
 /**
- * Common media types used for HTTP headers.
+ * Internal media types.
  */
 export enum MediaType {
     PLAIN_TEXT = "text/plain",

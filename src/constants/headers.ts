@@ -15,27 +15,18 @@
  */
 
 /**
- * Standard HTTP header names and common values used internally.
+ * Internally used headers.
  */
 export namespace HttpHeader {
     export const ACCEPT_ENCODING = "Accept-Encoding";
     export const ACCEPT_RANGES = "Accept-Ranges";
     export const ALLOW = "Allow";
+    export const CACHE_CONTROL = "Cache-Control";
     export const CONTENT_LENGTH = "Content-Length";
     export const CONTENT_RANGE = "Content-Range";
     export const CONTENT_TYPE = "Content-Type";
-    export const CACHE_CONTROL = "Cache-Control";
     export const ORIGIN = "Origin";
-    export const USER_AGENT = "User-Agent";
     export const VARY = "Vary";
-
-    // Security Headers
-    export const CONTENT_SECURITY_POLICY = "Content-Security-Policy";
-    export const PERMISSIONS_POLICY = "Permissions-Policy";
-    export const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
-    export const REFERRER_POLICY = "Referrer-Policy";
-    export const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
-    export const X_FRAME_OPTIONS = "X-Frame-Options";
 
     // Cors Headers
     export const ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
@@ -44,7 +35,6 @@ export namespace HttpHeader {
     export const ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
     export const ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
     export const ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age";
-    export const ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
 
     // Websocket Headers
     export const SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
