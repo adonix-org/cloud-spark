@@ -20,7 +20,8 @@ import { ALL_METHODS, BASIC_METHODS, expectHeadersEqual, GET_REQUEST, VALID_URL 
 import { BasicWorker } from "@src/workers/basic";
 import { Method } from "@src/constants/methods";
 import { TextResponse } from "@src/responses";
-import { CacheControl, StatusCodes } from "@src/constants";
+import { StatusCodes } from "@src/constants";
+import { CacheControl } from "@src/constants/cache";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {
