@@ -46,7 +46,7 @@ export function cache(cacheName?: string, getKey?: (request: Request) => URL): M
 /**
  * Returns a new URL with its query parameters sorted into a stable order.
  *
- * This is useful for cache key generation: URLs that differ only in the
+ * This is used for cache key generation: URLs that differ only in the
  * order of their query parameters will normalize to the same key.
  *
  * @param request - The incoming Request whose URL will be normalized.
@@ -65,7 +65,7 @@ export function sortSearchParams(request: Request): URL {
 /**
  * Returns a new URL with all query parameters removed.
  *
- * This is useful when query parameters are not relevant to cache lookups,
+ * This is used when query parameters are not relevant to cache lookups,
  * ensuring that variants of the same resource share a single cache entry.
  *
  * @param request - The incoming Request whose URL will be normalized.
