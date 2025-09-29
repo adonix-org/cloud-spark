@@ -20,8 +20,9 @@ import { ctx, env } from "@mock";
 import { BasicWorker } from "@src/workers/basic";
 import { websocket } from "@src/middleware/websocket/handler";
 import { Method, POST } from "@src/constants/methods";
-import { StatusCodes, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "@src/constants";
+import { StatusCodes } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
+import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "@src/middleware/websocket/constants";
 
 const GET_DISPATCH = "GET Dispatch";
 const POST_DISPATCH = "POST Dispatch";

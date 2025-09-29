@@ -61,16 +61,6 @@ declare const Time: {
     readonly Year: 31536000;
 };
 
-/** WebSocket upgrade header value */
-declare const WS_UPGRADE = "upgrade";
-/** WebSocket protocol header value */
-declare const WS_WEBSOCKET = "websocket";
-/** WebSocket protocol version */
-declare const WS_VERSION = "13";
-/** Max close code a user can send */
-declare const WS_MAX_CLOSE_CODE = 4999;
-/** Max number of reason chars a user can send */
-declare const WS_MAX_REASON_CHARS = 123;
 /** WebSocket close codes */
 declare const CloseCode: {
     readonly NORMAL: 1000;
@@ -86,8 +76,6 @@ declare const CloseCode: {
     readonly INTERNAL_ERROR: 1011;
     readonly TLS_HANDSHAKE: 1015;
 };
-/** WebSocket RESERVED close codes */
-declare const WS_RESERVED_CODES: Set<number>;
 
 /**
  * Type guard that checks if a string is a valid HTTP method.
@@ -931,6 +919,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, isMethod, isMethodArray, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, isMethod, isMethodArray, sortSearchParams, stripSearchParams, websocket };
 "
 `;

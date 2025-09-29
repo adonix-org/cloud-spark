@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { WS_VERSION } from "@src/constants";
+import { WS_VERSION } from "@src/middleware/websocket/constants";
 import {
     hasConnectionHeader,
     hasUpgradeHeader,

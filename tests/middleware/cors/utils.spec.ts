@@ -21,7 +21,7 @@ import {
     VALID_ORIGIN,
     VALID_URL,
 } from "@common";
-import { StatusCodes, WS_WEBSOCKET } from "@src/constants";
+import { StatusCodes } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
 import { DELETE, GET, HEAD, OPTIONS, POST, PUT } from "@src/constants/methods";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
@@ -35,6 +35,7 @@ import {
     setMaxAge,
     skipCors,
 } from "@src/middleware/cors/utils";
+import { WS_WEBSOCKET } from "@src/middleware/websocket/constants";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("cors utils unit tests", () => {

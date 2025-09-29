@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { GET } from "../../constants";
+import { GET } from "../../constants/methods";
 import { BadRequest, UpgradeRequired } from "../../errors";
-import { Worker } from "../../interfaces";
+import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { hasConnectionHeader, hasUpgradeHeader, hasWebSocketVersion } from "./utils";
 

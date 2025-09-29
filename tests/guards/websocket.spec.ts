@@ -24,12 +24,12 @@ import {
     safeReason,
     assertSerializable,
 } from "@src/guards/websocket";
+import { CloseCode } from "@src/constants/websocket";
 import {
-    CloseCode,
+    WS_RESERVED_CODES,
     WS_MAX_CLOSE_CODE,
     WS_MAX_REASON_CHARS,
-    WS_RESERVED_CODES,
-} from "@src/constants/websocket";
+} from "@src/middleware/websocket/constants";
 
 const bufferView = new Uint8Array([1, 2, 3]);
 
