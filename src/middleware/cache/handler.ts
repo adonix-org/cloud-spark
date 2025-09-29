@@ -19,7 +19,7 @@ import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/http";
 import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
 import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
-import { sortSearchParams } from "../../utils/request";
+import { lexCompare } from "../../utils/compare";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -41,6 +41,41 @@ export function cache(cacheName?: string, getKey?: (request: Request) => URL): M
     assertGetKey(getKey);
 
     return new CacheHandler(cacheName, getKey);
+}
+
+/**
+ * Returns a new URL with its query parameters sorted into a stable order.
+ *
+ * This is useful for cache key generation: URLs that differ only in the
+ * order of their query parameters will normalize to the same key.
+ *
+ * @param request - The incoming Request whose URL will be normalized.
+ * @returns A new URL with query parameters sorted by name.
+ */
+export function sortSearchParams(request: Request): URL {
+    const url = new URL(request.url);
+    const sorted = new URLSearchParams(
+        [...url.searchParams.entries()].sort(([a], [b]) => lexCompare(a, b)),
+    );
+    url.search = sorted.toString();
+    url.hash = "";
+    return url;
+}
+
+/**
+ * Returns a new URL with all query parameters removed.
+ *
+ * This is useful when query parameters are not relevant to cache lookups,
+ * ensuring that variants of the same resource share a single cache entry.
+ *
+ * @param request - The incoming Request whose URL will be normalized.
+ * @returns A new URL with no query parameters.
+ */
+export function stripSearchParams(request: Request): URL {
+    const url = new URL(request.url);
+    url.search = "";
+    url.hash = "";
+    return url;
 }
 
 /**

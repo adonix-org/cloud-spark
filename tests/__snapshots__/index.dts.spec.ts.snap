@@ -506,21 +506,6 @@ declare abstract class Middleware {
  * @returns A \`Middleware\` instance that can be used in a Worker pipeline.
  */
 declare function cache(cacheName?: string, getKey?: (request: Request) => URL): Middleware;
-
-/**
- * Creates a\`CORS\`middleware instance.
- *
- * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
- * for incoming requests, including preflight \`OPTIONS\` requests, and adds
- * appropriate headers to responses.
- *
- * @param init - Optional configuration for \`CORS\` behavior. See {@link CorsConfig}.
- * @returns A {@link Middleware} instance that can be used in your middleware chain.
- */
-declare function cors(init?: CorsInit): Middleware;
-
-declare function websocket(path?: string): Middleware;
-
 /**
  * Returns a new URL with its query parameters sorted into a stable order.
  *
@@ -541,6 +526,20 @@ declare function sortSearchParams(request: Request): URL;
  * @returns A new URL with no query parameters.
  */
 declare function stripSearchParams(request: Request): URL;
+
+/**
+ * Creates a\`CORS\`middleware instance.
+ *
+ * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
+ * for incoming requests, including preflight \`OPTIONS\` requests, and adds
+ * appropriate headers to responses.
+ *
+ * @param init - Optional configuration for \`CORS\` behavior. See {@link CorsConfig}.
+ * @returns A {@link Middleware} instance that can be used in your middleware chain.
+ */
+declare function cors(init?: CorsInit): Middleware;
+
+declare function websocket(path?: string): Middleware;
 
 /**
  * Returns the proper Content-Type string for a given media type.
