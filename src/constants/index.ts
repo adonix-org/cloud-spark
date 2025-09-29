@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * https://github.com/prettymuchbryce/http-status-codes
+ */
+export { StatusCodes } from "http-status-codes";
+
 export * from "./cache";
 export * from "./http";
 export * from "./media-types";

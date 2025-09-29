@@ -26,7 +26,7 @@ import {
 import { ctx, env } from "@mock";
 import { cors } from "@src/middleware/cors/handler";
 import { BasicWorker } from "@src/workers/basic";
-import { GET, HEAD, Method, OPTIONS, StatusCodes } from "@src/constants/http";
+import { GET, HEAD, Method, OPTIONS, StatusCodes } from "@src/constants";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {

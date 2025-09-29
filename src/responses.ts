@@ -19,7 +19,7 @@ import { CacheControl } from "./constants/cache";
 import { setHeader, mergeHeader } from "./utils/header";
 import { getContentType } from "./utils/response";
 import { MediaType } from "./constants/media-types";
-import { HttpHeader } from "./constants/http";
+import { HttpHeader } from "./constants/headers";
 import { OctetStreamInit } from "./interfaces/response";
 
 /**

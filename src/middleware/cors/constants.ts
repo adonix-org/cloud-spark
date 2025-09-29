@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { GET, HEAD, HttpHeader, Method, OPTIONS, StatusCodes } from "../../constants/http";
+import { HttpHeader } from "../../constants/headers";
+import { GET, HEAD, Method, OPTIONS, StatusCodes } from "../../constants/";
 import { Time } from "../../constants/time";
 import { CorsConfig } from "../../interfaces/cors";
 

@@ -18,9 +18,9 @@ import { describe, it, expect, vi } from "vitest";
 import { env, ctx } from "@mock";
 import { ALL_METHODS, BASIC_METHODS, expectHeadersEqual, GET_REQUEST, VALID_URL } from "@common";
 import { BasicWorker } from "@src/workers/basic";
-import { Method, StatusCodes } from "@src/constants/http";
+import { Method } from "@src/constants/http";
 import { TextResponse } from "@src/responses";
-import { CacheControl } from "@src/constants";
+import { CacheControl, StatusCodes } from "@src/constants";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {

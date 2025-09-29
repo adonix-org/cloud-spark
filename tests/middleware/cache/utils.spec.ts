@@ -15,7 +15,7 @@
  */
 
 import { decodeVaryKey } from "@common";
-import { HttpHeader } from "@src/constants/http";
+import { HttpHeader } from "@src/constants/headers";
 import {
     base64UrlEncode,
     filterVaryHeader,

@@ -19,7 +19,7 @@ import { JsonResponse } from "./responses";
 import { ErrorJson } from "./interfaces/error";
 import { Worker } from "./interfaces/worker";
 import { CacheControl } from "./constants/cache";
-import { HttpHeader } from "./constants/http";
+import { HttpHeader } from "./constants/headers";
 import { assertMethods } from "./guards";
 import { WS_VERSION } from "./constants/websocket";
 

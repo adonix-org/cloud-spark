@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HttpHeader } from "../../constants/http";
+import { HttpHeader } from "../../constants/headers";
 import { assertMethods } from "../../guards/methods";
 import { CorsConfig } from "../../interfaces/cors";
 import { Worker } from "../../interfaces/worker";

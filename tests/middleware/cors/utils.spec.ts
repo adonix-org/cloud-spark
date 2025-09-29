@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { expectHeadersEqual, GET_REQUEST, GET_REQUEST_WITH_ORIGIN, VALID_ORIGIN, VALID_URL } from "@common";
-import { WS_WEBSOCKET } from "@src/constants";
 import {
-    DELETE,
-    GET,
-    HEAD,
-    HttpHeader,
-    OPTIONS,
-    POST,
-    PUT,
-    StatusCodes,
-} from "@src/constants/http";
+    expectHeadersEqual,
+    GET_REQUEST,
+    GET_REQUEST_WITH_ORIGIN,
+    VALID_ORIGIN,
+    VALID_URL,
+} from "@common";
+import { StatusCodes, WS_WEBSOCKET } from "@src/constants";
+import { HttpHeader } from "@src/constants/headers";
+import { DELETE, GET, HEAD, OPTIONS, POST, PUT } from "@src/constants/http";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import {
     getOrigin,

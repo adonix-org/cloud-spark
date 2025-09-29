@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HttpHeader } from "../../constants/http";
+import { HttpHeader } from "../../constants/headers";
 import { getHeaderValues } from "../../utils/header";
 import { WS_UPGRADE, WS_WEBSOCKET, WS_VERSION } from "../../constants";
 

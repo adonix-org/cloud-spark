@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { HttpHeader } from "../../constants/http";
+import { HttpHeader } from "../../constants/headers";
 import { lexCompare } from "../../utils/compare";
 import { getHeaderValues } from "../../utils/header";
 import { VARY_WILDCARD } from "./constants";

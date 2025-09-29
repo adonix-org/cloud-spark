@@ -19,8 +19,9 @@ import { ALL_METHODS, VALID_ORIGIN } from "@common";
 import { ctx, env } from "@mock";
 import { BasicWorker } from "@src/workers/basic";
 import { websocket } from "@src/middleware/websocket/handler";
-import { HttpHeader, Method, POST, StatusCodes } from "@src/constants/http";
-import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "@src/constants";
+import { Method, POST } from "@src/constants/http";
+import { StatusCodes, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "@src/constants";
+import { HttpHeader } from "@src/constants/headers";
 
 const GET_DISPATCH = "GET Dispatch";
 const POST_DISPATCH = "POST Dispatch";

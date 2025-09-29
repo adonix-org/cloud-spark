@@ -19,8 +19,9 @@ import { decodeVaryKey, GET_REQUEST, VALID_ORIGIN, VALID_URL } from "@common";
 import { ctx, defaultCache, env, namedCache } from "@mock";
 import { cache, sortSearchParams, stripSearchParams } from "@src/middleware/cache/handler";
 import { MiddlewareWorker } from "@src/workers/middleware";
-import { GET, HttpHeader, Method } from "@src/constants/http";
+import { GET, Method } from "@src/constants/http";
 import { getVaryHeader, getVaryKey } from "@src/middleware/cache/utils";
+import { HttpHeader } from "@src/constants/headers";
 
 class TestWorker extends MiddlewareWorker {
     public getAllowedMethods(): Method[] {

@@ -1,10 +1,10 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`library dts test > matches the index.d.ts snapshot 1`] = `
-"import CacheLib from 'cache-control-parser';
-import { MatchFunction } from 'path-to-regexp';
-import { StatusCodes } from 'http-status-codes';
+"import { StatusCodes } from 'http-status-codes';
 export { StatusCodes } from 'http-status-codes';
+import CacheLib from 'cache-control-parser';
+import { MatchFunction } from 'path-to-regexp';
 
 /**
  * @see {@link https://github.com/etienne-martin/cache-control-parser | cache-control-parser}
@@ -22,41 +22,6 @@ declare const CacheControl: {
     }>;
 };
 
-/**
- * https://github.com/prettymuchbryce/http-status-codes
- */
-
-/**
- * Standard HTTP header names and common values.
- */
-declare namespace HttpHeader {
-    const ACCEPT_ENCODING = "Accept-Encoding";
-    const ACCEPT_RANGES = "Accept-Ranges";
-    const ALLOW = "Allow";
-    const CONTENT_LENGTH = "Content-Length";
-    const CONTENT_RANGE = "Content-Range";
-    const CONTENT_TYPE = "Content-Type";
-    const CACHE_CONTROL = "Cache-Control";
-    const ORIGIN = "Origin";
-    const USER_AGENT = "User-Agent";
-    const VARY = "Vary";
-    const CONTENT_SECURITY_POLICY = "Content-Security-Policy";
-    const PERMISSIONS_POLICY = "Permissions-Policy";
-    const STRICT_TRANSPORT_SECURITY = "Strict-Transport-Security";
-    const REFERRER_POLICY = "Referrer-Policy";
-    const X_CONTENT_TYPE_OPTIONS = "X-Content-Type-Options";
-    const X_FRAME_OPTIONS = "X-Frame-Options";
-    const ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-    const ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
-    const ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
-    const ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    const ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
-    const ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age";
-    const ACCESS_CONTROL_REQUEST_HEADERS = "Access-Control-Request-Headers";
-    const SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
-    const CONNECTION = "Connection";
-    const UPGRADE = "Upgrade";
-}
 /**
  * Standard HTTP request methods.
  */
@@ -1014,6 +979,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, HttpHeader, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, isMethod, isMethodArray, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, MediaType, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, isMethod, isMethodArray, sortSearchParams, stripSearchParams, websocket };
 "
 `;

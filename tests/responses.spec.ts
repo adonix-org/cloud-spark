@@ -29,7 +29,7 @@ import {
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { assertDefined, VALID_URL } from "./test-utils/common";
 import { MethodNotAllowed } from "@src/errors";
-import { HttpHeader } from "@src/constants/http";
+import { HttpHeader } from "@src/constants/headers";
 import { CacheControl } from "@src/constants/cache";
 import { MediaType } from "@src/constants/media-types";
 
