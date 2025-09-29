@@ -19,7 +19,7 @@ import { Worker } from "../../interfaces/worker";
 import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors";
 import { defaultCorsConfig } from "./constants";
-import { OPTIONS } from "../../constants/http";
+import { OPTIONS } from "../../constants/methods";
 import { assertCorsInit } from "../../guards/cors";
 
 /**

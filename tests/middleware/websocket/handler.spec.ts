@@ -19,7 +19,7 @@ import { ALL_METHODS, VALID_ORIGIN } from "@common";
 import { ctx, env } from "@mock";
 import { BasicWorker } from "@src/workers/basic";
 import { websocket } from "@src/middleware/websocket/handler";
-import { Method, POST } from "@src/constants/http";
+import { Method, POST } from "@src/constants/methods";
 import { StatusCodes, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
 

@@ -16,7 +16,7 @@
 
 import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
-import { GET } from "../../constants/http";
+import { GET } from "../../constants/methods";
 import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
 import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { lexCompare } from "../../utils/compare";

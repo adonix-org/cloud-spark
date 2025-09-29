@@ -20,7 +20,7 @@ import { Routes } from "../routes";
 import { RouteHandler, RouteTable } from "../interfaces/route";
 import { WorkerClass } from "../interfaces/worker";
 import { BaseWorker } from "./base";
-import { Method } from "../constants/http";
+import { Method } from "../constants/methods";
 
 /**
  * Base worker supporting route-based request handling.

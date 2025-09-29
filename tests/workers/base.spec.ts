@@ -18,7 +18,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { env, ctx } from "@mock";
 import { BODY_INIT, GET_REQUEST, VALID_URL } from "@common";
 import { BaseWorker } from "@src/workers/base";
-import { Method } from "@src/constants/http";
+import { Method } from "@src/constants/methods";
 
 class TestWorker extends BaseWorker {
     public getAllowedMethods(): Method[] {

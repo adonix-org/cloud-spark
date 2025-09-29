@@ -15,7 +15,7 @@
  */
 
 import { expect } from "vitest";
-import { HEAD, Method, OPTIONS } from "@src/constants/http";
+import { HEAD, Method, OPTIONS } from "@src/constants/methods";
 import { MatchedRoute, RouteCallback, RouteTable } from "@src/interfaces/route";
 import { WorkerClass } from "@src/interfaces/worker";
 import { lexCompare } from "@src/utils/compare";

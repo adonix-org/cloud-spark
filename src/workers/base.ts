@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method } from "../constants/http";
+import { Method } from "../constants/methods";
 import { assertMethods, isMethod } from "../guards/methods";
 import { FetchHandler } from "../interfaces/fetch";
 import { Worker, WorkerClass } from "../interfaces/worker";
@@ -107,10 +107,9 @@ export abstract class BaseWorker implements Worker {
      * @param args Additional constructor arguments
      * @returns A Promise resolving to the {@link Response} object
      */
-    protected async response<Ctor extends new (...args: any[]) => { response(): Promise<Response> }>(
-        ResponseClass: Ctor,
-        ...args: ConstructorParameters<Ctor>
-    ): Promise<Response> {
+    protected async response<
+        Ctor extends new (...args: any[]) => { response(): Promise<Response> },
+    >(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor>): Promise<Response> {
         return new ResponseClass(...args).response();
     }
 

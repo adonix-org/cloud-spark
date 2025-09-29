@@ -18,7 +18,7 @@ import { describe, it, expect, vi } from "vitest";
 import { env, ctx } from "@mock";
 import { ALL_METHODS, BASIC_METHODS, expectHeadersEqual, GET_REQUEST, VALID_URL } from "@common";
 import { BasicWorker } from "@src/workers/basic";
-import { Method } from "@src/constants/http";
+import { Method } from "@src/constants/methods";
 import { TextResponse } from "@src/responses";
 import { CacheControl, StatusCodes } from "@src/constants";
 

@@ -23,7 +23,7 @@ import {
 } from "@common";
 import { StatusCodes, WS_WEBSOCKET } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
-import { DELETE, GET, HEAD, OPTIONS, POST, PUT } from "@src/constants/http";
+import { DELETE, GET, HEAD, OPTIONS, POST, PUT } from "@src/constants/methods";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import {
     getOrigin,

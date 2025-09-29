@@ -17,7 +17,7 @@
 import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
 import { MiddlewareWorker } from "./middleware";
 import { Head, Options } from "../responses";
-import { Method, GET, HEAD, OPTIONS } from "../constants/http";
+import { Method, GET, HEAD, OPTIONS } from "../constants/methods";
 
 /**
  * Basic worker class providing HTTP method dispatching and error handling.
