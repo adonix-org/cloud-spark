@@ -304,7 +304,7 @@ describe("response unit tests", () => {
             });
         });
 
-        it("does not use cache if none are present", () => {
+        it("does not set cache if neither are present", () => {
             const stream = createDummyStream();
             const obj = {
                 body: stream,
