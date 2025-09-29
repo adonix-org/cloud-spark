@@ -17,10 +17,10 @@
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { CacheControl } from "./constants/cache";
 import { setHeader, mergeHeader } from "./utils/header";
-import { getContentType } from "./utils/response";
-import { MediaType } from "./constants/media";
+import { UTF8_CHARSET, MediaType } from "./constants/media";
 import { HttpHeader } from "./constants/headers";
 import { OctetStreamInit } from "./interfaces/response";
+import { withCharset } from "./utils/media";
 
 /**
  * Base class for building HTTP responses.
@@ -40,7 +40,7 @@ abstract class BaseResponse {
     public webSocket: WebSocket | null = null;
 
     /** Default media type of the response body. */
-    public mediaType: MediaType | string = MediaType.PLAIN_TEXT;
+    public mediaType: string = `${MediaType.PLAIN_TEXT}; charset=utf-8`;
 
     /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit {
@@ -66,7 +66,7 @@ abstract class BaseResponse {
     /** Adds a Content-Type header if not already existing (does not overwrite). */
     public addContentType() {
         if (!this.headers.get(HttpHeader.CONTENT_TYPE)) {
-            this.headers.set(HttpHeader.CONTENT_TYPE, getContentType(this.mediaType));
+            this.headers.set(HttpHeader.CONTENT_TYPE, this.mediaType);
         }
     }
 }
@@ -150,9 +150,14 @@ export class JsonResponse extends SuccessResponse {
  * HTML response. Automatically sets Content-Type to text/html.
  */
 export class HtmlResponse extends SuccessResponse {
-    constructor(body: string, cache?: CacheControl, status: StatusCodes = StatusCodes.OK) {
+    constructor(
+        body: string,
+        cache?: CacheControl,
+        status: StatusCodes = StatusCodes.OK,
+        charset: string = UTF8_CHARSET,
+    ) {
         super(body, cache, status);
-        this.mediaType = MediaType.HTML;
+        this.mediaType = withCharset(MediaType.HTML, charset);
     }
 }
 
@@ -160,9 +165,14 @@ export class HtmlResponse extends SuccessResponse {
  * Plain text response. Automatically sets Content-Type to text/plain.
  */
 export class TextResponse extends SuccessResponse {
-    constructor(content: string, cache?: CacheControl, status: StatusCodes = StatusCodes.OK) {
-        super(content, cache, status);
-        this.mediaType = MediaType.PLAIN_TEXT;
+    constructor(
+        body: string,
+        cache?: CacheControl,
+        status: StatusCodes = StatusCodes.OK,
+        charset: string = UTF8_CHARSET,
+    ) {
+        super(body, cache, status);
+        this.mediaType = withCharset(MediaType.PLAIN_TEXT, charset);
     }
 }
 

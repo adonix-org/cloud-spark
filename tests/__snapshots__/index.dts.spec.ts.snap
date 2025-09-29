@@ -669,16 +669,6 @@ declare abstract class RouteWorker extends BasicWorker {
 }
 
 /**
- * Internal media types.
- */
-declare enum MediaType {
-    PLAIN_TEXT = "text/plain",
-    HTML = "text/html",
-    JSON = "application/json",
-    OCTET_STREAM = "application/octet-stream"
-}
-
-/**
  * Base class for building HTTP responses.
  * Manages headers, status, and media type.
  */
@@ -692,7 +682,7 @@ declare abstract class BaseResponse {
     /** Enable websocket responses. */
     webSocket: WebSocket | null;
     /** Default media type of the response body. */
-    mediaType: MediaType | string;
+    mediaType: string;
     /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit;
     /** Sets a header, overwriting any existing value. */
@@ -742,13 +732,13 @@ declare class JsonResponse extends SuccessResponse {
  * HTML response. Automatically sets Content-Type to text/html.
  */
 declare class HtmlResponse extends SuccessResponse {
-    constructor(body: string, cache?: CacheControl, status?: StatusCodes);
+    constructor(body: string, cache?: CacheControl, status?: StatusCodes, charset?: string);
 }
 /**
  * Plain text response. Automatically sets Content-Type to text/plain.
  */
 declare class TextResponse extends SuccessResponse {
-    constructor(content: string, cache?: CacheControl, status?: StatusCodes);
+    constructor(body: string, cache?: CacheControl, status?: StatusCodes, charset?: string);
 }
 /**
  * A response class for streaming binary data.

@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-export const UTF8_CHARSET = "utf-8";
-
-/**
- * Internal media types.
- */
-export enum MediaType {
-    PLAIN_TEXT = "text/plain",
-    HTML = "text/html",
-    JSON = "application/json",
-    OCTET_STREAM = "application/octet-stream",
+export function withCharset(mediaType: string, charset: string): string {
+    return `${mediaType}; charset=${charset}`;
 }
