@@ -19,7 +19,6 @@ export * from "./constants";
 export * from "./guards";
 export * from "./interfaces";
 export * from "./middleware";
-export * from "./utils";
 export * from "./websocket";
 export * from "./workers";
 

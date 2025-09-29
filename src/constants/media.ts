@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export * from "./response";
+/**
+ * Common media types used for HTTP headers.
+ */
+export enum MediaType {
+    PLAIN_TEXT = "text/plain",
+    HTML = "text/html",
+    JSON = "application/json",
+    OCTET_STREAM = "application/octet-stream",
+}

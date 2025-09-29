@@ -31,7 +31,7 @@ import { assertDefined, VALID_URL } from "./test-utils/common";
 import { MethodNotAllowed } from "@src/errors";
 import { HttpHeader } from "@src/constants/headers";
 import { CacheControl } from "@src/constants/cache";
-import { MediaType } from "@src/constants/media-types";
+import { MediaType } from "@src/constants/media";
 
 const mockWorker = {
     request: new Request(VALID_URL),

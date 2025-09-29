@@ -48,7 +48,6 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "assertMethods",
   "cache",
   "cors",
-  "getContentType",
   "isMethod",
   "isMethodArray",
   "sortSearchParams",

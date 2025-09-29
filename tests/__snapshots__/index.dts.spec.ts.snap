@@ -457,64 +457,6 @@ declare function cors(init?: CorsInit): Middleware;
 
 declare function websocket(path?: string): Middleware;
 
-/**
- * Common media types used for HTTP headers.
- */
-declare enum MediaType {
-    PLAIN_TEXT = "text/plain",
-    HTML = "text/html",
-    CSS = "text/css",
-    CSV = "text/csv",
-    XML = "text/xml",
-    MARKDOWN = "text/markdown",
-    RICH_TEXT = "text/richtext",
-    JSON = "application/json",
-    XML_APP = "application/xml",
-    YAML = "application/x-yaml",
-    FORM_URLENCODED = "application/x-www-form-urlencoded",
-    NDJSON = "application/x-ndjson",
-    MSGPACK = "application/x-msgpack",
-    PROTOBUF = "application/x-protobuf",
-    MULTIPART_FORM_DATA = "multipart/form-data",
-    MULTIPART_MIXED = "multipart/mixed",
-    MULTIPART_ALTERNATIVE = "multipart/alternative",
-    MULTIPART_DIGEST = "multipart/digest",
-    MULTIPART_RELATED = "multipart/related",
-    MULTIPART_SIGNED = "multipart/signed",
-    MULTIPART_ENCRYPTED = "multipart/encrypted",
-    OCTET_STREAM = "application/octet-stream",
-    PDF = "application/pdf",
-    ZIP = "application/zip",
-    GZIP = "application/gzip",
-    MSWORD = "application/msword",
-    DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    EXCEL = "application/vnd.ms-excel",
-    XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    POWERPOINT = "application/vnd.ms-powerpoint",
-    PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    ICO = "image/x-icon",
-    ICO_MS = "image/vnd.microsoft.icon",
-    GIF = "image/gif",
-    PNG = "image/png",
-    JPEG = "image/jpeg",
-    WEBP = "image/webp",
-    SVG = "image/svg+xml",
-    HEIF = "image/heif",
-    AVIF = "image/avif",
-    EVENT_STREAM = "text/event-stream",
-    TAR = "application/x-tar",
-    BZIP2 = "application/x-bzip2"
-}
-
-/**
- * Returns the proper Content-Type string for a given media type.
- * Appends \`charset=utf-8\` for text-based types that require it.
- *
- * @param type - The media type.
- * @returns A string suitable for the \`Content-Type\` header.
- */
-declare function getContentType(type: MediaType | string): string;
-
 type WarnEvent = {
     type: "warn";
     message: string;
@@ -784,6 +726,16 @@ declare abstract class RouteWorker extends BasicWorker {
 }
 
 /**
+ * Common media types used for HTTP headers.
+ */
+declare enum MediaType {
+    PLAIN_TEXT = "text/plain",
+    HTML = "text/html",
+    JSON = "application/json",
+    OCTET_STREAM = "application/octet-stream"
+}
+
+/**
  * Base class for building HTTP responses.
  * Manages headers, status, and media type.
  */
@@ -979,6 +931,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, getContentType, isMethod, isMethodArray, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, CloseCode, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES, WS_UPGRADE, WS_VERSION, WS_WEBSOCKET, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, assertMethods, cache, cors, isMethod, isMethodArray, sortSearchParams, stripSearchParams, websocket };
 "
 `;

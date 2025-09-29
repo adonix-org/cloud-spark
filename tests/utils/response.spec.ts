@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MediaType } from "@src/constants/media-types";
+import { MediaType } from "@src/constants/media";
 import { getContentType } from "@src/utils/response";
 import { describe, it, expect } from "vitest";
 

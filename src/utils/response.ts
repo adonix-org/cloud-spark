@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MediaType } from "../constants/media-types";
+import { MediaType } from "../constants/media";
 
 /**
  * A set of media types that require a `charset` parameter when setting
@@ -23,20 +23,7 @@ import { MediaType } from "../constants/media-types";
  * This includes common text-based media types such as HTML, CSS, JSON,
  * XML, CSV, Markdown, and others.
  */
-const ADD_CHARSET: Set<MediaType> = new Set([
-    MediaType.CSS,
-    MediaType.CSV,
-    MediaType.XML,
-    MediaType.SVG,
-    MediaType.HTML,
-    MediaType.JSON,
-    MediaType.NDJSON,
-    MediaType.XML_APP,
-    MediaType.MARKDOWN,
-    MediaType.RICH_TEXT,
-    MediaType.PLAIN_TEXT,
-    MediaType.FORM_URLENCODED,
-]);
+const ADD_CHARSET: Set<MediaType> = new Set([MediaType.HTML, MediaType.JSON, MediaType.PLAIN_TEXT]);
 
 /**
  * Returns the proper Content-Type string for a given media type.
