@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+/**
+ * Appends a charset parameter to a given media type string,
+ * avoiding duplicates and ignoring empty charsets.
+ *
+ * @param {string} mediaType - The MIME type (e.g., "text/html").
+ * @param {string} charset - The character set to append (e.g., "utf-8").
+ * @returns {string} The media type with charset appended if provided.
+ */
 export function withCharset(mediaType: string, charset: string): string {
-    return `${mediaType}; charset=${charset}`;
+    if (!charset || mediaType.toLowerCase().includes("charset=")) {
+        return mediaType;
+    }
+    return `${mediaType}; charset=${charset.toLowerCase()}`;
 }
