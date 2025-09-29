@@ -80,7 +80,7 @@ describe("middleware unit tests", () => {
         });
         expectHeadersEqual(response.headers, [
             ["cache-control", "no-cache, no-store, must-revalidate, max-age=0"],
-            ["content-type", "application/json"],
+            ["content-type", "application/json; charset=utf-8"],
         ]);
     });
 });

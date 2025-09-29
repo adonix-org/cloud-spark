@@ -50,7 +50,7 @@ describe("response unit tests", () => {
     it("sets json body and content-type in json response", async () => {
         const resp = new JsonResponse({ foo: "bar" });
         const r = await resp.response();
-        expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("application/json");
+        expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("application/json; charset=utf-8");
         const json = await r.json();
         expect(json).toEqual({ foo: "bar" });
     });

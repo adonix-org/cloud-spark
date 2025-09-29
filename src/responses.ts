@@ -142,7 +142,7 @@ export class SuccessResponse extends WorkerResponse {
 export class JsonResponse extends SuccessResponse {
     constructor(json: unknown = {}, cache?: CacheControl, status: StatusCodes = StatusCodes.OK) {
         super(JSON.stringify(json), cache, status);
-        this.mediaType = MediaType.JSON;
+        this.mediaType = withCharset(MediaType.JSON, UTF8_CHARSET);
     }
 }
 
