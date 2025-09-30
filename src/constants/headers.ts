@@ -22,6 +22,7 @@ export namespace HttpHeader {
     export const ACCEPT_RANGES = "Accept-Ranges";
     export const ALLOW = "Allow";
     export const CACHE_CONTROL = "Cache-Control";
+    export const CONNECTION = "Connection";
     export const CONTENT_DISPOSITION = "Content-Disposition";
     export const CONTENT_ENCODING = "Content-Encoding";
     export const CONTENT_LANGUAGE = "Content-Language";
@@ -43,7 +44,6 @@ export namespace HttpHeader {
 
     // Websocket Headers
     export const SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
-    export const CONNECTION = "Connection";
     export const UPGRADE = "Upgrade";
 }
 
