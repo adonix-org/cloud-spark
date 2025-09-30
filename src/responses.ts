@@ -284,7 +284,7 @@ export class R2ObjectStream extends OctetStream {
      *   - `length` — number of bytes in the range
      */
     private static computeRange(size: number, range?: R2Range): OctetStreamInit {
-        if (!range) return { size, offset: 0, length: size };
+        if (!range) return { size };
 
         if ("suffix" in range) {
             const offset = Math.max(0, size - range.suffix);
@@ -292,8 +292,7 @@ export class R2ObjectStream extends OctetStream {
             return { size, offset, length };
         }
 
-        const { offset = 0, length = size } = range;
-        return { size, offset, length };
+        return { size, ...range };
     }
 }
 
