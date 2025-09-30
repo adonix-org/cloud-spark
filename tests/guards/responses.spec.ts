@@ -65,5 +65,29 @@ describe("responses guard unit tests", () => {
             const init = { size: 10, offset: 0, length: 10 };
             expect(() => assertOctetStreamInit(init)).not.toThrow();
         });
+
+        it("handles size = 0 correctly", () => {
+            expect(() => assertOctetStreamInit({ size: 0 })).not.toThrow();
+        });
+
+        it("allows offset with zero length", () => {
+            expect(() => assertOctetStreamInit({ size: 10, offset: 5, length: 0 })).not.toThrow();
+        });
+
+        it("allows length that reaches the end exactly", () => {
+            expect(() => assertOctetStreamInit({ size: 10, offset: 5, length: 5 })).not.toThrow();
+        });
+
+        it("works with offset and length explicitly undefined", () => {
+            expect(() =>
+                assertOctetStreamInit({ size: 10, offset: undefined, length: undefined }),
+            ).not.toThrow();
+        });
+
+        it("throws for fractional size, offset, or length", () => {
+            expect(() => assertOctetStreamInit({ size: 10.5 })).toThrow(RangeError);
+            expect(() => assertOctetStreamInit({ size: 10, offset: 2.5 })).toThrow(RangeError);
+            expect(() => assertOctetStreamInit({ size: 10, length: 3.2 })).toThrow(RangeError);
+        });
     });
 });
