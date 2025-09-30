@@ -219,10 +219,15 @@ export class OctetStream extends WorkerResponse {
  * A streaming response for Cloudflare R2 objects.
  *
  * @param source - The R2 object to stream.
+ * @param range = Optional range override.
  * @param cache - Optional caching information.
  */
 export class R2ObjectStream extends OctetStream {
-    constructor(source: R2ObjectBody, cache?: CacheControl) {
+    constructor(
+        source: R2ObjectBody,
+        range: R2Range | undefined = source.range,
+        cache?: CacheControl,
+    ) {
         /**
          * If a cache was passed into the constructor, use that.
          * Otherwise use the R2 object's cache.  Any of which can
@@ -233,7 +238,7 @@ export class R2ObjectStream extends OctetStream {
             useCache = CacheControl.parse(source.httpMetadata.cacheControl);
         }
 
-        super(source.body, R2ObjectStream.computeRange(source), useCache);
+        super(source.body, R2ObjectStream.computeRange(source.size, range), useCache);
 
         this.setHeader(HttpHeader.ETAG, source.httpEtag);
 
@@ -259,20 +264,18 @@ export class R2ObjectStream extends OctetStream {
      *   - `offset` — starting byte of the range
      *   - `length` — number of bytes in the range
      */
-    private static computeRange(source: R2ObjectBody): OctetStreamInit {
-        const size = source.size;
-
-        if (!source.range) {
+    private static computeRange(size: number, range?: R2Range): OctetStreamInit {
+        if (!range) {
             return { size, offset: 0, length: size };
         }
 
-        if ("suffix" in source.range) {
-            const offset = Math.max(0, size - source.range.suffix);
+        if ("suffix" in range) {
+            const offset = Math.max(0, size - range.suffix);
             const length = size - offset;
             return { size, offset, length };
         }
 
-        const { offset = 0, length = size } = source.range;
+        const { offset = 0, length = size } = range;
         return { size, offset, length };
     }
 }
