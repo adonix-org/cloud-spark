@@ -19,7 +19,7 @@ import { CacheControl } from "./constants/cache";
 import { setHeader, mergeHeader } from "./utils/header";
 import { UTF8_CHARSET, MediaType } from "./constants/media";
 import { HttpHeader } from "./constants/headers";
-import { OctetStreamInit } from "./interfaces/response";
+import { OctetStreamInit, R2ObjectOverride } from "./interfaces/response";
 import { withCharset } from "./utils/media";
 
 /**
@@ -223,16 +223,9 @@ export class OctetStream extends WorkerResponse {
  * @param cache - Optional caching information.
  */
 export class R2ObjectStream extends OctetStream {
-    constructor(
-        source: R2ObjectBody,
-        range: R2Range | undefined = source.range,
-        cache?: CacheControl,
-    ) {
-        /**
-         * If a cache was passed into the constructor, use that.
-         * Otherwise use the R2 object's cache.  Any of which can
-         * be undefined.
-         */
+    constructor(source: R2ObjectBody, override: R2ObjectOverride = {}) {
+        const { range = source.range, cache } = override;
+
         let useCache = cache;
         if (!useCache && source.httpMetadata?.cacheControl) {
             useCache = CacheControl.parse(source.httpMetadata.cacheControl);
@@ -314,6 +307,7 @@ export class Options extends WorkerResponse {
         this.status = StatusCodes.NO_CONTENT;
     }
 }
+
 /**
  * 304 Not Modified response.
  */
