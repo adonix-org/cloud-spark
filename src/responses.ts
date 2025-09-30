@@ -40,7 +40,7 @@ abstract class BaseResponse {
     public webSocket: WebSocket | null = null;
 
     /** Default media type of the response body. */
-    public mediaType: string = `${MediaType.PLAIN_TEXT}; charset=utf-8`;
+    public mediaType: string = withCharset(MediaType.PLAIN_TEXT, UTF8_CHARSET);
 
     /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit {
@@ -66,7 +66,7 @@ abstract class BaseResponse {
     /** Adds a Content-Type header if not already existing (does not overwrite). */
     public addContentType() {
         if (!this.headers.get(HttpHeader.CONTENT_TYPE)) {
-            this.headers.set(HttpHeader.CONTENT_TYPE, this.mediaType);
+            this.setHeader(HttpHeader.CONTENT_TYPE, this.mediaType);
         }
     }
 }
@@ -82,7 +82,7 @@ abstract class CacheResponse extends BaseResponse {
     /** Adds Cache-Control header if caching is configured. */
     protected addCacheHeader(): void {
         if (this.cache) {
-            this.headers.set(HttpHeader.CACHE_CONTROL, CacheControl.stringify(this.cache));
+            this.setHeader(HttpHeader.CACHE_CONTROL, CacheControl.stringify(this.cache));
         }
     }
 }
@@ -309,5 +309,15 @@ export class Options extends WorkerResponse {
     constructor() {
         super();
         this.status = StatusCodes.NO_CONTENT;
+    }
+}
+/**
+ * 304 Not Modified response.
+ */
+export class NotModified extends WorkerResponse {
+    constructor(response: Response) {
+        super();
+        this.headers = new Headers(response.headers);
+        this.status = StatusCodes.NOT_MODIFIED;
     }
 }

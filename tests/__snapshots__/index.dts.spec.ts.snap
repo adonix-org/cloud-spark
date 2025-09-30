@@ -809,6 +809,12 @@ declare class Head extends WorkerResponse {
 declare class Options extends WorkerResponse {
     constructor();
 }
+/**
+ * 304 Not Modified response.
+ */
+declare class NotModified extends WorkerResponse {
+    constructor(response: Response);
+}
 
 /**
  * Generic HTTP error response.
@@ -864,6 +870,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, cache, cors, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, NotModified, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, cache, cors, sortSearchParams, stripSearchParams, websocket };
 "
 `;

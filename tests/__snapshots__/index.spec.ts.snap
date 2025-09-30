@@ -20,6 +20,7 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "MethodNotImplemented",
   "NotFound",
   "NotImplemented",
+  "NotModified",
   "OPTIONS",
   "OctetStream",
   "Options",
