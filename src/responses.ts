@@ -219,8 +219,8 @@ export class OctetStream extends WorkerResponse {
  * A streaming response for Cloudflare R2 objects.
  *
  * @param source - The R2 object to stream.
- * @param range = Optional range override.
  * @param cache - Optional caching information.
+ * @param range = Optional range override.
  */
 export class R2ObjectStream extends OctetStream {
     constructor(
