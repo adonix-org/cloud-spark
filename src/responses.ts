@@ -222,21 +222,26 @@ export class TextResponse extends SuccessResponse {
  */
 export class OctetStream extends WorkerResponse {
     constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl) {
-        const { size, offset = 0, length = size } = init;
-
         super(stream, cache);
         this.mediaType = MediaType.OCTET_STREAM;
 
-        this.setHeader(HttpHeader.ACCEPT_RANGES, "bytes");
-        this.setHeader(HttpHeader.CONTENT_LENGTH, `${length}`);
+        const { size, offset = 0, length = size } = init;
 
-        if (offset > 0 || length < size) {
+        /**
+         * If either offset or length was passed in, always
+         * set status to 206 Partial Content even if the range
+         * is the entire file.
+         */
+        if (init.offset !== undefined || init.length !== undefined) {
             this.setHeader(
                 HttpHeader.CONTENT_RANGE,
                 `bytes ${offset}-${offset + length - 1}/${size}`,
             );
             this.status = StatusCodes.PARTIAL_CONTENT;
         }
+
+        this.setHeader(HttpHeader.ACCEPT_RANGES, "bytes");
+        this.setHeader(HttpHeader.CONTENT_LENGTH, `${length}`);
     }
 }
 
