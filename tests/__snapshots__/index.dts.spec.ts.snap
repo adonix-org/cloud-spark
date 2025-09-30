@@ -754,26 +754,31 @@ declare class TextResponse extends SuccessResponse {
     constructor(body: string, cache?: CacheControl, status?: StatusCodes, charset?: string);
 }
 /**
- * A response class for streaming binary data.
+ * Represents an HTTP response for serving binary data as \`application/octet-stream\`.
  *
- * Automatically sets headers for:
- * - Accept-Ranges: bytes
- * - Content-Length
- * - Content-Range (for partial content)
+ * This class validates the provided \`OctetStreamInit\` configuration and
+ * automatically sets the correct HTTP headers for either a full or partial
+ * content response.
  *
- * The status code is handled internally:
- * - 200 OK for full content
- * - 206 Partial Content for range responses
- *
- * @param stream - The ReadableStream containing the data to send.
- * @param init - Options for the response:
- *   - size: Total size of the data (required)
- *   - offset: Start of the byte range (defaults to 0)
- *   - length: Length of the byte range (defaults to size)
- * @param cache: Optional caching information
+ * Behavior:
+ * - Always sets \`Content-Type\` to \`application/octet-stream\`.
+ * - Always sets \`Accept-Ranges: bytes\`.
+ * - Always sets \`Content-Length\` to the validated length of the response body.
+ * - If either \`offset\` or \`length\` is provided, the response is treated as
+ *   partial content (\`206 Partial Content\`) and a \`Content-Range\` header is added,
+ *   even if the specified range spans the entire file.
  */
 declare class OctetStream extends WorkerResponse {
     constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl);
+    /**
+     * Returns true if the given \`OctetStreamInit\` represents a partial range.
+     *
+     * A partial range is any init with an explicit \`offset\` or \`length\`.
+     *
+     * @param init - The OctetStreamInit to check.
+     * @returns \`true\` if partial, \`false\` otherwise.
+     */
+    private static isPartial;
 }
 /**
  * A streaming response for Cloudflare R2 objects.
@@ -784,22 +789,21 @@ declare class OctetStream extends WorkerResponse {
 declare class R2ObjectStream extends OctetStream {
     constructor(source: R2ObjectBody, cache?: CacheControl);
     /**
-     * Computes the byte range for an R2 object, returning all values needed
-     * to construct a proper streaming response.
+     * Computes an \`OctetStreamInit\` object from a given R2 range.
      *
-     * Handles three cases:
-     * 1. **No range specified** — returns the full object.
-     * 2. **Suffix range** (e.g., last N bytes) — calculates offset and length
-     *    so that only the requested suffix is returned.
-     * 3. **Standard offset/length range** — returns the requested range,
-     *    applying defaults if offset or length are missing.
+     * This function normalizes a Cloudflare R2 \`R2Range\` into the shape expected
+     * by \`OctetStream\`. It handles the following cases:
      *
-     * @param size - Total size of the R2 object in bytes.
-     * @param range - Optional range request.
-     * @returns An object containing:
-     *   - \`size\` — total size of the object in bytes
-     *   - \`offset\` — starting byte of the range
-     *   - \`length\` — number of bytes in the range
+     * - No range provided → returns \`{ size }\` (full content).
+     * - \`suffix\` range → calculates the offset and length from the end of the file.
+     * - Explicit \`offset\` and/or \`length\` → passed through as-is.
+     *
+     * @param size - The total size of the file/object.
+     * @param range - Optional range to extract (from R2). Can be:
+     *   - \`{ offset: number; length?: number }\`
+     *   - \`{ offset?: number; length: number }\`
+     *   - \`{ suffix: number }\`
+     * @returns An \`OctetStreamInit\` object suitable for \`OctetStream\`.
      */
     private static computeRange;
 }
