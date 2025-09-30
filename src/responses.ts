@@ -224,7 +224,9 @@ export class OctetStream extends WorkerResponse {
         super(stream, cache);
         this.mediaType = MediaType.OCTET_STREAM;
 
-        const { size, offset = 0, length = size } = init;
+        const { size } = init;
+        const offset = init.offset ?? 0;
+        const length = init.length ?? size - offset;
 
         if (OctetStream.isPartial(init)) {
             this.setHeader(

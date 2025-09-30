@@ -36,25 +36,28 @@ import { isNumber } from "./basic";
  * @throws {RangeError} If `size`, `offset`, or `length` are invalid.
  * @returns `true` if the value is a valid `OctetStreamInit`.
  */
-export function assertOctetStreamInit(value: unknown): value is OctetStreamInit {
+export function assertOctetStreamInit(value: unknown): asserts value is OctetStreamInit {
     if (typeof value !== "object" || value === null) {
-        throw new TypeError("OctetStreamInit must be a non-null object");
+        throw new TypeError("OctetStreamInit must be an object.");
     }
 
-    const init = value as Partial<OctetStreamInit>;
-    const { size, offset = 0, length = size } = init;
+    const obj = value as Record<string, unknown>;
 
+    // Validate size
+    const size = obj["size"];
     if (!isNumber(size) || size < 0) {
-        throw new RangeError("size must be a non-negative number");
+        throw new RangeError("OctetStreamInit.size must be a non-negative number.");
     }
 
+    // Validate offset
+    const offset = obj["offset"] ?? 0;
     if (!isNumber(offset) || offset < 0 || offset > size) {
-        throw new RangeError("offset out of bounds");
+        throw new RangeError("OctetStreamInit.offset out of bounds.");
     }
 
+    // Validate length
+    const length = obj["length"] ?? size - offset;
     if (!isNumber(length) || length < 0 || offset + length > size) {
-        throw new RangeError("length out of bounds");
+        throw new RangeError("OctetStreamInit.length out of bounds.");
     }
-
-    return true;
 }
