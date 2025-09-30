@@ -226,7 +226,11 @@ export class OctetStream extends WorkerResponse {
 
         const { size } = init;
         const offset = init.offset ?? 0;
-        const length = init.length ?? size - offset;
+        let length = init.length ?? size - offset;
+
+        if (offset === 0 && length === 0 && size > 0) {
+            length = 1;
+        }
 
         if (OctetStream.isPartial(init)) {
             this.setHeader(
@@ -249,6 +253,7 @@ export class OctetStream extends WorkerResponse {
      * @returns `true` if partial, `false` otherwise.
      */
     private static isPartial(init: OctetStreamInit): boolean {
+        if (init.size === 0) return false;
         return init.offset !== undefined || init.length !== undefined;
     }
 }

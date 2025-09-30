@@ -247,6 +247,87 @@ describe("response unit tests", () => {
 
             expect(octet.cache).toBe(dummyCache);
         });
+
+        it("offset = 0 and length = size behaves as partial if explicitly set", () => {
+            const size = 10;
+            const init = { size, offset: 0, length: 10 }; // full file, but explicitly partial
+            const stream = createDummyStream();
+
+            const octet = new OctetStream(stream, init);
+
+            expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("10");
+            expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 0-9/10");
+        });
+
+        it("does not change length if positive", () => {
+            const size = 10;
+            const init = { size, offset: 2, length: 3 };
+            const stream = new ReadableStream();
+
+            const octet = new OctetStream(stream, init);
+
+            expect(octet.headers.get("Content-Length")).toBe("3");
+            expect(octet.status).toBe(206);
+        });
+
+        it("offset > 0 with length = 0 returns zero-length 206", () => {
+            const size = 1024;
+            const init = { size, offset: 256, length: 0 };
+            const stream = createDummyStream();
+
+            const octet = new OctetStream(stream, init);
+
+            expect(octet.headers.get("Content-Length")).toBe("0");
+            expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 256-255/1024");
+        });
+
+        it("offset = size with length = 0 returns zero-length 206", () => {
+            const size = 10;
+            const init = { size, offset: 10, length: 0 };
+            const stream = createDummyStream();
+
+            const octet = new OctetStream(stream, init);
+
+            expect(octet.headers.get("Content-Length")).toBe("0");
+            expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 10-9/10");
+        });
+
+        it("length omitted with offset > 0 defaults to size - offset", () => {
+            const size = 10;
+            const init = { size, offset: 4 }; // length omitted
+            const stream = createDummyStream();
+
+            const octet = new OctetStream(stream, init);
+
+            expect(octet.headers.get("Content-Length")).toBe("6"); // 10 - 4
+            expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 4-9/10");
+        });
+
+        it("length = 0 and size = 0 remains zero-length", () => {
+            const init = { size: 0, offset: 0, length: 0 };
+            const stream = createDummyStream();
+
+            const octet = new OctetStream(stream, init);
+
+            expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("0");
+            expect(octet.status).toBe(StatusCodes.OK);
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBeNull();
+        });
+
+        it("range 0-0 and size > 0 is one byte partial", () => {
+            const init = { size: 10, offset: 0, length: 0 };
+            const stream = createDummyStream();
+
+            const octet = new OctetStream(stream, init);
+
+            expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("1");
+            expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 0-0/10");
+        });
     });
 
     describe("r2 object stream unit tests", () => {
