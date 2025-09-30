@@ -240,6 +240,17 @@ export class OctetStream extends WorkerResponse {
         this.setHeader(HttpHeader.CONTENT_LENGTH, `${length}`);
     }
 
+    /**
+     * Returns a fully specified `OctetStreamInit` with all fields set.
+     *
+     * Fills in defaults for any missing values:
+     * - `offset` defaults to 0
+     * - `length` defaults to `size - offset`
+     * - If `offset` and `length` are both 0 but `size > 0`, `length` is set to 1
+     *
+     * @param init - Partial or complete OctetStreamInit
+     * @returns An object with `size`, `offset`, and `length` guaranteed
+     */
     private static normalizeInit(init: OctetStreamInit): Required<OctetStreamInit> {
         const { size } = init;
         const offset = init.offset ?? 0;

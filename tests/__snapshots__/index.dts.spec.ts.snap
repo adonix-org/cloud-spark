@@ -773,6 +773,18 @@ declare class TextResponse extends SuccessResponse {
 declare class OctetStream extends WorkerResponse {
     constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl);
     /**
+     * Returns a fully specified \`OctetStreamInit\` with all fields set.
+     *
+     * Fills in defaults for any missing values:
+     * - \`offset\` defaults to 0
+     * - \`length\` defaults to \`size - offset\`
+     * - If \`offset\` and \`length\` are both 0 but \`size > 0\`, \`length\` is set to 1
+     *
+     * @param init - Partial or complete OctetStreamInit
+     * @returns An object with \`size\`, \`offset\`, and \`length\` guaranteed
+     */
+    private static normalizeInit;
+    /**
      * Returns true if the given \`OctetStreamInit\` represents a partial range.
      *
      * A partial range is any init with an explicit \`offset\` or \`length\`, provided
