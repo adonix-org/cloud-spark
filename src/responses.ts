@@ -266,22 +266,21 @@ export class R2ObjectStream extends OctetStream {
     }
 
     /**
-     * Computes the byte range for an R2 object, returning all values needed
-     * to construct a proper streaming response.
+     * Computes an `OctetStreamInit` object from a given R2 range.
      *
-     * Handles three cases:
-     * 1. **No range specified** — returns the full object.
-     * 2. **Suffix range** (e.g., last N bytes) — calculates offset and length
-     *    so that only the requested suffix is returned.
-     * 3. **Standard offset/length range** — returns the requested range,
-     *    applying defaults if offset or length are missing.
+     * This function normalizes a Cloudflare R2 `R2Range` into the shape expected
+     * by `OctetStream`. It handles the following cases:
      *
-     * @param size - Total size of the R2 object in bytes.
-     * @param range - Optional range request.
-     * @returns An object containing:
-     *   - `size` — total size of the object in bytes
-     *   - `offset` — starting byte of the range
-     *   - `length` — number of bytes in the range
+     * - No range provided → returns `{ size }` (full content).
+     * - `suffix` range → calculates the offset and length from the end of the file.
+     * - Explicit `offset` and/or `length` → passed through as-is.
+     *
+     * @param size - The total size of the file/object.
+     * @param range - Optional range to extract (from R2). Can be:
+     *   - `{ offset: number; length?: number }`
+     *   - `{ offset?: number; length: number }`
+     *   - `{ suffix: number }`
+     * @returns An `OctetStreamInit` object suitable for `OctetStream`.
      */
     private static computeRange(size: number, range?: R2Range): OctetStreamInit {
         if (!range) return { size };
