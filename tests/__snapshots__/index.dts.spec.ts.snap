@@ -760,7 +760,7 @@ declare class TextResponse extends SuccessResponse {
  * @param cache: Optional caching information
  */
 declare class OctetStream extends WorkerResponse {
-    constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl);
+    constructor(stream: ReadableStream | null, init: OctetStreamInit, cache?: CacheControl);
 }
 /**
  * A streaming response for Cloudflare R2 objects.
@@ -770,7 +770,7 @@ declare class OctetStream extends WorkerResponse {
  * @param cache - Optional caching information.
  */
 declare class R2ObjectStream extends OctetStream {
-    constructor(source: R2ObjectBody, range?: R2Range | undefined, cache?: CacheControl);
+    constructor(source: R2Object | R2ObjectBody, cache?: CacheControl, range?: R2Range | undefined);
     /**
      * Computes the byte range for an R2 object, returning all values needed
      * to construct a proper streaming response.
@@ -812,9 +812,10 @@ declare class Options extends WorkerResponse {
 }
 /**
  * 304 Not Modified response.
+ * Can wrap any existing response, preserving only headers allowed by RFC 9110.
  */
 declare class NotModified extends WorkerResponse {
-    constructor(response: Response);
+    constructor(response?: Response);
 }
 
 /**

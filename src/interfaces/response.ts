@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { CacheControl } from "cache-control-parser";
-
 /**
  * Initialization options for an OctetStream response.
  *
@@ -27,9 +25,4 @@ export interface OctetStreamInit {
     size: number;
     offset?: number;
     length?: number;
-}
-
-export interface R2ObjectOverride {
-    cache?: CacheControl;
-    range?: R2Range;
 }

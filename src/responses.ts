@@ -19,7 +19,7 @@ import { CacheControl } from "./constants/cache";
 import { setHeader, mergeHeader } from "./utils/header";
 import { UTF8_CHARSET, MediaType } from "./constants/media";
 import { HttpHeader } from "./constants/headers";
-import { OctetStreamInit, R2ObjectOverride } from "./interfaces/response";
+import { OctetStreamInit } from "./interfaces/response";
 import { withCharset } from "./utils/media";
 
 /**
@@ -196,7 +196,7 @@ export class TextResponse extends SuccessResponse {
  * @param cache: Optional caching information
  */
 export class OctetStream extends WorkerResponse {
-    constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl) {
+    constructor(stream: ReadableStream | null, init: OctetStreamInit, cache?: CacheControl) {
         const { size, offset = 0, length = size } = init;
 
         super(stream, cache);
@@ -223,15 +223,18 @@ export class OctetStream extends WorkerResponse {
  * @param cache - Optional caching information.
  */
 export class R2ObjectStream extends OctetStream {
-    constructor(source: R2ObjectBody, override: R2ObjectOverride = {}) {
-        const { range = source.range, cache } = override;
-
+    constructor(
+        source: R2Object | R2ObjectBody,
+        cache?: CacheControl,
+        range: R2Range | undefined = source.range,
+    ) {
         let useCache = cache;
         if (!useCache && source.httpMetadata?.cacheControl) {
             useCache = CacheControl.parse(source.httpMetadata.cacheControl);
         }
 
-        super(source.body, R2ObjectStream.computeRange(source.size, range), useCache);
+        const stream = "body" in source ? source.body : null;
+        super(stream, R2ObjectStream.computeRange(source.size, range), useCache);
 
         this.setHeader(HttpHeader.ETAG, source.httpEtag);
 
@@ -258,9 +261,7 @@ export class R2ObjectStream extends OctetStream {
      *   - `length` — number of bytes in the range
      */
     private static computeRange(size: number, range?: R2Range): OctetStreamInit {
-        if (!range) {
-            return { size, offset: 0, length: size };
-        }
+        if (!range) return { size, offset: 0, length: size };
 
         if ("suffix" in range) {
             const offset = Math.max(0, size - range.suffix);
@@ -310,11 +311,32 @@ export class Options extends WorkerResponse {
 
 /**
  * 304 Not Modified response.
+ * Can wrap any existing response, preserving only headers allowed by RFC 9110.
  */
 export class NotModified extends WorkerResponse {
-    constructor(response: Response) {
+    constructor(response?: Response) {
         super();
-        this.headers = new Headers(response.headers);
+
         this.status = StatusCodes.NOT_MODIFIED;
+        this.headers = new Headers();
+
+        if (!response) return;
+
+        // Entity headers that MUST NOT be sent in a 304
+        const entityHeaders = new Set([
+            "content-type",
+            "content-length",
+            "content-range",
+            "content-encoding",
+            "content-language",
+            "content-disposition",
+            "content-md5", // optional, if used
+        ]);
+
+        for (const [key, value] of response.headers.entries()) {
+            if (!entityHeaders.has(key.toLowerCase())) {
+                this.headers.set(key, value);
+            }
+        }
     }
 }
