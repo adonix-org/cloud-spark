@@ -85,3 +85,16 @@ export function getHeaderValues(headers: Headers, key: string): string[] {
             .filter((v) => v.length > 0) ?? [];
     return Array.from(new Set(values)).sort(lexCompare);
 }
+
+/**
+ * Removes a list of header fields from a {@link Headers} object.
+ *
+ * @param headers - The {@link Headers} object to modify in place.
+ * @param keys - An array of header field names to remove. Header names are
+ *               matched case-insensitively per the Fetch spec.
+ */
+export function filterHeaders(headers: Headers, keys: string[]): void {
+    for (const key of keys) {
+        headers.delete(key);
+    }
+}

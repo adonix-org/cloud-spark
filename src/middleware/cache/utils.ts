@@ -17,7 +17,7 @@
 
 import { HttpHeader } from "../../constants/headers";
 import { lexCompare } from "../../utils/compare";
-import { getHeaderValues } from "../../utils/header";
+import { getHeaderValues } from "../../utils/headers";
 import { VARY_WILDCARD } from "./constants";
 
 /** Base URL used for constructing cache keys. Only used internally. */

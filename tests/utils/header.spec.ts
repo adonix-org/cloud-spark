@@ -15,7 +15,7 @@
  */
 
 import { describe, it, beforeEach, expect } from "vitest";
-import { getHeaderValues, mergeHeader, setHeader } from "@src/utils/header";
+import { filterHeaders, getHeaderValues, mergeHeader, setHeader } from "@src/utils/headers";
 import { expectHeadersEqual } from "@common";
 
 describe("header functions unit tests", () => {
@@ -292,6 +292,52 @@ describe("header functions unit tests", () => {
                 "x-test": "  b , a ,B,, c , , A ",
             });
             expect(getHeaderValues(headers, "x-test")).toEqual(["A", "B", "a", "b", "c"]);
+        });
+    });
+
+    describe("filterHeaders", () => {
+        it("removes a single header", () => {
+            const headers = new Headers({
+                "content-type": "application/json",
+                "x-test": "123",
+            });
+            filterHeaders(headers, ["content-type"]);
+            expectHeadersEqual(headers, [["x-test", "123"]]);
+        });
+
+        it("removes multiple headers", () => {
+            const headers = new Headers({
+                "content-type": "application/json",
+                "content-length": "42",
+                "x-custom": "ok",
+            });
+            filterHeaders(headers, ["content-type", "content-length"]);
+            expectHeadersEqual(headers, [["x-custom", "ok"]]);
+        });
+
+        it("ignores headers that are not present", () => {
+            const headers = new Headers({
+                "x-existing": "yes",
+            });
+            filterHeaders(headers, ["x-missing", "another-missing"]);
+            expectHeadersEqual(headers, [["x-existing", "yes"]]);
+        });
+
+        it("is case-insensitive (per spec)", () => {
+            const headers = new Headers({
+                "Content-Type": "text/html",
+                "X-Case": "match",
+            });
+            filterHeaders(headers, ["content-type", "x-case"]);
+            expectHeadersEqual(headers, []);
+        });
+
+        it("no-op when keys is empty", () => {
+            const headers = new Headers({
+                "x-keep": "ok",
+            });
+            filterHeaders(headers, []);
+            expectHeadersEqual(headers, [["x-keep", "ok"]]);
         });
     });
 });

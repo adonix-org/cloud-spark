@@ -16,9 +16,9 @@
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { CacheControl } from "./constants/cache";
-import { setHeader, mergeHeader } from "./utils/header";
+import { setHeader, mergeHeader } from "./utils/headers";
 import { UTF8_CHARSET, MediaType } from "./constants/media";
-import { HttpHeader } from "./constants/headers";
+import { FORBIDDEN_ENTITY_HEADERS, HttpHeader } from "./constants/headers";
 import { OctetStreamInit } from "./interfaces/response";
 import { withCharset } from "./utils/media";
 
@@ -88,7 +88,7 @@ abstract class CacheResponse extends BaseResponse {
 }
 
 /**
- * Core worker response. Combines caching, and security headers.
+ * Core response. Combines caching, and content type headers.
  */
 export abstract class WorkerResponse extends CacheResponse {
     constructor(
@@ -102,10 +102,21 @@ export abstract class WorkerResponse extends CacheResponse {
     public async response(): Promise<Response> {
         this.addCacheHeader();
 
-        const body = this.status === StatusCodes.NO_CONTENT ? null : this.body;
+        const body =
+            this.status in [StatusCodes.NO_CONTENT, StatusCodes.NOT_MODIFIED] ? null : this.body;
 
         if (body) this.addContentType();
+
+        this.filterHeaders();
         return new Response(body, this.responseInit);
+    }
+
+    private filterHeaders(): void {
+        if (this.status !== StatusCodes.NOT_MODIFIED) return;
+
+        for (const key of FORBIDDEN_ENTITY_HEADERS) {
+            this.headers.delete(key);
+        }
     }
 }
 
@@ -301,37 +312,5 @@ export class Options extends WorkerResponse {
     constructor() {
         super();
         this.status = StatusCodes.NO_CONTENT;
-    }
-}
-
-/**
- * 304 Not Modified response.
- * Can wrap any existing response, preserving only headers allowed by RFC 9110.
- */
-export class NotModified extends WorkerResponse {
-    constructor(response?: Response) {
-        super();
-
-        this.status = StatusCodes.NOT_MODIFIED;
-        this.headers = new Headers();
-
-        if (!response) return;
-
-        // Entity headers that MUST NOT be sent in a 304
-        const entityHeaders = new Set([
-            "content-type",
-            "content-length",
-            "content-range",
-            "content-encoding",
-            "content-language",
-            "content-disposition",
-            "content-md5", // optional, if used
-        ]);
-
-        for (const [key, value] of response.headers.entries()) {
-            if (!entityHeaders.has(key.toLowerCase())) {
-                this.headers.set(key, value);
-            }
-        }
     }
 }

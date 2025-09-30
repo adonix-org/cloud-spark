@@ -22,9 +22,13 @@ export namespace HttpHeader {
     export const ACCEPT_RANGES = "Accept-Ranges";
     export const ALLOW = "Allow";
     export const CACHE_CONTROL = "Cache-Control";
+    export const CONTENT_DISPOSITION = "Content-Disposition";
+    export const CONTENT_ENCODING = "Content-Encoding";
+    export const CONTENT_LANGUAGE = "Content-Language";
     export const CONTENT_LENGTH = "Content-Length";
     export const CONTENT_RANGE = "Content-Range";
     export const CONTENT_TYPE = "Content-Type";
+    export const CONTENT_MD5 = "Content-MD5";
     export const ETAG = "ETag";
     export const ORIGIN = "Origin";
     export const VARY = "Vary";
@@ -42,3 +46,14 @@ export namespace HttpHeader {
     export const CONNECTION = "Connection";
     export const UPGRADE = "Upgrade";
 }
+
+/** Headers forbidden in 304 responses */
+export const FORBIDDEN_ENTITY_HEADERS = new Set([
+    HttpHeader.CONTENT_TYPE,
+    HttpHeader.CONTENT_LENGTH,
+    HttpHeader.CONTENT_RANGE,
+    HttpHeader.CONTENT_ENCODING,
+    HttpHeader.CONTENT_LANGUAGE,
+    HttpHeader.CONTENT_DISPOSITION,
+    HttpHeader.CONTENT_MD5,
+]);
