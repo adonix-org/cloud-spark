@@ -213,9 +213,11 @@ export class TextResponse extends SuccessResponse {
  * - Always sets `Content-Type` to `application/octet-stream`.
  * - Always sets `Accept-Ranges: bytes`.
  * - Always sets `Content-Length` to the validated length of the response body.
- * - If either `offset` or `length` is provided, the response is treated as
- *   partial content (`206 Partial Content`) and a `Content-Range` header is added,
- *   even if the specified range spans the entire file.
+ * - If either `offset` or `length` is provided and the size is non-zero, the response
+ *   is treated as partial content (`206 Partial Content`) and a `Content-Range` header
+ *   is added, even if the specified range spans the entire file.
+ * - Special case: a requested range of `0-0` on a non-empty file returns 1 byte.
+ * - Zero-length streams (`size = 0`) are never treated as partial content.
  */
 export class OctetStream extends WorkerResponse {
     constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl) {
@@ -247,7 +249,8 @@ export class OctetStream extends WorkerResponse {
     /**
      * Returns true if the given `OctetStreamInit` represents a partial range.
      *
-     * A partial range is any init with an explicit `offset` or `length`.
+     * A partial range is any init with an explicit `offset` or `length`, provided
+     * the stream size is greater than zero.
      *
      * @param init - The OctetStreamInit to check.
      * @returns `true` if partial, `false` otherwise.
