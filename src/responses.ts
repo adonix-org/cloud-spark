@@ -16,9 +16,9 @@
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { CacheControl } from "./constants/cache";
-import { setHeader, mergeHeader } from "./utils/headers";
+import { setHeader, mergeHeader, filterHeaders } from "./utils/headers";
 import { UTF8_CHARSET, MediaType } from "./constants/media";
-import { FORBIDDEN_ENTITY_HEADERS, HttpHeader } from "./constants/headers";
+import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "./constants/headers";
 import { OctetStreamInit } from "./interfaces/response";
 import { withCharset } from "./utils/media";
 
@@ -69,6 +69,26 @@ abstract class BaseResponse {
             this.setHeader(HttpHeader.CONTENT_TYPE, this.mediaType);
         }
     }
+
+    /**
+     * Removes headers that are disallowed or discouraged based on the current
+     * status code.
+     *
+     * - **204 No Content:** strips headers that "should not" be sent
+     *   (`Content-Length`, `Content-Range`), per the HTTP spec.
+     * - **304 Not Modified:** strips headers that "must not" be sent
+     *   (`Content-Type`, `Content-Length`, `Content-Range`, etc.), per the HTTP spec.
+     *
+     * This ensures that responses remain compliant with HTTP/1.1 standards while preserving
+     * custom headers that are allowed.
+     */
+    public filterHeaders(): void {
+        if (this.status === StatusCodes.NO_CONTENT) {
+            filterHeaders(this.headers, FORBIDDEN_204_HEADERS);
+        } else if (this.status === StatusCodes.NOT_MODIFIED) {
+            filterHeaders(this.headers, FORBIDDEN_304_HEADERS);
+        }
+    }
 }
 
 /**
@@ -102,21 +122,15 @@ export abstract class WorkerResponse extends CacheResponse {
     public async response(): Promise<Response> {
         this.addCacheHeader();
 
-        const body =
-            this.status in [StatusCodes.NO_CONTENT, StatusCodes.NOT_MODIFIED] ? null : this.body;
+        const body = [StatusCodes.NO_CONTENT, StatusCodes.NOT_MODIFIED].includes(this.status)
+            ? null
+            : this.body;
 
         if (body) this.addContentType();
 
         this.filterHeaders();
+
         return new Response(body, this.responseInit);
-    }
-
-    private filterHeaders(): void {
-        if (this.status !== StatusCodes.NOT_MODIFIED) return;
-
-        for (const key of FORBIDDEN_ENTITY_HEADERS) {
-            this.headers.delete(key);
-        }
     }
 }
 

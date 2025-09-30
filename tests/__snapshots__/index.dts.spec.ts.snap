@@ -691,6 +691,19 @@ declare abstract class BaseResponse {
     mergeHeader(key: string, value: string | string[]): void;
     /** Adds a Content-Type header if not already existing (does not overwrite). */
     addContentType(): void;
+    /**
+     * Removes headers that are disallowed or discouraged based on the current
+     * status code.
+     *
+     * - **204 No Content:** strips headers that "should not" be sent
+     *   (\`Content-Length\`, \`Content-Range\`), per the HTTP spec.
+     * - **304 Not Modified:** strips headers that "must not" be sent
+     *   (\`Content-Type\`, \`Content-Length\`, \`Content-Range\`, etc.), per the HTTP spec.
+     *
+     * This ensures that responses remain compliant with HTTP/1.1 standards while preserving
+     * custom headers that are allowed.
+     */
+    filterHeaders(): void;
 }
 /**
  * Base response class that adds caching headers.
@@ -709,7 +722,6 @@ declare abstract class WorkerResponse extends CacheResponse {
     constructor(body?: BodyInit | null, cache?: CacheControl);
     /** Builds the Response with body, headers, and status. */
     response(): Promise<Response>;
-    private filterHeaders;
 }
 /**
  * Wraps an existing Response and clones its body, headers, and status.

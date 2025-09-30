@@ -47,8 +47,11 @@ export namespace HttpHeader {
     export const UPGRADE = "Upgrade";
 }
 
-/** Headers forbidden in 304 responses */
-export const FORBIDDEN_ENTITY_HEADERS = new Set([
+/**
+ * Headers that must not be sent in 304 Not Modified responses.
+ * These are stripped to comply with the HTTP spec.
+ */
+export const FORBIDDEN_304_HEADERS = [
     HttpHeader.CONTENT_TYPE,
     HttpHeader.CONTENT_LENGTH,
     HttpHeader.CONTENT_RANGE,
@@ -56,4 +59,10 @@ export const FORBIDDEN_ENTITY_HEADERS = new Set([
     HttpHeader.CONTENT_LANGUAGE,
     HttpHeader.CONTENT_DISPOSITION,
     HttpHeader.CONTENT_MD5,
-]);
+];
+
+/**
+ * Headers that should not be sent in 204 No Content responses.
+ * Stripping them is recommended but optional per spec.
+ */
+export const FORBIDDEN_204_HEADERS = [HttpHeader.CONTENT_LENGTH, HttpHeader.CONTENT_RANGE];
