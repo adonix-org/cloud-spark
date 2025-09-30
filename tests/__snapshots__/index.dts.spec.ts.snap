@@ -760,17 +760,16 @@ declare class TextResponse extends SuccessResponse {
  * @param cache: Optional caching information
  */
 declare class OctetStream extends WorkerResponse {
-    constructor(stream: ReadableStream | null, init: OctetStreamInit, cache?: CacheControl);
+    constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl);
 }
 /**
  * A streaming response for Cloudflare R2 objects.
  *
  * @param source - The R2 object to stream.
- * @param range = Optional range override.
  * @param cache - Optional caching information.
  */
 declare class R2ObjectStream extends OctetStream {
-    constructor(source: R2Object | R2ObjectBody, cache?: CacheControl, range?: R2Range | undefined);
+    constructor(source: R2ObjectBody, cache?: CacheControl);
     /**
      * Computes the byte range for an R2 object, returning all values needed
      * to construct a proper streaming response.
@@ -782,7 +781,8 @@ declare class R2ObjectStream extends OctetStream {
      * 3. **Standard offset/length range** — returns the requested range,
      *    applying defaults if offset or length are missing.
      *
-     * @param source - The R2 object containing optional range information.
+     * @param size - Total size of the R2 object in bytes.
+     * @param range - Optional range request.
      * @returns An object containing:
      *   - \`size\` — total size of the object in bytes
      *   - \`offset\` — starting byte of the range

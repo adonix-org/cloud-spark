@@ -196,7 +196,7 @@ export class TextResponse extends SuccessResponse {
  * @param cache: Optional caching information
  */
 export class OctetStream extends WorkerResponse {
-    constructor(stream: ReadableStream | null, init: OctetStreamInit, cache?: CacheControl) {
+    constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl) {
         const { size, offset = 0, length = size } = init;
 
         super(stream, cache);
@@ -220,21 +220,15 @@ export class OctetStream extends WorkerResponse {
  *
  * @param source - The R2 object to stream.
  * @param cache - Optional caching information.
- * @param range = Optional range override.
  */
 export class R2ObjectStream extends OctetStream {
-    constructor(
-        source: R2Object | R2ObjectBody,
-        cache?: CacheControl,
-        range: R2Range | undefined = source.range,
-    ) {
+    constructor(source: R2ObjectBody, cache?: CacheControl) {
         let useCache = cache;
         if (!useCache && source.httpMetadata?.cacheControl) {
             useCache = CacheControl.parse(source.httpMetadata.cacheControl);
         }
 
-        const stream = "body" in source ? source.body : null;
-        super(stream, R2ObjectStream.computeRange(source.size, range), useCache);
+        super(source.body, R2ObjectStream.computeRange(source.size, source.range), useCache);
 
         this.setHeader(HttpHeader.ETAG, source.httpEtag);
 
@@ -254,7 +248,8 @@ export class R2ObjectStream extends OctetStream {
      * 3. **Standard offset/length range** — returns the requested range,
      *    applying defaults if offset or length are missing.
      *
-     * @param source - The R2 object containing optional range information.
+     * @param size - Total size of the R2 object in bytes.
+     * @param range - Optional range request.
      * @returns An object containing:
      *   - `size` — total size of the object in bytes
      *   - `offset` — starting byte of the range
