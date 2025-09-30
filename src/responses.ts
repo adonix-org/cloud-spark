@@ -238,6 +238,14 @@ export class OctetStream extends WorkerResponse {
         this.setHeader(HttpHeader.CONTENT_LENGTH, `${length}`);
     }
 
+    /**
+     * Returns true if the given `OctetStreamInit` represents a partial range.
+     *
+     * A partial range is any init with an explicit `offset` or `length`.
+     *
+     * @param init - The OctetStreamInit to check.
+     * @returns `true` if partial, `false` otherwise.
+     */
     private static isPartial(init: OctetStreamInit): boolean {
         return init.offset !== undefined || init.length !== undefined;
     }
