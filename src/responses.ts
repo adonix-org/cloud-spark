@@ -226,13 +226,7 @@ export class OctetStream extends WorkerResponse {
         super(stream, cache);
         this.mediaType = MediaType.OCTET_STREAM;
 
-        const { size } = init;
-        const offset = init.offset ?? 0;
-        let length = init.length ?? size - offset;
-
-        if (offset === 0 && length === 0 && size > 0) {
-            length = 1;
-        }
+        const { size, offset, length } = OctetStream.normalizeInit(init);
 
         if (OctetStream.isPartial(init)) {
             this.setHeader(
@@ -244,6 +238,18 @@ export class OctetStream extends WorkerResponse {
 
         this.setHeader(HttpHeader.ACCEPT_RANGES, "bytes");
         this.setHeader(HttpHeader.CONTENT_LENGTH, `${length}`);
+    }
+
+    private static normalizeInit(init: OctetStreamInit): Required<OctetStreamInit> {
+        const { size } = init;
+        const offset = init.offset ?? 0;
+        let length = init.length ?? size - offset;
+
+        if (offset === 0 && length === 0 && size > 0) {
+            length = 1;
+        }
+
+        return { size, offset, length };
     }
 
     /**
