@@ -52,12 +52,16 @@ export function assertOctetStreamInit(value: unknown): asserts value is OctetStr
     // offset
     const offset = obj["offset"] ?? 0;
     if (!isNumber(offset) || offset < 0 || offset > size || !Number.isInteger(offset)) {
-        throw new RangeError("OctetStreamInit.offset must be an integer within bounds.");
+        throw new RangeError(
+            "OctetStreamInit.offset must be a non-negative integer less than or equal to size.",
+        );
     }
 
     // length
     const length = obj["length"] ?? size - offset;
     if (!isNumber(length) || length < 0 || offset + length > size || !Number.isInteger(length)) {
-        throw new RangeError("OctetStreamInit.length must be an integer within bounds.");
+        throw new RangeError(
+            "OctetStreamInit.length must be a non-negative integer less than or equal to size - offset.",
+        );
     }
 }
