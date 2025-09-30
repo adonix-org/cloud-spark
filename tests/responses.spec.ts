@@ -29,7 +29,7 @@ import {
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { assertDefined, VALID_URL } from "./test-utils/common";
 import { MethodNotAllowed } from "@src/errors";
-import { HttpHeader } from "@src/constants/headers";
+import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "@src/constants/headers";
 import { CacheControl } from "@src/constants/cache";
 import { MediaType } from "@src/constants/media";
 
@@ -118,6 +118,68 @@ describe("response unit tests", () => {
         const resp = new WebSocketUpgrade(ws);
         expect(resp.status).toBe(StatusCodes.SWITCHING_PROTOCOLS);
         expect(resp.webSocket).toBe(ws);
+    });
+
+    it("returns null body for 204 No Content", async () => {
+        const resp = new SuccessResponse("Some body", undefined, StatusCodes.NO_CONTENT);
+        const r = await resp.response();
+        expect(await r.text()).toBe(""); // body should be null
+        FORBIDDEN_204_HEADERS.forEach((h) => expect(r.headers.has(h)).toBe(false));
+    });
+
+    it("returns null body for 304 Not Modified", async () => {
+        const resp = new SuccessResponse("Some body", undefined, StatusCodes.NOT_MODIFIED);
+        const r = await resp.response();
+        expect(await r.text()).toBe(""); // body should be null
+        FORBIDDEN_304_HEADERS.forEach((h) => expect(r.headers.has(h)).toBe(false));
+    });
+
+    it("preserves custom headers for 204/304", async () => {
+        const resp204 = new SuccessResponse(null, undefined, StatusCodes.NO_CONTENT);
+        resp204.setHeader("X-Custom", "keep-me");
+        const r204 = await resp204.response();
+        expect(r204.headers.get("X-Custom")).toBe("keep-me");
+
+        const resp304 = new SuccessResponse(null, undefined, StatusCodes.NOT_MODIFIED);
+        resp304.setHeader("X-Custom", "keep-me");
+        const r304 = await resp304.response();
+        expect(r304.headers.get("X-Custom")).toBe("keep-me");
+    });
+
+    it("does not overwrite existing content type", async () => {
+        const resp = new SuccessResponse("hi");
+        resp.setHeader(HttpHeader.CONTENT_TYPE, "text/custom");
+        const r = await resp.response();
+        expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("text/custom");
+    });
+
+    it("sets correct status text if provided", async () => {
+        const resp = new SuccessResponse("hi", undefined, StatusCodes.OK);
+        resp.statusText = "All Good";
+        const r = await resp.response();
+        expect(r.statusText).toBe("All Good");
+    });
+
+    it("defaults status text to standard reason phrase", async () => {
+        const resp = new SuccessResponse("hi", undefined, StatusCodes.NOT_FOUND);
+        const r = await resp.response();
+        expect(r.statusText).toBe(getReasonPhrase(StatusCodes.NOT_FOUND));
+    });
+
+    it("adds content type for non-null body", async () => {
+        const resp = new SuccessResponse("hello");
+        const r = await resp.response();
+        expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe(resp.mediaType);
+    });
+
+    it("does not add content type for 204 or 304", async () => {
+        const resp204 = new SuccessResponse("hi", undefined, StatusCodes.NO_CONTENT);
+        const r204 = await resp204.response();
+        expect(r204.headers.has(HttpHeader.CONTENT_TYPE)).toBe(false);
+
+        const resp304 = new SuccessResponse("hi", undefined, StatusCodes.NOT_MODIFIED);
+        const r304 = await resp304.response();
+        expect(r304.headers.has(HttpHeader.CONTENT_TYPE)).toBe(false);
     });
 
     describe("octet stream unit tests", () => {
