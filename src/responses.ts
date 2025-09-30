@@ -21,6 +21,7 @@ import { UTF8_CHARSET, MediaType } from "./constants/media";
 import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "./constants/headers";
 import { OctetStreamInit } from "./interfaces/response";
 import { withCharset } from "./utils/media";
+import { assertOctetStreamInit } from "./guards/responses";
 
 /**
  * Base class for building HTTP responses.
@@ -202,37 +203,30 @@ export class TextResponse extends SuccessResponse {
 }
 
 /**
- * A response class for streaming binary data.
+ * Represents an HTTP response for serving binary data as `application/octet-stream`.
  *
- * Automatically sets headers for:
- * - Accept-Ranges: bytes
- * - Content-Length
- * - Content-Range (for partial content)
+ * This class validates the provided `OctetStreamInit` configuration and
+ * automatically sets the correct HTTP headers for either a full or partial
+ * content response.
  *
- * The status code is handled internally:
- * - 200 OK for full content
- * - 206 Partial Content for range responses
- *
- * @param stream - The ReadableStream containing the data to send.
- * @param init - Options for the response:
- *   - size: Total size of the data (required)
- *   - offset: Start of the byte range (defaults to 0)
- *   - length: Length of the byte range (defaults to size)
- * @param cache: Optional caching information
+ * Behavior:
+ * - Always sets `Content-Type` to `application/octet-stream`.
+ * - Always sets `Accept-Ranges: bytes`.
+ * - Always sets `Content-Length` to the validated length of the response body.
+ * - If either `offset` or `length` is provided, the response is treated as
+ *   partial content (`206 Partial Content`) and a `Content-Range` header is added,
+ *   even if the specified range spans the entire file.
  */
 export class OctetStream extends WorkerResponse {
     constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl) {
+        assertOctetStreamInit(init);
+
         super(stream, cache);
         this.mediaType = MediaType.OCTET_STREAM;
 
         const { size, offset = 0, length = size } = init;
 
-        /**
-         * If either offset or length was passed in, always
-         * set status to 206 Partial Content even if the range
-         * is the entire file.
-         */
-        if (init.offset !== undefined || init.length !== undefined) {
+        if (OctetStream.isPartial(init)) {
             this.setHeader(
                 HttpHeader.CONTENT_RANGE,
                 `bytes ${offset}-${offset + length - 1}/${size}`,
@@ -242,6 +236,10 @@ export class OctetStream extends WorkerResponse {
 
         this.setHeader(HttpHeader.ACCEPT_RANGES, "bytes");
         this.setHeader(HttpHeader.CONTENT_LENGTH, `${length}`);
+    }
+
+    private static isPartial(init: OctetStreamInit): boolean {
+        return init.offset !== undefined || init.length !== undefined;
     }
 }
 
