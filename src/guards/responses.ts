@@ -43,19 +43,19 @@ export function assertOctetStreamInit(value: unknown): asserts value is OctetStr
 
     const obj = value as Record<string, unknown>;
 
-    // Validate size
+    // size
     const size = obj["size"];
     if (!isNumber(size) || size < 0 || !Number.isInteger(size)) {
         throw new RangeError("OctetStreamInit.size must be a non-negative integer.");
     }
 
-    // Validate offset
+    // offset
     const offset = obj["offset"] ?? 0;
     if (!isNumber(offset) || offset < 0 || offset > size || !Number.isInteger(offset)) {
         throw new RangeError("OctetStreamInit.offset must be an integer within bounds.");
     }
 
-    // Validate length
+    // length
     const length = obj["length"] ?? size - offset;
     if (!isNumber(length) || length < 0 || offset + length > size || !Number.isInteger(length)) {
         throw new RangeError("OctetStreamInit.length must be an integer within bounds.");
