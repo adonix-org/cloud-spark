@@ -18,7 +18,7 @@ import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 import { GET } from "../../constants/methods";
 import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
-import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
+import { filterVaryHeader, getRange, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { lexCompare } from "../../utils/compare";
 
 /**
@@ -107,9 +107,14 @@ class CacheHandler extends Middleware {
             return next();
         }
 
+        const range = getRange(worker.request);
+        if (range && (range.start !== 0 || range.end === 0)) return next();
+
         const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
         const cached = await this.getCached(cache, worker.request);
-        if (cached) return cached;
+        if (cached) {
+            return cached;
+        }
 
         const response = await next();
 

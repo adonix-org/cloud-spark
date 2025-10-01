@@ -46,6 +46,49 @@ export function isCacheable(response: Response): boolean {
     return true;
 }
 
+/**
+ * Determines whether a cached response matches the request's If-None-Match header.
+ *
+ * - Returns `true` if the response is considered "not modified" (i.e., the request's
+ *   If-None-Match includes the response's ETag, supporting weak ETags).
+ * - Returns `false` if the response is modified or does not match any of the request ETags.
+ *
+ * @param request - The incoming Request object containing If-None-Match headers.
+ * @param response - The cached Response object containing the ETag header.
+ * @returns `true` if the cached response matches the request's ETag(s), `false` otherwise.
+ */
+export function isNotModified(request: Request, response: Response): boolean {
+    const etag = response.headers.get(HttpHeader.ETAG);
+    const ifNoneMatch = getHeaderValues(request.headers, HttpHeader.IF_NONE_MATCH);
+
+    if (!etag || ifNoneMatch.length === 0) return true;
+
+    const normalizedResponseEtag = normalizeEtag(etag);
+    const normalizedRequestEtags = ifNoneMatch.map(normalizeEtag);
+
+    return normalizedRequestEtags.includes(normalizedResponseEtag);
+}
+
+/**
+ * Normalizes an ETag string for comparison.
+ * - Strips the weak prefix "W/" if present.
+ * - Leaves strong ETags unchanged.
+ */
+export function normalizeEtag(etag: string): string {
+    return etag.startsWith("W/") ? etag.slice(2) : etag;
+}
+
+/**
+ * Parses the `Range` header from an HTTP request and returns a byte range object.
+ *
+ * Only supports **single-range headers** of the form `bytes=X-Y` or `bytes=X-`.
+ * - `X` (start) is **required** and must be a whole number (up to 12 digits).
+ * - `Y` (end) is optional; if missing, `end` is `undefined`.
+ *
+ * @param request - The HTTP request object containing headers
+ * @returns A ByteRange object with `start` and optional `end` if a valid range is found,
+ *          otherwise `undefined`.
+ */
 export function getRange(request: Request): ByteRange | undefined {
     const range = request.headers.get("range");
     if (!range) return;

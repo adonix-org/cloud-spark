@@ -23,6 +23,8 @@ import {
     getVaryHeader,
     getVaryKey,
     isCacheable,
+    isNotModified,
+    normalizeEtag,
 } from "@src/middleware/cache/utils";
 import { describe, expect, it } from "vitest";
 
@@ -68,6 +70,90 @@ describe("cache utils unit tests ", () => {
                 headers: { Vary: "" },
             });
             expect(isCacheable(response)).toBe(true);
+        });
+    });
+
+    describe("is not modified function", () => {
+        function makeRequest(etags?: string[]) {
+            const headers = new Headers();
+            if (etags) headers.set(HttpHeader.IF_NONE_MATCH, etags.join(", "));
+            return new Request("https://example.com", { headers });
+        }
+
+        function makeResponse(etag?: string) {
+            const headers = new Headers();
+            if (etag) headers.set(HttpHeader.ETAG, etag);
+            return new Response(null, { headers });
+        }
+
+        it("returns true if no request ETag", () => {
+            const req = makeRequest();
+            const res = makeResponse('"abc"');
+            expect(isNotModified(req, res)).toBe(true);
+        });
+
+        it("returns true if no response ETag", () => {
+            const req = makeRequest(['"abc"']);
+            const res = makeResponse();
+            expect(isNotModified(req, res)).toBe(true);
+        });
+
+        it("returns true if request ETag matches response ETag (strong)", () => {
+            const req = makeRequest(['"abc"']);
+            const res = makeResponse('"abc"');
+            expect(isNotModified(req, res)).toBe(true);
+        });
+
+        it("returns false if request ETag does not match response ETag", () => {
+            const req = makeRequest(['"abc"']);
+            const res = makeResponse('"def"');
+            expect(isNotModified(req, res)).toBe(false);
+        });
+
+        it("supports weak request ETag matching strong response ETag", () => {
+            const req = makeRequest(['W/"abc"']);
+            const res = makeResponse('"abc"');
+            expect(isNotModified(req, res)).toBe(true);
+        });
+
+        it("supports multiple request ETags with one matching", () => {
+            const req = makeRequest(['"x"', 'W/"abc"', '"y"']);
+            const res = makeResponse('"abc"');
+            expect(isNotModified(req, res)).toBe(true);
+        });
+
+        it("returns false if multiple request ETags but none match", () => {
+            const req = makeRequest(['"x"', '"y"']);
+            const res = makeResponse('"abc"');
+            expect(isNotModified(req, res)).toBe(false);
+        });
+
+        it("supports multiple weak ETags", () => {
+            const req = makeRequest(['W/"x"', 'W/"abc"']);
+            const res = makeResponse('"abc"');
+            expect(isNotModified(req, res)).toBe(true);
+        });
+    });
+
+    describe("normalize etag function", () => {
+        it("strips the W/ prefix from a weak ETag", () => {
+            expect(normalizeEtag('W/"abc123"')).toBe('"abc123"');
+        });
+
+        it("leaves a strong ETag unchanged", () => {
+            expect(normalizeEtag('"abc123"')).toBe('"abc123"');
+        });
+
+        it("does not modify ETag that starts with W but no slash", () => {
+            expect(normalizeEtag('W"abc123"')).toBe('W"abc123"');
+        });
+
+        it("handles an empty string", () => {
+            expect(normalizeEtag("")).toBe("");
+        });
+
+        it("handles unusual formatting with spaces", () => {
+            expect(normalizeEtag('W/ "abc123"')).toBe(' "abc123"'); // note: space preserved
         });
     });
 
