@@ -47,7 +47,7 @@ export function assertOctetStreamInit(value: unknown): asserts value is OctetStr
     const size = obj["size"];
     if (!isNumber(size) || size < 0 || !Number.isInteger(size)) {
         throw new RangeError(
-            `OctetStreamInit.size must be a non-negative integer (size=${String(size)}).`,
+            `OctetStreamInit.size must be a non-negative integer (size=${JSON.stringify(size)}).`,
         );
     }
 
@@ -55,7 +55,7 @@ export function assertOctetStreamInit(value: unknown): asserts value is OctetStr
     const offset = obj["offset"] ?? 0;
     if (!isNumber(offset) || offset < 0 || offset > size || !Number.isInteger(offset)) {
         throw new RangeError(
-            `OctetStreamInit.offset must be a non-negative integer less than or equal to size (size=${String(size)}, offset=${String(offset)}).`,
+            `OctetStreamInit.offset must be a non-negative integer less than or equal to size (size=${JSON.stringify(size)}, offset=${JSON.stringify(offset)}).`,
         );
     }
 
@@ -63,7 +63,7 @@ export function assertOctetStreamInit(value: unknown): asserts value is OctetStr
     const length = obj["length"] ?? size - offset;
     if (!isNumber(length) || length < 0 || offset + length > size || !Number.isInteger(length)) {
         throw new RangeError(
-            `OctetStreamInit.length must be a non-negative integer less than or equal to size - offset (size=${String(size)}, offset=${String(offset)}, length=${String(length)}).`,
+            `OctetStreamInit.length must be a non-negative integer less than or equal to size - offset (size=${JSON.stringify(size)}, offset=${JSON.stringify(offset)}, length=${JSON.stringify(length)}).`,
         );
     }
 }
