@@ -205,19 +205,20 @@ export class TextResponse extends SuccessResponse {
 /**
  * Represents an HTTP response for serving binary data as `application/octet-stream`.
  *
- * This class validates the provided `OctetStreamInit` configuration and
- * automatically sets the correct HTTP headers for either a full or partial
- * content response.
+ * This class wraps a `ReadableStream` and sets all necessary headers for both
+ * full and partial content responses, handling range requests in a hybrid way
+ * to maximize browser and CDN caching.
  *
- * Behavior:
- * - Always sets `Content-Type` to `application/octet-stream`.
- * - Always sets `Accept-Ranges: bytes`.
- * - Always sets `Content-Length` to the validated length of the response body.
- * - If either `offset` or `length` is provided and the size is non-zero, the response
- *   is treated as partial content (`206 Partial Content`) and a `Content-Range` header
- *   is added, even if the specified range spans the entire file.
- * - Special case: a requested range of `0-0` on a non-empty file returns 1 byte.
- * - Zero-length streams (`size = 0`) are never treated as partial content.
+ * Key behaviors:
+ * - `Content-Type` is set to `application/octet-stream`.
+ * - `Accept-Ranges: bytes` is always included.
+ * - `Content-Length` is always set to the validated length of the response body.
+ * - If the request is a true partial range (offset > 0 or length < size), the response
+ *   will be `206 Partial Content` with the appropriate `Content-Range` header.
+ * - If the requested range covers the entire file (even if a Range header is present),
+ *   the response will return `200 OK` to enable browser and edge caching.
+ * - Zero-length streams (`size = 0`) are never treated as partial.
+ * - Special case: a requested range of `0-0` on a non-empty file is normalized to 1 byte.
  */
 export class OctetStream extends WorkerResponse {
     constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl) {
@@ -242,15 +243,16 @@ export class OctetStream extends WorkerResponse {
     }
 
     /**
-     * Returns a fully specified `OctetStreamInit` with all fields set.
+     * Normalizes a partially-specified `OctetStreamInit` into a fully-specified object.
      *
-     * Fills in defaults for any missing values:
-     * - `offset` defaults to 0
-     * - `length` defaults to `size - offset`
-     * - If `offset` and `length` are both 0 but `size > 0`, `length` is set to 1
+     * Ensures that all required fields (`size`, `offset`, `length`) are defined:
+     * - `offset` defaults to 0 if not provided.
+     * - `length` defaults to `size - offset` if not provided.
+     * - Special case: if `offset` and `length` are both 0 but `size > 0`, `length` is set to 1
+     *   to avoid zero-length partial streams.
      *
-     * @param init - Partial or complete OctetStreamInit
-     * @returns An object with `size`, `offset`, and `length` guaranteed
+     * @param init - The initial `OctetStreamInit` object, possibly with missing `offset` or `length`.
+     * @returns A fully-specified `OctetStreamInit` object with `size`, `offset`, and `length` guaranteed.
      */
     private static normalizeInit(init: OctetStreamInit): Required<OctetStreamInit> {
         const { size } = init;
@@ -265,13 +267,16 @@ export class OctetStream extends WorkerResponse {
     }
 
     /**
-     * Returns true if the given `OctetStreamInit` represents a partial range.
+     * Determines whether the given `OctetStreamInit` represents a partial range.
      *
-     * A partial range is any init with an explicit `offset` or `length`, provided
-     * the stream size is greater than zero.
+     * Partial ranges are defined as any range that does **not** cover the entire file:
+     * - If `size === 0`, the stream is never partial.
+     * - If `offset === 0` and `length === size`, the stream is treated as a full file (not partial),
+     *   even if a Range header is present. This enables browser and CDN caching.
+     * - All other cases are considered partial, and will result in a `206 Partial Content` response.
      *
-     * @param init - The OctetStreamInit to check.
-     * @returns `true` if partial, `false` otherwise.
+     * @param init - A fully-normalized `OctetStreamInit` object.
+     * @returns `true` if the stream represents a partial range; `false` if it represents the full file.
      */
     private static isPartial(init: Required<OctetStreamInit>): boolean {
         if (init.size === 0) return false;
