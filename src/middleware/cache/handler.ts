@@ -95,23 +95,29 @@ class CacheHandler extends Middleware {
     }
 
     /**
-     * Handles an incoming request.
-     * - Bypasses caching for non-`GET` requests.
-     * - Checks the cache for a stored response.
-     * - Calls next if no cached response exists.
-     * - Caches the response if it is cacheable.
+     * Handles an incoming request through the cache middleware.
      *
-     * @param worker The Worker instance containing the request and context.
-     * @param next Function to call the next middleware or origin fetch.
-     * @returns A cached or freshly fetched Response.
+     * Behavior:
+     * - Opens the configured cache (or the default cache if none specified).
+     * - Creates a `CachePolicy` with default rules (GET check, range check, ETag handling).
+     * - Executes the policy to determine if a cached response can be returned.
+     *   - If a cached response is found and valid per the rules, it is returned.
+     *   - If no cached response is usable, the `next()` handler is invoked to fetch a fresh response.
+     * - Stores the fresh response in the cache if it is cacheable.
+     *
+     * @param worker - The Worker instance containing the request and context.
+     * @param next - Function to invoke the next middleware or origin fetch.
+     * @returns A `Response` object, either from cache or freshly fetched.
      */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
 
-        const policy = new CachePolicy(worker);
+        const policy = new CachePolicy();
         policy.use(new GetRule(), new RangeRule(), new ETagRule());
 
-        const cachedResponse = await policy.execute(() => this.getCached(cache, worker.request));
+        const cachedResponse = await policy.execute(worker, () =>
+            this.getCached(cache, worker.request),
+        );
         if (cachedResponse) return cachedResponse;
 
         const response = await next();

@@ -20,18 +20,17 @@ import { CacheRule } from "./rules/interfaces";
 export class CachePolicy {
     private rules: CacheRule[] = [];
 
-    constructor(private readonly worker: Worker) {}
-
     public use(...rules: CacheRule[]): this {
         this.rules.push(...rules);
         return this;
     }
 
     public async execute(
+        worker: Worker,
         getCached: () => Promise<Response | undefined>,
     ): Promise<Response | undefined> {
         const chain = this.rules.reduceRight(
-            (next, rule) => () => rule.handle(this.worker, next),
+            (next, rule) => () => rule.handle(worker, next),
             () => getCached(),
         );
 
