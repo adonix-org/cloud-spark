@@ -46,26 +46,14 @@ export function isCacheable(response: Response): boolean {
     return true;
 }
 
-/**
- * Determines whether a cached response matches the request's If-None-Match header.
- *
- * - Returns `true` if the response is considered "not modified" (i.e., the request's
- *   If-None-Match includes the response's ETag, supporting weak ETags).
- * - Returns `false` if the response is modified or does not match any of the request ETags.
- *
- * @param request - The incoming Request object containing If-None-Match headers.
- * @param response - The cached Response object containing the ETag header.
- * @returns `true` if the cached response matches the request's ETag(s), `false` otherwise.
- */
 export function isNotModified(request: Request, response: Response): boolean {
     const etag = response.headers.get(HttpHeader.ETAG);
     const ifNoneMatch = getHeaderValues(request.headers, HttpHeader.IF_NONE_MATCH);
 
-    if (!etag || ifNoneMatch.length === 0) return true;
+    if (!etag || ifNoneMatch.length === 0) return false;
 
     const normalizedResponseEtag = normalizeEtag(etag);
     const normalizedRequestEtags = ifNoneMatch.map(normalizeEtag);
-
     return normalizedRequestEtags.includes(normalizedResponseEtag);
 }
 

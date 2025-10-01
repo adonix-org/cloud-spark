@@ -86,49 +86,49 @@ describe("cache utils unit tests ", () => {
             return new Response(null, { headers });
         }
 
-        it("returns true if no request ETag", () => {
+        it("returns false if no request etag", () => {
             const req = makeRequest();
             const res = makeResponse('"abc"');
-            expect(isNotModified(req, res)).toBe(true);
+            expect(isNotModified(req, res)).toBe(false);
         });
 
-        it("returns true if no response ETag", () => {
+        it("returns false if no response etag", () => {
             const req = makeRequest(['"abc"']);
             const res = makeResponse();
-            expect(isNotModified(req, res)).toBe(true);
+            expect(isNotModified(req, res)).toBe(false);
         });
 
-        it("returns true if request ETag matches response ETag (strong)", () => {
+        it("returns true if request etag matches response etag (strong)", () => {
             const req = makeRequest(['"abc"']);
             const res = makeResponse('"abc"');
             expect(isNotModified(req, res)).toBe(true);
         });
 
-        it("returns false if request ETag does not match response ETag", () => {
+        it("returns false if request etag does not match response etag", () => {
             const req = makeRequest(['"abc"']);
             const res = makeResponse('"def"');
             expect(isNotModified(req, res)).toBe(false);
         });
 
-        it("supports weak request ETag matching strong response ETag", () => {
+        it("supports weak request etag matching strong response etag", () => {
             const req = makeRequest(['W/"abc"']);
             const res = makeResponse('"abc"');
             expect(isNotModified(req, res)).toBe(true);
         });
 
-        it("supports multiple request ETags with one matching", () => {
+        it("supports multiple request etags with one matching", () => {
             const req = makeRequest(['"x"', 'W/"abc"', '"y"']);
             const res = makeResponse('"abc"');
             expect(isNotModified(req, res)).toBe(true);
         });
 
-        it("returns false if multiple request ETags but none match", () => {
+        it("returns false if multiple request etags but none match", () => {
             const req = makeRequest(['"x"', '"y"']);
             const res = makeResponse('"abc"');
             expect(isNotModified(req, res)).toBe(false);
         });
 
-        it("supports multiple weak ETags", () => {
+        it("supports multiple weak etags", () => {
             const req = makeRequest(['W/"x"', 'W/"abc"']);
             const res = makeResponse('"abc"');
             expect(isNotModified(req, res)).toBe(true);
@@ -136,15 +136,15 @@ describe("cache utils unit tests ", () => {
     });
 
     describe("normalize etag function", () => {
-        it("strips the W/ prefix from a weak ETag", () => {
+        it("strips the W/ prefix from a weak Etag", () => {
             expect(normalizeEtag('W/"abc123"')).toBe('"abc123"');
         });
 
-        it("leaves a strong ETag unchanged", () => {
+        it("leaves a strong Etag unchanged", () => {
             expect(normalizeEtag('"abc123"')).toBe('"abc123"');
         });
 
-        it("does not modify ETag that starts with W but no slash", () => {
+        it("does not modify Etag that starts with W but no slash", () => {
             expect(normalizeEtag('W"abc123"')).toBe('W"abc123"');
         });
 
