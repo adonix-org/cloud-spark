@@ -270,8 +270,6 @@ export class OctetStream extends WorkerResponse {
         const offset = init.offset ?? 0;
         let length = init.length ?? size - offset;
 
-        // Special case: if the request asks for bytes=0-0 on a non-empty file,
-        // return 1 byte instead of 0 to comply with RFC 7233 §2.1 & §4.2 (partial content).
         if (offset === 0 && length === 0 && size > 0) {
             length = 1;
         }
