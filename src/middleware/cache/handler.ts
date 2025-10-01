@@ -21,6 +21,8 @@ import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./util
 import { lexCompare } from "../../utils/compare";
 import { CachePolicy } from "./policy";
 import { GetRule } from "./rules/get";
+import { RangeRule } from "./rules/range";
+import { ETagRule } from "./rules/etag";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -107,7 +109,7 @@ class CacheHandler extends Middleware {
         const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
 
         const policy = new CachePolicy(worker);
-        policy.use(new GetRule());
+        policy.use(new GetRule(), new RangeRule(), new ETagRule());
 
         const cachedResponse = await policy.execute(() => this.getCached(cache, worker.request));
         if (cachedResponse) return cachedResponse;
