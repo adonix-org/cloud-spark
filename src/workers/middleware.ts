@@ -31,18 +31,18 @@ export abstract class MiddlewareWorker extends BaseWorker {
     }
 
     /**
-     * Add a middleware instance to this worker.
+     * Add one or more middleware instances to this worker.
      *
      * The middleware will run for every request handled by this worker,
      * in the order they are added.
      *
-     * @param handler - The middleware to run.
+     * @param handlers - One or more middleware instances to run.
      * @returns `this` to allow chaining multiple `.use()` calls.
      */
-    public use(handler: Middleware): this {
-        assertMiddleware(handler);
+    public use(...handlers: Middleware[]): this {
+        handlers.forEach(assertMiddleware);
 
-        this.middlewares.push(handler);
+        this.middlewares.push(...handlers);
         return this;
     }
 
