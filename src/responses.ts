@@ -149,6 +149,17 @@ export class ClonedResponse extends WorkerResponse {
 }
 
 /**
+ * Copies the response, but with null body and status 304 Not Modified.
+ */
+export class NotModified extends ClonedResponse {
+    constructor(response: Response) {
+        super(response);
+        this.status = StatusCodes.NOT_MODIFIED;
+        this.statusText = getReasonPhrase(StatusCodes.NOT_MODIFIED);
+    }
+}
+
+/**
  * Represents a successful response with customizable body, cache and status.
  */
 export class SuccessResponse extends WorkerResponse {
