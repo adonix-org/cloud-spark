@@ -270,6 +270,8 @@ export class OctetStream extends WorkerResponse {
         const offset = init.offset ?? 0;
         let length = init.length ?? size - offset;
 
+        // Special case: if the request asks for bytes=0-0 on a non-empty file,
+        // return 1 byte instead of 0 to comply with RFC 7233 §2.1 & §4.2 (partial content).
         if (offset === 0 && length === 0 && size > 0) {
             length = 1;
         }
@@ -298,8 +300,16 @@ export class OctetStream extends WorkerResponse {
 /**
  * A streaming response for Cloudflare R2 objects.
  *
+ * **Partial content support:** To enable HTTP 206 streaming, you must provide
+ * request headers containing the `Range` header when calling the R2 bucket's `get()` method.
+ *
+ * Example:
+ * ```ts
+ * const stream = await this.env.R2_BUCKET.get("key", { range: this.request.headers });
+ * ```
+ *
  * @param source - The R2 object to stream.
- * @param cache - Optional caching information.
+ * @param cache - Optional caching override.
  */
 export class R2ObjectStream extends OctetStream {
     constructor(source: R2ObjectBody, cache?: CacheControl) {
