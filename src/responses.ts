@@ -226,9 +226,10 @@ export class OctetStream extends WorkerResponse {
         super(stream, cache);
         this.mediaType = MediaType.OCTET_STREAM;
 
-        const { size, offset, length } = OctetStream.normalizeInit(init);
+        const normalized = OctetStream.normalizeInit(init);
+        const { size, offset, length } = normalized;
 
-        if (OctetStream.isPartial(init)) {
+        if (OctetStream.isPartial(normalized)) {
             this.setHeader(
                 HttpHeader.CONTENT_RANGE,
                 `bytes ${offset}-${offset + length - 1}/${size}`,
@@ -272,9 +273,9 @@ export class OctetStream extends WorkerResponse {
      * @param init - The OctetStreamInit to check.
      * @returns `true` if partial, `false` otherwise.
      */
-    private static isPartial(init: OctetStreamInit): boolean {
+    private static isPartial(init: Required<OctetStreamInit>): boolean {
         if (init.size === 0) return false;
-        return init.offset !== undefined || init.length !== undefined;
+        return !(init.offset === 0 && init.length === init.size);
     }
 }
 

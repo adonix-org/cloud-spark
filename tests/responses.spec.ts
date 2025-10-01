@@ -250,14 +250,14 @@ describe("response unit tests", () => {
 
         it("offset = 0 and length = size behaves as partial if explicitly set", () => {
             const size = 10;
-            const init = { size, offset: 0, length: 10 }; // full file, but explicitly partial
+            const init = { size, offset: 0, length: 10 };
             const stream = createDummyStream();
 
             const octet = new OctetStream(stream, init);
 
             expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("10");
-            expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
-            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 0-9/10");
+            expect(octet.status).toBe(StatusCodes.OK);
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBeNull();
         });
 
         it("does not change length if positive", () => {
