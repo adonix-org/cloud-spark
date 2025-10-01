@@ -16,18 +16,11 @@
 
 import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
-import { GET } from "../../constants/methods";
 import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
-import {
-    filterVaryHeader,
-    getRange,
-    getVaryHeader,
-    getVaryKey,
-    isCacheable,
-    isNotModified,
-} from "./utils";
+import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { lexCompare } from "../../utils/compare";
-import { NotModified } from "../../responses";
+import { CachePolicy } from "./policy";
+import { GetRule } from "./rules/get";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -111,25 +104,15 @@ class CacheHandler extends Middleware {
      * @returns A cached or freshly fetched Response.
      */
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        if (worker.request.method !== GET) {
-            return next();
-        }
-
-        const range = getRange(worker.request);
-        if (range && (range.start !== 0 || range.end === 0)) return next();
-
         const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
-        const cached = await this.getCached(cache, worker.request);
 
-        if (cached) {
-            if (isNotModified(worker.request, cached)) {
-                return new NotModified(cached).response();
-            }
-            return cached;
-        }
+        const policy = new CachePolicy(worker, () => this.getCached(cache, worker.request));
+        policy.use(new GetRule());
+
+        const cached = await policy.execute();
+        if (cached) return cached;
 
         const response = await next();
-
         this.setCached(cache, worker, response);
         return response;
     }

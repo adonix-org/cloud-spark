@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import { decodeVaryKey, VALID_URL } from "@common";
+import { decodeVaryKey } from "@common";
 import { HttpHeader } from "@src/constants/headers";
 import {
     base64UrlEncode,
     filterVaryHeader,
-    getRange,
     getVaryHeader,
     getVaryKey,
     isCacheable,
-    isNotModified,
-    normalizeEtag,
 } from "@src/middleware/cache/utils";
 import { describe, expect, it } from "vitest";
 
@@ -70,143 +67,6 @@ describe("cache utils unit tests ", () => {
                 headers: { Vary: "" },
             });
             expect(isCacheable(response)).toBe(true);
-        });
-    });
-
-    describe("is not modified function", () => {
-        function makeRequest(etags?: string[]) {
-            const headers = new Headers();
-            if (etags) headers.set(HttpHeader.IF_NONE_MATCH, etags.join(", "));
-            return new Request("https://example.com", { headers });
-        }
-
-        function makeResponse(etag?: string) {
-            const headers = new Headers();
-            if (etag) headers.set(HttpHeader.ETAG, etag);
-            return new Response(null, { headers });
-        }
-
-        it("returns false if no request etag", () => {
-            const req = makeRequest();
-            const res = makeResponse('"abc"');
-            expect(isNotModified(req, res)).toBe(false);
-        });
-
-        it("returns false if no response etag", () => {
-            const req = makeRequest(['"abc"']);
-            const res = makeResponse();
-            expect(isNotModified(req, res)).toBe(false);
-        });
-
-        it("returns true if request etag matches response etag (strong)", () => {
-            const req = makeRequest(['"abc"']);
-            const res = makeResponse('"abc"');
-            expect(isNotModified(req, res)).toBe(true);
-        });
-
-        it("returns false if request etag does not match response etag", () => {
-            const req = makeRequest(['"abc"']);
-            const res = makeResponse('"def"');
-            expect(isNotModified(req, res)).toBe(false);
-        });
-
-        it("supports weak request etag matching strong response etag", () => {
-            const req = makeRequest(['W/"abc"']);
-            const res = makeResponse('"abc"');
-            expect(isNotModified(req, res)).toBe(true);
-        });
-
-        it("supports multiple request etags with one matching", () => {
-            const req = makeRequest(['"x"', 'W/"abc"', '"y"']);
-            const res = makeResponse('"abc"');
-            expect(isNotModified(req, res)).toBe(true);
-        });
-
-        it("returns false if multiple request etags but none match", () => {
-            const req = makeRequest(['"x"', '"y"']);
-            const res = makeResponse('"abc"');
-            expect(isNotModified(req, res)).toBe(false);
-        });
-
-        it("supports multiple weak etags", () => {
-            const req = makeRequest(['W/"x"', 'W/"abc"']);
-            const res = makeResponse('"abc"');
-            expect(isNotModified(req, res)).toBe(true);
-        });
-    });
-
-    describe("normalize etag function", () => {
-        it("strips the W/ prefix from a weak Etag", () => {
-            expect(normalizeEtag('W/"abc123"')).toBe('"abc123"');
-        });
-
-        it("leaves a strong Etag unchanged", () => {
-            expect(normalizeEtag('"abc123"')).toBe('"abc123"');
-        });
-
-        it("does not modify Etag that starts with W but no slash", () => {
-            expect(normalizeEtag('W"abc123"')).toBe('W"abc123"');
-        });
-
-        it("handles an empty string", () => {
-            expect(normalizeEtag("")).toBe("");
-        });
-
-        it("handles unusual formatting with spaces", () => {
-            expect(normalizeEtag('W/ "abc123"')).toBe(' "abc123"'); // note: space preserved
-        });
-    });
-
-    describe("get range function", () => {
-        const makeRequest = (range?: string): Request =>
-            new Request(VALID_URL, {
-                headers: range ? { Range: range } : {},
-            });
-
-        it("returns undefined if no Range header", () => {
-            expect(getRange(makeRequest())).toBeUndefined();
-        });
-
-        it("parses simple range bytes=0-99", () => {
-            expect(getRange(makeRequest("bytes=0-99"))).toEqual({ start: 0, end: 99 });
-        });
-
-        it("parses open-ended range bytes=0-", () => {
-            expect(getRange(makeRequest("bytes=0-"))).toEqual({ start: 0 });
-        });
-
-        it("parses larger numbers correctly", () => {
-            expect(getRange(makeRequest("bytes=12345-67890"))).toEqual({
-                start: 12345,
-                end: 67890,
-            });
-        });
-
-        it("returns undefined for bytes=-500 (suffix range)", () => {
-            expect(getRange(makeRequest("bytes=-500"))).toBeUndefined();
-        });
-
-        it("returns undefined for malformed headers", () => {
-            expect(getRange(makeRequest("bytes=abc-def"))).toBeUndefined();
-            expect(getRange(makeRequest("bytes=--"))).toBeUndefined();
-            expect(getRange(makeRequest("bytes=123"))).toBeUndefined();
-            expect(getRange(makeRequest("bytes=123-abc"))).toBeUndefined();
-            expect(getRange(makeRequest("foobar"))).toBeUndefined();
-        });
-
-        it("handles bytes=0-0 correctly", () => {
-            expect(getRange(makeRequest("bytes=0-0"))).toEqual({ start: 0, end: 0 });
-        });
-
-        it("handles max 12-digit numbers", () => {
-            expect(getRange(makeRequest("bytes=123456789012-123456789012"))).toEqual({
-                start: 123456789012,
-                end: 123456789012,
-            });
-        });
-
-        it("rejects ranges with more than 12 digits", () => {
-            expect(getRange(makeRequest("bytes=1234567890123-1234567890123"))).toBeUndefined();
         });
     });
 

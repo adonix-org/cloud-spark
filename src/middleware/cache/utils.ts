@@ -24,12 +24,6 @@ import { VARY_WILDCARD } from "./constants";
 /** Base URL used for constructing cache keys. Only used internally. */
 const VARY_CACHE_URL = "https://vary";
 
-const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
-
-interface ByteRange {
-    start: number;
-    end?: number;
-}
 
 /**
  * Determines whether a Response is cacheable.
@@ -46,49 +40,13 @@ export function isCacheable(response: Response): boolean {
     return true;
 }
 
-export function isNotModified(request: Request, response: Response): boolean {
+export function isConditionalGet(request: Request, response: Response): boolean {
     const etag = response.headers.get(HttpHeader.ETAG);
     const ifNoneMatch = getHeaderValues(request.headers, HttpHeader.IF_NONE_MATCH);
 
-    if (!etag || ifNoneMatch.length === 0) return false;
-
-    const normalizedResponseEtag = normalizeEtag(etag);
-    const normalizedRequestEtags = ifNoneMatch.map(normalizeEtag);
-    return normalizedRequestEtags.includes(normalizedResponseEtag);
+    return etag !== null && etag !== "" && ifNoneMatch.length > 0;
 }
 
-/**
- * Normalizes an ETag string for comparison.
- * - Strips the weak prefix "W/" if present.
- * - Leaves strong ETags unchanged.
- */
-export function normalizeEtag(etag: string): string {
-    return etag.startsWith("W/") ? etag.slice(2) : etag;
-}
-
-/**
- * Parses the `Range` header from an HTTP request and returns a byte range object.
- *
- * Only supports **single-range headers** of the form `bytes=X-Y` or `bytes=X-`.
- * - `X` (start) is **required** and must be a whole number (up to 12 digits).
- * - `Y` (end) is optional; if missing, `end` is `undefined`.
- *
- * @param request - The HTTP request object containing headers
- * @returns A ByteRange object with `start` and optional `end` if a valid range is found,
- *          otherwise `undefined`.
- */
-export function getRange(request: Request): ByteRange | undefined {
-    const range = request.headers.get("range");
-    if (!range) return;
-
-    const match = RANGE_REGEX.exec(range);
-    if (!match) return;
-
-    const start = Number(match[1]);
-    const end = match[2] === "" ? undefined : Number(match[2]);
-
-    return end !== undefined ? { start, end } : { start };
-}
 
 /**
  * Extracts and normalizes the `Vary` header from a Response.
