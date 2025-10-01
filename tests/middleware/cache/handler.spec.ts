@@ -22,6 +22,7 @@ import { MiddlewareWorker } from "@src/workers/middleware";
 import { GET, Method } from "@src/constants/methods";
 import { getVaryHeader, getVaryKey } from "@src/middleware/cache/utils";
 import { HttpHeader } from "@src/constants/headers";
+import { StatusCodes } from "http-status-codes";
 
 class TestWorker extends MiddlewareWorker {
     public getAllowedMethods(): Method[] {
@@ -300,12 +301,12 @@ describe("cache middleware unit tests", () => {
     it("does not cache 'uncacheable' responses", async () => {
         class BadResponseWorker extends TestWorker {
             protected async dispatch(): Promise<Response> {
-                return new Response("do not cache", { status: 500 });
+                return new Response("do not cache", { status: StatusCodes.PARTIAL_CONTENT });
             }
         }
 
         const response = await new BadResponseWorker(GET_REQUEST).fetch();
-        expect(response.status).toBe(500);
+        expect(response.status).toBe(206);
         expect(defaultCache.size).toBe(0);
         expect(namedCache.size).toBe(0);
     });
