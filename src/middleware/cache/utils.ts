@@ -24,6 +24,13 @@ import { VARY_WILDCARD } from "./constants";
 /** Base URL used for constructing cache keys. Only used internally. */
 const VARY_CACHE_URL = "https://vary";
 
+const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
+
+interface ByteRange {
+    start: number;
+    end?: number;
+}
+
 /**
  * Determines whether a Response is cacheable.
  * - Status must be 200 OK
@@ -37,6 +44,19 @@ export function isCacheable(response: Response): boolean {
     if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
 
     return true;
+}
+
+export function getRange(request: Request): ByteRange | undefined {
+    const range = request.headers.get("range");
+    if (!range) return;
+
+    const match = RANGE_REGEX.exec(range);
+    if (!match) return;
+
+    const start = Number(match[1]);
+    const end = match[2] === "" ? undefined : Number(match[2]);
+
+    return end !== undefined ? { start, end } : { start };
 }
 
 /**

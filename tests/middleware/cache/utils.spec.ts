@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { decodeVaryKey } from "@common";
+import { decodeVaryKey, VALID_URL } from "@common";
 import { HttpHeader } from "@src/constants/headers";
 import {
     base64UrlEncode,
     filterVaryHeader,
+    getRange,
     getVaryHeader,
     getVaryKey,
     isCacheable,
@@ -27,8 +28,8 @@ import { describe, expect, it } from "vitest";
 
 describe("cache utils unit tests ", () => {
     describe("is cacheable function", () => {
-        it("returns false if response.ok is false", () => {
-            const response = new Response(null, { status: 500 });
+        it("returns false if status != 200 is false", () => {
+            const response = new Response(null, { status: 206 });
             expect(isCacheable(response)).toBe(false);
         });
 
@@ -48,7 +49,7 @@ describe("cache utils unit tests ", () => {
             expect(isCacheable(response)).toBe(false);
         });
 
-        it("returns true if response.ok is true and vary header does not contain '*'", () => {
+        it("returns true if status = 200 and vary header does not contain '*'", () => {
             const response = new Response(null, {
                 status: 200,
                 headers: { Vary: "Accept-Encoding, Content-Type" },
@@ -56,17 +57,70 @@ describe("cache utils unit tests ", () => {
             expect(isCacheable(response)).toBe(true);
         });
 
-        it("returns true if response.ok is true and vary header is missing", () => {
+        it("returns true if status = 200 and vary header is missing", () => {
             const response = new Response(null, { status: 200 });
             expect(isCacheable(response)).toBe(true);
         });
 
-        it("returns true if response.ok is true and vary header is empty", () => {
+        it("returns true if status = 200 and vary header is empty", () => {
             const response = new Response(null, {
                 status: 200,
                 headers: { Vary: "" },
             });
             expect(isCacheable(response)).toBe(true);
+        });
+    });
+
+    describe("get range function", () => {
+        const makeRequest = (range?: string): Request =>
+            new Request(VALID_URL, {
+                headers: range ? { Range: range } : {},
+            });
+
+        it("returns undefined if no Range header", () => {
+            expect(getRange(makeRequest())).toBeUndefined();
+        });
+
+        it("parses simple range bytes=0-99", () => {
+            expect(getRange(makeRequest("bytes=0-99"))).toEqual({ start: 0, end: 99 });
+        });
+
+        it("parses open-ended range bytes=0-", () => {
+            expect(getRange(makeRequest("bytes=0-"))).toEqual({ start: 0 });
+        });
+
+        it("parses larger numbers correctly", () => {
+            expect(getRange(makeRequest("bytes=12345-67890"))).toEqual({
+                start: 12345,
+                end: 67890,
+            });
+        });
+
+        it("returns undefined for bytes=-500 (suffix range)", () => {
+            expect(getRange(makeRequest("bytes=-500"))).toBeUndefined();
+        });
+
+        it("returns undefined for malformed headers", () => {
+            expect(getRange(makeRequest("bytes=abc-def"))).toBeUndefined();
+            expect(getRange(makeRequest("bytes=--"))).toBeUndefined();
+            expect(getRange(makeRequest("bytes=123"))).toBeUndefined();
+            expect(getRange(makeRequest("bytes=123-abc"))).toBeUndefined();
+            expect(getRange(makeRequest("foobar"))).toBeUndefined();
+        });
+
+        it("handles bytes=0-0 correctly", () => {
+            expect(getRange(makeRequest("bytes=0-0"))).toEqual({ start: 0, end: 0 });
+        });
+
+        it("handles max 12-digit numbers", () => {
+            expect(getRange(makeRequest("bytes=123456789012-123456789012"))).toEqual({
+                start: 123456789012,
+                end: 123456789012,
+            });
+        });
+
+        it("rejects ranges with more than 12 digits", () => {
+            expect(getRange(makeRequest("bytes=1234567890123-1234567890123"))).toBeUndefined();
         });
     });
 

@@ -31,7 +31,10 @@ export namespace HttpHeader {
     export const CONTENT_TYPE = "Content-Type";
     export const CONTENT_MD5 = "Content-MD5";
     export const ETAG = "ETag";
+    export const IF_MODIFED_SINCE = "If-Modified-Since";
+    export const LAST_MODIFIED = "Last-Modified";
     export const ORIGIN = "Origin";
+    export const RANGE = "Range";
     export const VARY = "Vary";
 
     // Cors Headers
