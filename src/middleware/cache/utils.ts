@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import { StatusCodes } from "http-status-codes";
 import { HttpHeader } from "../../constants/headers";
 import { lexCompare } from "../../utils/compare";
 import { getHeaderValues } from "../../utils/headers";
@@ -25,14 +26,14 @@ const VARY_CACHE_URL = "https://vary";
 
 /**
  * Determines whether a Response is cacheable.
- * - Must have `ok` status (2xx-3xx)
+ * - Status must be 200 OK
  * - Must not contain a Vary header with a wildcard (`*`)
  *
  * @param response The Response object to check.
  * @returns `true` if the response can be cached; `false` otherwise.
  */
 export function isCacheable(response: Response): boolean {
-    if (!response.ok) return false;
+    if (response.status !== StatusCodes.OK) return false;
     if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
 
     return true;

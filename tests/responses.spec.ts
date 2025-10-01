@@ -328,6 +328,17 @@ describe("response unit tests", () => {
             expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
             expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 0-0/10");
         });
+
+        it("range 0-1 and size > 0 is two byte partial", () => {
+            const init = { size: 10, offset: 0, length: 2 };
+            const stream = createDummyStream();
+
+            const octet = new OctetStream(stream, init);
+
+            expect(octet.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("2");
+            expect(octet.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(octet.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 0-1/10");
+        });
     });
 
     describe("r2 object stream unit tests", () => {
