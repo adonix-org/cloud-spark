@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { HttpHeader } from "../../../constants/headers";
-import { isNumber } from "../../../guards/basic";
 import { Worker } from "../../../interfaces/worker";
 import { CacheRule } from "./interfaces";
-import { getRange } from "./utils";
+import { getContentLength, getRange } from "./utils";
 
 export class RangeRule implements CacheRule {
     public async handle(
@@ -36,10 +34,9 @@ export class RangeRule implements CacheRule {
         if (!range) return response;
         if (range.end === undefined) return response;
 
-        // Validate response length
-        const lengthHeader = response.headers.get(HttpHeader.CONTENT_LENGTH);
-        const length = Number(lengthHeader);
-        if (!isNumber(length) || range.end >= length) return undefined;
+        const length = getContentLength(response.headers);
+        if (!length) return undefined;
+        if (range.end !== length - 1) return undefined;
 
         return response;
     }

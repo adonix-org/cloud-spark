@@ -18,6 +18,7 @@ import { HttpHeader } from "../../../constants/headers";
 import { getHeaderValues } from "../../../utils/headers";
 import { ByteRange, CacheValidators } from "./interfaces";
 import { CacheControl } from "../../../constants";
+import { isNumber } from "../../../guards/basic";
 
 const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
 
@@ -99,4 +100,23 @@ export function getCacheValidators(headers: Headers): CacheValidators {
 export function hasCacheValidator(headers: Headers): boolean {
     const { ifNoneMatch, ifMatch, ifModifiedSince } = getCacheValidators(headers);
     return ifNoneMatch.length > 0 || ifMatch.length > 0 || ifModifiedSince !== null;
+}
+
+/**
+ * Safely extracts Content-Length from headers.
+ *
+ * Returns the length as a number if present and valid.
+ * Returns `undefined` if the header is missing, empty, or not a valid number.
+ *
+ * @param headers - The headers object to read from.
+ */
+export function getContentLength(headers: Headers): number | undefined {
+    const lengthHeader = headers.get(HttpHeader.CONTENT_LENGTH);
+    if (lengthHeader === null) return;
+    if (lengthHeader.trim() === "") return;
+
+    const length = Number(lengthHeader);
+    if (!isNumber(length)) return;
+
+    return length;
 }
