@@ -15,6 +15,7 @@
  */
 
 import { HttpHeader } from "../../../constants/headers";
+import { isNumber } from "../../../guards/basic";
 import { Worker } from "../../../interfaces/worker";
 import { CacheRule } from "./interfaces";
 import { getRange } from "./utils";
@@ -26,36 +27,20 @@ export class RangeRule implements CacheRule {
     ): Promise<Response | undefined> {
         const range = getRange(worker.request);
 
-        // Pre-cache check: skip cache for disallowed ranges
         if (range && (range.start !== 0 || range.end === 0)) {
             return undefined;
         }
 
         const response = await next();
-        if (!response) return undefined;
 
-        // If request has a range but only specifies start (no end), allow cached
-        if (range && range.end === undefined) {
-            return response;
-        }
+        if (!range) return response;
 
-        // If request specifies an end, validate response length
-        if (range) {
-            const lengthHeader = response.headers.get(HttpHeader.CONTENT_LENGTH);
-            if (!lengthHeader) {
-                return undefined; // no length to validate
-            }
+        if (range.end === undefined) return response;
 
-            const length = Number(lengthHeader);
-            if (Number.isNaN(length)) {
-                return undefined; // invalid length
-            }
-
-            // If the response isn't long enough, skip cached
-            if (range.end! >= length) {
-                return undefined;
-            }
-        }
+        // Validate response length
+        const lengthHeader = response.headers.get(HttpHeader.CONTENT_LENGTH);
+        const length = Number(lengthHeader);
+        if (!isNumber(length) || range.end! >= length) return undefined;
 
         return response;
     }

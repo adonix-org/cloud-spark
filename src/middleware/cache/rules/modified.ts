@@ -25,7 +25,6 @@ export class LastModifiedRule implements CacheRule {
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {
         const response = await next();
-        if (!response) return response;
 
         const lastModified = response.headers.get(HttpHeader.LAST_MODIFIED);
         const ifModifiedSince = worker.request.headers.get(HttpHeader.IF_MODIFIED_SINCE);

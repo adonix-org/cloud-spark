@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { Worker } from "../../../interfaces";
 import { HttpHeader } from "../../../constants/headers";
 import { PreconditionFailed } from "../../../errors";
-import { Worker } from "../../../interfaces";
 import { NotModified } from "../../../responses";
 import { getHeaderValues } from "../../../utils/headers";
 import { CacheRule } from "./interfaces";
 
+/**
+ * Cache rule that handles conditional GETs based on ETag headers.
+ * - Applies If-Match (strong comparison) and If-None-Match (weak comparison) rules.
+ * - Returns `undefined` if the cached response cannot be used.
+ * - Returns `NotModified` or `PreconditionFailed` responses when appropriate.
+ */
 export class ETagRule implements CacheRule {
     public async handle(
         worker: Worker,
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {
         const response = await next();
-        if (!response) return undefined;
 
         const etag = response.headers.get(HttpHeader.ETAG);
         if (!etag) return response;
@@ -35,27 +39,24 @@ export class ETagRule implements CacheRule {
         const ifNoneMatch = getHeaderValues(worker.request.headers, HttpHeader.IF_NONE_MATCH);
         const ifMatch = getHeaderValues(worker.request.headers, HttpHeader.IF_MATCH);
 
-        // If-Match
-        if (ifMatch.length > 0) {
-            if (ifMatch.includes("*")) {
-                if (!response) {
-                    return new PreconditionFailed().response();
-                }
-            } else if (!ifMatch.map(normalizeStrong).includes(normalizeStrong(etag))) {
+        // If-Match (strong comparison)
+        if (ifMatch.length > 0 && !ifMatch.includes("*")) {
+            const normalizedEtag = normalizeStrong(etag);
+            const normalizedMatches = ifMatch.map(normalizeStrong);
+            if (!normalizedMatches.includes(normalizedEtag)) {
                 return new PreconditionFailed().response();
             }
         }
 
-        // If-None-Match (weak compare or wildcard)
+        // If-None-Match (weak comparison or wildcard)
         if (ifNoneMatch.length > 0) {
-            if (
-                ifNoneMatch.includes("*") ||
-                ifNoneMatch.map(normalizeWeak).includes(normalizeWeak(etag))
-            ) {
+            const normalizedEtag = normalizeWeak(etag);
+            const normalizedMatches = ifNoneMatch.map(normalizeWeak);
+            if (ifNoneMatch.includes("*") || normalizedMatches.includes(normalizedEtag)) {
                 return new NotModified(response).response();
             }
 
-            // ETags exist but don't match → cache can't be used
+            // ETags exist but don't match → cache cannot be used
             return undefined;
         }
 
@@ -63,19 +64,12 @@ export class ETagRule implements CacheRule {
     }
 }
 
-/**
- * Normalizes an ETag string for weak comparison.
- * - Strips the weak prefix "W/" if present.
- */
+/** Normalizes an ETag for weak comparison (strips "W/" prefix). */
 function normalizeWeak(etag: string): string {
     return etag.startsWith("W/") ? etag.slice(2) : etag;
 }
 
-/**
- * Normalizes an ETag string for strong comparison.
- * - Leaves strong ETags unchanged.
- * - Weak ETags are NOT equivalent to strong ones.
- */
+/** Normalizes an ETag for strong comparison (no changes). */
 function normalizeStrong(etag: string): string {
     return etag;
 }
