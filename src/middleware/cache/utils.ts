@@ -27,6 +27,7 @@ const VARY_CACHE_URL = "https://vary";
 
 /**
  * Determines whether a Response is cacheable.
+ * - Request method must be GET
  * - Request cache cannot be `no-store`
  * - Status must be 200 OK
  * - Must not contain a Vary header with a wildcard (`*`)
