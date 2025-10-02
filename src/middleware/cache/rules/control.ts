@@ -28,10 +28,11 @@ export class CacheControlRule implements CacheRule {
             return undefined;
         }
 
+        const headers = worker.request.headers;
         const hasValidator =
-            worker.request.headers.has(HttpHeader.IF_NONE_MATCH) ||
-            worker.request.headers.has(HttpHeader.IF_MATCH) ||
-            worker.request.headers.has(HttpHeader.IF_MODIFIED_SINCE);
+            headers.has(HttpHeader.IF_NONE_MATCH) ||
+            headers.has(HttpHeader.IF_MATCH) ||
+            headers.has(HttpHeader.IF_MODIFIED_SINCE);
 
         if (cache === "no-cache" && !hasValidator) {
             return undefined;
