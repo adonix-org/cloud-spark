@@ -113,8 +113,11 @@ class CacheHandler extends Middleware {
     public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
 
-        const policy = new CachePolicy();
-        policy.use(new GetRule(), new RangeRule(), new ETagRule(), new LastModifiedRule());
+        const policy = new CachePolicy()
+            .use(new GetRule())
+            .use(new RangeRule())
+            .use(new ETagRule())
+            .use(new LastModifiedRule());
 
         const cachedResponse = await policy.execute(worker, () =>
             this.getCached(cache, worker.request),
