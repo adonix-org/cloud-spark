@@ -16,6 +16,7 @@
 
 export * from "./cors";
 export * from "./error";
+export * from "./middleware";
 export * from "./response";
 export * from "./route";
 export * from "./worker";

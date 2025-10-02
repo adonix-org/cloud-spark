@@ -183,19 +183,6 @@ interface ErrorJson {
 }
 
 /**
- * Initialization options for an OctetStream response.
- *
- * @property size - Total size of the data (required).
- * @property offset - Start of the byte range (optional, defaults to 0).
- * @property length - Length of the byte range (optional, defaults to size).
- */
-interface OctetStreamInit {
-    size: number;
-    offset?: number;
-    length?: number;
-}
-
-/**
  * Represents the constructor of a Worker subclass.
  *
  * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
@@ -238,6 +225,53 @@ interface Worker {
      * @returns An array of allowed HTTP methods.
      */
     getAllowedMethods(): Method[];
+}
+
+/**
+ * Middleware interface for request/response processing.
+ *
+ * Middleware objects implement logic that can process requests and responses
+ * in a chainable manner. Each middleware receives a \`Worker\` object and a
+ * \`next\` function that invokes the next middleware in the chain.
+ *
+ * Implementers **must provide** the \`handle\` method.
+ *
+ * Example implementation:
+ * \`\`\`ts
+ * class LoggingMiddleware implements Middleware {
+ *     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+ *         console.log(\`Processing request: \${worker.request.url}\`);
+ *         const response = await next();
+ *         console.log(\`Response status: \${response.status}\`);
+ *         return response;
+ *     }
+ * }
+ * \`\`\`
+ */
+interface Middleware {
+    /**
+     * Process a request in the middleware chain.
+     *
+     * @param worker - The \`Worker\` instance representing the request context.
+     * @param next - Function to invoke the next middleware in the chain.
+     *               Must be called to continue the chain unless the middleware
+     *               terminates early (e.g., returns a response directly).
+     * @returns A \`Response\` object, either returned directly or from \`next()\`.
+     */
+    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+}
+
+/**
+ * Initialization options for an OctetStream response.
+ *
+ * @property size - Total size of the data (required).
+ * @property offset - Start of the byte range (optional, defaults to 0).
+ * @property length - Length of the byte range (optional, defaults to size).
+ */
+interface OctetStreamInit {
+    size: number;
+    offset?: number;
+    length?: number;
 }
 
 /**
@@ -314,40 +348,6 @@ type RouteTuple = [Method, string, RouteHandler];
  * @see {@link RouteTuple}
  */
 type RouteTable = Iterable<RouteTuple>;
-
-/**
- * Middleware interface for request/response processing.
- *
- * Middleware objects implement logic that can process requests and responses
- * in a chainable manner. Each middleware receives a \`Worker\` object and a
- * \`next\` function that invokes the next middleware in the chain.
- *
- * Implementers **must provide** the \`handle\` method.
- *
- * Example implementation:
- * \`\`\`ts
- * class LoggingMiddleware implements Middleware {
- *     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
- *         console.log(\`Processing request: \${worker.request.url}\`);
- *         const response = await next();
- *         console.log(\`Response status: \${response.status}\`);
- *         return response;
- *     }
- * }
- * \`\`\`
- */
-interface Middleware {
-    /**
-     * Process a request in the middleware chain.
-     *
-     * @param worker - The \`Worker\` instance representing the request context.
-     * @param next - Function to invoke the next middleware in the chain.
-     *               Must be called to continue the chain unless the middleware
-     *               terminates early (e.g., returns a response directly).
-     * @returns A \`Response\` object, either returned directly or from \`next()\`.
-     */
-    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
-}
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -920,6 +920,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, NotModified, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, PreconditionFailed, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, cache, cors, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, type Middleware, NotFound, NotImplemented, NotModified, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, PreconditionFailed, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, cache, cors, sortSearchParams, stripSearchParams, websocket };
 "
 `;
