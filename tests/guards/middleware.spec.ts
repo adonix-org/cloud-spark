@@ -16,10 +16,10 @@
 
 import { describe, it, expect } from "vitest";
 import { assertMiddleware } from "@src/guards/middleware";
-import { Middleware } from "@src/middleware/middleware";
+import { Middleware } from "@src/interfaces/middleware";
 
 describe("middleware guard unit tests", () => {
-    class TestMiddleware extends Middleware {
+    class TestMiddleware implements Middleware {
         async handle(_worker: any, next: () => Promise<Response>): Promise<Response> {
             return next();
         }
@@ -28,11 +28,6 @@ describe("middleware guard unit tests", () => {
     it("does not throw for a valid Middleware subclass", () => {
         const instance = new TestMiddleware();
         expect(() => assertMiddleware(instance)).not.toThrow();
-    });
-
-    it("throws for a plain object", () => {
-        const obj = { handle: () => {} };
-        expect(() => assertMiddleware(obj)).toThrow(TypeError);
     });
 
     it("throws for a function", () => {

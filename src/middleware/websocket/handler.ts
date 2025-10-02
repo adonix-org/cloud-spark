@@ -16,18 +16,16 @@
 
 import { GET } from "../../constants/methods";
 import { BadRequest, UpgradeRequired } from "../../errors";
+import { Middleware } from "../../interfaces/middleware";
 import { Worker } from "../../interfaces/worker";
-import { Middleware } from "../middleware";
 import { hasConnectionHeader, hasUpgradeHeader, hasWebSocketVersion } from "./utils";
 
 export function websocket(path: string = "/"): Middleware {
     return new WebSocketHandler(path);
 }
 
-class WebSocketHandler extends Middleware {
-    constructor(private readonly path: string) {
-        super();
-    }
+class WebSocketHandler implements Middleware {
+    constructor(private readonly path: string) {}
 
     public handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         if (worker.request.method !== GET) {

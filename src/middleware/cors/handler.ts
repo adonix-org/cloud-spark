@@ -16,11 +16,11 @@
 
 import { apply, options, skipCors } from "./utils";
 import { Worker } from "../../interfaces/worker";
-import { Middleware } from "../middleware";
 import { CorsConfig, CorsInit } from "../../interfaces/cors";
 import { defaultCorsConfig } from "./constants";
 import { OPTIONS } from "../../constants/methods";
 import { assertCorsInit } from "../../guards/cors";
+import { Middleware } from "../../interfaces/middleware";
 
 /**
  * Creates a`CORS`middleware instance.
@@ -41,7 +41,7 @@ export function cors(init?: CorsInit): Middleware {
  * Cors Middleware Implementation
  * @see {@link cors}
  */
-class CorsHandler extends Middleware {
+class CorsHandler implements Middleware {
     /** The configuration used for this instance, with all defaults applied. */
     private readonly config: CorsConfig;
 
@@ -52,7 +52,6 @@ class CorsHandler extends Middleware {
      *               not provided will use `defaultCorsConfig`.
      */
     constructor(init?: CorsInit) {
-        super();
         this.config = { ...defaultCorsConfig, ...init };
     }
 
@@ -66,7 +65,7 @@ class CorsHandler extends Middleware {
      * @param next - Function to invoke the next middleware.
      * @returns Response with`CORS`headers applied.
      */
-    public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+    public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         if (worker.request.method === OPTIONS) {
             return options(worker, this.config);
         }

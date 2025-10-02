@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Middleware } from "../middleware";
 import { Worker } from "../../interfaces/worker";
 import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
 import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
@@ -25,6 +24,7 @@ import { RangeRule } from "./rules/range";
 import { ETagRule } from "./rules/etag";
 import { LastModifiedRule } from "./rules/modified";
 import { CacheControlRule } from "./rules/control";
+import { Middleware } from "../../interfaces/middleware";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -87,12 +87,11 @@ export function stripSearchParams(request: Request): URL {
  * Cache Middleware Implementation
  * @see {@link cache}
  */
-class CacheHandler extends Middleware {
+class CacheHandler implements Middleware {
     constructor(
         private readonly cacheName?: string,
         private readonly getKey?: (request: Request) => URL,
     ) {
-        super();
         this.cacheName = cacheName?.trim() || undefined;
     }
 
@@ -111,7 +110,7 @@ class CacheHandler extends Middleware {
      * @param next - Function to invoke the next middleware or origin fetch.
      * @returns A `Response` object, either from cache or freshly fetched.
      */
-    public override async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+    public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
 
         const policy = new CachePolicy()

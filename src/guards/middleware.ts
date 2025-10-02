@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-import { Middleware } from "../middleware/middleware";
+import { Middleware } from "../interfaces/middleware";
 
 /**
- * Asserts at runtime that a value is a Middleware instance.
+ * Asserts at runtime that a value implements the `Middleware` interface.
  *
- * @param handler - The value to check.
- * @throws TypeError If `handler` is not a `Middleware` subclass instance.
+ * @param value - The value to check.
+ * @throws TypeError If `handler` does not have a `handle` method.
  */
-export function assertMiddleware(handler: unknown): asserts handler is Middleware {
-    if (handler instanceof Middleware) return;
-
-    throw new TypeError("Handler must be a subclass of Middleware.");
+export function assertMiddleware(value: unknown): asserts value is Middleware {
+    if (
+        value === null ||
+        typeof value !== "object" ||
+        typeof (value as Middleware).handle !== "function"
+    ) {
+        throw new TypeError(
+            "Handler must implement the Middleware interface (have a handle method).",
+        );
+    }
 }

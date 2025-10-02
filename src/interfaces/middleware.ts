@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-import { Worker } from "../interfaces/worker";
+import { Worker } from "./worker";
 
 /**
- * Abstract base class for middleware.
+ * Middleware interface for request/response processing.
  *
- * Middleware classes implement request/response processing logic in a
- * chainable manner. Each middleware receives a `Worker` object and a
+ * Middleware objects implement logic that can process requests and responses
+ * in a chainable manner. Each middleware receives a `Worker` object and a
  * `next` function that invokes the next middleware in the chain.
  *
- * Subclasses **must implement** the `handle` method.
+ * Implementers **must provide** the `handle` method.
  *
- * Example subclass:
+ * Example implementation:
  * ```ts
- * class LoggingMiddleware extends Middleware {
+ * class LoggingMiddleware implements Middleware {
  *     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
  *         console.log(`Processing request: ${worker.request.url}`);
  *         const response = await next();
  *         console.log(`Response status: ${response.status}`);
  *         return response;
- *      }
+ *     }
  * }
  * ```
  */
-export abstract class Middleware {
+export interface Middleware {
     /**
      * Process a request in the middleware chain.
      *
@@ -47,5 +47,5 @@ export abstract class Middleware {
      *               terminates early (e.g., returns a response directly).
      * @returns A `Response` object, either returned directly or from `next()`.
      */
-    public abstract handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
 }

@@ -18,9 +18,9 @@ import { describe, it, expect } from "vitest";
 import { env, ctx } from "@mock";
 import { BODY_INIT, expectHeadersEqual, GET_REQUEST } from "@common";
 import { BasicWorker } from "@src/workers/basic";
-import { Middleware } from "@src/middleware/middleware";
 import { Unauthorized } from "@src/errors";
 import { Worker } from "@src/interfaces/worker";
+import { Middleware } from "@src/interfaces/middleware";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {
@@ -36,8 +36,8 @@ class TestWorker extends BasicWorker {
     }
 }
 
-class AddHeader extends Middleware {
-    override async handle(_worker: Worker, next: () => Promise<Response>): Promise<Response> {
+class AddHeader implements Middleware {
+    async handle(_worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const response = await next();
         response.headers.set("x-custom-header", String(true));
         return response;
@@ -51,8 +51,8 @@ class AuthWorker extends TestWorker {
     }
 }
 
-class AuthHandler extends Middleware {
-    public override handle(): Promise<Response> {
+class AuthHandler implements Middleware {
+    handle(): Promise<Response> {
         return new Unauthorized().response();
     }
 }
