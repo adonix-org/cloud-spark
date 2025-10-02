@@ -17,9 +17,11 @@
 
 import { Worker } from "../../../interfaces/worker";
 
+export interface ByteRange {
+    start: number;
+    end?: number;
+}
+
 export interface CacheRule {
-    handle(
-        worker: Worker,
-        next: () => Promise<Response>,
-    ): Promise<Response | undefined>;
+    handle(worker: Worker, next: () => Promise<Response>): Promise<Response | undefined>;
 }

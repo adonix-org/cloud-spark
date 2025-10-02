@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { ByteRange, RANGE_REGEX } from "./constants";
+import { ByteRange } from "./interfaces";
+
+const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
 
 /**
  * Parses the `Range` header from an HTTP request and returns a byte range object.
