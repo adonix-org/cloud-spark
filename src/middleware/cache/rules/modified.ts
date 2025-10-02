@@ -22,7 +22,7 @@ import { CacheRule } from "./interfaces";
 export class LastModifiedRule implements CacheRule {
     public async handle(
         worker: Worker,
-        next: () => Promise<Response | undefined>,
+        next: () => Promise<Response>,
     ): Promise<Response | undefined> {
         const response = await next();
         if (!response) return response;

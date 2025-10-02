@@ -20,6 +20,6 @@ import { Worker } from "../../../interfaces/worker";
 export interface CacheRule {
     handle(
         worker: Worker,
-        next: () => Promise<Response | undefined>,
+        next: () => Promise<Response>,
     ): Promise<Response | undefined>;
 }

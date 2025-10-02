@@ -21,7 +21,7 @@ import { CacheRule } from "./interfaces";
 export class GetRule implements CacheRule {
     public async handle(
         worker: Worker,
-        next: () => Promise<Response | undefined>,
+        next: () => Promise<Response>,
     ): Promise<Response | undefined> {
         if (worker.request.method !== GET) return undefined;
 

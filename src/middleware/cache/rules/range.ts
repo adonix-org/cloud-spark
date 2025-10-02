@@ -22,7 +22,7 @@ import { getRange } from "./utils";
 export class RangeRule implements CacheRule {
     public async handle(
         worker: Worker,
-        next: () => Promise<Response | undefined>,
+        next: () => Promise<Response>,
     ): Promise<Response | undefined> {
         const range = getRange(worker.request);
 
