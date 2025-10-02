@@ -550,10 +550,10 @@ declare abstract class MiddlewareWorker extends BaseWorker {
      * The middleware will run for every request handled by this worker,
      * in the order they are added.
      *
-     * @param handlers - One or more middleware instances to run.
+     * @param middleware - One or more middleware instances to run.
      * @returns \`this\` to allow chaining multiple \`.use()\` calls.
      */
-    use(...handlers: Middleware[]): this;
+    use(...middleware: Middleware[]): this;
     /**
      * Executes the middleware chain and dispatches the request.
      *
