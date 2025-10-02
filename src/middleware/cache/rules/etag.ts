@@ -18,9 +18,8 @@ import { Worker } from "../../../interfaces";
 import { HttpHeader } from "../../../constants/headers";
 import { PreconditionFailed } from "../../../errors";
 import { NotModified } from "../../../responses";
-import { getHeaderValues } from "../../../utils/headers";
 import { CacheRule } from "./interfaces";
-import { normalizeStrong, normalizeWeak } from "./utils";
+import { getCacheValidators, normalizeStrong, normalizeWeak } from "./utils";
 
 /**
  * Cache rule that handles conditional GETs based on ETag headers.
@@ -38,8 +37,7 @@ export class ETagRule implements CacheRule {
         const etag = response.headers.get(HttpHeader.ETAG);
         if (!etag) return response;
 
-        const ifNoneMatch = getHeaderValues(worker.request.headers, HttpHeader.IF_NONE_MATCH);
-        const ifMatch = getHeaderValues(worker.request.headers, HttpHeader.IF_MATCH);
+        const { ifNoneMatch, ifMatch } = getCacheValidators(worker.request.headers);
 
         // If-Match (strong comparison)
         if (ifMatch.length > 0 && !ifMatch.includes("*")) {

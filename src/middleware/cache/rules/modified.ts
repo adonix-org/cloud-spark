@@ -18,6 +18,7 @@ import { HttpHeader } from "../../../constants/headers";
 import { Worker } from "../../../interfaces/worker";
 import { NotModified } from "../../../responses";
 import { CacheRule } from "./interfaces";
+import { getCacheValidators } from "./utils";
 
 export class LastModifiedRule implements CacheRule {
     public async handle(
@@ -27,14 +28,18 @@ export class LastModifiedRule implements CacheRule {
         const response = await next();
 
         const lastModified = response.headers.get(HttpHeader.LAST_MODIFIED);
-        const ifModifiedSince = worker.request.headers.get(HttpHeader.IF_MODIFIED_SINCE);
+        const { ifModifiedSince } = getCacheValidators(worker.request.headers);
 
-        if (!lastModified || !ifModifiedSince) return response;
+        if (!lastModified || !ifModifiedSince) {
+            return response;
+        }
 
         const lastModifiedTime = Date.parse(lastModified);
         const ifModifiedSinceTime = Date.parse(ifModifiedSince);
 
-        if (isNaN(lastModifiedTime) || isNaN(ifModifiedSinceTime)) return response;
+        if (isNaN(lastModifiedTime) || isNaN(ifModifiedSinceTime)) {
+            return response;
+        }
 
         if (lastModifiedTime <= ifModifiedSinceTime) {
             return new NotModified(response).response();

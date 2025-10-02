@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { HttpHeader } from "../../../constants/headers";
 import { Worker } from "../../../interfaces";
 import { CacheRule } from "./interfaces";
+import { hasCacheValidator } from "./utils";
 
 export class CacheControlRule implements CacheRule {
     public async handle(
@@ -24,17 +24,12 @@ export class CacheControlRule implements CacheRule {
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {
         const { cache } = worker.request;
+
         if (cache === "no-store") {
             return undefined;
         }
 
-        const headers = worker.request.headers;
-        const hasValidator =
-            headers.has(HttpHeader.IF_NONE_MATCH) ||
-            headers.has(HttpHeader.IF_MATCH) ||
-            headers.has(HttpHeader.IF_MODIFIED_SINCE);
-
-        if (cache === "no-cache" && !hasValidator) {
+        if (cache === "no-cache" && !hasCacheValidator(worker.request.headers)) {
             return undefined;
         }
 

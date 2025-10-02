@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HttpHeader } from "../../../constants/headers";
+import { getHeaderValues } from "../../../utils/headers";
 import { ByteRange } from "./interfaces";
 
 const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
@@ -50,4 +52,40 @@ export function normalizeWeak(etag: string): string {
 /** Normalizes an ETag for strong comparison (no changes). */
 export function normalizeStrong(etag: string): string {
     return etag;
+}
+
+/**
+ * Extracts cache validators from request headers.
+ *
+ * Cache validators allow conditional requests against cached resources.
+ * They let clients revalidate instead of always re-downloading.
+ *
+ * Recognized validators:
+ * - `If-None-Match` (ETag weak comparison)
+ * - `If-Match` (ETag strong comparison)
+ * - `If-Modified-Since` (date-based comparison)
+ *
+ * @param headers - The request headers to inspect.
+ * @returns Object containing the parsed cache validators.
+ */
+export function getCacheValidators(headers: Headers) {
+    return {
+        ifNoneMatch: getHeaderValues(headers, HttpHeader.IF_NONE_MATCH),
+        ifMatch: getHeaderValues(headers, HttpHeader.IF_MATCH),
+        ifModifiedSince: headers.get(HttpHeader.IF_MODIFIED_SINCE),
+    };
+}
+
+/**
+ * Returns true if any cache validator headers are present.
+ *
+ * Useful as a quick check for conditional requests where the
+ * specific values are not important.
+ *
+ * @param headers - The request headers to inspect.
+ * @returns `true` if any validator exists, otherwise `false`.
+ */
+export function hasCacheValidator(headers: Headers): boolean {
+    const { ifNoneMatch, ifMatch, ifModifiedSince } = getCacheValidators(headers);
+    return ifNoneMatch.length > 0 || ifMatch.length > 0 || ifModifiedSince !== null;
 }
