@@ -35,7 +35,8 @@ export class CachePolicy {
                 const response = await next();
                 if (!response) return undefined;
                 if (response.status !== StatusCodes.OK) return response;
-                return rule.handle(worker, () => Promise.resolve(response));
+
+                return rule.handle(worker, async () => response);
             },
             () => getCached(),
         );

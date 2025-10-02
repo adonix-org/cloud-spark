@@ -34,7 +34,6 @@ export class RangeRule implements CacheRule {
         const response = await next();
 
         if (!range) return response;
-
         if (range.end === undefined) return response;
 
         // Validate response length
