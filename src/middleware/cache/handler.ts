@@ -85,10 +85,10 @@ class CacheHandler implements Middleware {
             .use(new ETagRule())
             .use(new LastModifiedRule());
 
-        const cachedResponse = await policy.execute(worker, () =>
+        const cacheResponse = await policy.execute(worker, () =>
             this.getCached(cache, worker.request),
         );
-        if (cachedResponse) return cachedResponse;
+        if (cacheResponse) return cacheResponse;
 
         const response = await next();
 
