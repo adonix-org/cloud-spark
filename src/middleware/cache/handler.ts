@@ -23,6 +23,7 @@ import { CachePolicy } from "./policy";
 import { GetRule } from "./rules/get";
 import { RangeRule } from "./rules/range";
 import { ETagRule } from "./rules/etag";
+import { LastModifiedRule } from "./rules/modified";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -113,7 +114,7 @@ class CacheHandler extends Middleware {
         const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
 
         const policy = new CachePolicy();
-        policy.use(new GetRule(), new RangeRule(), new ETagRule());
+        policy.use(new GetRule(), new RangeRule(), new ETagRule(), new LastModifiedRule());
 
         const cachedResponse = await policy.execute(worker, () =>
             this.getCached(cache, worker.request),
