@@ -24,7 +24,6 @@ import { VARY_WILDCARD } from "./constants";
 /** Base URL used for constructing cache keys. Only used internally. */
 const VARY_CACHE_URL = "https://vary";
 
-
 /**
  * Determines whether a Response is cacheable.
  * - Status must be 200 OK
@@ -33,7 +32,8 @@ const VARY_CACHE_URL = "https://vary";
  * @param response The Response object to check.
  * @returns `true` if the response can be cached; `false` otherwise.
  */
-export function isCacheable(response: Response): boolean {
+export function isCacheable(request: Request, response: Response): boolean {
+    if (request.cache === "no-store") return false;
     if (response.status !== StatusCodes.OK) return false;
     if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
 
@@ -46,7 +46,6 @@ export function isConditionalGet(request: Request, response: Response): boolean 
 
     return etag !== null && etag !== "" && ifNoneMatch.length > 0;
 }
-
 
 /**
  * Extracts and normalizes the `Vary` header from a Response.

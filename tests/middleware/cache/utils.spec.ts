@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { decodeVaryKey } from "@common";
+import { decodeVaryKey, GET_REQUEST } from "@common";
 import { HttpHeader } from "@src/constants/headers";
 import {
     base64UrlEncode,
@@ -29,7 +29,7 @@ describe("cache utils unit tests ", () => {
     describe("is cacheable function", () => {
         it("returns false if status != 200 is false", () => {
             const response = new Response(null, { status: 206 });
-            expect(isCacheable(response)).toBe(false);
+            expect(isCacheable(GET_REQUEST, response)).toBe(false);
         });
 
         it("returns false if vary header is '*'", () => {
@@ -37,7 +37,7 @@ describe("cache utils unit tests ", () => {
                 status: 200,
                 headers: { Vary: "*" },
             });
-            expect(isCacheable(response)).toBe(false);
+            expect(isCacheable(GET_REQUEST, response)).toBe(false);
         });
 
         it("returns false if vary header contains '*'", () => {
@@ -45,7 +45,7 @@ describe("cache utils unit tests ", () => {
                 status: 200,
                 headers: { Vary: "Accept, *, Accept-Encoding" },
             });
-            expect(isCacheable(response)).toBe(false);
+            expect(isCacheable(GET_REQUEST, response)).toBe(false);
         });
 
         it("returns true if status = 200 and vary header does not contain '*'", () => {
@@ -53,12 +53,12 @@ describe("cache utils unit tests ", () => {
                 status: 200,
                 headers: { Vary: "Accept-Encoding, Content-Type" },
             });
-            expect(isCacheable(response)).toBe(true);
+            expect(isCacheable(GET_REQUEST, response)).toBe(true);
         });
 
         it("returns true if status = 200 and vary header is missing", () => {
             const response = new Response(null, { status: 200 });
-            expect(isCacheable(response)).toBe(true);
+            expect(isCacheable(GET_REQUEST, response)).toBe(true);
         });
 
         it("returns true if status = 200 and vary header is empty", () => {
@@ -66,7 +66,7 @@ describe("cache utils unit tests ", () => {
                 status: 200,
                 headers: { Vary: "" },
             });
-            expect(isCacheable(response)).toBe(true);
+            expect(isCacheable(GET_REQUEST, response)).toBe(true);
         });
     });
 

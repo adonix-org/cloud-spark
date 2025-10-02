@@ -167,7 +167,7 @@ class CacheHandler extends Middleware {
      * @param response The Response to cache.
      */
     public async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
-        if (!isCacheable(response)) return;
+        if (!isCacheable(worker.request, response)) return;
 
         const url = this.getCacheKey(worker.request);
 
