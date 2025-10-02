@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { Worker } from "../../../interfaces";
 import { HttpHeader } from "../../../constants/headers";
 import { PreconditionFailed } from "../../../errors";
 import { NotModified } from "../../../responses";
 import { getHeaderValues } from "../../../utils/headers";
 import { CacheRule } from "./interfaces";
+import { normalizeStrong, normalizeWeak } from "./utils";
 
 /**
  * Cache rule that handles conditional GETs based on ETag headers.
@@ -62,14 +64,4 @@ export class ETagRule implements CacheRule {
 
         return response;
     }
-}
-
-/** Normalizes an ETag for weak comparison (strips "W/" prefix). */
-function normalizeWeak(etag: string): string {
-    return etag.startsWith("W/") ? etag.slice(2) : etag;
-}
-
-/** Normalizes an ETag for strong comparison (no changes). */
-function normalizeStrong(etag: string): string {
-    return etag;
 }

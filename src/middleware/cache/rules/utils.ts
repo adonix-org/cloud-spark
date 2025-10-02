@@ -40,3 +40,12 @@ export function getRange(request: Request): ByteRange | undefined {
     return end !== undefined ? { start, end } : { start };
 }
 
+/** Normalizes an ETag for weak comparison (strips "W/" prefix). */
+export function normalizeWeak(etag: string): string {
+    return etag.startsWith("W/") ? etag.slice(2) : etag;
+}
+
+/** Normalizes an ETag for strong comparison (no changes). */
+export function normalizeStrong(etag: string): string {
+    return etag;
+}
