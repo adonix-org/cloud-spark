@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { StatusCodes } from "http-status-codes";
 import { Worker } from "../../interfaces/worker";
 import { CacheRule } from "./rules/interfaces";
 
@@ -30,7 +31,12 @@ export class CachePolicy {
         getCached: () => Promise<Response | undefined>,
     ): Promise<Response | undefined> {
         const chain = this.rules.reduceRight(
-            (next, rule) => () => rule.handle(worker, next),
+            (next, rule) => async () => {
+                const response = await next();
+                if (!response) return undefined;
+                if (response.status !== StatusCodes.OK) return response;
+                return rule.handle(worker, () => Promise.resolve(response));
+            },
             () => getCached(),
         );
 
