@@ -18,7 +18,7 @@ import { BaseWorker } from "./base";
 import { assertMiddleware } from "../guards/middleware";
 import { Middleware } from "../interfaces/middleware";
 
-/** Internal base worker for handling middleware chains. */
+/** Base worker for handling middleware chains. */
 export abstract class MiddlewareWorker extends BaseWorker {
     /** Middleware handlers registered for this worker. */
     protected readonly middlewares: Middleware[] = [];

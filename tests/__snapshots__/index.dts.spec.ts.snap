@@ -536,7 +536,7 @@ declare abstract class BaseWorker implements Worker {
     static ignite<W extends Worker>(this: WorkerClass<W>): FetchHandler;
 }
 
-/** Internal base worker for handling middleware chains. */
+/** Base worker for handling middleware chains. */
 declare abstract class MiddlewareWorker extends BaseWorker {
     /** Middleware handlers registered for this worker. */
     protected readonly middlewares: Middleware[];
