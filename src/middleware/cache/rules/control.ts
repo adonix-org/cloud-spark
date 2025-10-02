@@ -16,20 +16,20 @@
 
 import { Worker } from "../../../interfaces";
 import { CacheRule } from "./interfaces";
-import { hasCacheValidator } from "./utils";
+import { getCacheControl, hasCacheValidator } from "./utils";
 
 export class CacheControlRule implements CacheRule {
     public async handle(
         worker: Worker,
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {
-        const { cache } = worker.request;
+        const cache = getCacheControl(worker.request.headers);
 
-        if (cache === "no-store") {
+        if (Boolean(cache["no-store"])) {
             return undefined;
         }
 
-        if (cache === "no-cache" && !hasCacheValidator(worker.request.headers)) {
+        if (Boolean(cache["no-cache"]) && !hasCacheValidator(worker.request.headers)) {
             return undefined;
         }
 

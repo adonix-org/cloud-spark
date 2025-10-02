@@ -16,7 +16,8 @@
 
 import { HttpHeader } from "../../../constants/headers";
 import { getHeaderValues } from "../../../utils/headers";
-import { ByteRange } from "./interfaces";
+import { ByteRange, CacheValidators } from "./interfaces";
+import { CacheControl } from "../../../constants";
 
 const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
 
@@ -55,6 +56,16 @@ export function normalizeStrong(etag: string): string {
 }
 
 /**
+ * Parses the Cache-Control header from the given headers.
+ *
+ * @param headers - The request headers to inspect.
+ * @returns A `CacheControl` object.
+ */
+export function getCacheControl(headers: Headers): CacheControl {
+    return CacheControl.parse(headers.get(HttpHeader.CACHE_CONTROL) ?? "");
+}
+
+/**
  * Extracts cache validators from request headers.
  *
  * Cache validators allow conditional requests against cached resources.
@@ -68,7 +79,7 @@ export function normalizeStrong(etag: string): string {
  * @param headers - The request headers to inspect.
  * @returns Object containing the parsed cache validators.
  */
-export function getCacheValidators(headers: Headers) {
+export function getCacheValidators(headers: Headers): CacheValidators {
     return {
         ifNoneMatch: getHeaderValues(headers, HttpHeader.IF_NONE_MATCH),
         ifMatch: getHeaderValues(headers, HttpHeader.IF_MATCH),

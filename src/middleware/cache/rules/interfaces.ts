@@ -25,3 +25,9 @@ export interface ByteRange {
 export interface CacheRule {
     handle(worker: Worker, next: () => Promise<Response>): Promise<Response | undefined>;
 }
+
+export interface CacheValidators {
+    ifNoneMatch: string[];
+    ifMatch: string[];
+    ifModifiedSince: string | null;
+}
