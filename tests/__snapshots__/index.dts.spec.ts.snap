@@ -365,6 +365,7 @@ type RouteTable = Iterable<RouteTuple>;
  * @returns A \`Middleware\` instance that can be used in a Worker pipeline.
  */
 declare function cache(cacheName?: string, getKey?: (request: Request) => URL): Middleware;
+
 /**
  * Returns a new URL with its query parameters sorted into a stable order.
  *
