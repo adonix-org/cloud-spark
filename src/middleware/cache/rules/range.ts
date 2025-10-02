@@ -39,7 +39,7 @@ export class RangeRule implements CacheRule {
         // Validate response length
         const lengthHeader = response.headers.get(HttpHeader.CONTENT_LENGTH);
         const length = Number(lengthHeader);
-        if (!isNumber(length) || range.end! >= length) return undefined;
+        if (!isNumber(length) || range.end >= length) return undefined;
 
         return response;
     }
