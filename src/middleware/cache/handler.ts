@@ -20,7 +20,7 @@ import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
 import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { lexCompare } from "../../utils/compare";
 import { CachePolicy } from "./policy";
-import { GetRule as GetMethodRule } from "./rules/get";
+import { GetMethodRule } from "./rules/get";
 import { RangeRule } from "./rules/range";
 import { ETagRule } from "./rules/etag";
 import { LastModifiedRule } from "./rules/modified";

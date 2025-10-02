@@ -18,7 +18,7 @@ import { GET } from "../../../constants";
 import { Worker } from "../../../interfaces";
 import { CacheRule } from "./interfaces";
 
-export class GetRule implements CacheRule {
+export class GetMethodRule implements CacheRule {
     public async handle(
         worker: Worker,
         next: () => Promise<Response>,
