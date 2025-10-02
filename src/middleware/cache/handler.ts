@@ -17,7 +17,6 @@
 import { Worker } from "../../interfaces/worker";
 import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
 import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
-import { lexCompare } from "../../utils/compare";
 import { CachePolicy } from "./policy";
 import { GetMethodRule } from "./rules/get";
 import { RangeRule } from "./rules/range";
@@ -25,6 +24,7 @@ import { ETagRule } from "./rules/etag";
 import { LastModifiedRule } from "./rules/modified";
 import { CacheControlRule } from "./rules/control";
 import { Middleware } from "../../interfaces/middleware";
+import { sortSearchParams } from "./keys";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -46,41 +46,6 @@ export function cache(cacheName?: string, getKey?: (request: Request) => URL): M
     assertGetKey(getKey);
 
     return new CacheHandler(cacheName, getKey);
-}
-
-/**
- * Returns a new URL with its query parameters sorted into a stable order.
- *
- * This is used for cache key generation: URLs that differ only in the
- * order of their query parameters will normalize to the same key.
- *
- * @param request - The incoming Request whose URL will be normalized.
- * @returns A new URL with query parameters sorted by name.
- */
-export function sortSearchParams(request: Request): URL {
-    const url = new URL(request.url);
-    const sorted = new URLSearchParams(
-        [...url.searchParams.entries()].sort(([a], [b]) => lexCompare(a, b)),
-    );
-    url.search = sorted.toString();
-    url.hash = "";
-    return url;
-}
-
-/**
- * Returns a new URL with all query parameters removed.
- *
- * This is used when query parameters are not relevant to cache lookups,
- * ensuring that variants of the same resource share a single cache entry.
- *
- * @param request - The incoming Request whose URL will be normalized.
- * @returns A new URL with no query parameters.
- */
-export function stripSearchParams(request: Request): URL {
-    const url = new URL(request.url);
-    url.search = "";
-    url.hash = "";
-    return url;
 }
 
 /**
@@ -142,7 +107,7 @@ class CacheHandler implements Middleware {
     public async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
         const url = this.getCacheKey(request);
         const response = await cache.match(url);
-        if (!response) return;
+        if (!response) return undefined;
 
         const vary = this.getFilteredVary(response);
         if (vary.length === 0) return response;

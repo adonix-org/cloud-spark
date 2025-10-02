@@ -40,13 +40,6 @@ export function isCacheable(request: Request, response: Response): boolean {
     return true;
 }
 
-export function isConditionalGet(request: Request, response: Response): boolean {
-    const etag = response.headers.get(HttpHeader.ETAG);
-    const ifNoneMatch = getHeaderValues(request.headers, HttpHeader.IF_NONE_MATCH);
-
-    return etag !== null && etag !== "" && ifNoneMatch.length > 0;
-}
-
 /**
  * Extracts and normalizes the `Vary` header from a Response.
  * - Splits comma-separated values
