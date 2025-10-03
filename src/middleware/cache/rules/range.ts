@@ -19,7 +19,7 @@ import { CacheRule } from "./interfaces";
 import { getContentLength, getRange } from "./utils";
 
 export class RangeRule implements CacheRule {
-    public async handle(
+    public async apply(
         worker: Worker,
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {

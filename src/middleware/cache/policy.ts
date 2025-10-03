@@ -36,7 +36,7 @@ export class CachePolicy {
                 if (!response) return undefined;
                 if (response.status !== StatusCodes.OK) return response;
 
-                return rule.handle(worker, async () => response);
+                return rule.apply(worker, async () => response);
             },
             () => getCached(),
         );

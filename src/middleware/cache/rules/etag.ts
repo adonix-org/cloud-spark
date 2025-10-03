@@ -28,7 +28,7 @@ import { getCacheValidators, normalizeStrong, normalizeWeak } from "./utils";
  * - Returns `NotModified` or `PreconditionFailed` responses when appropriate.
  */
 export class ETagRule implements CacheRule {
-    public async handle(
+    public async apply(
         worker: Worker,
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {

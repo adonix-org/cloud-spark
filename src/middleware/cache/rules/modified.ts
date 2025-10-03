@@ -21,7 +21,7 @@ import { CacheRule } from "./interfaces";
 import { getCacheValidators } from "./utils";
 
 export class LastModifiedRule implements CacheRule {
-    public async handle(
+    public async apply(
         worker: Worker,
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {

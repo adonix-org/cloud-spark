@@ -20,7 +20,7 @@ import { getCacheControl } from "../utils";
 import { hasCacheValidator } from "./utils";
 
 export class CacheControlRule implements CacheRule {
-    public async handle(
+    public async apply(
         worker: Worker,
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {
