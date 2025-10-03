@@ -14,7 +14,29 @@
  * limitations under the License.
  */
 
+import { CacheInit } from "../interfaces/cache";
 import { isFunction, isString } from "./basic";
+
+/**
+ * Asserts that a value is a valid {@link CacheInit} object.
+ *
+ * Ensures that if provided, `name` is a string and `getKey` is a function.
+ *
+ * @param value - The value to check.
+ * @throws TypeError If the object shape is invalid.
+ */
+export function assertCacheInit(value: unknown): asserts value is CacheInit {
+    if (value === undefined) return;
+
+    if (typeof value !== "object" || value === null) {
+        throw new TypeError("CacheInit must be an object.");
+    }
+
+    const { name, getKey } = value as Partial<CacheInit>;
+
+    assertCacheName(name);
+    assertGetKey(getKey);
+}
 
 /**
  * Asserts that a value is a string suitable for a cache name.

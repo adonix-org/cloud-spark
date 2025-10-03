@@ -62,6 +62,22 @@ declare const Time: {
 };
 
 /**
+ * Configuration options for the cache middleware.
+ */
+interface CacheInit {
+    /**
+     * Name of the cache storage to use.
+     * If omitted, the default cache is used.
+     */
+    name?: string;
+    /**
+     * Function that maps the incoming request
+     * to a cache key.
+     */
+    getKey: (request: Request) => URL;
+}
+
+/**
  * User-supplied options for configuring\`CORS\`behavior.
  *
  * This is a partial form of {@link CorsConfig}, meaning you only need
@@ -359,12 +375,13 @@ type RouteTable = Iterable<RouteTuple>;
  * - Skips caching for non-cacheable responses (e.g., error responses or
  *   responses with \`Vary: *\`).
  *
- * @param cacheName Optional name of the cache to use. If omitted, the default cache is used.
- * @param getKey Optional function to compute a custom cache key from a request.
- *               If omitted, the request URL is normalized and used as the key.
+ * @param init Optional cache configuration object.
+ * @param init.name Optional name of the cache to use. If omitted, the default cache is used.
+ * @param init.getKey Optional function to compute a custom cache key from a request.
+ *
  * @returns A \`Middleware\` instance that can be used in a Worker pipeline.
  */
-declare function cache(cacheName?: string, getKey?: (request: Request) => URL): Middleware;
+declare function cache(init?: Partial<CacheInit>): Middleware;
 
 /**
  * Returns a new URL with its query parameters sorted into a stable order.
@@ -921,6 +938,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, type Middleware, NotFound, NotImplemented, NotModified, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, PreconditionFailed, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, cache, cors, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, type CacheInit, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, type Middleware, NotFound, NotImplemented, NotModified, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, PreconditionFailed, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, cache, cors, sortSearchParams, stripSearchParams, websocket };
 "
 `;

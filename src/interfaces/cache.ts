@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-export * from "./cache";
-export * from "./cors";
-export * from "./error";
-export * from "./middleware";
-export * from "./response";
-export * from "./route";
-export * from "./worker";
+/**
+ * Configuration options for the cache middleware.
+ */
+export interface CacheInit {
+    /**
+     * Name of the cache storage to use.
+     * If omitted, the default cache is used.
+     */
+    name?: string;
+
+    /**
+     * Function that maps the incoming request
+     * to a cache key.
+     */
+    getKey: (request: Request) => URL;
+}

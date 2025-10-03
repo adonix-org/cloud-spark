@@ -17,7 +17,7 @@
 import { describe, expect, it } from "vitest";
 import { decodeVaryKey, GET_REQUEST, VALID_ORIGIN, VALID_URL } from "@common";
 import { ctx, defaultCache, env, namedCache } from "@mock";
-import { cache} from "@src/middleware/cache/handler";
+import { cache } from "@src/middleware/cache/handler";
 import { MiddlewareWorker } from "@src/workers/middleware";
 import { GET, Method } from "@src/constants/methods";
 import { getVaryHeader, getVaryKey } from "@src/middleware/cache/utils";
@@ -31,7 +31,7 @@ class TestWorker extends MiddlewareWorker {
 
     constructor(request: Request, cacheName?: string) {
         super(request, env, ctx);
-        this.use(cache(cacheName));
+        this.use(cache({ name: cacheName }));
     }
 
     protected async dispatch(): Promise<Response> {
@@ -127,8 +127,10 @@ describe("cache middleware unit tests", () => {
             constructor(request: Request) {
                 super(request, env, ctx);
                 this.use(
-                    cache(undefined, (): URL => {
-                        return new URL(url.pathname, url.origin);
+                    cache({
+                        getKey: () => {
+                            return new URL(url.pathname, url.origin);
+                        },
                     }),
                 );
             }
@@ -159,8 +161,10 @@ describe("cache middleware unit tests", () => {
             constructor(request: Request) {
                 super(request, env, ctx);
                 this.use(
-                    cache(undefined, (): URL => {
-                        return url;
+                    cache({
+                        getKey: () => {
+                            return url;
+                        },
                     }),
                 );
             }

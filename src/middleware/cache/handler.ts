@@ -15,7 +15,7 @@
  */
 
 import { Worker } from "../../interfaces/worker";
-import { assertCacheName, assertGetKey, assertKey } from "../../guards/cache";
+import { assertCacheInit, assertKey } from "../../guards/cache";
 import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { CachePolicy } from "./policy";
 import { GetMethodRule } from "./rules/get";
@@ -25,6 +25,7 @@ import { LastModifiedRule } from "./rules/modified";
 import { CacheControlRule } from "./rules/control";
 import { Middleware } from "../../interfaces/middleware";
 import { sortSearchParams } from "./keys";
+import { CacheInit } from "../../interfaces/cache";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -36,16 +37,16 @@ import { sortSearchParams } from "./keys";
  * - Skips caching for non-cacheable responses (e.g., error responses or
  *   responses with `Vary: *`).
  *
- * @param cacheName Optional name of the cache to use. If omitted, the default cache is used.
- * @param getKey Optional function to compute a custom cache key from a request.
- *               If omitted, the request URL is normalized and used as the key.
+ * @param init Optional cache configuration object.
+ * @param init.name Optional name of the cache to use. If omitted, the default cache is used.
+ * @param init.getKey Optional function to compute a custom cache key from a request.
+ *
  * @returns A `Middleware` instance that can be used in a Worker pipeline.
  */
-export function cache(cacheName?: string, getKey?: (request: Request) => URL): Middleware {
-    assertCacheName(cacheName);
-    assertGetKey(getKey);
+export function cache(init: Partial<CacheInit> = {}): Middleware {
+    assertCacheInit(init);
 
-    return new CacheHandler(cacheName, getKey);
+    return new CacheHandler(init);
 }
 
 /**
@@ -53,11 +54,15 @@ export function cache(cacheName?: string, getKey?: (request: Request) => URL): M
  * @see {@link cache}
  */
 class CacheHandler implements Middleware {
-    constructor(
-        private readonly cacheName?: string,
-        private readonly getKey?: (request: Request) => URL,
-    ) {
-        this.cacheName = cacheName?.trim() || undefined;
+    private readonly init: CacheInit;
+
+    constructor(init: CacheInit) {
+        const { name, getKey = sortSearchParams } = init;
+
+        this.init = {
+            name: name?.trim() || undefined,
+            getKey,
+        };
     }
 
     /**
@@ -76,7 +81,7 @@ class CacheHandler implements Middleware {
      * @returns A `Response` object, either from cache or freshly fetched.
      */
     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        const cache = this.cacheName ? await caches.open(this.cacheName) : caches.default;
+        const cache = this.init.name ? await caches.open(this.init.name) : caches.default;
 
         const policy = new CachePolicy()
             .use(new GetMethodRule())
@@ -175,7 +180,7 @@ class CacheHandler implements Middleware {
      * @returns A URL representing the main cache key for this request.
      */
     public getCacheKey(request: Request): URL {
-        const key = this.getKey ? this.getKey(request) : sortSearchParams(request);
+        const key = this.init.getKey(request);
         assertKey(key);
 
         key.hash = "";
