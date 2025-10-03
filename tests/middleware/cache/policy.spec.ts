@@ -39,7 +39,7 @@ describe("cache policy", () => {
         expect(result).toBeUndefined();
     });
 
-    it("applies rules in correct order", async () => {
+    it("executes the rules in onion pattern", async () => {
         const order: string[] = [];
         policy.use(
             {
