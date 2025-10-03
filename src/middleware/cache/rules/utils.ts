@@ -17,7 +17,6 @@
 import { HttpHeader } from "../../../constants/headers";
 import { getHeaderValues } from "../../../utils/headers";
 import { ByteRange, CacheValidators } from "./interfaces";
-import { CacheControl } from "../../../constants";
 import { isNumber } from "../../../guards/basic";
 
 const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
@@ -54,16 +53,6 @@ export function normalizeWeak(etag: string): string {
 /** Normalizes an ETag for strong comparison (no changes). */
 export function normalizeStrong(etag: string): string {
     return etag;
-}
-
-/**
- * Parses the Cache-Control header from the given headers.
- *
- * @param headers - The request headers to inspect.
- * @returns A `CacheControl` object.
- */
-export function getCacheControl(headers: Headers): CacheControl {
-    return CacheControl.parse(headers.get(HttpHeader.CACHE_CONTROL) ?? "");
 }
 
 /**

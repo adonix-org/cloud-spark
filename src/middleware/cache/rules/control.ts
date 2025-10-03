@@ -16,7 +16,8 @@
 
 import { Worker } from "../../../interfaces";
 import { CacheRule } from "./interfaces";
-import { getCacheControl, hasCacheValidator } from "./utils";
+import { getCacheControl } from "../utils";
+import { hasCacheValidator } from "./utils";
 
 export class CacheControlRule implements CacheRule {
     public async handle(
@@ -29,7 +30,10 @@ export class CacheControlRule implements CacheRule {
             return undefined;
         }
 
-        if (Boolean(cache["no-cache"]) && !hasCacheValidator(worker.request.headers)) {
+        if (
+            (Boolean(cache["no-cache"]) || cache["max-age"] === 0) &&
+            !hasCacheValidator(worker.request.headers)
+        ) {
             return undefined;
         }
 

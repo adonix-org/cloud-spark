@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { GET } from "../../../constants";
+import { GET, HEAD } from "../../../constants";
 import { Worker } from "../../../interfaces";
+import { Head } from "../../../responses";
 import { CacheRule } from "./interfaces";
 
 export class GetMethodRule implements CacheRule {
@@ -23,8 +24,14 @@ export class GetMethodRule implements CacheRule {
         worker: Worker,
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {
-        if (worker.request.method !== GET) return undefined;
+        if (worker.request.method === GET) {
+            return next();
+        }
 
-        return next();
+        if (worker.request.method === HEAD) {
+            return new Head(await next()).response();
+        }
+
+        return undefined;
     }
 }

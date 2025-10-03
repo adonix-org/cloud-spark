@@ -20,7 +20,7 @@ import { HttpHeader } from "../../constants/headers";
 import { lexCompare } from "../../utils/compare";
 import { getHeaderValues } from "../../utils/headers";
 import { VARY_WILDCARD } from "./constants";
-import { GET } from "../../constants";
+import { CacheControl, GET } from "../../constants";
 
 /** Base URL used for constructing cache keys. Only used internally. */
 const VARY_CACHE_URL = "https://vary";
@@ -37,11 +37,23 @@ const VARY_CACHE_URL = "https://vary";
  */
 export function isCacheable(request: Request, response: Response): boolean {
     if (request.method !== GET) return false;
-    if (request.cache === "no-store") return false;
     if (response.status !== StatusCodes.OK) return false;
     if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
 
+    const cache = getCacheControl(request.headers);
+    if (cache["no-store"]) return false;
+
     return true;
+}
+
+/**
+ * Parses the Cache-Control header from the given headers.
+ *
+ * @param headers - The request headers to inspect.
+ * @returns A `CacheControl` object.
+ */
+export function getCacheControl(headers: Headers): CacheControl {
+    return CacheControl.parse(headers.get(HttpHeader.CACHE_CONTROL) ?? "");
 }
 
 /**
