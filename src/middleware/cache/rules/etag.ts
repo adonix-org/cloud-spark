@@ -15,11 +15,11 @@
  */
 
 import { Worker } from "../../../interfaces";
-import { HttpHeader } from "../../../constants/headers";
 import { PreconditionFailed } from "../../../errors";
 import { NotModified } from "../../../responses";
 import { CacheRule } from "./interfaces";
-import { getCacheValidators, normalizeStrong, normalizeWeak } from "./utils";
+import { getCacheValidators, found, getEtag } from "./utils";
+import { WILDCARD_ETAG } from "./constants";
 
 /**
  * Cache rule that handles conditional GETs based on ETag headers.
@@ -34,29 +34,21 @@ export class ETagRule implements CacheRule {
     ): Promise<Response | undefined> {
         const response = await next();
 
-        const etag = response.headers.get(HttpHeader.ETAG);
+        const etag = getEtag(response);
         if (!etag) return response;
 
-        const { ifNoneMatch, ifMatch } = getCacheValidators(worker.request.headers);
+        const { ifMatch, ifNoneMatch } = getCacheValidators(worker.request.headers);
+        if (ifMatch.length === 0 && ifNoneMatch.length === 0) return response;
 
-        // If-Match (strong comparison)
-        if (ifMatch.length > 0 && !ifMatch.includes("*")) {
-            const normalizedEtag = normalizeStrong(etag);
-            const normalizedMatches = ifMatch.map(normalizeStrong);
-            if (!normalizedMatches.includes(normalizedEtag)) {
-                return new PreconditionFailed().response();
-            }
+        if (ifMatch.length > 0 && !found(ifMatch, etag, WILDCARD_ETAG)) {
+            return new PreconditionFailed().response();
         }
 
-        // If-None-Match (weak comparison or wildcard)
         if (ifNoneMatch.length > 0) {
-            const normalizedEtag = normalizeWeak(etag);
-            const normalizedMatches = ifNoneMatch.map(normalizeWeak);
-            if (ifNoneMatch.includes("*") || normalizedMatches.includes(normalizedEtag)) {
+            if (found(ifNoneMatch, etag, WILDCARD_ETAG)) {
                 return new NotModified(response).response();
             }
 
-            // ETags exist but don't match → cache cannot be used
             return undefined;
         }
 

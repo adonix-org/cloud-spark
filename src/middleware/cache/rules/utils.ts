@@ -20,6 +20,7 @@ import { ByteRange, CacheValidators } from "./interfaces";
 import { isNumber } from "../../../guards/basic";
 
 const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
+const ETAG_WEAK_PREFIX = "W/";
 
 /**
  * Parses the `Range` header from an HTTP request and returns a byte range object.
@@ -45,34 +46,51 @@ export function getRange(request: Request): ByteRange | undefined {
     return end !== undefined ? { start, end } : { start };
 }
 
-/** Normalizes an ETag for weak comparison (strips "W/" prefix). */
-export function normalizeWeak(etag: string): string {
-    return etag.startsWith("W/") ? etag.slice(2) : etag;
+/**
+ * Retrieves and normalizes the ETag from a Response.
+ *
+ * Strips the weak prefix (`W/`) if present, so the returned ETag
+ * can be safely compared against normalized If-Match or If-None-Match headers.
+ *
+ * @param response - The HTTP Response object.
+ * @returns The normalized ETag string, or `undefined` if the header is missing.
+ */
+export function getEtag(response: Response): string | undefined {
+    const etag = response.headers.get(HttpHeader.ETAG);
+    if (etag) return normalizeEtag(etag);
+
+    return undefined;
 }
 
-/** Normalizes an ETag for strong comparison (no changes). */
-export function normalizeStrong(etag: string): string {
-    return etag;
+export function found(array: string[], ...search: string[]): boolean {
+    return array.some((value) => search.includes(value));
+}
+
+/** Normalizes an ETag for comparison */
+export function normalizeEtag(etag: string): string {
+    return etag.startsWith(ETAG_WEAK_PREFIX) ? etag.slice(2) : etag;
 }
 
 /**
- * Extracts cache validators from request headers.
+ * Extracts and normalizes HTTP cache validators from request headers.
  *
- * Cache validators allow conditional requests against cached resources.
- * They let clients revalidate instead of always re-downloading.
+ * This function processes the three main cache-related headers:
+ * - `If-Match`       → only strong ETags are retained, since weak ETags never satisfy strong comparison.
+ * - `If-None-Match`  → all ETags are normalized (weak prefix removed) to allow weak comparison.
+ * - `If-Modified-Since` → returned as-is (nullable string).
  *
- * Recognized validators:
- * - `If-None-Match` (ETag weak comparison)
- * - `If-Match` (ETag strong comparison)
- * - `If-Modified-Since` (date-based comparison)
- *
- * @param headers - The request headers to inspect.
- * @returns Object containing the parsed cache validators.
+ * @param headers - The request headers from which to extract cache validators.
+ * @returns A `CacheValidators` object containing:
+ *   - `ifMatch`: an array of strong ETags for If-Match precondition checks.
+ *   - `ifNoneMatch`: an array of normalized ETags for If-None-Match checks.
+ *   - `ifModifiedSince`: the raw If-Modified-Since header value, or `null` if not present.
  */
 export function getCacheValidators(headers: Headers): CacheValidators {
     return {
-        ifNoneMatch: getHeaderValues(headers, HttpHeader.IF_NONE_MATCH),
-        ifMatch: getHeaderValues(headers, HttpHeader.IF_MATCH),
+        ifMatch: getHeaderValues(headers, HttpHeader.IF_MATCH).filter(
+            (value) => !value.startsWith(ETAG_WEAK_PREFIX),
+        ),
+        ifNoneMatch: getHeaderValues(headers, HttpHeader.IF_NONE_MATCH).map(normalizeEtag),
         ifModifiedSince: headers.get(HttpHeader.IF_MODIFIED_SINCE),
     };
 }
