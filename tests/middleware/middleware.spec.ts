@@ -57,7 +57,58 @@ class AuthHandler implements Middleware {
     }
 }
 
+class TestMiddleware implements Middleware {
+    constructor(
+        private name: string,
+        private log: string[],
+    ) {}
+    async handle(_worker: Worker, next: () => Promise<Response>): Promise<Response> {
+        this.log.push(`pre-${this.name}`);
+        const response = await next();
+        this.log.push(`post-${this.name}`);
+        return response;
+    }
+}
+
 describe("middleware unit tests", () => {
+    it("executes the middleware in the onion pattern", async () => {
+        const log: string[] = [];
+        const mw1 = new TestMiddleware("first", log);
+        const mw2 = new TestMiddleware("second", log);
+
+        class OrderWorker extends TestWorker {
+            init() {
+                this.use(mw1);
+                this.use(mw2);
+            }
+        }
+
+        await new OrderWorker(GET_REQUEST).fetch();
+        expect(log).toStrictEqual(["pre-first", "pre-second", "post-second", "post-first"]);
+    });
+
+    it("short-circuits when a middleware returns early", async () => {
+        const log: string[] = [];
+        const mw1 = new TestMiddleware("first", log);
+        const mw2: Middleware = {
+            handle: async (_worker, _next) => {
+                log.push("pre-second");
+                return new Response("short circuited");
+            },
+        };
+
+        class ShortCircuitWorker extends TestWorker {
+            init() {
+                this.use(mw1);
+                this.use(mw2);
+            }
+        }
+
+        const response = await new ShortCircuitWorker(GET_REQUEST).fetch();
+        expect(await response.text()).toBe("short circuited");
+        expect(log).toStrictEqual(["pre-first", "pre-second", "post-first"]);
+    });
+
     it("adds a custom header to the response", async () => {
         const worker = new TestWorker(GET_REQUEST);
         const response = await worker.fetch();

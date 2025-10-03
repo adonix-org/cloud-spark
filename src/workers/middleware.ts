@@ -56,6 +56,6 @@ export abstract class MiddlewareWorker extends BaseWorker {
             (next, handler) => () => handler.handle(this, next),
             () => this.dispatch(),
         );
-        return await chain();
+        return chain();
     }
 }
