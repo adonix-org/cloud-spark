@@ -28,7 +28,7 @@ import {
     normalizeEtag,
 } from "@src/middleware/cache/rules/utils";
 
-describe("rules/cache utils unit tests ", () => {
+describe("cache rules utils unit tests ", () => {
     describe("get range function", () => {
         const makeRequest = (range?: string): Request =>
             new Request(VALID_URL, {
