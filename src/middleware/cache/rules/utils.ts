@@ -21,6 +21,7 @@ import { isNumber } from "../../../guards/basic";
 
 const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
 const ETAG_WEAK_PREFIX = "W/";
+const WILDCARD_ETAG = "*";
 
 /**
  * Parses the `Range` header from an HTTP request and returns a byte range object.
@@ -46,20 +47,19 @@ export function getRange(request: Request): ByteRange | undefined {
     return end !== undefined ? { start, end } : { start };
 }
 
-/**
- * Retrieves and normalizes the ETag from a Response.
- *
- * Strips the weak prefix (`W/`) if present, so the returned ETag
- * can be safely compared against normalized If-Match or If-None-Match headers.
- *
- * @param response - The HTTP Response object.
- * @returns The normalized ETag string, or `undefined` if the header is missing.
- */
 export function getEtag(response: Response): string | undefined {
     const etag = response.headers.get(HttpHeader.ETAG);
-    if (etag) return normalizeEtag(etag);
+    if (etag) return etag;
 
     return undefined;
+}
+
+export function isPreconditionFailed(ifMatch: string[], etag: string): boolean {
+    return ifMatch.length > 0 && !found(ifMatch, etag, WILDCARD_ETAG);
+}
+
+export function isNotModified(ifNoneMatch: string[], etag: string): boolean {
+    return ifNoneMatch.length > 0 && found(ifNoneMatch, normalizeEtag(etag), WILDCARD_ETAG);
 }
 
 export function found(array: string[], ...search: string[]): boolean {

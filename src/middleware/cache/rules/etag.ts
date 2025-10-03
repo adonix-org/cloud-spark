@@ -18,8 +18,7 @@ import { Worker } from "../../../interfaces";
 import { PreconditionFailed } from "../../../errors";
 import { NotModified } from "../../../responses";
 import { CacheRule } from "./interfaces";
-import { getCacheValidators, found, getEtag } from "./utils";
-import { WILDCARD_ETAG } from "./constants";
+import { getCacheValidators, getEtag, isPreconditionFailed, isNotModified } from "./utils";
 
 /**
  * Cache rule that handles conditional GETs based on ETag headers.
@@ -40,12 +39,12 @@ export class ETagRule implements CacheRule {
         const { ifMatch, ifNoneMatch } = getCacheValidators(worker.request.headers);
         if (ifMatch.length === 0 && ifNoneMatch.length === 0) return response;
 
-        if (ifMatch.length > 0 && !found(ifMatch, etag, WILDCARD_ETAG)) {
+        if (isPreconditionFailed(ifMatch, etag)) {
             return new PreconditionFailed().response();
         }
 
         if (ifNoneMatch.length > 0) {
-            if (found(ifNoneMatch, etag, WILDCARD_ETAG)) {
+            if (isNotModified(ifNoneMatch, etag)) {
                 return new NotModified(response).response();
             }
 
