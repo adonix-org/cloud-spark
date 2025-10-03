@@ -82,32 +82,32 @@ describe("rules/cache utils unit tests ", () => {
         });
     });
 
-    describe("getEtag", () => {
+    describe("get etag function", () => {
         const makeResponse = (etag?: string) =>
             new Response("ok", {
                 headers: etag ? { ETag: etag } : {},
             });
 
-        it("returns undefined if no ETag header", () => {
+        it("returns undefined if no etag header", () => {
             expect(getEtag(makeResponse())).toBeUndefined();
         });
 
-        it("returns the ETag if present", () => {
+        it("returns the etag if present", () => {
             expect(getEtag(makeResponse('"abc123"'))).toBe('"abc123"');
         });
     });
 
-    describe("normalizeEtag", () => {
+    describe("normalize etag function", () => {
         it("removes weak prefix W/", () => {
             expect(normalizeEtag('W/"123"')).toBe('"123"');
         });
 
-        it("returns strong ETag unchanged", () => {
+        it("returns strong etag unchanged", () => {
             expect(normalizeEtag('"abc"')).toBe('"abc"');
         });
     });
 
-    describe("found", () => {
+    describe("found function", () => {
         it("returns true if array contains search value", () => {
             expect(found(["a", "b", "c"], "b")).toBe(true);
         });
@@ -121,12 +121,12 @@ describe("rules/cache utils unit tests ", () => {
         });
     });
 
-    describe("isPreconditionFailed", () => {
-        it("returns false if ifMatch is empty", () => {
+    describe("is precondition failed function", () => {
+        it("returns false if 'if-match' is empty", () => {
             expect(isPreconditionFailed([], '"abc"')).toBe(false);
         });
 
-        it("returns false if ETag matches one of the values", () => {
+        it("returns false if etag matches one of the values", () => {
             expect(isPreconditionFailed(['"abc"'], '"abc"')).toBe(false);
         });
 
@@ -139,8 +139,8 @@ describe("rules/cache utils unit tests ", () => {
         });
     });
 
-    describe("isNotModified", () => {
-        it("returns false if ifNoneMatch is empty", () => {
+    describe("is not modified function", () => {
+        it("returns false if 'if-none-match' is empty", () => {
             expect(isNotModified([], '"abc"')).toBe(false);
         });
 
@@ -157,7 +157,7 @@ describe("rules/cache utils unit tests ", () => {
         });
     });
 
-    describe("getCacheValidators", () => {
+    describe("get cache validators function", () => {
         const makeHeaders = (init: Record<string, string>) => new Headers(init);
 
         it("returns empty arrays and null if no headers", () => {
@@ -167,17 +167,17 @@ describe("rules/cache utils unit tests ", () => {
             expect(v.ifModifiedSince).toBeNull();
         });
 
-        it("filters out weak ETags from If-Match", () => {
+        it("filters out weak etags from 'if-match'", () => {
             const v = getCacheValidators(makeHeaders({ "If-Match": 'W/"123", "456"' }));
             expect(v.ifMatch).toEqual(['"456"']);
         });
 
-        it("normalizes all If-None-Match ETags", () => {
+        it("normalizes all 'if-none-match' eTags", () => {
             const v = getCacheValidators(makeHeaders({ "If-None-Match": 'W/"123", "456"' }));
             expect(v.ifNoneMatch.sort()).toEqual(['"123"', '"456"'].sort());
         });
 
-        it("returns If-Modified-Since as string if present", () => {
+        it("returns 'if-modified-since' as string if present", () => {
             const v = getCacheValidators(
                 makeHeaders({ "If-Modified-Since": "Mon, 29 Sep 2025 10:00:00 GMT" }),
             );
@@ -185,29 +185,29 @@ describe("rules/cache utils unit tests ", () => {
         });
     });
 
-    describe("hasCacheValidator", () => {
+    describe("has cache validators function", () => {
         const makeHeaders = (init: Record<string, string>) => new Headers(init);
 
         it("returns false if no validators", () => {
             expect(hasCacheValidator(makeHeaders({}))).toBe(false);
         });
 
-        it("returns true if If-Match present", () => {
+        it("returns true if 'if-match' present", () => {
             expect(hasCacheValidator(makeHeaders({ "If-Match": '"123"' }))).toBe(true);
         });
 
-        it("returns true if If-None-Match present", () => {
+        it("returns true if 'if-none-match' present", () => {
             expect(hasCacheValidator(makeHeaders({ "If-None-Match": '"123"' }))).toBe(true);
         });
 
-        it("returns true if If-Modified-Since present", () => {
+        it("returns true if 'if-modified-since' present", () => {
             expect(
                 hasCacheValidator(makeHeaders({ "If-Modified-Since": "Mon, 29 Sep 2025" })),
             ).toBe(true);
         });
     });
 
-    describe("getContentLength", () => {
+    describe("get content length function", () => {
         const makeHeaders = (contentLength?: string) => {
             const h = new Headers();
             if (contentLength !== undefined) {
@@ -220,19 +220,19 @@ describe("rules/cache utils unit tests ", () => {
             expect(getContentLength(makeHeaders())).toBeUndefined();
         });
 
-        it("returns undefined for empty Content-Length header", () => {
+        it("returns undefined for empty 'content-length' header", () => {
             expect(getContentLength(makeHeaders(""))).toBeUndefined();
         });
 
-        it("returns undefined for whitespace-only Content-Length header", () => {
+        it("returns undefined for whitespace-only 'content-length' header", () => {
             expect(getContentLength(makeHeaders("   "))).toBeUndefined();
         });
 
-        it("parses valid Content-Length", () => {
+        it("parses valid 'content-length'", () => {
             expect(getContentLength(makeHeaders("123"))).toBe(123);
         });
 
-        it("returns undefined for non-numeric Content-Length", () => {
+        it("returns undefined for non-numeric 'content-length'", () => {
             expect(getContentLength(makeHeaders("abc"))).toBeUndefined();
         });
     });
