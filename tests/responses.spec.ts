@@ -25,9 +25,10 @@ import {
     WebSocketUpgrade,
     OctetStream,
     R2ObjectStream,
+    NotModified,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
-import { assertDefined, VALID_URL } from "./test-utils/common";
+import { assertDefined, expectHeadersEqual, VALID_URL } from "./test-utils/common";
 import { MethodNotAllowed } from "@src/errors";
 import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "@src/constants/headers";
 import { CacheControl } from "@src/constants/cache";
@@ -172,7 +173,7 @@ describe("response unit tests", () => {
         expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe(resp.mediaType);
     });
 
-    it("does not add content type for 204 or 304", async () => {
+    it("does not add content type for 204 no content or 304 not modified", async () => {
         const resp204 = new SuccessResponse("hi", undefined, StatusCodes.NO_CONTENT);
         const r204 = await resp204.response();
         expect(r204.headers.has(HttpHeader.CONTENT_TYPE)).toBe(false);
@@ -180,6 +181,22 @@ describe("response unit tests", () => {
         const resp304 = new SuccessResponse("hi", undefined, StatusCodes.NOT_MODIFIED);
         const r304 = await resp304.response();
         expect(r304.headers.has(HttpHeader.CONTENT_TYPE)).toBe(false);
+    });
+
+    it("clones the provided response for 304 not modified", async () => {
+        const resp = new SuccessResponse("hi", { public: true, "max-age": 60 });
+        resp.headers.set("x-test-header-1", "123");
+        resp.headers.set("x-test-header-2", "345");
+
+        const resp304 = await new NotModified(await resp.response()).response();
+        expect(resp304.status).toBe(StatusCodes.NOT_MODIFIED);
+        expect(resp304.statusText).toBe("Not Modified");
+        expect(await resp304.text()).toBe("");
+        expectHeadersEqual(resp304.headers, [
+            ["cache-control", "public, max-age=60"],
+            ["x-test-header-1", "123"],
+            ["x-test-header-2", "345"],
+        ]);
     });
 
     describe("octet stream unit tests", () => {
