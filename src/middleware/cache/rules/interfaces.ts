@@ -23,7 +23,7 @@ export interface ByteRange {
 }
 
 export interface CacheRule {
-    apply(worker: Worker, next: () => Promise<Response>): Promise<Response | undefined>;
+    apply(worker: Worker, next: () => Promise<Response | undefined>): Promise<Response | undefined>;
 }
 
 export interface CacheValidators {
