@@ -97,7 +97,7 @@ export class PreconditionFailed extends WorkerResponse {
 export class UpgradeRequired extends HttpError {
     constructor() {
         super(StatusCodes.UPGRADE_REQUIRED);
-        this.headers.set(HttpHeader.SEC_WEBSOCKET_VERSION, WS_VERSION);
+        this.setHeader(HttpHeader.SEC_WEBSOCKET_VERSION, WS_VERSION);
     }
 }
 

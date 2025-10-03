@@ -295,7 +295,7 @@ describe("header functions unit tests", () => {
         });
     });
 
-    describe("filterHeaders", () => {
+    describe("filter headers function", () => {
         it("removes a single header", () => {
             const headers = new Headers({
                 "content-type": "application/json",
