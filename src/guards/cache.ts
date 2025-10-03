@@ -26,8 +26,6 @@ import { isFunction, isString } from "./basic";
  * @throws TypeError If the object shape is invalid.
  */
 export function assertCacheInit(value: unknown): asserts value is CacheInit {
-    if (value === undefined) return;
-
     if (typeof value !== "object" || value === null) {
         throw new TypeError("CacheInit must be an object.");
     }

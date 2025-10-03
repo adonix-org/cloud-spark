@@ -15,9 +15,62 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { assertCacheName, assertGetKey, assertKey } from "@src/guards/cache";
+import { assertCacheInit, assertCacheName, assertGetKey, assertKey } from "@src/guards/cache";
+import { CacheInit } from "@src/interfaces/cache";
+import { VALID_URL } from "@common";
 
 describe("cache guard unit tests", () => {
+    describe("assert cache init function", () => {
+        it("throws for undefined", () => {
+            expect(() => assertCacheInit(undefined)).toThrow(TypeError);
+        });
+
+        it("throws for null", () => {
+            expect(() => assertCacheInit(null)).toThrow(TypeError);
+        });
+
+        it("throws for non-object types", () => {
+            expect(() => assertCacheInit(42)).toThrow(TypeError);
+            expect(() => assertCacheInit("string")).toThrow(TypeError);
+            expect(() => assertCacheInit(true)).toThrow(TypeError);
+            expect(() => assertCacheInit(Symbol("sym"))).toThrow(TypeError);
+        });
+
+        it("throws if get key is missing", () => {
+            expect(() => assertCacheInit({})).not.toThrow();
+        });
+
+        it("throws if get key is not a function", () => {
+            expect(() => assertCacheInit({ getKey: 123 })).toThrow(TypeError);
+            expect(() => assertCacheInit({ getKey: "not a function" })).toThrow(TypeError);
+        });
+
+        it("throws if name is present but invalid type", () => {
+            expect(() => assertCacheInit({ name: 123, getKey: () => new URL(VALID_URL) })).toThrow(
+                TypeError,
+            );
+
+            expect(() => assertCacheInit({ name: true, getKey: () => new URL(VALID_URL) })).toThrow(
+                TypeError,
+            );
+        });
+
+        it("accepts valid object with get key only", () => {
+            const valid: CacheInit = {
+                getKey: () => new URL(VALID_URL),
+            };
+            expect(() => assertCacheInit(valid)).not.toThrow();
+        });
+
+        it("accepts valid object with name and getKey", () => {
+            const valid: CacheInit = {
+                name: "my-cache",
+                getKey: () => new URL(VALID_URL),
+            };
+            expect(() => assertCacheInit(valid)).not.toThrow();
+        });
+    });
+
     describe("assert cache name", () => {
         it("does not throw for undefined", () => {
             expect(() => assertCacheName(undefined)).not.toThrow();
