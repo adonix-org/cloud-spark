@@ -24,7 +24,7 @@ import { getCacheValidators, getEtag, isPreconditionFailed, isNotModified } from
  * Cache rule that handles conditional GETs based on ETag headers.
  * - Applies If-Match (strong comparison) and If-None-Match (weak comparison) rules.
  * - Returns `undefined` if the cached response cannot be used.
- * - Returns `NotModified` or `PreconditionFailed` responses when appropriate.
+ * - Returns `NotModified` or `PreconditionFailed` responses per HTTP spec.
  */
 export class ETagRule implements CacheRule {
     public async apply(
