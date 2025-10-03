@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { decodeVaryKey, GET_REQUEST } from "@common";
+import { decodeVaryKey, VALID_URL } from "@common";
 import { HttpHeader } from "@src/constants/headers";
+import { GET, POST } from "@src/constants/methods";
 import {
     base64UrlEncode,
     filterVaryHeader,
@@ -23,50 +24,91 @@ import {
     getVaryKey,
     isCacheable,
 } from "@src/middleware/cache/utils";
+import { StatusCodes } from "http-status-codes";
 import { describe, expect, it } from "vitest";
 
 describe("cache utils unit tests ", () => {
     describe("is cacheable function", () => {
-        it("returns false if status != 200 is false", () => {
-            const response = new Response(null, { status: 206 });
-            expect(isCacheable(GET_REQUEST, response)).toBe(false);
+        const makeRequest = (method = GET, headers: Record<string, string> = {}) =>
+            new Request(VALID_URL, { method, headers });
+
+        const makeResponse = (status = StatusCodes.OK, headers: Record<string, string> = {}) =>
+            new Response("", { status, headers });
+
+        it("returns false if response status is not 200", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.CREATED);
+            expect(isCacheable(req, resp)).toBe(false);
         });
 
-        it("returns false if vary header is '*'", () => {
-            const response = new Response(null, {
-                status: 200,
-                headers: { Vary: "*" },
+        it("returns false if request method is not get", () => {
+            const req = makeRequest(POST);
+            const resp = makeResponse();
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if vary header contains *", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, { Vary: "*" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if request cache-control contains no-store", () => {
+            const req = makeRequest(GET, { "Cache-Control": "no-store" });
+            const resp = makeResponse();
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if response cache-control contains no-store", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "no-store" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if response cache-control max-age is 0", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "max-age=0" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if response cache-control contains private", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "private, max-age=60" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("throws an error if response has content-range header", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, { "Content-Range": "bytes 0-99/100" });
+            expect(() => isCacheable(req, resp)).toThrow();
+        });
+
+        it("returns true for standard cacheable get 200 response", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "public, max-age=3600" });
+            expect(isCacheable(req, resp)).toBe(true);
+        });
+
+        it("handles multiple cache-control directives correctly", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, {
+                "Cache-Control": "public, max-age=3600, immutable",
             });
-            expect(isCacheable(GET_REQUEST, response)).toBe(false);
+            expect(isCacheable(req, resp)).toBe(true);
         });
 
-        it("returns false if vary header contains '*'", () => {
-            const response = new Response(null, {
-                status: 200,
-                headers: { Vary: "Accept, *, Accept-Encoding" },
+        it("returns false for requests with multiple cache-control headers including no-store", () => {
+            const req = makeRequest(GET, { "Cache-Control": "max-age=0, no-cache, no-store" });
+            const resp = makeResponse();
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false for responses with multiple cache-control headers including private or no-store", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, {
+                "Cache-Control": "public, max-age=3600, no-store",
             });
-            expect(isCacheable(GET_REQUEST, response)).toBe(false);
-        });
-
-        it("returns true if status = 200 and vary header does not contain '*'", () => {
-            const response = new Response(null, {
-                status: 200,
-                headers: { Vary: "Accept-Encoding, Content-Type" },
-            });
-            expect(isCacheable(GET_REQUEST, response)).toBe(true);
-        });
-
-        it("returns true if status = 200 and vary header is missing", () => {
-            const response = new Response(null, { status: 200 });
-            expect(isCacheable(GET_REQUEST, response)).toBe(true);
-        });
-
-        it("returns true if status = 200 and vary header is empty", () => {
-            const response = new Response(null, {
-                status: 200,
-                headers: { Vary: "" },
-            });
-            expect(isCacheable(GET_REQUEST, response)).toBe(true);
+            expect(isCacheable(req, resp)).toBe(false);
         });
     });
 
