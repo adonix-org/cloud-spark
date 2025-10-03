@@ -16,7 +16,17 @@
 
 import { VALID_URL } from "@common";
 import { describe, expect, it } from "vitest";
-import { getRange } from "@src/middleware/cache/rules/utils";
+import {
+    found,
+    getCacheValidators,
+    getContentLength,
+    getEtag,
+    getRange,
+    hasCacheValidator,
+    isNotModified,
+    isPreconditionFailed,
+    normalizeEtag,
+} from "@src/middleware/cache/rules/utils";
 
 describe("rules/cache utils unit tests ", () => {
     describe("get range function", () => {
@@ -69,6 +79,161 @@ describe("rules/cache utils unit tests ", () => {
 
         it("rejects ranges with more than 12 digits", () => {
             expect(getRange(makeRequest("bytes=1234567890123-1234567890123"))).toBeUndefined();
+        });
+    });
+
+    describe("getEtag", () => {
+        const makeResponse = (etag?: string) =>
+            new Response("ok", {
+                headers: etag ? { ETag: etag } : {},
+            });
+
+        it("returns undefined if no ETag header", () => {
+            expect(getEtag(makeResponse())).toBeUndefined();
+        });
+
+        it("returns the ETag if present", () => {
+            expect(getEtag(makeResponse('"abc123"'))).toBe('"abc123"');
+        });
+    });
+
+    describe("normalizeEtag", () => {
+        it("removes weak prefix W/", () => {
+            expect(normalizeEtag('W/"123"')).toBe('"123"');
+        });
+
+        it("returns strong ETag unchanged", () => {
+            expect(normalizeEtag('"abc"')).toBe('"abc"');
+        });
+    });
+
+    describe("found", () => {
+        it("returns true if array contains search value", () => {
+            expect(found(["a", "b", "c"], "b")).toBe(true);
+        });
+
+        it("returns false if array does not contain search value", () => {
+            expect(found(["a", "b", "c"], "x")).toBe(false);
+        });
+
+        it("returns true if any search term matches", () => {
+            expect(found(["a", "b", "c"], "x", "b", "z")).toBe(true);
+        });
+    });
+
+    describe("isPreconditionFailed", () => {
+        it("returns false if ifMatch is empty", () => {
+            expect(isPreconditionFailed([], '"abc"')).toBe(false);
+        });
+
+        it("returns false if ETag matches one of the values", () => {
+            expect(isPreconditionFailed(['"abc"'], '"abc"')).toBe(false);
+        });
+
+        it("returns false if wildcard is present", () => {
+            expect(isPreconditionFailed(["*"], '"abc"')).toBe(false);
+        });
+
+        it("returns true if no match and no wildcard", () => {
+            expect(isPreconditionFailed(['"def"'], '"abc"')).toBe(true);
+        });
+    });
+
+    describe("isNotModified", () => {
+        it("returns false if ifNoneMatch is empty", () => {
+            expect(isNotModified([], '"abc"')).toBe(false);
+        });
+
+        it("returns true if value matches after normalization", () => {
+            expect(isNotModified(['"123"'], 'W/"123"')).toBe(true);
+        });
+
+        it("returns true if wildcard is present", () => {
+            expect(isNotModified(["*"], '"xyz"')).toBe(true);
+        });
+
+        it("returns false if no match and no wildcard", () => {
+            expect(isNotModified(['"def"'], '"abc"')).toBe(false);
+        });
+    });
+
+    describe("getCacheValidators", () => {
+        const makeHeaders = (init: Record<string, string>) => new Headers(init);
+
+        it("returns empty arrays and null if no headers", () => {
+            const v = getCacheValidators(makeHeaders({}));
+            expect(v.ifMatch).toEqual([]);
+            expect(v.ifNoneMatch).toEqual([]);
+            expect(v.ifModifiedSince).toBeNull();
+        });
+
+        it("filters out weak ETags from If-Match", () => {
+            const v = getCacheValidators(makeHeaders({ "If-Match": 'W/"123", "456"' }));
+            expect(v.ifMatch).toEqual(['"456"']);
+        });
+
+        it("normalizes all If-None-Match ETags", () => {
+            const v = getCacheValidators(makeHeaders({ "If-None-Match": 'W/"123", "456"' }));
+            expect(v.ifNoneMatch.sort()).toEqual(['"123"', '"456"'].sort());
+        });
+
+        it("returns If-Modified-Since as string if present", () => {
+            const v = getCacheValidators(
+                makeHeaders({ "If-Modified-Since": "Mon, 29 Sep 2025 10:00:00 GMT" }),
+            );
+            expect(v.ifModifiedSince).toBe("Mon, 29 Sep 2025 10:00:00 GMT");
+        });
+    });
+
+    describe("hasCacheValidator", () => {
+        const makeHeaders = (init: Record<string, string>) => new Headers(init);
+
+        it("returns false if no validators", () => {
+            expect(hasCacheValidator(makeHeaders({}))).toBe(false);
+        });
+
+        it("returns true if If-Match present", () => {
+            expect(hasCacheValidator(makeHeaders({ "If-Match": '"123"' }))).toBe(true);
+        });
+
+        it("returns true if If-None-Match present", () => {
+            expect(hasCacheValidator(makeHeaders({ "If-None-Match": '"123"' }))).toBe(true);
+        });
+
+        it("returns true if If-Modified-Since present", () => {
+            expect(
+                hasCacheValidator(makeHeaders({ "If-Modified-Since": "Mon, 29 Sep 2025" })),
+            ).toBe(true);
+        });
+    });
+
+    describe("getContentLength", () => {
+        const makeHeaders = (contentLength?: string) => {
+            const h = new Headers();
+            if (contentLength !== undefined) {
+                h.set("Content-Length", contentLength);
+            }
+            return h;
+        };
+
+        it("returns undefined for missing Content-Length header", () => {
+            expect(getContentLength(makeHeaders())).toBeUndefined();
+        });
+
+        it("returns undefined for empty Content-Length header", () => {
+            expect(getContentLength(makeHeaders(""))).toBeUndefined();
+        });
+
+        it("returns undefined for whitespace-only Content-Length header", () => {
+            expect(getContentLength(makeHeaders("   "))).toBeUndefined();
+        });
+
+        it("parses valid Content-Length", () => {
+            expect(getContentLength(makeHeaders("123"))).toBe(123);
+        });
+
+        it("returns undefined for non-numeric Content-Length", () => {
+            expect(getContentLength(makeHeaders("abc"))).toBeUndefined();
         });
     });
 });

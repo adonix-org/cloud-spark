@@ -27,6 +27,7 @@ import {
     MethodNotImplemented,
     ServiceUnavailable,
     UpgradeRequired,
+    PreconditionFailed,
 } from "@src/errors";
 import { ErrorJson } from "@src/interfaces/error";
 
@@ -53,6 +54,14 @@ describe("http error unit tests", () => {
             error: reason,
             details: "",
         });
+    });
+
+    it("should return empty body for precondition failed", async () => {
+        const err = new PreconditionFailed();
+        expect(err.status).toBe(StatusCodes.PRECONDITION_FAILED);
+        const r = await err.response();
+        expect(r.bodyUsed).toBe(false);
+        expect(await r.text()).toBe("");
     });
 
     it("should include 'allow' header if method not allowed", () => {
