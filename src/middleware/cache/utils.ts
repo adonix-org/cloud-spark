@@ -26,22 +26,38 @@ import { CacheControl, GET } from "../../constants";
 const VARY_CACHE_URL = "https://vary";
 
 /**
- * Determines whether a Response is cacheable.
- * - Request method must be GET
- * - Request cache cannot be `no-store`
- * - Status must be 200 OK
- * - Must not contain a Vary header with a wildcard (`*`)
+ * Determines whether a given Response is safe to cache.
  *
- * @param response The Response object to check.
- * @returns `true` if the response can be cached; `false` otherwise.
+ * Internal utility used by the caching pipeline to decide if a response
+ * should be stored in the cache. Returns `true` only if:
+ *   - The response status is 200 OK.
+ *   - The request method is GET.
+ *   - The response does not have a Vary header containing '*'.
+ *   - Neither the request nor the response has `Cache-Control: no-store`.
+ *   - The response is not `private`, and does not have `max-age=0`.
+ *   - The response does not include a Content-Range header (partial content).
+ *
+ * @param request - The incoming Request object.
+ * @param response - The Response object generated for the request.
+ * @returns `true` if the response can safely be cached; `false` otherwise.
+ * @throws Error If a 200 OK response contains a Content-Range header.
  */
 export function isCacheable(request: Request, response: Response): boolean {
-    if (request.method !== GET) return false;
     if (response.status !== StatusCodes.OK) return false;
+    if (request.method !== GET) return false;
     if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
 
-    const cache = getCacheControl(request.headers);
-    if (cache["no-store"]) return false;
+    const requestCacheControl = getCacheControl(request.headers);
+    if (requestCacheControl["no-store"]) return false;
+
+    const responseCacheControl = getCacheControl(response.headers);
+    if (responseCacheControl["no-store"]) return false;
+    if (responseCacheControl["max-age"] === 0) return false;
+    if (responseCacheControl["private"]) return false;
+
+    if (response.headers.has(HttpHeader.CONTENT_RANGE)) {
+        throw new Error("Found content-range header on 200 OK. Must use 206 Partial Content");
+    }
 
     return true;
 }
