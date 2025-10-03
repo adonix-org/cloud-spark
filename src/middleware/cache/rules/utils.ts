@@ -33,7 +33,7 @@ const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
  *          otherwise `undefined`.
  */
 export function getRange(request: Request): ByteRange | undefined {
-    const range = request.headers.get("range");
+    const range = request.headers.get(HttpHeader.RANGE);
     if (!range) return;
 
     const match = RANGE_REGEX.exec(range);
