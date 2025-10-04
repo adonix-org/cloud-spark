@@ -71,20 +71,6 @@ export function normalizeEtag(etag: string): string {
     return etag.startsWith(ETAG_WEAK_PREFIX) ? etag.slice(2) : etag;
 }
 
-/**
- * Extracts and normalizes HTTP cache validators from request headers.
- *
- * This function processes the three main cache-related headers:
- * - `If-Match`       → only strong ETags are retained, since weak ETags never satisfy strong comparison.
- * - `If-None-Match`  → all ETags are normalized (weak prefix removed) to allow weak comparison.
- * - `If-Modified-Since` → returned as-is (nullable string).
- *
- * @param headers - The request headers from which to extract cache validators.
- * @returns A `CacheValidators` object containing:
- *   - `ifMatch`: an array of strong ETags for If-Match precondition checks.
- *   - `ifNoneMatch`: an array of normalized ETags for If-None-Match checks.
- *   - `ifModifiedSince`: the raw If-Modified-Since header value, or `null` if not present.
- */
 export function getCacheValidators(headers: Headers): CacheValidators {
     return {
         ifMatch: getHeaderValues(headers, HttpHeader.IF_MATCH).filter(
@@ -92,6 +78,7 @@ export function getCacheValidators(headers: Headers): CacheValidators {
         ),
         ifNoneMatch: getHeaderValues(headers, HttpHeader.IF_NONE_MATCH).map(normalizeEtag),
         ifModifiedSince: headers.get(HttpHeader.IF_MODIFIED_SINCE),
+        ifUnmodifiedSince: headers.get(HttpHeader.IF_UNMODIFIED_SINCE),
     };
 }
 

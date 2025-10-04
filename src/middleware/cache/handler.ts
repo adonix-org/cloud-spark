@@ -21,7 +21,7 @@ import { CachePolicy } from "./policy";
 import { GetMethodRule } from "./rules/get";
 import { RangeRule } from "./rules/range";
 import { ETagRule } from "./rules/etag";
-import { LastModifiedRule } from "./rules/modified";
+import { ModifiedSinceRule, UnmodifiedSinceRule } from "./rules/modified";
 import { CacheControlRule } from "./rules/control";
 import { Middleware } from "../../interfaces/middleware";
 import { sortSearchParams } from "./keys";
@@ -87,7 +87,8 @@ class CacheHandler implements Middleware {
             .use(new GetMethodRule())
             .use(new CacheControlRule())
             .use(new RangeRule())
-            .use(new LastModifiedRule())
+            .use(new ModifiedSinceRule())
+            .use(new UnmodifiedSinceRule())
             .use(new ETagRule());
 
         const cacheResponse = await policy.execute(worker, () =>

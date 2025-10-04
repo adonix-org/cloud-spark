@@ -30,4 +30,5 @@ export interface CacheValidators {
     ifNoneMatch: string[];
     ifMatch: string[];
     ifModifiedSince: string | null;
+    ifUnmodifiedSince: string | null;
 }

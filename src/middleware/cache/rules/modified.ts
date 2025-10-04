@@ -16,12 +16,17 @@
 
 import { StatusCodes } from "../../../constants";
 import { HttpHeader } from "../../../constants/headers";
+import { PreconditionFailed } from "../../../errors";
 import { Worker } from "../../../interfaces/worker";
 import { NotModified } from "../../../responses";
-import { CacheRule } from "./interfaces";
+import { CacheRule, CacheValidators } from "./interfaces";
 import { getCacheValidators } from "./utils";
 
-export class LastModifiedRule implements CacheRule {
+abstract class SinceRule implements CacheRule {
+    abstract requestHeader: Extract<keyof CacheValidators, "ifModifiedSince" | "ifUnmodifiedSince">;
+    abstract compare(lastModified: number, headerTime: number): boolean;
+    abstract onFail(response: Response): Promise<Response>;
+
     public async apply(
         worker: Worker,
         next: () => Promise<Response | undefined>,
@@ -30,23 +35,32 @@ export class LastModifiedRule implements CacheRule {
         if (!response || response.status !== StatusCodes.OK) return response;
 
         const lastModified = response.headers.get(HttpHeader.LAST_MODIFIED);
-        const { ifModifiedSince } = getCacheValidators(worker.request.headers);
-
-        if (!lastModified || !ifModifiedSince) {
-            return response;
-        }
+        if (!lastModified) return response;
 
         const lastModifiedTime = Date.parse(lastModified);
-        const ifModifiedSinceTime = Date.parse(ifModifiedSince);
+        if (isNaN(lastModifiedTime)) return response;
 
-        if (isNaN(lastModifiedTime) || isNaN(ifModifiedSinceTime)) {
-            return response;
-        }
-
-        if (lastModifiedTime <= ifModifiedSinceTime) {
-            return new NotModified(response).response();
+        const validators = getCacheValidators(worker.request.headers);
+        const headerValue = validators[this.requestHeader];
+        if (headerValue) {
+            const headerTime = Date.parse(headerValue);
+            if (!isNaN(headerTime) && this.compare(lastModifiedTime, headerTime)) {
+                return this.onFail(response);
+            }
         }
 
         return response;
     }
+}
+
+export class UnmodifiedSinceRule extends SinceRule {
+    requestHeader: "ifUnmodifiedSince" = "ifUnmodifiedSince";
+    compare = (lastModified: number, headerTime: number) => lastModified > headerTime;
+    onFail = () => new PreconditionFailed().response();
+}
+
+export class ModifiedSinceRule extends SinceRule {
+    requestHeader: "ifModifiedSince" = "ifModifiedSince";
+    compare = (lastModified: number, headerTime: number) => lastModified <= headerTime;
+    onFail = (response: Response) => new NotModified(response).response();
 }

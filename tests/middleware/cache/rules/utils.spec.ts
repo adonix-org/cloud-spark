@@ -165,6 +165,7 @@ describe("cache rules utils unit tests ", () => {
             expect(v.ifMatch).toEqual([]);
             expect(v.ifNoneMatch).toEqual([]);
             expect(v.ifModifiedSince).toBeNull();
+            expect(v.ifUnmodifiedSince).toBeNull();
         });
 
         it("filters out weak etags from 'if-match'", () => {
@@ -182,6 +183,13 @@ describe("cache rules utils unit tests ", () => {
                 makeHeaders({ "If-Modified-Since": "Mon, 29 Sep 2025 10:00:00 GMT" }),
             );
             expect(v.ifModifiedSince).toBe("Mon, 29 Sep 2025 10:00:00 GMT");
+        });
+
+        it("returns 'if-unmodified-since' as string if present", () => {
+            const v = getCacheValidators(
+                makeHeaders({ "If-Unmodified-Since": "Sat, 04 Oct 2025 12:26:00 GMT" }),
+            );
+            expect(v.ifUnmodifiedSince).toBe("Sat, 04 Oct 2025 12:26:00 GMT");
         });
     });
 
