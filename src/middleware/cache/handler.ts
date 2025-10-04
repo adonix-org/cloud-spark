@@ -18,7 +18,7 @@ import { Worker } from "../../interfaces/worker";
 import { assertCacheInit, assertKey } from "../../guards/cache";
 import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { CachePolicy } from "./policy";
-import { GetMethodRule } from "./rules/get";
+import { MethodRule } from "./rules/method";
 import { RangeRule } from "./rules/range";
 import { ETagRule } from "./rules/etag";
 import { ModifiedSinceRule, UnmodifiedSinceRule } from "./rules/modified";
@@ -84,7 +84,7 @@ class CacheHandler implements Middleware {
         const cache = this.init.name ? await caches.open(this.init.name) : caches.default;
 
         const policy = new CachePolicy()
-            .use(new GetMethodRule())
+            .use(new MethodRule())
             .use(new CacheControlRule())
             .use(new RangeRule())
             .use(new ModifiedSinceRule())

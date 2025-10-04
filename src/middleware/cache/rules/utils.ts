@@ -17,7 +17,7 @@
 import { HttpHeader } from "../../../constants/headers";
 import { getHeaderValues } from "../../../utils/headers";
 import { ByteRange, CacheValidators } from "./interfaces";
-import { isNumber } from "../../../guards/basic";
+import { isNumber, isString } from "../../../guards/basic";
 
 const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
 const ETAG_WEAK_PREFIX = "W/";
@@ -66,6 +66,13 @@ export function found(array: string[], ...search: string[]): boolean {
     return array.some((value) => search.includes(value));
 }
 
+export function toDate(value: unknown): number | undefined {
+    if (!isString(value)) return;
+
+    const date = Date.parse(value);
+    return isNaN(date) ? undefined : date;
+}
+
 /** Normalizes an ETag for comparison */
 export function normalizeEtag(etag: string): string {
     return etag.startsWith(ETAG_WEAK_PREFIX) ? etag.slice(2) : etag;
@@ -92,8 +99,14 @@ export function getCacheValidators(headers: Headers): CacheValidators {
  * @returns `true` if any validator exists, otherwise `false`.
  */
 export function hasCacheValidator(headers: Headers): boolean {
-    const { ifNoneMatch, ifMatch, ifModifiedSince } = getCacheValidators(headers);
-    return ifNoneMatch.length > 0 || ifMatch.length > 0 || ifModifiedSince !== null;
+    const { ifNoneMatch, ifMatch, ifModifiedSince, ifUnmodifiedSince } =
+        getCacheValidators(headers);
+    return (
+        ifNoneMatch.length > 0 ||
+        ifMatch.length > 0 ||
+        ifModifiedSince !== null ||
+        ifUnmodifiedSince !== null
+    );
 }
 
 /**

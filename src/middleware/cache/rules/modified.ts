@@ -14,56 +14,51 @@
  * limitations under the License.
  */
 
-import { StatusCodes } from "../../../constants";
 import { HttpHeader } from "../../../constants/headers";
 import { PreconditionFailed } from "../../../errors";
-import { Worker } from "../../../interfaces/worker";
 import { NotModified } from "../../../responses";
-import { CacheRule } from "./interfaces";
-import { getCacheValidators } from "./utils";
+import { ValidationRule } from "./validation";
+import { CacheValidators } from "./interfaces";
+import { toDate } from "./utils";
 
-type SinceValidatorKeys = "ifModifiedSince" | "ifUnmodifiedSince";
+abstract class LastModifiedRule extends ValidationRule {
+    protected get key(): string {
+        return HttpHeader.LAST_MODIFIED;
+    }
 
-abstract class SinceRule implements CacheRule {
-    // Let the literal type be inferred from the value we assign in the subclass
-    abstract requestHeader: SinceValidatorKeys;
-    abstract compare(lastModified: number, headerTime: number): boolean;
-    abstract onFail(response: Response | undefined): Response | Promise<Response>;
+    protected override getHeader(response: Response): number | undefined {
+        return toDate(response.headers.get(this.key));
+    }
+}
 
-    public async apply(
-        worker: Worker,
-        next: () => Promise<Response | undefined>,
+export class UnmodifiedSinceRule extends LastModifiedRule {
+    protected async response(
+        response: Response,
+        lastModified: number,
+        validators: CacheValidators,
     ): Promise<Response | undefined> {
-        const response = await next();
-        if (!response || response.status !== StatusCodes.OK) return response;
+        const unmodifiedSince = toDate(validators.ifUnmodifiedSince);
+        if (unmodifiedSince === undefined) return response;
 
-        const lastModified = response.headers.get(HttpHeader.LAST_MODIFIED);
-        if (!lastModified) return response;
-
-        const lastModifiedTime = Date.parse(lastModified);
-        if (isNaN(lastModifiedTime)) return response;
-
-        const validators = getCacheValidators(worker.request.headers);
-        const headerValue = validators[this.requestHeader];
-        if (headerValue) {
-            const headerTime = Date.parse(headerValue);
-            if (!isNaN(headerTime) && this.compare(lastModifiedTime, headerTime)) {
-                return await this.onFail(response); // supports async onFail if needed
-            }
+        if (lastModified > unmodifiedSince) {
+            return new PreconditionFailed(`last-modified: ${lastModified}`).response();
         }
 
         return response;
     }
 }
 
-export class UnmodifiedSinceRule extends SinceRule {
-    requestHeader: "ifUnmodifiedSince" = "ifUnmodifiedSince";
-    compare = (lastModified: number, headerTime: number) => lastModified > headerTime;
-    onFail = () => new PreconditionFailed().response();
-}
+export class ModifiedSinceRule extends LastModifiedRule {
+    protected async response(
+        response: Response,
+        lastModified: number,
+        validators: CacheValidators,
+    ): Promise<Response | undefined> {
+        const modifiedSince = toDate(validators.ifModifiedSince);
+        if (modifiedSince === undefined) return response;
 
-export class ModifiedSinceRule extends SinceRule {
-    requestHeader: "ifModifiedSince" = "ifModifiedSince";
-    compare = (lastModified: number, headerTime: number) => lastModified <= headerTime;
-    onFail = (response: Response) => new NotModified(response).response();
+        if (lastModified <= modifiedSince) return new NotModified(response).response();
+
+        return response;
+    }
 }

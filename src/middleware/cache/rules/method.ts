@@ -19,7 +19,7 @@ import { Worker } from "../../../interfaces";
 import { Head } from "../../../responses";
 import { CacheRule } from "./interfaces";
 
-export class GetMethodRule implements CacheRule {
+export class MethodRule implements CacheRule {
     public async apply(
         worker: Worker,
         next: () => Promise<Response | undefined>,
