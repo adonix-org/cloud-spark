@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GET, HEAD, StatusCodes } from "../../../constants";
+import { GET, HEAD } from "../../../constants";
 import { Worker } from "../../../interfaces";
 import { Head } from "../../../responses";
 import { CacheRule } from "./interfaces";
@@ -30,7 +30,7 @@ export class GetMethodRule implements CacheRule {
 
         if (worker.request.method === HEAD) {
             const response = await next();
-            if (!response || response.status !== StatusCodes.OK) return response;
+            if (!response) return response;
 
             return new Head(response).response();
         }
