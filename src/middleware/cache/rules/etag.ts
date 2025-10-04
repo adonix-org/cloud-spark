@@ -33,10 +33,7 @@ export class IfMatchRule extends MatchRule {
         etag: string,
         validators: CacheValidators,
     ): Promise<Response | undefined> {
-        const ifMatch = validators.ifMatch;
-        if (ifMatch.length === 0) return response;
-
-        if (isPreconditionFailed(ifMatch, etag)) {
+        if (isPreconditionFailed(validators.ifMatch, etag)) {
             return new PreconditionFailed(`ETag: ${etag}`).response();
         }
 
