@@ -1,0 +1,943 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`library dts test > matches the index.d.ts snapshot 1`] = `
+"import { StatusCodes } from 'http-status-codes';
+export { StatusCodes } from 'http-status-codes';
+import CacheLib from 'cache-control-parser';
+import { MatchFunction } from 'path-to-regexp';
+
+/**
+ * @see {@link https://github.com/etienne-martin/cache-control-parser | cache-control-parser}
+ */
+type CacheControl = CacheLib.CacheControl;
+declare const CacheControl: {
+    parse: (cacheControlHeader: string) => CacheLib.CacheControl;
+    stringify: (cacheControl: CacheLib.CacheControl) => string;
+    /** A CacheControl directive that disables all caching. */
+    DISABLE: Readonly<{
+        "no-cache": true;
+        "no-store": true;
+        "must-revalidate": true;
+        "max-age": 0;
+    }>;
+};
+
+/**
+ * Standard HTTP request methods.
+ */
+declare enum Method {
+    GET = "GET",
+    PUT = "PUT",
+    HEAD = "HEAD",
+    POST = "POST",
+    PATCH = "PATCH",
+    DELETE = "DELETE",
+    OPTIONS = "OPTIONS"
+}
+/**
+ * Shorthand constants for each HTTP method.
+ *
+ * These are equivalent to the corresponding enum members in \`Method\`.
+ * For example, \`GET === Method.GET\`.
+ */
+declare const GET: Method;
+declare const PUT: Method;
+declare const HEAD: Method;
+declare const POST: Method;
+declare const PATCH: Method;
+declare const DELETE: Method;
+declare const OPTIONS: Method;
+
+/**
+ * Time constants in seconds. Month is approximated as 30 days.
+ */
+declare const Time: {
+    readonly Second: 1;
+    readonly Minute: 60;
+    readonly Hour: 3600;
+    readonly Day: 86400;
+    readonly Week: 604800;
+    readonly Month: 2592000;
+    readonly Year: 31536000;
+};
+
+/**
+ * Configuration options for the cache middleware.
+ */
+interface CacheInit {
+    /**
+     * Name of the cache storage to use.
+     * If omitted, the default cache is used.
+     */
+    name?: string;
+    /**
+     * Function that maps the incoming request
+     * to a cache key.
+     */
+    getKey: (request: Request) => URL;
+}
+
+/**
+ * User-supplied options for configuring\`CORS\`behavior.
+ *
+ * This is a partial form of {@link CorsConfig}, meaning you only need
+ * to provide the options you want to override. Any missing values will
+ * fall back to the {@link defaultCorsConfig}.
+ *
+ * Example:
+ * \`\`\`ts
+ * const cors: CorsInit = {
+ *   allowedOrigins: ["https://example.com"],
+ *   allowCredentials: true,
+ * };
+ * \`\`\`
+ */
+type CorsInit = Partial<CorsConfig>;
+/**
+ * Configuration options for Cross-Origin Resource Sharing \`CORS\`.
+ *
+ * Implementations of \`CORS\` middleware use this interface to determine
+ * how cross-origin requests are validated and which headers are sent
+ * in the response.
+ *
+ * @default
+ * \`\`\`ts
+ * {
+ *   allowedOrigins: ["*"],
+ *   allowedHeaders: ["Content-Type"],
+ *   exposedHeaders: [],
+ *   allowCredentials: false,
+ *   maxAge: 300, // 5 minutes
+ * }
+ * \`\`\`
+ */
+interface CorsConfig {
+    /**
+     * Origins allowed for \`CORS\` requests.
+     *
+     * Use \`["*"]\` to allow all origins, or provide a list of specific origins.
+     * Example: \`["https://example.com", "https://api.example.com"]\`
+     *
+     * @default ["*"]
+     */
+    allowedOrigins: string[];
+    /**
+     * HTTP headers allowed in \`CORS\` requests.
+     *
+     * Browsers always allow \`CORS\`-safelisted request headers* without preflight:
+     * - \`Accept\`
+     * - \`Accept-Language\`
+     * - \`Content-Language\`
+     * - \`Content-Type\` (but only if its value is \`application/x-www-form-urlencoded\`,
+     *   \`multipart/form-data\`, or \`text/plain\`)
+     *
+     * Because \`Content-Type\` is only partially safelisted, it is included in the
+     * default allowed headers.
+     *
+     * Add custom headers here (e.g., \`Authorization\`) if your clients send them.
+     *
+     * @default ["Content-Type"]
+     */
+    allowedHeaders: string[];
+    /**
+     * HTTP headers exposed to the client.
+     *
+     * By default, most headers are not accessible from client-side JavaScript.
+     * Use this option to explicitly allow certain response headers to be read.
+     *
+     * @default []
+     */
+    exposedHeaders: string[];
+    /**
+     * Whether the resource supports user credentials (cookies, HTTP authentication).
+     *
+     * If true, the Access-Control-Allow-Origin response header must not be "*".
+     *
+     * @default false
+     */
+    allowCredentials: boolean;
+    /**
+     * Maximum age (in seconds) that the results of a preflight request
+     * can be cached by the client.
+     *
+     * Increase for production use to reduce preflights, or lower for development
+     * if you frequently adjust \`CORS\` rules.
+     *
+     * @default 300 (5 minutes)
+     */
+    maxAge: number;
+}
+
+/**
+ * Structure for JSON-formatted error responses.
+ *
+ * This interface defines the standard shape of error responses returned
+ * when an operation fails. It ensures consistent error reporting and easy
+ * parsing by clients.
+ */
+interface ErrorJson {
+    /**
+     * HTTP status code associated with the error.
+     *
+     * Example: \`404\` for Not Found, \`500\` for Internal Server Error.
+     */
+    status: number;
+    /**
+     * Standard HTTP reason phrase corresponding to the status code.
+     *
+     * Example: \`"Not Found"\` for 404, \`"Internal Server Error"\` for 500.
+     */
+    error: string;
+    /**
+     * Optional detailed message describing the error.
+     *
+     * This can include additional context, debugging hints, or
+     * information useful to the client. Will be an empty string
+     * if no details are provided.
+     */
+    details: string;
+}
+
+/**
+ * Represents the constructor of a Worker subclass.
+ *
+ * @template T - The specific type of Worker being constructed. Defaults to \`Worker\`.
+ * @param req - The \`Request\` object to be handled by the worker instance.
+ * @param env - The environment bindings available to the worker.
+ * @param ctx - The \`ExecutionContext\` for the worker invocation.
+ * @returns An instance of the worker type \`T\`.
+ */
+type WorkerClass<T extends Worker = Worker> = new (request: Request, env: Env, ctx: ExecutionContext) => T;
+/**
+ * Defines the contract for a Cloudflare-compatible Worker.
+ *
+ * Implementations are responsible for handling incoming requests,
+ * providing access to the request, environment bindings, and
+ * execution context.
+ */
+interface Worker {
+    /**
+     * Processes the incoming {@link Request} and produces a {@link Response}.
+     *
+     * @returns A Promise that resolves to the HTTP {@link Response}.
+     */
+    fetch(): Promise<Response>;
+    /**
+     * The original {@link Request} being processed by this worker instance.
+     */
+    get request(): Request;
+    /**
+     * The environment bindings provided at runtime (e.g., KV, R2, secrets).
+     */
+    get env(): Env;
+    /**
+     * The {@link ExecutionContext} associated with the current request,
+     * used to manage background tasks and request lifecycle.
+     */
+    get ctx(): ExecutionContext;
+    /**
+     * Returns the list of HTTP methods that are allowed for this worker.
+     *
+     * @returns An array of allowed HTTP methods.
+     */
+    getAllowedMethods(): Method[];
+}
+
+/**
+ * Middleware interface for request/response processing.
+ *
+ * Middleware objects implement logic that can process requests and responses
+ * in a chainable manner. Each middleware receives a \`Worker\` object and a
+ * \`next\` function that invokes the next middleware in the chain.
+ *
+ * Implementers **must provide** the \`handle\` method.
+ *
+ * Example implementation:
+ * \`\`\`ts
+ * class LoggingMiddleware implements Middleware {
+ *     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+ *         console.log(\`Processing request: \${worker.request.url}\`);
+ *         const response = await next();
+ *         console.log(\`Response status: \${response.status}\`);
+ *         return response;
+ *     }
+ * }
+ * \`\`\`
+ */
+interface Middleware {
+    /**
+     * Process a request in the middleware chain.
+     *
+     * @param worker - The \`Worker\` instance representing the request context.
+     * @param next - Function to invoke the next middleware in the chain.
+     *               Must be called to continue the chain unless the middleware
+     *               terminates early (e.g., returns a response directly).
+     * @returns A \`Response\` object, either returned directly or from \`next()\`.
+     */
+    handle(worker: Worker, next: () => Promise<Response>): Promise<Response>;
+}
+
+/**
+ * Initialization options for an OctetStream response.
+ *
+ * @property size - Total size of the data (required).
+ * @property offset - Start of the byte range (optional, defaults to 0).
+ * @property length - Length of the byte range (optional, defaults to size).
+ */
+interface OctetStreamInit {
+    size: number;
+    offset?: number;
+    length?: number;
+}
+
+/**
+ * Parameters extracted from a matched route.
+ *
+ * The keys correspond to named parameters in the route's path pattern,
+ * and the values are the strings captured from the URL.
+ *
+ * @example
+ * // For a route defined as "/users/:userId/posts/:postId"
+ * // and a URL "/users/42/posts/7", the extracted PathParams would be:
+ * const params: PathParams = {
+ *   userId: "42",
+ *   postId: "7"
+ * };
+ */
+type PathParams = Record<string, string>;
+/**
+ * Type for a route callback function.
+ *
+ * Route callbacks are executed when a request matches a route.
+ *
+ * @param params - Named parameters extracted from the URL path.
+ * @returns A Response object or a Promise resolving to a Response.
+ */
+type RouteCallback = (params: PathParams) => Response | Promise<Response>;
+/**
+ * A handler for a route, which can be either:
+ *
+ * 1. \`RouteCallback\` function that receives the route
+ *    parameters and returns a \`Response\` or \`Promise<Response>\`.
+ * 2. \`WorkerClass\` (subclass of \`Worker\`) that will handle
+ *    the request by instantiating a new worker.
+ */
+type RouteHandler = RouteCallback | WorkerClass;
+/**
+ * Represents a single route.
+ *
+ * Contains all necessary information to match an incoming request and
+ * pass to the registered handler.
+ */
+interface Route {
+    /** HTTP method for the route (e.g., \`GET\`, \`POST\`, etc.) */
+    method: Method;
+    /** Path-to-regexp matcher function for this route */
+    matcher: MatchFunction<PathParams>;
+    /** Function or Worker to execute or instantiate when the route is matched */
+    handler: RouteHandler;
+}
+/**
+ * Result of a route match.
+ *
+ * Returned by routing logic when a request matches a route pattern.
+ */
+interface MatchedRoute {
+    /** The route that matched the request */
+    route: Route;
+    /** Parameters extracted from the URL path */
+    params: PathParams;
+}
+/**
+ * A route tuple. Each tuple consists of:
+ *
+ * 1. HTTP method (e.g., \`GET\`, \`POST\`)
+ * 2. Path string (supports parameters, e.g., "/users/:id")
+ * 3. Callback function or Worker class to handle matched requests
+ * */
+type RouteTuple = [Method, string, RouteHandler];
+/**
+ * Iterable of route tuples, used to populate a \`Routes\` object.
+ *
+ * Each item yields a {@link RouteTuple} representing a single route.
+ *
+ * @see {@link RouteTuple}
+ */
+type RouteTable = Iterable<RouteTuple>;
+
+/**
+ * Creates a Vary-aware caching middleware for Workers.
+ *
+ * This middleware:
+ * - Caches \`GET\` requests **only**.
+ * - Respects the \`Vary\` header of responses, ensuring that requests
+ *   with different headers (e.g., \`Origin\`) receive the correct cached response.
+ * - Skips caching for non-cacheable responses (e.g., error responses or
+ *   responses with \`Vary: *\`).
+ *
+ * @param init Optional cache configuration object.
+ * @param init.name Optional name of the cache to use. If omitted, the default cache is used.
+ * @param init.getKey Optional function to compute a custom cache key from a request.
+ *
+ * @returns A \`Middleware\` instance that can be used in a Worker pipeline.
+ */
+declare function cache(init?: Partial<CacheInit>): Middleware;
+
+/**
+ * Returns a new URL with its query parameters sorted into a stable order.
+ *
+ * This is used for cache key generation: URLs that differ only in the
+ * order of their query parameters will normalize to the same key.
+ *
+ * @param request - The incoming Request whose URL will be normalized.
+ * @returns A new URL with query parameters sorted by name.
+ */
+declare function sortSearchParams(request: Request): URL;
+/**
+ * Returns a new URL with all query parameters removed.
+ *
+ * This is used when query parameters are not relevant to cache lookups,
+ * ensuring that variants of the same resource share a single cache entry.
+ *
+ * @param request - The incoming Request whose URL will be normalized.
+ * @returns A new URL with no query parameters.
+ */
+declare function stripSearchParams(request: Request): URL;
+
+/**
+ * Creates a\`CORS\`middleware instance.
+ *
+ * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
+ * for incoming requests, including preflight \`OPTIONS\` requests, and adds
+ * appropriate headers to responses.
+ *
+ * @param init - Optional configuration for \`CORS\` behavior. See {@link CorsConfig}.
+ * @returns A {@link Middleware} instance that can be used in your middleware chain.
+ */
+declare function cors(init?: CorsInit): Middleware;
+
+declare function websocket(path?: string): Middleware;
+
+type WarnEvent = {
+    type: "warn";
+    message: string;
+};
+type CustomEventMap = {
+    warn: WarnEvent;
+    open: Event;
+};
+type EventOptions = {
+    once?: boolean;
+};
+type ExtendedEventMap = WebSocketEventMap & CustomEventMap;
+type ExtendedEventType = keyof ExtendedEventMap;
+type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
+type WSAttachment = object;
+interface WebSocketConnection<A extends WSAttachment> {
+    get readyState(): number;
+    isState(...states: number[]): boolean;
+    accept(): WebSocket;
+    acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket;
+    get attachment(): A;
+    attach(attachment: A): void;
+    send(message: string | ArrayBuffer): void;
+    close(code?: number, reason?: string): void;
+    addEventListener<K extends ExtendedEventType>(type: K, listener: ExtendedEventListener<K>, options?: EventOptions): void;
+    removeEventListener<K extends ExtendedEventType>(type: K, listener: ExtendedEventListener<K>): void;
+}
+
+declare class WebSocketSessions<A extends WSAttachment = WSAttachment> {
+    private readonly map;
+    create(attachment?: Partial<A>): WebSocketConnection<A>;
+    restore(ws: WebSocket): WebSocketConnection<A>;
+    restoreAll(all: WebSocket[]): ReadonlyArray<WebSocketConnection<A>>;
+    get(ws: WebSocket): WebSocketConnection<A> | undefined;
+    values(): IterableIterator<WebSocketConnection<A>>;
+    keys(): IterableIterator<WebSocket>;
+    close(ws: WebSocket, code?: number, reason?: string): boolean;
+    [Symbol.iterator](): IterableIterator<WebSocketConnection<A>>;
+    private register;
+    private unregister;
+}
+
+/**
+ * A type-safe Cloudflare Worker handler with a guaranteed \`fetch\` method.
+ */
+interface FetchHandler {
+    /**
+     * Handles an incoming request and produces a response.
+     *
+     * @param request - The incoming \`Request\` object.
+     * @param env - User-provided environment bindings.
+     * @param ctx - Execution context for background tasks (\`waitUntil\`).
+     * @returns A \`Promise\` that resolves to a \`Response\`.
+     */
+    fetch: (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
+}
+
+/**
+ * Provides the foundational structure for handling requests,
+ * environment bindings, and the worker execution context.
+ *
+ * Features:
+ * - Holds the current \`Request\` object (\`request\` getter).
+ * - Provides access to environment bindings (\`env\` getter).
+ * - Provides access to the worker execution context (\`ctx\` getter).
+ * - Subclasses must implement \`fetch()\` to process the request.
+ */
+declare abstract class BaseWorker implements Worker {
+    private readonly _request;
+    private readonly _env;
+    private readonly _ctx;
+    constructor(_request: Request, _env: Env, _ctx: ExecutionContext);
+    /** The Request object associated with this worker invocation */
+    get request(): Request;
+    /** Environment bindings (e.g., KV, secrets, or other globals) */
+    get env(): Env;
+    /** Execution context for background tasks or \`waitUntil\` */
+    get ctx(): ExecutionContext;
+    /**
+     * Dispatches the incoming request to the appropriate handler and produces a response.
+     *
+     * Subclasses must implement this method to define how the worker generates a \`Response\`
+     * for the current request. This is the central point where request processing occurs.
+     *
+     * @returns A Promise that resolves to the \`Response\` for the request.
+     */
+    protected abstract dispatch(): Promise<Response>;
+    /**
+     * Checks if the given HTTP method is allowed for this worker.
+     * @param method HTTP method string
+     * @returns true if the method is allowed
+     */
+    isAllowed(method: string): boolean;
+    abstract getAllowedMethods(): Method[];
+    /**
+     * Creates a new instance of the current Worker subclass.
+     *
+     * @param request - The {@link Request} to pass to the new worker instance.
+     * @returns A new worker instance of the same subclass as \`this\`.
+     */
+    protected create(request: Request): this;
+    /**
+     * Process the {@link Request} and produce a {@link Response}.
+     *
+     * @returns A {@link Response} promise for the {@link Request}.
+     */
+    abstract fetch(): Promise<Response>;
+    /**
+     * Simplify and standardize {@link Response} creation by extending {@link WorkerResponse}
+     * or any of its subclasses and passing to this method.
+     *
+     * Or directly use any of the built-in classes.
+     *
+     * \`\`\`ts
+     * this.response(TextResponse, "Hello World!")
+     * \`\`\`
+     *
+     * @param ResponseClass The response class to instantiate
+     * @param args Additional constructor arguments
+     * @returns A Promise resolving to the {@link Response} object
+     */
+    protected response<Ctor extends new (...args: any[]) => {
+        response(): Promise<Response>;
+    }>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor>): Promise<Response>;
+    /**
+     * **Ignite** your \`Worker\` implementation into a Cloudflare handler.
+     *
+     * @returns A \`FetchHandler\` that launches a new worker instance for each request.
+     *
+     * \`\`\`ts
+     * export default MyWorker.ignite();
+     * \`\`\`
+     */
+    static ignite<W extends Worker>(this: WorkerClass<W>): FetchHandler;
+}
+
+/** Base worker for handling middleware chains. */
+declare abstract class MiddlewareWorker extends BaseWorker {
+    /** Middleware handlers registered for this worker. */
+    protected readonly middlewares: Middleware[];
+    /**
+     * Hook for subclasses to perform any initialization.
+     */
+    protected init(): void | Promise<void>;
+    /**
+     * Add one or more middleware instances to this worker.
+     *
+     * The middleware will run for every request handled by this worker,
+     * in the order they are added.
+     *
+     * @param middleware - One or more middleware instances to run.
+     * @returns \`this\` to allow chaining multiple \`.use()\` calls.
+     */
+    use(...middleware: Middleware[]): this;
+    /**
+     * Executes the middleware chain and dispatches the request.
+     *
+     * @returns The Response produced by the last middleware or \`dispatch()\`.
+     */
+    fetch(): Promise<Response>;
+}
+
+/**
+ * Basic worker class providing HTTP method dispatching and error handling.
+ */
+declare abstract class BasicWorker extends MiddlewareWorker {
+    /**
+     * Entry point to handle a fetch request.
+     */
+    fetch(): Promise<Response>;
+    /**
+     * Dispatches the request to the method-specific handler.
+     */
+    protected dispatch(): Promise<Response>;
+    /** Override and implement this method for \`GET\` requests. */
+    protected get(): Promise<Response>;
+    /** Override and implement this method for \`PUT\` requests. */
+    protected put(): Promise<Response>;
+    /** Override and implement this method for \`POST\` requests. */
+    protected post(): Promise<Response>;
+    /** Override and implement this method for \`PATCH\` requests. */
+    protected patch(): Promise<Response>;
+    /** Override and implement this method for \`DELETE\` requests. */
+    protected delete(): Promise<Response>;
+    /** Returns a default empty \`OPTIONS\` response. */
+    protected options(): Promise<Response>;
+    /**
+     * Default handler for \`HEAD\` requests.
+     * Performs a \`GET\` request and removes the body for \`HEAD\` semantics.
+     *
+     * Usually does not need to be overridden as this behavior covers
+     * standard \`HEAD\` requirements.
+     */
+    protected head(): Promise<Response>;
+    /**
+     * The DEFAULT allowed HTTP methods for subclasses are \`GET\`, \`HEAD\`, \`OPTIONS\`.
+     *
+     * These defaults were selected for getting started quickly and can be
+     * overridden for each worker subclass.
+     */
+    getAllowedMethods(): Method[];
+}
+
+/**
+ * Base worker supporting route-based request handling.
+ *
+ * Subclass \`RouteWorker\` to define a worker with multiple route handlers.
+ *
+ * Routes can be registered individually via \`route()\` or in bulk via \`routes()\`.
+ */
+declare abstract class RouteWorker extends BasicWorker {
+    /** Internal table of registered routes. */
+    private readonly _routes;
+    /**
+     * Registers a single new route in the worker.
+     *
+     * When a request matches the specified method and path, the provided handler
+     * will be executed. The handler can be either:
+     * - A function that receives URL parameters, or
+     * - A Worker subclass that will handle the request.
+     *
+     * @param method  - HTTP method for the route (\`GET\`, \`POST\`, etc.).
+     * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
+     * @param handler - The function or Worker class to run when the route matches.
+     * @returns The current worker instance, allowing method chaining.
+     */
+    protected route(method: Method, path: string, handler: RouteHandler): this;
+    /**
+     * Registers multiple routes at once in the worker.
+     *
+     * Each route should be a tuple \`[method, path, handler]\` where:
+     * - \`method\`  - HTTP method for the route (\`GET\`, \`POST\`, etc.).
+     * - \`path\`    - URL path pattern (Express-style, e.g., "/users/:id").
+     * - \`handler\` - A function that receives URL parameters or a Worker subclass
+     *               that will handle the request.
+     *
+     * @param routes - An iterable of routes to register. Each item is a \`[method, path, handler]\` tuple.
+     * @returns The current worker instance, allowing method chaining.
+     */
+    protected routes(routes: RouteTable): this;
+    /**
+     * Matches the incoming request against registered routes and dispatches it.
+     *
+     * If a route is found:
+     * - If the handler is a Worker class, a new instance is created and its \`fetch()\` is called.
+     * - If the handler is a callback function, it is invoked with the extracted path parameters.
+     *
+     * If no route matches, the request is passed to the parent \`dispatch()\` handler.
+     *
+     * @returns A \`Promise<Response>\` from the matched handler or parent dispatch.
+     */
+    protected dispatch(): Promise<Response>;
+    /**
+     * Runtime type guard to check if a given handler is a Worker class.
+     *
+     * A Worker class is any class that extends \`BaseWorker\`.
+     *
+     * @param handler - The constructor function to test.
+     * @returns \`true\` if \`handler\` is a subclass of \`BaseWorker\` at runtime, \`false\` otherwise.
+     */
+    private static isWorkerClass;
+    protected get(): Promise<Response>;
+    protected put(): Promise<Response>;
+    protected post(): Promise<Response>;
+    protected patch(): Promise<Response>;
+    protected delete(): Promise<Response>;
+}
+
+/**
+ * Base class for building HTTP responses.
+ * Manages headers, status, and media type.
+ */
+declare abstract class BaseResponse {
+    /** HTTP headers for the response. */
+    headers: Headers;
+    /** HTTP status code (default 200 OK). */
+    status: StatusCodes;
+    /** Optional status text. Defaults to standard reason phrase. */
+    statusText?: string;
+    /** Enable websocket responses. */
+    webSocket: WebSocket | null;
+    /** Default media type of the response body. */
+    mediaType: string;
+    /** Converts current state to ResponseInit for constructing a Response. */
+    protected get responseInit(): ResponseInit;
+    /** Sets a header, overwriting any existing value. */
+    setHeader(key: string, value: string | string[]): void;
+    /** Merges a header with existing values (does not overwrite). */
+    mergeHeader(key: string, value: string | string[]): void;
+    /** Adds a Content-Type header if not already existing (does not overwrite). */
+    addContentType(): void;
+    /**
+     * Removes headers that are disallowed or discouraged based on the current
+     * status code.
+     *
+     * - **204 No Content:** strips headers that "should not" be sent
+     *   (\`Content-Length\`, \`Content-Range\`), per the HTTP spec.
+     * - **304 Not Modified:** strips headers that "must not" be sent
+     *   (\`Content-Type\`, \`Content-Length\`, \`Content-Range\`, etc.), per the HTTP spec.
+     *
+     * This ensures that responses remain compliant with HTTP/1.1 standards while preserving
+     * custom headers that are allowed.
+     */
+    filterHeaders(): void;
+}
+/**
+ * Base response class that adds caching headers.
+ */
+declare abstract class CacheResponse extends BaseResponse {
+    cache?: CacheControl | undefined;
+    constructor(cache?: CacheControl | undefined);
+    /** Adds Cache-Control header if caching is configured. */
+    protected addCacheHeader(): void;
+}
+/**
+ * Core response. Combines caching, and content type headers.
+ */
+declare abstract class WorkerResponse extends CacheResponse {
+    private readonly body;
+    constructor(body?: BodyInit | null, cache?: CacheControl);
+    /** Builds the Response with body, headers, and status. */
+    response(): Promise<Response>;
+}
+/**
+ * Wraps an existing Response and clones its body, headers, and status.
+ */
+declare class ClonedResponse extends WorkerResponse {
+    constructor(response: Response, cache?: CacheControl);
+}
+/**
+ * Copies the response, but with null body and status 304 Not Modified.
+ */
+declare class NotModified extends ClonedResponse {
+    constructor(response: Response);
+}
+/**
+ * Represents a successful response with customizable body, cache and status.
+ */
+declare class SuccessResponse extends WorkerResponse {
+    constructor(body?: BodyInit | null, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * JSON response. Automatically sets Content-Type to application/json.
+ */
+declare class JsonResponse extends SuccessResponse {
+    constructor(json?: unknown, cache?: CacheControl, status?: StatusCodes);
+}
+/**
+ * HTML response. Automatically sets Content-Type to text/html.
+ */
+declare class HtmlResponse extends SuccessResponse {
+    constructor(body: string, cache?: CacheControl, status?: StatusCodes, charset?: string);
+}
+/**
+ * Plain text response. Automatically sets Content-Type to text/plain.
+ */
+declare class TextResponse extends SuccessResponse {
+    constructor(body: string, cache?: CacheControl, status?: StatusCodes, charset?: string);
+}
+/**
+ * Represents an HTTP response for serving binary data as \`application/octet-stream\`.
+ *
+ * This class wraps a \`ReadableStream\` and sets all necessary headers for both
+ * full and partial content responses, handling range requests in a hybrid way
+ * to maximize browser and CDN caching.
+ *
+ * Key behaviors:
+ * - \`Content-Type\` is set to \`application/octet-stream\`.
+ * - \`Accept-Ranges: bytes\` is always included.
+ * - \`Content-Length\` is always set to the validated length of the response body.
+ * - If the request is a true partial range (offset > 0 or length < size), the response
+ *   will be \`206 Partial Content\` with the appropriate \`Content-Range\` header.
+ * - If the requested range covers the entire file (even if a Range header is present),
+ *   the response will return \`200 OK\` to enable browser and edge caching.
+ * - Zero-length streams (\`size = 0\`) are never treated as partial.
+ * - Special case: a requested range of \`0-0\` on a non-empty file is normalized to 1 byte.
+ */
+declare class OctetStream extends WorkerResponse {
+    constructor(stream: ReadableStream, init: OctetStreamInit, cache?: CacheControl);
+    /**
+     * Normalizes a partially-specified \`OctetStreamInit\` into a fully-specified object.
+     *
+     * Ensures that all required fields (\`size\`, \`offset\`, \`length\`) are defined:
+     * - \`offset\` defaults to 0 if not provided.
+     * - \`length\` defaults to \`size - offset\` if not provided.
+     * - Special case: if \`offset\` and \`length\` are both 0 but \`size > 0\`, \`length\` is set to 1
+     *   to avoid zero-length partial streams.
+     *
+     * @param init - The initial \`OctetStreamInit\` object, possibly with missing \`offset\` or \`length\`.
+     * @returns A fully-specified \`OctetStreamInit\` object with \`size\`, \`offset\`, and \`length\` guaranteed.
+     */
+    private static normalizeInit;
+    /**
+     * Determines whether the given \`OctetStreamInit\` represents a partial range.
+     *
+     * Partial ranges are defined as any range that does **not** cover the entire file:
+     * - If \`size === 0\`, the stream is never partial.
+     * - If \`offset === 0\` and \`length === size\`, the stream is treated as a full file (not partial),
+     *   even if a Range header is present. This enables browser and CDN caching.
+     * - All other cases are considered partial, and will result in a \`206 Partial Content\` response.
+     *
+     * @param init - A fully-normalized \`OctetStreamInit\` object.
+     * @returns \`true\` if the stream represents a partial range; \`false\` if it represents the full file.
+     */
+    private static isPartial;
+}
+/**
+ * A streaming response for Cloudflare R2 objects.
+ *
+ * **Partial content support:** To enable HTTP 206 streaming, you must provide
+ * request headers containing the \`Range\` header when calling the R2 bucket's \`get()\` method.
+ *
+ * Example:
+ * \`\`\`ts
+ * const stream = await this.env.R2_BUCKET.get("key", { range: this.request.headers });
+ * \`\`\`
+ *
+ * @param source - The R2 object to stream.
+ * @param cache - Optional caching override.
+ */
+declare class R2ObjectStream extends OctetStream {
+    constructor(source: R2ObjectBody, cache?: CacheControl);
+    /**
+     * Computes an \`OctetStreamInit\` object from a given R2 range.
+     *
+     * This function normalizes a Cloudflare R2 \`R2Range\` into the shape expected
+     * by \`OctetStream\`. It handles the following cases:
+     *
+     * - No range provided → returns \`{ size }\` (full content).
+     * - \`suffix\` range → calculates the offset and length from the end of the file.
+     * - Explicit \`offset\` and/or \`length\` → passed through as-is.
+     *
+     * @param size - The total size of the file/object.
+     * @param range - Optional range to extract (from R2). Can be:
+     *   - \`{ offset: number; length?: number }\`
+     *   - \`{ offset?: number; length: number }\`
+     *   - \`{ suffix: number }\`
+     * @returns An \`OctetStreamInit\` object suitable for \`OctetStream\`.
+     */
+    private static computeRange;
+}
+/**
+ * Response for WebSocket upgrade requests.
+ * Automatically sets status to 101 and attaches the client socket.
+ */
+declare class WebSocketUpgrade extends WorkerResponse {
+    constructor(client: WebSocket);
+}
+/**
+ * Response for \`HEAD\` requests. Copy headers and status from a \`GET\` response
+ * without the body.
+ */
+declare class Head extends WorkerResponse {
+    constructor(get: Response);
+}
+/**
+ * Response for \`OPTIONS\` preflight requests.
+ */
+declare class Options extends WorkerResponse {
+    constructor();
+}
+
+/**
+ * Generic HTTP error response.
+ * Sends a JSON body with status, error message, and details.
+ */
+declare class HttpError extends JsonResponse {
+    protected readonly details?: string | undefined;
+    /**
+     * @param worker The worker handling the request.
+     * @param status HTTP status code.
+     * @param details Optional detailed error message.
+     */
+    constructor(status: StatusCodes, details?: string | undefined);
+}
+/** 400 Bad Request error response. */
+declare class BadRequest extends HttpError {
+    constructor(details?: string);
+}
+/** 401 Unauthorized error response. */
+declare class Unauthorized extends HttpError {
+    constructor(details?: string);
+}
+/** 403 Forbidden error response. */
+declare class Forbidden extends HttpError {
+    constructor(details?: string);
+}
+/** 404 Not Found error response. */
+declare class NotFound extends HttpError {
+    constructor(details?: string);
+}
+/** 405 Method Not Allowed error response. */
+declare class MethodNotAllowed extends HttpError {
+    constructor(worker: Worker);
+}
+/** 412 Precondition Failed error response */
+declare class PreconditionFailed extends HttpError {
+    constructor(details?: string);
+}
+/** 426 Upgrade Required error response. */
+declare class UpgradeRequired extends HttpError {
+    constructor();
+}
+/** 500 Internal Server Error response. */
+declare class InternalServerError extends HttpError {
+    constructor(details?: string);
+}
+/** 501 Not Implemented error response. */
+declare class NotImplemented extends HttpError {
+    constructor(details?: string);
+}
+/** 501 Method Not Implemented error response for unsupported HTTP methods. */
+declare class MethodNotImplemented extends NotImplemented {
+    constructor(worker: Worker);
+}
+/** 503 Service Unavailable error response. */
+declare class ServiceUnavailable extends HttpError {
+    constructor(details?: string);
+}
+
+export { BadRequest, BasicWorker, CacheControl, type CacheInit, ClonedResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, type Middleware, NotFound, NotImplemented, NotModified, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, PreconditionFailed, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, cache, cors, sortSearchParams, stripSearchParams, websocket };
+"
+`;
