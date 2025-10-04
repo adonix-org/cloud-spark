@@ -87,8 +87,8 @@ export class MethodNotAllowed extends HttpError {
 
 /** 412 Precondition Failed error response */
 export class PreconditionFailed extends HttpError {
-    constructor() {
-        super(StatusCodes.PRECONDITION_FAILED);
+    constructor(details?: string) {
+        super(StatusCodes.PRECONDITION_FAILED, details);
     }
 }
 
