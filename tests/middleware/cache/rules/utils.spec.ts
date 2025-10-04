@@ -82,7 +82,7 @@ describe("cache rules utils unit tests ", () => {
         });
     });
 
-    describe("toDate", () => {
+    describe("to date function", () => {
         it("returns undefined for non-string values", () => {
             expect(toDate(undefined)).toBeUndefined();
             expect(toDate(null)).toBeUndefined();
