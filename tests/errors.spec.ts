@@ -46,24 +46,13 @@ describe("http error unit tests", () => {
         [InternalServerError, StatusCodes.INTERNAL_SERVER_ERROR, "Internal Server Error"],
         [NotImplemented, StatusCodes.NOT_IMPLEMENTED, "Not Implemented"],
         [ServiceUnavailable, StatusCodes.SERVICE_UNAVAILABLE, "Service Unavailable"],
+        [PreconditionFailed, StatusCodes.PRECONDITION_FAILED, "Precondition Failed"],
     ])("should return correct JSON for $2", (Ctor, status, reason) => {
         const err = new Ctor() as any;
         expect(err.status).toBe(status);
         expect(JSON.parse(err.body)).toEqual<ErrorJson>({
             status,
             error: reason,
-            details: "",
-        });
-    });
-
-    it("should return empty body for precondition failed", async () => {
-        const err = new PreconditionFailed();
-        expect(err.status).toBe(StatusCodes.PRECONDITION_FAILED);
-        const r = await err.response();
-        expect(r.bodyUsed).toBe(false);
-        expect(await r.json()).toStrictEqual({
-            status: 412,
-            error: "Precondition Failed",
             details: "",
         });
     });
