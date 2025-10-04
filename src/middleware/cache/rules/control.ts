@@ -22,7 +22,7 @@ import { hasCacheValidator } from "./utils";
 export class CacheControlRule implements CacheRule {
     public async apply(
         worker: Worker,
-        next: () => Promise<Response>,
+        next: () => Promise<Response | undefined>,
     ): Promise<Response | undefined> {
         const cache = getCacheControl(worker.request.headers);
 

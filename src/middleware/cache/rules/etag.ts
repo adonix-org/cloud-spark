@@ -30,7 +30,7 @@ import { StatusCodes } from "../../../constants";
 export class ETagRule implements CacheRule {
     public async apply(
         worker: Worker,
-        next: () => Promise<Response>,
+        next: () => Promise<Response | undefined>,
     ): Promise<Response | undefined> {
         const response = await next();
         if (!response || response.status !== StatusCodes.OK) return response;

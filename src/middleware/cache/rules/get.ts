@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GET, HEAD } from "../../../constants";
+import { GET, HEAD, StatusCodes } from "../../../constants";
 import { Worker } from "../../../interfaces";
 import { Head } from "../../../responses";
 import { CacheRule } from "./interfaces";
@@ -22,14 +22,17 @@ import { CacheRule } from "./interfaces";
 export class GetMethodRule implements CacheRule {
     public async apply(
         worker: Worker,
-        next: () => Promise<Response>,
+        next: () => Promise<Response | undefined>,
     ): Promise<Response | undefined> {
         if (worker.request.method === GET) {
             return next();
         }
 
         if (worker.request.method === HEAD) {
-            return new Head(await next()).response();
+            const response = await next();
+            if (!response || response.status !== StatusCodes.OK) return response;
+
+            return new Head(response).response();
         }
 
         return undefined;
