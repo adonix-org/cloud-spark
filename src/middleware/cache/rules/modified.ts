@@ -22,9 +22,23 @@ import { CacheValidators } from "./interfaces";
 import { toDate } from "./utils";
 
 abstract class LastModifiedRule extends ValidationRule<number> {
-
     protected override getHeader(response: Response): number | undefined {
         return toDate(response.headers.get(HttpHeader.LAST_MODIFIED));
+    }
+}
+
+export class ModifiedSinceRule extends LastModifiedRule {
+    protected async response(
+        response: Response,
+        lastModified: number,
+        validators: CacheValidators,
+    ): Promise<Response | undefined> {
+        const modifiedSince = toDate(validators.ifModifiedSince);
+        if (modifiedSince === undefined) return response;
+
+        if (lastModified <= modifiedSince) return new NotModified(response).response();
+
+        return response;
     }
 }
 
@@ -40,21 +54,6 @@ export class UnmodifiedSinceRule extends LastModifiedRule {
         if (lastModified > unmodifiedSince) {
             return new PreconditionFailed(`last-modified: ${lastModified}`).response();
         }
-
-        return response;
-    }
-}
-
-export class ModifiedSinceRule extends LastModifiedRule {
-    protected async response(
-        response: Response,
-        lastModified: number,
-        validators: CacheValidators,
-    ): Promise<Response | undefined> {
-        const modifiedSince = toDate(validators.ifModifiedSince);
-        if (modifiedSince === undefined) return response;
-
-        if (lastModified <= modifiedSince) return new NotModified(response).response();
 
         return response;
     }
