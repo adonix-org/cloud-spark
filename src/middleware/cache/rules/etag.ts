@@ -21,9 +21,9 @@ import { isPreconditionFailed, isNotModified } from "./utils";
 import { ValidationRule } from "./validation";
 import { HttpHeader } from "../../../constants/headers";
 
-abstract class MatchRule extends ValidationRule {
-    protected get key(): string {
-        return HttpHeader.ETAG;
+abstract class MatchRule extends ValidationRule<string> {
+    protected override getHeader(response: Response): string | undefined {
+        return response.headers.get(HttpHeader.ETAG) ?? undefined;
     }
 }
 

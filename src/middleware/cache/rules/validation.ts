@@ -19,16 +19,12 @@ import { Worker } from "../../../interfaces";
 import { CacheRule, CacheValidators } from "./interfaces";
 import { getCacheValidators } from "./utils";
 
-export abstract class ValidationRule implements CacheRule {
-    protected abstract get key(): string;
-
-    protected getHeader(response: Response): string | number | undefined {
-        return response.headers.get(this.key) ?? undefined;
-    }
+export abstract class ValidationRule<T> implements CacheRule {
+    protected abstract getHeader(response: Response): T | undefined;
 
     protected abstract response(
         response: Response,
-        header: string | number,
+        header: T,
         validators: CacheValidators,
     ): Promise<Response | undefined>;
 

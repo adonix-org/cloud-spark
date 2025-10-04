@@ -21,13 +21,10 @@ import { ValidationRule } from "./validation";
 import { CacheValidators } from "./interfaces";
 import { toDate } from "./utils";
 
-abstract class LastModifiedRule extends ValidationRule {
-    protected get key(): string {
-        return HttpHeader.LAST_MODIFIED;
-    }
+abstract class LastModifiedRule extends ValidationRule<number> {
 
     protected override getHeader(response: Response): number | undefined {
-        return toDate(response.headers.get(this.key));
+        return toDate(response.headers.get(HttpHeader.LAST_MODIFIED));
     }
 }
 
