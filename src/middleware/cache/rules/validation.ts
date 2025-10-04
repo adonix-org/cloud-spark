@@ -36,7 +36,7 @@ export abstract class ValidationRule<H> implements CacheRule {
         if (!response || response.status !== StatusCodes.OK) return response;
 
         const header = this.getHeader(response);
-        if (!header) return response;
+        if (header === undefined) return response;
 
         const validators = getCacheValidators(worker.request.headers);
         return this.response(response, header, validators);
