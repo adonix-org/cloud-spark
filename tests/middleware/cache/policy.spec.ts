@@ -19,7 +19,7 @@ import { Worker } from "@src/interfaces/worker";
 import { CachePolicy } from "@src/middleware/cache/policy";
 import { StatusCodes } from "@src/constants";
 
-describe("cache policy", () => {
+describe("cache policy unit tests", () => {
     let worker: Worker;
     let policy: CachePolicy;
     let cachedResponse: Response;
@@ -82,7 +82,6 @@ describe("cache policy", () => {
             {
                 apply: async (_w, _next) => {
                     order.push("pre-second");
-                    // short-circuit with 304 Not Modified
                     return new Response(null, { status: StatusCodes.NOT_MODIFIED });
                 },
             },
@@ -96,10 +95,10 @@ describe("cache policy", () => {
             },
         );
 
-        const worker = {} as Worker; // mock worker
+        const worker = {} as Worker;
         const result = await policy.execute(worker, async () => cachedResponse);
 
-        expect(order).toEqual(["pre-first", "pre-second", "post-first"]); // execution stops at second rule
+        expect(order).toEqual(["pre-first", "pre-second", "post-first"]);
         expect(result?.status).toBe(StatusCodes.NOT_MODIFIED);
     });
 });
