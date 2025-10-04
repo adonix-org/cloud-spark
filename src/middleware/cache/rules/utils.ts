@@ -47,13 +47,6 @@ export function getRange(request: Request): ByteRange | undefined {
     return end !== undefined ? { start, end } : { start };
 }
 
-export function getEtag(response: Response): string | undefined {
-    const etag = response.headers.get(HttpHeader.ETAG);
-    if (etag) return etag;
-
-    return undefined;
-}
-
 export function isPreconditionFailed(ifMatch: string[], etag: string): boolean {
     return ifMatch.length > 0 && !found(ifMatch, etag, WILDCARD_ETAG);
 }

@@ -20,7 +20,6 @@ import {
     found,
     getCacheValidators,
     getContentLength,
-    getEtag,
     getRange,
     hasCacheValidator,
     isNotModified,
@@ -79,21 +78,6 @@ describe("cache rules utils unit tests ", () => {
 
         it("rejects ranges with more than 12 digits", () => {
             expect(getRange(makeRequest("bytes=1234567890123-1234567890123"))).toBeUndefined();
-        });
-    });
-
-    describe("get etag function", () => {
-        const makeResponse = (etag?: string) =>
-            new Response("ok", {
-                headers: etag ? { ETag: etag } : {},
-            });
-
-        it("returns undefined if no etag header", () => {
-            expect(getEtag(makeResponse())).toBeUndefined();
-        });
-
-        it("returns the etag if present", () => {
-            expect(getEtag(makeResponse('"abc123"'))).toBe('"abc123"');
         });
     });
 

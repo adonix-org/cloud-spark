@@ -20,7 +20,7 @@ import { filterVaryHeader, getVaryHeader, getVaryKey, isCacheable } from "./util
 import { CachePolicy } from "./policy";
 import { MethodRule } from "./rules/method";
 import { RangeRule } from "./rules/range";
-import { ETagRule } from "./rules/etag";
+import { IfMatchRule, IfNoneMatchRule } from "./rules/etag";
 import { ModifiedSinceRule, UnmodifiedSinceRule } from "./rules/modified";
 import { CacheControlRule } from "./rules/control";
 import { Middleware } from "../../interfaces/middleware";
@@ -88,8 +88,9 @@ class CacheHandler implements Middleware {
             .use(new CacheControlRule())
             .use(new RangeRule())
             .use(new ModifiedSinceRule())
+            .use(new IfNoneMatchRule())
             .use(new UnmodifiedSinceRule())
-            .use(new ETagRule());
+            .use(new IfMatchRule());
 
         const cacheResponse = await policy.execute(worker, () =>
             this.getCached(cache, worker.request),

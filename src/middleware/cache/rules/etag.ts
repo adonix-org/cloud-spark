@@ -14,45 +14,49 @@
  * limitations under the License.
  */
 
-import { Worker } from "../../../interfaces";
 import { PreconditionFailed } from "../../../errors";
 import { NotModified } from "../../../responses";
-import { CacheRule } from "./interfaces";
-import { getCacheValidators, getEtag, isPreconditionFailed, isNotModified } from "./utils";
-import { StatusCodes } from "../../../constants";
+import { CacheValidators } from "./interfaces";
+import { isPreconditionFailed, isNotModified } from "./utils";
+import { ValidationRule } from "./validation";
+import { HttpHeader } from "../../../constants/headers";
 
-/**
- * Cache rule that handles conditional GETs based on ETag headers.
- * - Applies If-Match (strong comparison) and If-None-Match (weak comparison) rules.
- * - Returns `undefined` if the cached response cannot be used.
- * - Returns `NotModified` or `PreconditionFailed` responses per HTTP spec.
- */
-export class ETagRule implements CacheRule {
-    public async apply(
-        worker: Worker,
-        next: () => Promise<Response | undefined>,
+abstract class MatchRule extends ValidationRule {
+    protected get key(): string {
+        return HttpHeader.ETAG;
+    }
+}
+
+export class IfMatchRule extends MatchRule {
+    protected async response(
+        response: Response,
+        etag: string,
+        validators: CacheValidators,
     ): Promise<Response | undefined> {
-        const response = await next();
-        if (!response || response.status !== StatusCodes.OK) return response;
-
-        const etag = getEtag(response);
-        if (!etag) return response;
-
-        const { ifMatch, ifNoneMatch } = getCacheValidators(worker.request.headers);
-        if (ifMatch.length === 0 && ifNoneMatch.length === 0) return response;
+        const ifMatch = validators.ifMatch;
+        if (ifMatch.length === 0) return response;
 
         if (isPreconditionFailed(ifMatch, etag)) {
-            return new PreconditionFailed().response();
-        }
-
-        if (ifNoneMatch.length > 0) {
-            if (isNotModified(ifNoneMatch, etag)) {
-                return new NotModified(response).response();
-            }
-
-            return undefined;
+            return new PreconditionFailed(`ETag: ${etag}`).response();
         }
 
         return response;
+    }
+}
+
+export class IfNoneMatchRule extends MatchRule {
+    protected async response(
+        response: Response,
+        etag: string,
+        validators: CacheValidators,
+    ): Promise<Response | undefined> {
+        const ifNoneMatch = validators.ifNoneMatch;
+        if (ifNoneMatch.length === 0) return response;
+
+        if (isNotModified(ifNoneMatch, etag)) {
+            return new NotModified(response).response();
+        }
+
+        return undefined;
     }
 }
