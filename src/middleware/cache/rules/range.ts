@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { StatusCodes } from "http-status-codes";
 import { Worker } from "../../../interfaces/worker";
 import { CacheRule } from "./interfaces";
 import { getContentLength, getRange } from "./utils";
@@ -30,6 +31,7 @@ export class RangeRule implements CacheRule {
         }
 
         const response = await next();
+        if (!response || response.status !== StatusCodes.OK) return response;
 
         if (!range) return response;
         if (range.end === undefined) return response;

@@ -19,6 +19,7 @@ import { PreconditionFailed } from "../../../errors";
 import { NotModified } from "../../../responses";
 import { CacheRule } from "./interfaces";
 import { getCacheValidators, getEtag, isPreconditionFailed, isNotModified } from "./utils";
+import { StatusCodes } from "../../../constants";
 
 /**
  * Cache rule that handles conditional GETs based on ETag headers.
@@ -32,6 +33,7 @@ export class ETagRule implements CacheRule {
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {
         const response = await next();
+        if (!response || response.status !== StatusCodes.OK) return response;
 
         const etag = getEtag(response);
         if (!etag) return response;

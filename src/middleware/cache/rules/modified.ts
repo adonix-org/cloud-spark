@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { StatusCodes } from "../../../constants";
 import { HttpHeader } from "../../../constants/headers";
 import { Worker } from "../../../interfaces/worker";
 import { NotModified } from "../../../responses";
@@ -26,6 +27,7 @@ export class LastModifiedRule implements CacheRule {
         next: () => Promise<Response>,
     ): Promise<Response | undefined> {
         const response = await next();
+        if (!response || response.status !== StatusCodes.OK) return response;
 
         const lastModified = response.headers.get(HttpHeader.LAST_MODIFIED);
         const { ifModifiedSince } = getCacheValidators(worker.request.headers);
