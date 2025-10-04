@@ -15,7 +15,7 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { JsonResponse, WorkerResponse } from "./responses";
+import { JsonResponse } from "./responses";
 import { ErrorJson } from "./interfaces/error";
 import { Worker } from "./interfaces/worker";
 import { CacheControl } from "./constants/cache";
@@ -86,10 +86,9 @@ export class MethodNotAllowed extends HttpError {
 }
 
 /** 412 Precondition Failed error response */
-export class PreconditionFailed extends WorkerResponse {
+export class PreconditionFailed extends HttpError {
     constructor() {
-        super();
-        this.status = StatusCodes.PRECONDITION_FAILED;
+        super(StatusCodes.PRECONDITION_FAILED);
     }
 }
 

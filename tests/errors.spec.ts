@@ -61,7 +61,11 @@ describe("http error unit tests", () => {
         expect(err.status).toBe(StatusCodes.PRECONDITION_FAILED);
         const r = await err.response();
         expect(r.bodyUsed).toBe(false);
-        expect(await r.text()).toBe("");
+        expect(await r.json()).toStrictEqual({
+            status: 412,
+            error: "Precondition Failed",
+            details: "",
+        });
     });
 
     it("should include 'allow' header if method not allowed", () => {

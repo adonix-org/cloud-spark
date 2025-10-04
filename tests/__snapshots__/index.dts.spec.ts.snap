@@ -914,7 +914,7 @@ declare class MethodNotAllowed extends HttpError {
     constructor(worker: Worker);
 }
 /** 412 Precondition Failed error response */
-declare class PreconditionFailed extends WorkerResponse {
+declare class PreconditionFailed extends HttpError {
     constructor();
 }
 /** 426 Upgrade Required error response. */
