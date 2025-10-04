@@ -25,6 +25,7 @@ import {
     isNotModified,
     isPreconditionFailed,
     normalizeEtag,
+    toDate,
 } from "@src/middleware/cache/rules/utils";
 
 describe("cache rules utils unit tests ", () => {
@@ -78,6 +79,47 @@ describe("cache rules utils unit tests ", () => {
 
         it("rejects ranges with more than 12 digits", () => {
             expect(getRange(makeRequest("bytes=1234567890123-1234567890123"))).toBeUndefined();
+        });
+    });
+
+    describe("toDate", () => {
+        it("returns undefined for non-string values", () => {
+            expect(toDate(undefined)).toBeUndefined();
+            expect(toDate(null)).toBeUndefined();
+            expect(toDate(12345)).toBeUndefined();
+            expect(toDate({})).toBeUndefined();
+            expect(toDate([])).toBeUndefined();
+        });
+
+        it("returns undefined for clearly invalid date strings", () => {
+            expect(toDate("not-a-date")).toBeUndefined();
+            expect(toDate("")).toBeUndefined();
+        });
+
+        it("returns a number (timestamp) for valid date strings", () => {
+            const iso = "2025-10-04T12:34:56Z";
+            const result = toDate(iso);
+            expect(typeof result).toBe("number");
+            expect(result).toBe(Date.parse(iso));
+
+            const rfc1123 = "Wed, 04 Oct 2025 12:34:56 GMT";
+            const result2 = toDate(rfc1123);
+            expect(typeof result2).toBe("number");
+            expect(result2).toBe(Date.parse(rfc1123));
+        });
+
+        it("parses RFC 850 format", () => {
+            const rfc850 = "Wednesday, 04-Oct-25 12:34:56 GMT";
+            const result = toDate(rfc850);
+            expect(typeof result).toBe("number");
+            expect(result).toBe(Date.parse(rfc850));
+        });
+
+        it("parses ANSI C asctime format", () => {
+            const asctime = "Wed Oct  4 12:34:56 2025";
+            const result = toDate(asctime);
+            expect(typeof result).toBe("number");
+            expect(result).toBe(Date.parse(asctime));
         });
     });
 
