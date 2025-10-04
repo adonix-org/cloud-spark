@@ -19,13 +19,16 @@ import { HttpHeader } from "../../../constants/headers";
 import { PreconditionFailed } from "../../../errors";
 import { Worker } from "../../../interfaces/worker";
 import { NotModified } from "../../../responses";
-import { CacheRule, CacheValidators } from "./interfaces";
+import { CacheRule } from "./interfaces";
 import { getCacheValidators } from "./utils";
 
+type SinceValidatorKeys = "ifModifiedSince" | "ifUnmodifiedSince";
+
 abstract class SinceRule implements CacheRule {
-    abstract requestHeader: Extract<keyof CacheValidators, "ifModifiedSince" | "ifUnmodifiedSince">;
+    // Let the literal type be inferred from the value we assign in the subclass
+    abstract requestHeader: SinceValidatorKeys;
     abstract compare(lastModified: number, headerTime: number): boolean;
-    abstract onFail(response: Response): Promise<Response>;
+    abstract onFail(response: Response | undefined): Response | Promise<Response>;
 
     public async apply(
         worker: Worker,
@@ -45,7 +48,7 @@ abstract class SinceRule implements CacheRule {
         if (headerValue) {
             const headerTime = Date.parse(headerValue);
             if (!isNaN(headerTime) && this.compare(lastModifiedTime, headerTime)) {
-                return this.onFail(response);
+                return await this.onFail(response); // supports async onFail if needed
             }
         }
 
