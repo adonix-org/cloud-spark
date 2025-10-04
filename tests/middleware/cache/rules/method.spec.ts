@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { describe, expect, it, vi } from "vitest";
 import { GET, HEAD, POST } from "@src/constants/methods";
 import { MethodRule } from "@src/middleware/cache/rules/method";
 import { Head } from "@src/responses";
-import { describe, expect, it, vi } from "vitest";
 
 describe("method rule unit tests", () => {
     it("returns next for get requests", async () => {

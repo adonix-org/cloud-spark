@@ -38,7 +38,7 @@ export class ModifiedSinceRule extends LastModifiedRule {
 
         if (lastModified <= modifiedSince) return new NotModified(response).response();
 
-        return response;
+        return undefined;
     }
 }
 
