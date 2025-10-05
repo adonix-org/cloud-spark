@@ -44,7 +44,7 @@ export function getRange(request: Request): ByteRange | undefined {
     const start = Number(match[1]);
     const end = match[2] === "" ? undefined : Number(match[2]);
 
-    return end !== undefined ? { start, end } : { start };
+    return end === undefined ? { start } : { start, end };
 }
 
 export function isPreconditionFailed(ifMatch: string[], etag: string): boolean {
@@ -63,7 +63,7 @@ export function toDate(value: unknown): number | undefined {
     if (!isString(value)) return;
 
     const date = Date.parse(value);
-    return isNaN(date) ? undefined : date;
+    return Number.isNaN(date) ? undefined : date;
 }
 
 /** Normalizes an ETag for comparison */

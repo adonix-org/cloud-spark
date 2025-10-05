@@ -31,7 +31,7 @@ export class CacheControlRule implements CacheRule {
         }
 
         if (
-            (Boolean(cache["no-cache"]) || cache["max-age"] === 0) &&
+            (cache["no-cache"] || cache["max-age"] === 0) &&
             !hasCacheValidator(worker.request.headers)
         ) {
             return undefined;

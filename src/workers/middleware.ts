@@ -40,7 +40,9 @@ export abstract class MiddlewareWorker extends BaseWorker {
      * @returns `this` to allow chaining multiple `.use()` calls.
      */
     public use(...middleware: Middleware[]): this {
-        middleware.forEach(assertMiddleware);
+        for (const value of middleware) {
+            assertMiddleware(value);
+        }
 
         this.middlewares.push(...middleware);
         return this;

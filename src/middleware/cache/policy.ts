@@ -18,7 +18,7 @@ import { Worker } from "../../interfaces/worker";
 import { CacheRule } from "./rules/interfaces";
 
 export class CachePolicy {
-    private rules: CacheRule[] = [];
+    private readonly rules: CacheRule[] = [];
 
     public use(...rules: CacheRule[]): this {
         this.rules.push(...rules);
