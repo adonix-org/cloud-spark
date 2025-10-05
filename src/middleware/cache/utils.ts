@@ -131,7 +131,7 @@ export function filterVaryHeader(vary: string[]): string[] {
  *   a safe cache key.
  * - The resulting string is returned as an absolute URL rooted at `VARY_CACHE_URL`.
  *
- * @param request The Request object to generate a key for.
+ * @param request The Request object used to generate the key.
  * @param vary Array of header names from the `Vary` header that affect caching.
  * @param key The cache key to be used for this request. Can be modified by the caller for
  *            custom cache key behavior.
