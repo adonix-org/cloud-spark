@@ -43,14 +43,31 @@ describe("etag cache rules unit tests", () => {
         });
 
         it("returns 412 precondition failed response if etag fails precondition", async () => {
-            vi.spyOn(utils, "isPreconditionFailed").mockReturnValue(true);
+            const fixedEtag = '"abc123"';
+            vi.spyOn(utils, "isPreconditionFailed").mockImplementation(
+                (_requestHeaders, responseEtag) => {
+                    return responseEtag === fixedEtag;
+                },
+            );
 
             const result = await rule.apply(
-                { request: { headers: new Headers() } } as any,
-                async () => response,
+                {
+                    request: { headers: new Headers({ "If-Match": fixedEtag }) },
+                } as any,
+                async () => {
+                    const resp = new Response("ok");
+                    resp.headers.set("ETag", fixedEtag);
+                    return resp;
+                },
             );
+
             expect(result).toBeInstanceOf(Response);
             expect(result?.status).toBe(412);
+            expect(await result?.json()).toStrictEqual({
+                status: 412,
+                error: "Precondition Failed",
+                details: 'ETag: "abc123"',
+            });
         });
     });
 
@@ -62,7 +79,6 @@ describe("etag cache rules unit tests", () => {
         });
 
         it("returns original response if if-none-match header is empty", async () => {
-            // Spy on getCacheValidators to return empty array
             vi.spyOn(utils, "getCacheValidators").mockReturnValue({
                 ifNoneMatch: [],
                 ifMatch: [],

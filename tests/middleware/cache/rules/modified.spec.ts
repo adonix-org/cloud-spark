@@ -88,16 +88,28 @@ describe("modified cache rules unit tests", () => {
         });
 
         it("returns 412 if response has been modified since header date", async () => {
+            const fixedResponseTimestamp = Date.parse("2025-10-05T12:41:17Z"); // response header, newer
+            const fixedRequestTimestamp = Date.parse("2025-10-05T12:40:17Z"); // request header, earlier
+
             vi.spyOn(utils, "toDate")
-                .mockReturnValueOnce(Date.now() + 1000) // response header, newer
-                .mockReturnValueOnce(Date.now()); // request header
+                .mockReturnValueOnce(fixedResponseTimestamp) // response header, newer
+                .mockReturnValueOnce(fixedRequestTimestamp); // request header
 
             const result = await rule.apply(
                 { request: { headers: new Headers() } } as any,
                 async () => response,
             );
+
             expect(result).toBeInstanceOf(Response);
             expect(result?.status).toBe(412);
+
+            const lastModifiedStr = new Date(fixedResponseTimestamp).toUTCString();
+
+            expect(await result?.json()).toStrictEqual({
+                status: 412,
+                error: "Precondition Failed",
+                details: `Last-Modified: ${lastModifiedStr}`,
+            });
         });
 
         it("returns response if response is not modified since header date", async () => {
