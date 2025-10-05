@@ -59,7 +59,7 @@ export function found(array: string[], ...search: string[]): boolean {
     return array.some((value) => search.includes(value));
 }
 
-export function toDate(value: unknown): number | undefined {
+export function toDate(value: string | null | undefined): number | undefined {
     if (!isString(value)) return undefined;
 
     const date = Date.parse(value);
