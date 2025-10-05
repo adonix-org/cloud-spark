@@ -52,7 +52,7 @@ export function isPreconditionFailed(ifMatch: string[], etag: string): boolean {
 }
 
 export function isNotModified(ifNoneMatch: string[], etag: string): boolean {
-    return ifNoneMatch.length > 0 && found(ifNoneMatch, normalizeEtag(etag), WILDCARD_ETAG);
+    return found(ifNoneMatch, normalizeEtag(etag), WILDCARD_ETAG);
 }
 
 export function found(array: string[], ...search: string[]): boolean {

@@ -47,10 +47,9 @@ export class IfNoneMatchRule extends MatchRule {
         etag: string,
         validators: CacheValidators,
     ): Promise<Response | undefined> {
-        const ifNoneMatch = validators.ifNoneMatch;
-        if (ifNoneMatch.length === 0) return response;
+        if (validators.ifNoneMatch.length === 0) return response;
 
-        if (isNotModified(ifNoneMatch, etag)) {
+        if (isNotModified(validators.ifNoneMatch, etag)) {
             return new NotModified(response).response();
         }
 

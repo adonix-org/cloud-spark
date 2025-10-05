@@ -19,11 +19,24 @@ import { StatusCodes } from "http-status-codes";
 import { HttpHeader } from "../../constants/headers";
 import { lexCompare } from "../../utils/compare";
 import { getHeaderValues } from "../../utils/headers";
-import { VARY_WILDCARD } from "./constants";
 import { CacheControl, GET } from "../../constants";
 
 /** Base URL used for constructing cache keys. Only used internally. */
 const VARY_CACHE_URL = "https://vary";
+
+/**
+ * Wildcard member (`*`) for the `Vary` header.
+ *
+ * When present, it indicates that the response can vary based on unspecified
+ * request headers. Such a response **MUST NOT be stored by a shared cache**,
+ * since it cannot be reliably reused for any request.
+ *
+ * Example:
+ * ```http
+ * Vary: *
+ * ```
+ */
+const VARY_WILDCARD = "*";
 
 /**
  * Determines whether a given Response is safe to cache.
