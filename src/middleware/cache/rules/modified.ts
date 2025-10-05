@@ -52,7 +52,9 @@ export class UnmodifiedSinceRule extends LastModifiedRule {
         if (unmodifiedSince === undefined) return response;
 
         if (lastModified > unmodifiedSince) {
-            return new PreconditionFailed(`last-modified: ${lastModified}`).response();
+            return new PreconditionFailed(
+                `Last-Modified: ${new Date(lastModified).toUTCString()}`,
+            ).response();
         }
 
         return response;
