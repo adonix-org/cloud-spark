@@ -84,8 +84,8 @@ class CacheHandler implements Middleware {
         const cache = this.init.name ? await caches.open(this.init.name) : caches.default;
 
         const policy = new CachePolicy()
-            .use(new MethodRule())
             .use(new CacheControlRule())
+            .use(new MethodRule())
             .use(new RangeRule())
             .use(new ModifiedSinceRule())
             .use(new IfNoneMatchRule())
