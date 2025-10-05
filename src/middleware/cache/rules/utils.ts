@@ -60,7 +60,7 @@ export function found(array: string[], ...search: string[]): boolean {
 }
 
 export function toDate(value: unknown): number | undefined {
-    if (!isString(value)) return;
+    if (!isString(value)) return undefined;
 
     const date = Date.parse(value);
     return Number.isNaN(date) ? undefined : date;
