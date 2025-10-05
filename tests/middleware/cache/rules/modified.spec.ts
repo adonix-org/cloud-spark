@@ -33,12 +33,13 @@ describe("modified cache rules unit tests", () => {
         });
 
         it("returns response if no if-modified-since header", async () => {
-            vi.spyOn(utils, "toDate").mockReturnValueOnce(undefined);
-
-            const result = await rule.apply(
-                { request: { headers: new Headers() } } as any,
-                async () => response,
-            );
+            const request = {
+                request: { headers: new Headers() },
+            } as any;
+            const response = new Response("ok", {
+                headers: { "Last-Modified": new Date().toUTCString() },
+            });
+            const result = await rule.apply(request, async () => response);
             expect(result).toBe(response);
         });
 
@@ -76,12 +77,13 @@ describe("modified cache rules unit tests", () => {
         });
 
         it("returns response if no if-unmodified-since header", async () => {
-            vi.spyOn(utils, "toDate").mockReturnValueOnce(undefined);
-
-            const result = await rule.apply(
-                { request: { headers: new Headers() } } as any,
-                async () => response,
-            );
+            const request = {
+                request: { headers: new Headers() },
+            } as any;
+            const response = new Response("ok", {
+                headers: { "Last-Modified": new Date().toUTCString() },
+            });
+            const result = await rule.apply(request, async () => response);
             expect(result).toBe(response);
         });
 
