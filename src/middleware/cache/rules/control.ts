@@ -26,7 +26,7 @@ export class CacheControlRule implements CacheRule {
     ): Promise<Response | undefined> {
         const cache = getCacheControl(worker.request.headers);
 
-        if (Boolean(cache["no-store"])) {
+        if (cache["no-store"]) {
             return undefined;
         }
 
