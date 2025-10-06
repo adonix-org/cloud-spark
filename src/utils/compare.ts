@@ -29,3 +29,23 @@ export function lexCompare(a: string, b: string): number {
     if (a > b) return 1;
     return 0;
 }
+
+/**
+ * Compares two string arrays for exact equality.
+ *
+ * Two arrays are considered equal if they have the same length
+ * and all corresponding elements are strictly equal (===) in order.
+ *
+ * This is a shallow comparison; it does not compare nested objects or arrays.
+ *
+ * @param a - The first string array to compare.
+ * @param b - The second string array to compare.
+ * @returns `true` if the arrays are identical in length and content, otherwise `false`.
+ */
+export function stringArraysEqual(a: string[], b: string[]): boolean {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false;
+    }
+    return true;
+}

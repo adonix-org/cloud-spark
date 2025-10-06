@@ -51,6 +51,9 @@ export namespace HttpHeader {
     // Websocket Headers
     export const SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
     export const UPGRADE = "Upgrade";
+
+    // Internal Headers
+    export const INTERNAL_VARIANT_SET = "Internal-Variant-Set";
 }
 
 /**

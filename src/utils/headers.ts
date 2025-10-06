@@ -98,3 +98,14 @@ export function filterHeaders(headers: Headers, keys: string[]): void {
         headers.delete(key);
     }
 }
+
+/**
+ * Extracts all header names from a `Headers` object, normalizes them,
+ * and returns them in a stable, lexicographically sorted array.
+ *
+ * @param headers - The `Headers` object to extract keys from.
+ * @returns A sorted array of lowercase header names.
+ */
+export function getHeaderKeys(headers: Headers): string[] {
+    return [...headers.keys()].sort(lexCompare);
+}
