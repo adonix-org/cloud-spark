@@ -26,7 +26,8 @@ import { CacheControlRule } from "./rules/control";
 import { Middleware } from "../../interfaces/middleware";
 import { sortSearchParams } from "./keys";
 import { CacheInit } from "../../interfaces/cache";
-import { VariantResponse } from "./vary/responses";
+import { VariantResponse } from "./variant";
+import { getHeaderKeys } from "../../utils/headers";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -113,9 +114,18 @@ class CacheHandler implements Middleware {
      * @returns A cached Response if available, otherwise `undefined`.
      */
     public async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
-        const url = this.getCacheKey(request);
+        const key = this.getCacheKey(request);
 
-        return VariantResponse.getCached(cache, request, url);
+        const response = await cache.match(key);
+        if (!response) return undefined;
+        if (!VariantResponse.isVariantResponse(response)) return response;
+
+        const variantResponse = await VariantResponse.create(response);
+        const match = variantResponse.match(getHeaderKeys(request.headers));
+        if (!match) return undefined;
+
+        const varyKey = getVaryKey(request, match, key);
+        return cache.match(varyKey);
     }
 
     /**
@@ -136,7 +146,7 @@ class CacheHandler implements Middleware {
         if (!isCacheable(worker.request, response)) return;
 
         const key = this.getCacheKey(worker.request);
-        const vary = this.getFilteredVary(response);
+        const vary = getFilteredVary(getVaryHeader(response));
         const existing = await cache.match(key);
 
         if (vary.length === 0 && !existing) {
@@ -155,6 +165,19 @@ class CacheHandler implements Middleware {
             return;
         }
 
+        if (vary.length === 0 && existing && VariantResponse.isVariantResponse(existing)) {
+            // There are no meaningful vary headers on the response and
+            // the cached response is a variant response. We need to add
+            // the empty variant case if it doesn't already exist.
+            const variantResponse = await VariantResponse.create(existing);
+            if (!variantResponse.match([])) {
+                variantResponse.append([]);
+                worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
+            }
+            worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, [], key), response.clone()));
+            return;
+        }
+
         if (vary.length > 0 && !existing) {
             // There ARE meaningful vary headers on the response and the
             // existing variant response does NOT exist.
@@ -162,7 +185,9 @@ class CacheHandler implements Middleware {
             const variantResponse = await VariantResponse.create();
             variantResponse.append(vary);
             worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-            worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, vary, key), response));
+            worker.ctx.waitUntil(
+                cache.put(getVaryKey(worker.request, vary, key), response.clone()),
+            );
             return;
         }
 
@@ -193,16 +218,6 @@ class CacheHandler implements Middleware {
             worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, vary, key), existing));
             return;
         }
-    }
-
-    /**
-     * Extracts and filters the `Vary` header from a response.
-     *
-     * @param response - The HTTP response to inspect.
-     * @returns An array of filtered header names from the `Vary` header.
-     */
-    public getFilteredVary(response: Response): string[] {
-        return getFilteredVary(getVaryHeader(response));
     }
 
     /**
