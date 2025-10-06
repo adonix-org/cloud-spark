@@ -26,6 +26,7 @@ import { CacheControlRule } from "./rules/control";
 import { Middleware } from "../../interfaces/middleware";
 import { sortSearchParams } from "./keys";
 import { CacheInit } from "../../interfaces/cache";
+import { CatalogResponse as VaryCatalog } from "./vary/responses";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -140,18 +141,27 @@ class CacheHandler implements Middleware {
     public async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
         if (!isCacheable(worker.request, response)) return;
 
-        const url = this.getCacheKey(worker.request);
-
-        // Always store the main cache entry to preserve Vary headers
-        worker.ctx.waitUntil(cache.put(url, response.clone()));
-
-        // Store request-specific cache entry if the response varies
+        const key = this.getCacheKey(worker.request);
         const vary = this.getFilteredVary(response);
-        if (vary.length > 0) {
-            worker.ctx.waitUntil(
-                cache.put(getVaryKey(worker.request, vary, url), response.clone()),
-            );
+
+        if (vary.length === 0) {
+            // Store the non-vary response as is.
+            worker.ctx.waitUntil(cache.put(key, response.clone()));
+            return;
         }
+
+        // Store request-specific cache entry since the response varies
+        worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, vary, key), response.clone()));
+
+        const catalog = await cache.match(key);
+        if (!catalog) {
+            // No vary catalog entry exists, add it.
+            worker.ctx.waitUntil(cache.put(key, await new VaryCatalog(response).response()));
+            return;
+        }
+
+        // Update vary catalog for any new vary entries in the response.
+        const catalogVary = this.getFilteredVary(catalog);
     }
 
     /**

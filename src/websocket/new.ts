@@ -31,11 +31,13 @@ export abstract class NewConnectionBase<A extends WSAttachment>
     }
 
     public acceptWebSocket(ctx: DurableObjectState, tags?: string[]): Readonly<WebSocket> {
+        if (this.accepted) return this.client;
         ctx.acceptWebSocket(this.server, tags);
         return this.ready();
     }
 
     public accept(): Readonly<WebSocket> {
+        if (this.accepted) return this.client;
         this.server.accept();
         return this.ready();
     }
