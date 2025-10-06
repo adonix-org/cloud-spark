@@ -43,12 +43,18 @@ const VARY_WILDCARD = "*";
  *
  * Internal utility used by the caching pipeline to decide if a response
  * should be stored in the cache. Returns `true` only if:
- *   - The response status is 200 OK.
- *   - The request method is GET.
- *   - The response does not have a Vary header containing '*'.
+ *
+ *   - The response status is `200 OK`.
+ *   - The request method is `GET`.
+ *   - The response does not have a `Vary` header containing `*`.
  *   - Neither the request nor the response has `Cache-Control: no-store`.
- *   - The response is not `private`, and does not have `max-age=0`.
- *   - The response does not include a Content-Range header (partial content).
+ *   - The response is not marked `private` and does not specify `max-age=0`.
+ *   - The request does **not** include sensitive headers such as `Authorization` or `Cookie`.
+ *   - The response does **not** include a `Set-Cookie` header.
+ *   - The response does not include a `Content-Range` header (partial content).
+ *
+ * These checks collectively ensure that the response is publicly cacheable,
+ * consistent with Cloudflare's and general HTTP caching rules.
  *
  * @param request - The incoming Request object.
  * @param response - The Response object generated for the request.
@@ -58,7 +64,6 @@ const VARY_WILDCARD = "*";
 export function isCacheable(request: Request, response: Response): boolean {
     if (response.status !== StatusCodes.OK) return false;
     if (request.method !== GET) return false;
-    if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
 
     const requestCacheControl = getCacheControl(request.headers);
     if (requestCacheControl["no-store"]) return false;
@@ -67,6 +72,11 @@ export function isCacheable(request: Request, response: Response): boolean {
     if (responseCacheControl["no-store"]) return false;
     if (responseCacheControl["max-age"] === 0) return false;
     if (responseCacheControl["private"]) return false;
+
+    if (request.headers.has(HttpHeader.AUTHORIZATION)) return false;
+    if (request.headers.has(HttpHeader.COOKIE)) return false;
+    if (response.headers.has(HttpHeader.SET_COOKIE)) return false;
+    if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
 
     if (response.headers.has(HttpHeader.CONTENT_RANGE)) {
         throw new Error("Found content-range header on 200 OK. Must use 206 Partial Content");

@@ -41,7 +41,7 @@ describe("cache utils unit tests ", () => {
             expect(isCacheable(req, resp)).toBe(false);
         });
 
-        it("returns false if request method is not get", () => {
+        it("returns false if request method is not GET", () => {
             const req = makeRequest(POST);
             const resp = makeResponse();
             expect(isCacheable(req, resp)).toBe(false);
@@ -83,7 +83,28 @@ describe("cache utils unit tests ", () => {
             expect(() => isCacheable(req, resp)).toThrow();
         });
 
-        it("returns true for standard cacheable get 200 response", () => {
+        it("returns false if request has Cookie header", () => {
+            const req = makeRequest(GET, { Cookie: "session=abc123" });
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "public, max-age=3600" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if request has Authorization header", () => {
+            const req = makeRequest(GET, { Authorization: "Bearer token" });
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "public, max-age=3600" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if response has Set-Cookie header", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, {
+                "Cache-Control": "public, max-age=3600",
+                "Set-Cookie": "session=abc123; Path=/",
+            });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns true for standard cacheable GET 200 response", () => {
             const req = makeRequest();
             const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "public, max-age=3600" });
             expect(isCacheable(req, resp)).toBe(true);
@@ -97,13 +118,13 @@ describe("cache utils unit tests ", () => {
             expect(isCacheable(req, resp)).toBe(true);
         });
 
-        it("returns false for requests with multiple cache-control headers including no-store", () => {
+        it("returns false for requests with multiple cache-control directives including no-store", () => {
             const req = makeRequest(GET, { "Cache-Control": "max-age=0, no-cache, no-store" });
             const resp = makeResponse();
             expect(isCacheable(req, resp)).toBe(false);
         });
 
-        it("returns false for responses with multiple cache-control headers including private or no-store", () => {
+        it("returns false for responses with multiple cache-control directives including private or no-store", () => {
             const req = makeRequest();
             const resp = makeResponse(StatusCodes.OK, {
                 "Cache-Control": "public, max-age=3600, no-store",

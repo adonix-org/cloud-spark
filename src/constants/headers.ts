@@ -21,6 +21,7 @@ export namespace HttpHeader {
     export const ACCEPT_ENCODING = "Accept-Encoding";
     export const ACCEPT_RANGES = "Accept-Ranges";
     export const ALLOW = "Allow";
+    export const AUTHORIZATION = "Authorization";
     export const CACHE_CONTROL = "Cache-Control";
     export const CONNECTION = "Connection";
     export const CONTENT_DISPOSITION = "Content-Disposition";
@@ -30,6 +31,7 @@ export namespace HttpHeader {
     export const CONTENT_RANGE = "Content-Range";
     export const CONTENT_TYPE = "Content-Type";
     export const CONTENT_MD5 = "Content-MD5";
+    export const COOKIE = "Cookie";
     export const ETAG = "ETag";
     export const IF_MATCH = "If-Match";
     export const IF_MODIFIED_SINCE = "If-Modified-Since";
@@ -38,6 +40,7 @@ export namespace HttpHeader {
     export const LAST_MODIFIED = "Last-Modified";
     export const ORIGIN = "Origin";
     export const RANGE = "Range";
+    export const SET_COOKIE = "Set-Cookie";
     export const VARY = "Vary";
 
     // Cors Headers
