@@ -41,7 +41,7 @@ export abstract class BaseWebSocket<A extends WSAttachment> extends WebSocketEve
         this.server.send(data);
     }
 
-    public get attachment(): A {
+    public get attachment(): Readonly<A> {
         return (this.server.deserializeAttachment() ?? {}) as A;
     }
 
