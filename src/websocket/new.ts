@@ -30,12 +30,12 @@ export abstract class NewConnectionBase<A extends WSAttachment>
         this.client = client;
     }
 
-    public acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket {
+    public acceptWebSocket(ctx: DurableObjectState, tags?: string[]): Readonly<WebSocket> {
         ctx.acceptWebSocket(this.server, tags);
         return this.ready();
     }
 
-    public accept(): WebSocket {
+    public accept(): Readonly<WebSocket> {
         this.server.accept();
         return this.ready();
     }

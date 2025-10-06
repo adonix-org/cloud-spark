@@ -31,8 +31,8 @@ export type WSAttachment = object;
 export interface WebSocketConnection<A extends WSAttachment> {
     get readyState(): number;
     isState(...states: number[]): boolean;
-    accept(): WebSocket;
-    acceptWebSocket(ctx: DurableObjectState, tags?: string[]): WebSocket;
+    accept(): Readonly<WebSocket>;
+    acceptWebSocket(ctx: DurableObjectState, tags?: string[]): Readonly<WebSocket>;
     get attachment(): Readonly<A>;
     attach(attachment: A): void;
     send(message: string | ArrayBuffer): void;

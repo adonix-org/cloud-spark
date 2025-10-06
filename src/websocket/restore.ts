@@ -26,11 +26,11 @@ export abstract class RestoredConnectionBase<A extends WSAttachment>
         this.accepted = true;
     }
 
-    public accept(): WebSocket {
+    public accept(): Readonly<WebSocket> {
         throw new Error("Do not call accept() on restore");
     }
 
-    public acceptWebSocket(): WebSocket {
+    public acceptWebSocket(): Readonly<WebSocket> {
         throw new Error("Do not call acceptWebSocket() on restore");
     }
 }
