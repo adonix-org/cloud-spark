@@ -50,6 +50,18 @@ describe("new connection base unit tests", () => {
         expect(listener).toHaveBeenCalledOnce();
     });
 
+    it("idempotently opens the connection on accept", () => {
+        const listener = vi.fn();
+        con.addEventListener("open", listener);
+
+        const client1 = con.accept();
+        const client2 = con.accept();
+
+        expect(client1).toBe(client2);
+        expect(con.getAccepted()).toBe(true);
+        expect(listener).toHaveBeenCalledOnce();
+    });
+
     it("opens the connection on accept web socket", () => {
         const listener = vi.fn();
         con.addEventListener("open", listener);
@@ -57,6 +69,20 @@ describe("new connection base unit tests", () => {
         const client = con.acceptWebSocket(mockCtx);
 
         expect(client).toBeDefined();
+        expect(con.getAccepted()).toBe(true);
+        expect(listener).toHaveBeenCalledOnce();
+        expect(mockCtx.acceptWebSocket).toHaveBeenCalledExactlyOnceWith(con.getServer(), undefined);
+    });
+
+    it("idempotently opens the connection on accept web socket", () => {
+        const listener = vi.fn();
+        con.addEventListener("open", listener);
+
+        const client1 = con.acceptWebSocket(mockCtx);
+        const client2 = con.acceptWebSocket(mockCtx);
+
+        expect(client1).toBe(client2);
+        expect(client1).toBeDefined();
         expect(con.getAccepted()).toBe(true);
         expect(listener).toHaveBeenCalledOnce();
         expect(mockCtx.acceptWebSocket).toHaveBeenCalledExactlyOnceWith(con.getServer(), undefined);

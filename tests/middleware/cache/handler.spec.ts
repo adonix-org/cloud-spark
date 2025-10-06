@@ -232,7 +232,7 @@ describe("cache middleware unit tests", () => {
         expect(decoded.vary).toStrictEqual([["origin", "https://localhost"]]);
     });
 
-    it("does not cache 'uncacheable' responses", async () => {
+    it("does not cache 'un-cacheable' responses", async () => {
         class BadResponseWorker extends TestWorker {
             protected async dispatch(): Promise<Response> {
                 return new Response("do not cache", { status: StatusCodes.PARTIAL_CONTENT });
