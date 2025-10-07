@@ -27,6 +27,7 @@ import { getCacheControl } from "./utils";
 export type VariantSet = string[][];
 
 const DEFAULT_TTL = 5 * Time.Minute;
+const BUFFER_SECONDS = 30;
 
 const DEFAULT_CACHE: CacheControl = {
     public: true,
@@ -68,7 +69,7 @@ export class VariantResponse extends WorkerResponse {
 
     public refreshCache(response: Response): void {
         const incoming = getCacheControl(response.headers);
-        const incomingTTL = incoming["s-maxage"] ?? DEFAULT_TTL;
+        const incomingTTL = (incoming["s-maxage"] ?? DEFAULT_TTL) + BUFFER_SECONDS;
         const currentTTL = this.cache["s-maxage"] ?? DEFAULT_TTL;
 
         if (incomingTTL > currentTTL) {
