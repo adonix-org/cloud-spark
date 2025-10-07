@@ -120,7 +120,7 @@ class CacheHandler implements Middleware {
         if (!response) return undefined;
         if (!VariantResponse.isVariantResponse(response)) return response;
 
-        const variantResponse = await VariantResponse.create(response);
+        const variantResponse = await VariantResponse.restore(response);
         const match = variantResponse.match(getHeaderKeys(request.headers));
         if (!match) return undefined;
 
@@ -169,7 +169,7 @@ class CacheHandler implements Middleware {
             // There are no meaningful vary headers on the response and
             // the cached response is a variant response. We need to add
             // the empty variant case if it doesn't already exist.
-            const variantResponse = await VariantResponse.create(existing);
+            const variantResponse = await VariantResponse.restore(existing);
             if (!variantResponse.match([])) {
                 variantResponse.append([]);
                 worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
@@ -182,7 +182,7 @@ class CacheHandler implements Middleware {
             // There ARE meaningful vary headers on the response and the
             // existing variant response does NOT exist.
             // Create a new variant response for this vary response.
-            const variantResponse = await VariantResponse.create();
+            const variantResponse = await VariantResponse.new();
             variantResponse.append(vary);
             worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
             worker.ctx.waitUntil(
@@ -197,7 +197,7 @@ class CacheHandler implements Middleware {
             // We need to convert it to a variant response and overwrite it
             // while saving the existing response with an empty vary key (as
             // it did not have vary to begin with).
-            const variantResponse = await VariantResponse.create();
+            const variantResponse = await VariantResponse.new();
             variantResponse.append([]);
             variantResponse.append(vary);
             worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
@@ -210,7 +210,7 @@ class CacheHandler implements Middleware {
             // the existing cached response is a variant response.
             // Update the variant response if no matches found and save.
             // Save the new response with the meaningful vary keys.
-            const variantResponse = await VariantResponse.create(existing);
+            const variantResponse = await VariantResponse.restore(existing);
             if (!variantResponse.match(vary)) {
                 variantResponse.append(vary);
                 worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));

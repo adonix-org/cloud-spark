@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
+import { CacheControl } from "../../constants/cache";
 import { HttpHeader } from "../../constants/headers";
 import { MediaType, UTF8_CHARSET } from "../../constants/media";
+import { Time } from "../../constants/time";
+import { assertVariantSet } from "../../guards/cache";
 import { WorkerResponse } from "../../responses";
 import { stringArraysEqual } from "../../utils/compare";
 import { withCharset } from "../../utils/media";
 import { getCacheControl } from "./utils";
 
-type VariantSet = string[][];
+export type VariantSet = string[][];
+
+const DEFAULT_TTL = 5 * Time.Minute;
+
+const DEFAULT_CACHE: CacheControl = {
+    public: true,
+    "s-maxage": DEFAULT_TTL,
+} as const;
 
 export class VariantResponse extends WorkerResponse {
+    public override cache: CacheControl = { ...DEFAULT_CACHE };
     private variants: VariantSet = [];
 
     private constructor() {
@@ -32,20 +43,22 @@ export class VariantResponse extends WorkerResponse {
         this.setHeader(HttpHeader.INTERNAL_VARIANT_SET, "true");
     }
 
-    public static async create(source?: Response): Promise<VariantResponse> {
-        const response = new VariantResponse();
-        if (!source) return response;
+    public static new(): VariantResponse {
+        return new VariantResponse();
+    }
 
-        const header = source.headers.get(HttpHeader.INTERNAL_VARIANT_SET);
-        if (!header) {
-            throw new Error(
-                `Invalid response type. Missing ${HttpHeader.INTERNAL_VARIANT_SET} header.`,
-            );
+    public static async restore(source: Response): Promise<VariantResponse> {
+        if (!VariantResponse.isVariantResponse(source)) {
+            throw new Error("The source response is not a Variant Response");
         }
 
-        response.setHeader(HttpHeader.INTERNAL_VARIANT_SET, header);
-        response.cache = getCacheControl(source.headers);
-        response.variants = await source.json();
+        const response = VariantResponse.new();
+        response.cache = { ...DEFAULT_CACHE, ...getCacheControl(source.headers) };
+
+        const json = await source.json();
+        assertVariantSet(json);
+        response.variants = json;
+
         return response;
     }
 
@@ -53,8 +66,18 @@ export class VariantResponse extends WorkerResponse {
         return new Response(JSON.stringify(this.variants), this.responseInit);
     }
 
+    public refreshCache(response: Response): void {
+        const incoming = getCacheControl(response.headers);
+        const incomingTTL = incoming["s-maxage"] ?? DEFAULT_TTL;
+        const currentTTL = this.cache["s-maxage"] ?? DEFAULT_TTL;
+
+        if (incomingTTL > currentTTL) {
+            this.cache["s-maxage"] = incomingTTL;
+        }
+    }
+
     public append(vary: string[]): void {
-        this.variants.push(vary);
+        if (!this.match(vary)) this.variants.push(vary);
     }
 
     public match(vary: string[]): string[] | undefined {
