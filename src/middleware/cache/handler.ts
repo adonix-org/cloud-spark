@@ -116,12 +116,15 @@ class CacheHandler implements Middleware {
     public async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
         const key = this.getCacheKey(request);
 
+        console.log(key.toString());
+
         const response = await cache.match(key);
         if (!response) return undefined;
         if (!VariantResponse.isVariantResponse(response)) return response;
 
         const variantResponse = await VariantResponse.restore(response);
-        const match = variantResponse.match(getHeaderKeys(request.headers));
+        const match = variantResponse.intersect(getHeaderKeys(request.headers));
+        console.log(match);
         if (!match) return undefined;
 
         const varyKey = getVaryKey(request, match, key);
@@ -182,7 +185,7 @@ class CacheHandler implements Middleware {
             // There ARE meaningful vary headers on the response and the
             // existing variant response does NOT exist.
             // Create a new variant response for this vary response.
-            const variantResponse = await VariantResponse.new();
+            const variantResponse = VariantResponse.new();
             variantResponse.append(vary);
             worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
             worker.ctx.waitUntil(

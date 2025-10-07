@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { decodeVaryKey, GET_REQUEST, VALID_ORIGIN, VALID_URL } from "@common";
+import { decodeVaryKey, expectHeadersEqual, GET_REQUEST, VALID_ORIGIN, VALID_URL } from "@common";
 import { ctx, defaultCache, env, namedCache } from "@mock";
 import { cache } from "@src/middleware/cache/handler";
 import { MiddlewareWorker } from "@src/workers/middleware";
@@ -243,5 +243,57 @@ describe("cache middleware unit tests", () => {
         expect(response.status).toBe(206);
         expect(defaultCache.size).toBe(0);
         expect(namedCache.size).toBe(0);
+    });
+
+    it("does not cache 'un-cacheable' responses", async () => {
+        class BadResponseWorker extends TestWorker {
+            protected async dispatch(): Promise<Response> {
+                return new Response("do not cache", { status: StatusCodes.PARTIAL_CONTENT });
+            }
+        }
+
+        const response = await new BadResponseWorker(GET_REQUEST).fetch();
+        expect(response.status).toBe(206);
+        expect(defaultCache.size).toBe(0);
+        expect(namedCache.size).toBe(0);
+    });
+
+    it("creates a response variant for vary cache", async () => {
+        const request = new Request(VALID_URL, {
+            method: GET,
+            headers: { [HttpHeader.ORIGIN]: VALID_ORIGIN },
+        });
+
+        await new TestVaryWorker(request, HttpHeader.ORIGIN).fetch();
+        const variant = defaultCache.match(VALID_URL);
+        expect(defaultCache.size).toBe(2);
+        expectHeadersEqual(variant!.headers, [
+            ["cache-control", "public, s-maxage=300"],
+            ["content-type", "application/json; charset=utf-8"],
+            ["internal-variant-set", "true"],
+        ]);
+
+        const json = await variant?.json();
+        expect(json).toStrictEqual([["origin"]]);
+    });
+
+    it("updates a response variant for vary cache", async () => {
+        const request1 = new Request(VALID_URL, {
+            method: GET,
+            headers: { Origin: VALID_ORIGIN },
+        });
+
+        const request2 = new Request(VALID_URL, {
+            method: GET,
+            headers: { Origin: VALID_ORIGIN, "X-Vary-Header": "true" },
+        });
+
+        await new TestVaryWorker(request1, HttpHeader.ORIGIN).fetch();
+        await new TestVaryWorker(request2, "X-Vary-Header").fetch();
+        expect(defaultCache.size).toBe(2);
+
+        const variant = defaultCache.match(VALID_URL);
+        const json = await variant?.json();
+        expect(json).toStrictEqual([["origin"], ["x-vary-header"]]);
     });
 });

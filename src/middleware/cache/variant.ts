@@ -56,7 +56,7 @@ export class VariantResponse extends WorkerResponse {
         const response = VariantResponse.new();
         response.cache = { ...DEFAULT_CACHE, ...getCacheControl(source.headers) };
 
-        const json = await source.json();
+        const json = await source.clone().json();
         assertVariantSet(json);
         response.variants = json;
 
@@ -64,6 +64,8 @@ export class VariantResponse extends WorkerResponse {
     }
 
     public override async response(): Promise<Response> {
+        this.addCacheHeader();
+        this.addContentType();
         return new Response(JSON.stringify(this.variants), this.responseInit);
     }
 
@@ -88,6 +90,40 @@ export class VariantResponse extends WorkerResponse {
             }
         }
         return undefined;
+    }
+
+    public intersect_maybe(requestHeaders: string[]): string[] | undefined {
+        let bestMatch: string[] | undefined = undefined;
+        let maxMatches = 0;
+
+        for (const variant of this.variants) {
+            const matches = variant.filter((h) => requestHeaders.includes(h)).length;
+
+            if (matches > maxMatches) {
+                maxMatches = matches;
+                bestMatch = variant;
+            }
+        }
+
+        return maxMatches > 0 ? bestMatch : undefined;
+    }
+    public intersect(requestHeaders: string[]): string[] | undefined {
+        let bestMatch: string[] | undefined;
+        let maxMatches = 0; // start at 0, not -1
+
+        for (const variant of this.variants) {
+            const matches = variant.filter((h) => requestHeaders.includes(h)).length;
+
+            if (matches > maxMatches) {
+                maxMatches = matches;
+                bestMatch = variant;
+            } else if (matches === maxMatches && variant.length === 0) {
+                bestMatch = variant;
+            }
+        }
+
+        // Only return if there was at least one matching header
+        return maxMatches > 0 ? bestMatch : undefined;
     }
 
     public static isVariantResponse(response: Response): boolean {
