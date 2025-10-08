@@ -26,7 +26,9 @@ import { HttpHeader } from "@src/constants/headers";
 import { DELETE, GET, HEAD, OPTIONS, POST, PUT } from "@src/constants/methods";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import {
+    apply,
     getOrigin,
+    options,
     setAllowCredentials,
     setAllowHeaders,
     setAllowMethods,
@@ -38,12 +40,128 @@ import {
 } from "@src/middleware/cors/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { StatusCodes } from "@src/constants";
+import { CorsConfig } from "@src/interfaces";
 
 describe("cors utils unit tests", () => {
     let headers: Headers;
 
     beforeEach(() => {
         headers = new Headers();
+    });
+
+    describe("options function", () => {
+        it("returns a valid preflight response with expected headers for a specific allowed origin", async () => {
+            const worker = {
+                request: new Request(VALID_URL, {
+                    method: "OPTIONS",
+                    headers: { Origin: "https://foo.com" },
+                }),
+                getAllowedMethods: () => {
+                    return [GET, POST, OPTIONS];
+                },
+            };
+            const cors: CorsConfig = {
+                allowedOrigins: ["https://foo.com"],
+                allowCredentials: true,
+                maxAge: 86400,
+                allowedHeaders: [],
+                exposedHeaders: [],
+            };
+
+            const response = await options(worker as any, cors);
+
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(204);
+            expectHeadersEqual(response.headers, [
+                ["access-control-allow-credentials", "true"],
+                ["access-control-allow-methods", "POST"],
+                ["access-control-allow-origin", "https://foo.com"],
+                ["access-control-max-age", "86400"],
+                ["vary", "Origin"],
+            ]);
+        });
+
+        it("returns a valid preflight response with expected headers for * allowed origins", async () => {
+            const worker = {
+                request: new Request(VALID_URL, {
+                    method: "OPTIONS",
+                    headers: { Origin: "https://foo.com" },
+                }),
+                getAllowedMethods: () => {
+                    return [GET, POST, OPTIONS];
+                },
+            };
+            const cors: CorsConfig = {
+                allowedOrigins: ["*"],
+                allowCredentials: true,
+                maxAge: 86400,
+                allowedHeaders: ["x-header-1"],
+                exposedHeaders: ["x-header-2, x-header-3"],
+            };
+
+            const response = await options(worker as any, cors);
+
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(204);
+            expectHeadersEqual(response.headers, [
+                ["access-control-allow-headers", "x-header-1"],
+                ["access-control-allow-methods", "POST"],
+                ["access-control-allow-origin", "*"],
+                ["access-control-max-age", "86400"],
+            ]);
+        });
+    });
+
+    describe("apply function", () => {
+        it("returns a valid cors response with expected headers for a specific allowed origin", async () => {
+            const worker = {
+                request: new Request(VALID_URL, {
+                    headers: { Origin: "https://foo.com" },
+                }),
+            };
+            const cors: CorsConfig = {
+                allowedOrigins: ["https://foo.com"],
+                allowCredentials: true,
+                maxAge: 86400,
+                allowedHeaders: [],
+                exposedHeaders: ["x-header-1"],
+            };
+            const r = new Response("ok", { headers: { "x-header-2": "preserved" } });
+            const response = await apply(r, worker as any, cors);
+
+            expectHeadersEqual(response.headers, [
+                ["access-control-allow-credentials", "true"],
+                ["access-control-allow-origin", "https://foo.com"],
+                ["access-control-expose-headers", "x-header-1"],
+                ["content-type", "text/plain;charset=UTF-8"],
+                ["vary", "Origin"],
+                ["x-header-2", "preserved"],
+            ]);
+        });
+
+        it("returns a valid cors response with expected headers for * allowed origins", async () => {
+            const worker = {
+                request: new Request(VALID_URL, {
+                    headers: { Origin: "https://foo.com" },
+                }),
+            };
+            const cors: CorsConfig = {
+                allowedOrigins: ["*"],
+                allowCredentials: true,
+                maxAge: 86400,
+                allowedHeaders: [],
+                exposedHeaders: ["x-header-1"],
+            };
+            const r = new Response("ok", { headers: { "x-header-2": "preserved" } });
+            const response = await apply(r, worker as any, cors);
+
+            expectHeadersEqual(response.headers, [
+                ["access-control-allow-origin", "*"],
+                ["access-control-expose-headers", "x-header-1"],
+                ["content-type", "text/plain;charset=UTF-8"],
+                ["x-header-2", "preserved"],
+            ]);
+        });
     });
 
     describe("set allow origin function", () => {
