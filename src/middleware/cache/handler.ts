@@ -154,9 +154,9 @@ export class CacheHandler implements Middleware {
         }
 
         if (cached && vary.length > 0 && VariantResponse.isVariantResponse(cached)) {
-            // The cached resposne is already a variant response, so update it with
+            // The cached response is already a variant response, so update it with
             // the newly seen vary elements and save the actual response with a key
-            // gnerated from the vary headers.
+            // generated from the vary headers.
             const variantResponse = VariantResponse.restore(cached);
             variantResponse.append(vary);
             worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
