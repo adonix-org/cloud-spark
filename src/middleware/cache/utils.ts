@@ -145,7 +145,7 @@ export function getFilteredVary(vary: string[]): string[] {
  * @param vary Array of header names from the `Vary` header that affect caching.
  * @param key The cache key to be used for this request. Can be modified by the caller for
  *            custom cache key behavior.
- * @returns A string URL representing a unique cache key for this request + Vary headers.
+ * @returns A URL representing a unique cache key for this request + Vary headers.
  */
 export function getVaryKey(request: Request, vary: string[], key: URL): string {
     const varyPairs: [string, string][] = [];
@@ -160,7 +160,7 @@ export function getVaryKey(request: Request, vary: string[], key: URL): string {
     }
 
     const encoded = base64UrlEncode(JSON.stringify([key.toString(), varyPairs]));
-    return new URL(encoded, VARY_CACHE_URL).href;
+    return new URL(encoded, VARY_CACHE_URL).toString();
 }
 
 /**

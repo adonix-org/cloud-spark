@@ -37,7 +37,7 @@ export class VariantResponse extends WorkerResponse {
 
     public static restore(source: Response): VariantResponse {
         if (!VariantResponse.isVariantResponse(source)) {
-            throw new Error("The source response is not a Variant Response");
+            throw new Error("The source response is not a variant response");
         }
 
         const variant = VariantResponse.new(

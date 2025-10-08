@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { assertCacheInit, assertCacheName, assertGetKey, assertKey, assertVariantSet } from "@src/guards/cache";
+import { assertCacheInit, assertCacheName, assertGetKey, assertKey } from "@src/guards/cache";
 import { CacheInit } from "@src/interfaces/cache";
 import { VALID_URL } from "@common";
 
@@ -135,58 +135,6 @@ describe("cache guard unit tests", () => {
 
         it("throws TypeError for null", () => {
             expect(() => assertKey(null)).toThrow(TypeError);
-        });
-    });
-
-    describe("assertVariantSet", () => {
-        it("accepts an empty array", () => {
-            const value: unknown = [];
-            expect(() => assertVariantSet(value)).not.toThrow();
-        });
-
-        it("accepts array of empty arrays", () => {
-            const value: unknown = [[], []];
-            expect(() => assertVariantSet(value)).not.toThrow();
-        });
-
-        it("accepts valid variant sets", () => {
-            const value: unknown = [["Accept-Language"], ["Origin", "User-Agent"]];
-            expect(() => assertVariantSet(value)).not.toThrow();
-        });
-
-        it("accepts variant sets with empty strings", () => {
-            const value: unknown = [[""], ["X-Custom-Header"]];
-            expect(() => assertVariantSet(value)).not.toThrow();
-        });
-
-        it("throws if value is not an array", () => {
-            const value: unknown = "not-an-array";
-            expect(() => assertVariantSet(value)).toThrow(TypeError);
-        });
-
-        it("throws if an element is not an array", () => {
-            const value: unknown = [["Origin"], "not-an-array"];
-            expect(() => assertVariantSet(value)).toThrow(TypeError);
-        });
-
-        it("throws if a variant contains non-string elements", () => {
-            const value: unknown = [["Origin", 123]];
-            expect(() => assertVariantSet(value)).toThrow(TypeError);
-        });
-
-        it("throws if a nested element is null", () => {
-            const value: unknown = [["Origin", null]];
-            expect(() => assertVariantSet(value)).toThrow(TypeError);
-        });
-
-        it("throws if a nested element is undefined", () => {
-            const value: unknown = [["Origin", undefined]];
-            expect(() => assertVariantSet(value)).toThrow(TypeError);
-        });
-
-        it("does not throw for large variant sets", () => {
-            const value: unknown = Array.from({ length: 100 }, (_, i) => [`Header-${i}`]);
-            expect(() => assertVariantSet(value)).not.toThrow();
         });
     });
 });

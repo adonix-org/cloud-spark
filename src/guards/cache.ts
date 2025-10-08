@@ -15,7 +15,6 @@
  */
 
 import { CacheInit } from "../interfaces/cache";
-import { VariantSet } from "../middleware/cache/variant";
 import { isFunction, isString } from "./basic";
 
 /**
@@ -80,36 +79,5 @@ export function assertGetKey(value: unknown): asserts value is Function | undefi
 export function assertKey(value: unknown): asserts value is URL {
     if (!(value instanceof URL)) {
         throw new TypeError("getKey must return a URL.");
-    }
-}
-
-/**
- * Asserts that a given value is a valid `VariantSet` (an array of string arrays).
- *
- * This function performs a runtime type check to ensure that:
- *   - `value` is an array
- *   - every element of `value` is also an array
- *   - every element of those inner arrays is a string
- *
- * Throws a descriptive `TypeError` if the structure does not match.
- *
- * @param value - The value to validate.
- * @throws {TypeError} If the value is not a valid `VariantSet`.
- */
-export function assertVariantSet(value: unknown): asserts value is VariantSet {
-    if (!Array.isArray(value)) {
-        throw new TypeError("Expected VariantSet to be an array");
-    }
-
-    for (const variant of value) {
-        if (!Array.isArray(variant)) {
-            throw new TypeError("Expected each variant to be an array of strings");
-        }
-
-        for (const element of variant) {
-            if (typeof element !== "string") {
-                throw new TypeError("Expected each element of a variant to be a string");
-            }
-        }
     }
 }

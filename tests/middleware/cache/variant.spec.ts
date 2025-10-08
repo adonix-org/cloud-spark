@@ -41,7 +41,7 @@ describe("variant response unit tests", () => {
         it("throws if source is not a variant response", () => {
             const nonVariant = new Response("ok");
             expect(() => VariantResponse.restore(nonVariant)).toThrow(
-                "The source response is not a Variant Response",
+                "The source response is not a variant response",
             );
         });
 

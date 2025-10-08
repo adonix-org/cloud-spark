@@ -86,9 +86,9 @@ describe("cache rules utils unit tests ", () => {
         it("returns undefined for non-string values", () => {
             expect(toDate(undefined)).toBeUndefined();
             expect(toDate(null)).toBeUndefined();
-            expect(toDate(12345)).toBeUndefined();
-            expect(toDate({})).toBeUndefined();
-            expect(toDate([])).toBeUndefined();
+            expect(toDate(12345 as any)).toBeUndefined();
+            expect(toDate({} as any)).toBeUndefined();
+            expect(toDate([] as any)).toBeUndefined();
         });
 
         it("returns undefined for clearly invalid date strings", () => {

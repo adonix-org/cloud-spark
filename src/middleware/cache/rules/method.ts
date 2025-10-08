@@ -30,7 +30,7 @@ export class MethodRule implements CacheRule {
 
         if (worker.request.method === HEAD) {
             const response = await next();
-            if (!response) return response;
+            if (!response) return undefined;
 
             return new Head(response).response();
         }
