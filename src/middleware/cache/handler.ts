@@ -182,7 +182,7 @@ export class CacheHandler implements Middleware {
             worker.ctx.waitUntil(
                 cache.put(getVaryKey(request, variantResponse.vary, key), response),
             );
-            worker.ctx.waitUntil(cache.put(getVaryKey(request, [], key), response));
+            worker.ctx.waitUntil(cache.put(getVaryKey(request, [], key), cached));
             return;
         }
     }

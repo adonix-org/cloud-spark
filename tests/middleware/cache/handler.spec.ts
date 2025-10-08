@@ -295,11 +295,18 @@ describe("cache middleware unit tests", () => {
         ]);
 
         await new TestVaryWorker(request, "Origin").fetch();
-        const variant = defaultCache.match(VALID_URL);
-        expect(defaultCache.size).toBe(3);
-        expectHeadersEqual(variant!.headers, [
+        const responses = defaultCache.matchAll();
+        expectHeadersEqual(responses[0]!.headers, [
             ["cache-control", "public, s-maxage=300"],
             ["internal-variant-set", "origin"],
+        ]);
+        expectHeadersEqual(responses[1]!.headers, [
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["vary", "Origin"],
+        ]);
+        expectHeadersEqual(responses[2]!.headers, [
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["vary", ""],
         ]);
     });
 });
