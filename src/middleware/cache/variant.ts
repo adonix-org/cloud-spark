@@ -30,6 +30,7 @@ const DEFAULT_CACHE: CacheControl = {
 
 export class VariantResponse extends WorkerResponse {
     public override cache: CacheControl = { ...DEFAULT_CACHE };
+    private _isModified = false;
 
     private constructor(vary: string[]) {
         if (vary.length === 0) {
@@ -59,8 +60,14 @@ export class VariantResponse extends WorkerResponse {
         return getHeaderValues(this.headers, HttpHeader.INTERNAL_VARIANT_SET);
     }
 
+    public get isModified(): boolean {
+        return this._isModified;
+    }
+
     public append(vary: string[]): void {
+        const before = this.vary.length;
         this.mergeHeader(HttpHeader.INTERNAL_VARIANT_SET, vary);
+        this._isModified = this.vary.length !== before;
     }
 
     public static isVariantResponse(response: Response): boolean {
@@ -74,6 +81,7 @@ export class VariantResponse extends WorkerResponse {
 
         if (incomingTTL > currentTTL) {
             this.cache["s-maxage"] = incomingTTL;
+            this._isModified = true;
         }
     }
 }

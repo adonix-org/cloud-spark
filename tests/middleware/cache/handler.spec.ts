@@ -345,4 +345,39 @@ describe("cache middleware unit tests", () => {
             ["vary", "Origin, X-Vary-Header-1"],
         ]);
     });
+
+    it("does not modify the existing variant response if not needed", async () => {
+        vi.spyOn(CacheHandler.prototype, "getCached").mockResolvedValue(undefined);
+
+        const request = new Request(VALID_URL, {
+            method: GET,
+            headers: { [HttpHeader.ORIGIN]: VALID_ORIGIN, "X-Vary-Header-1": "on" },
+        });
+
+        await new TestVaryWorker(request, "Origin").fetch();
+
+        const response = defaultCache.match(VALID_URL);
+        expect(defaultCache.size).toBe(2);
+        expectHeadersEqual(response!.headers, [
+            ["cache-control", "public, s-maxage=300"],
+            ["internal-variant-set", "origin"],
+        ]);
+
+        await new TestVaryWorker(request, "Origin, X-Vary-Header-1").fetch();
+        const responses = defaultCache.matchAll();
+        expect(responses.length).toBe(3);
+        expectHeadersEqual(responses[0]!.headers, [
+            ["cache-control", "public, s-maxage=300"],
+            ["internal-variant-set", "origin, x-vary-header-1"],
+        ]);
+        expect(await responses[0]!.text()).toBe("");
+        expectHeadersEqual(responses[1]!.headers, [
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["vary", "Origin"],
+        ]);
+        expectHeadersEqual(responses[2]!.headers, [
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["vary", "Origin, X-Vary-Header-1"],
+        ]);
+    });
 });
