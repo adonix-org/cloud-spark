@@ -18,7 +18,7 @@ import { HttpHeader } from "../../constants/headers";
 import { assertMethods } from "../../guards/methods";
 import { CorsConfig } from "../../interfaces/cors";
 import { Worker } from "../../interfaces/worker";
-import { ClonedResponse, Options } from "../../responses";
+import { Options } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/headers";
 import { ALLOW_ALL_ORIGINS, SIMPLE_METHODS, SKIP_CORS_STATUSES } from "./constants";
 
@@ -66,20 +66,23 @@ export async function apply(
     worker: Worker,
     cors: CorsConfig,
 ): Promise<Response> {
-    const clone = new ClonedResponse(response);
     const origin = getOrigin(worker.request);
+    const headers = new Headers(response.headers);
 
-    deleteCorsHeaders(clone.headers);
+    deleteCorsHeaders(headers);
 
     if (origin) {
-        setAllowOrigin(clone.headers, cors, origin);
-        setAllowCredentials(clone.headers, cors, origin);
-        setExposedHeaders(clone.headers, cors);
+        setAllowOrigin(headers, cors, origin);
+        setAllowCredentials(headers, cors, origin);
+        setExposedHeaders(headers, cors);
     }
 
-    setVaryOrigin(clone.headers, cors);
+    setVaryOrigin(headers, cors);
 
-    return clone.response();
+    return new Response(response.body, {
+        ...response,
+        headers,
+    });
 }
 
 export function setVaryOrigin(headers: Headers, cors: CorsConfig) {
