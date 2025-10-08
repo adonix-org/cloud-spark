@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./handler";
+export * from "./cache";
 export * from "./keys";

@@ -19,29 +19,13 @@ import { Worker } from "../../interfaces/worker";
 import { CorsConfig, CorsInit } from "../../interfaces/cors";
 import { defaultCorsConfig } from "./constants";
 import { OPTIONS } from "../../constants/methods";
-import { assertCorsInit } from "../../guards/cors";
 import { Middleware } from "../../interfaces/middleware";
-
-/**
- * Creates a`CORS`middleware instance.
- *
- * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
- * for incoming requests, including preflight `OPTIONS` requests, and adds
- * appropriate headers to responses.
- *
- * @param init - Optional configuration for `CORS` behavior. See {@link CorsConfig}.
- * @returns A {@link Middleware} instance that can be used in your middleware chain.
- */
-export function cors(init?: CorsInit): Middleware {
-    assertCorsInit(init);
-    return new CorsHandler(init);
-}
 
 /**
  * Cors Middleware Implementation
  * @see {@link cors}
  */
-class CorsHandler implements Middleware {
+export class CorsHandler implements Middleware {
     /** The configuration used for this instance, with all defaults applied. */
     private readonly config: CorsConfig;
 

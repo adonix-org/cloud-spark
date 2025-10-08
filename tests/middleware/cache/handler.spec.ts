@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { decodeVaryKey, expectHeadersEqual, GET_REQUEST, VALID_ORIGIN, VALID_URL } from "@common";
 import { ctx, defaultCache, env, namedCache } from "@mock";
-import { cache } from "@src/middleware/cache/handler";
+import { CacheHandler } from "@src/middleware/cache/handler";
 import { MiddlewareWorker } from "@src/workers/middleware";
 import { GET, Method } from "@src/constants/methods";
 import { getVaryHeader, getVaryKey } from "@src/middleware/cache/utils";
 import { HttpHeader } from "@src/constants/headers";
 import { StatusCodes } from "http-status-codes";
+import { cache } from "@src/middleware/cache/cache";
 
 class TestWorker extends MiddlewareWorker {
     public getAllowedMethods(): Method[] {
@@ -274,5 +275,31 @@ describe("cache middleware unit tests", () => {
 
         const text = await variant?.text();
         expect(text).toBe("");
+    });
+
+    it("converts a non-variant response to a variant", async () => {
+        vi.spyOn(CacheHandler.prototype, "getCached").mockResolvedValue(undefined);
+
+        const request = new Request(VALID_URL, {
+            method: GET,
+            headers: { [HttpHeader.ORIGIN]: VALID_ORIGIN },
+        });
+
+        await new TestVaryWorker(request, "").fetch();
+
+        const response = defaultCache.match(VALID_URL);
+        expect(defaultCache.size).toBe(1);
+        expectHeadersEqual(response!.headers, [
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["vary", ""],
+        ]);
+
+        await new TestVaryWorker(request, "Origin").fetch();
+        const variant = defaultCache.match(VALID_URL);
+        expect(defaultCache.size).toBe(3);
+        expectHeadersEqual(variant!.headers, [
+            ["cache-control", "public, s-maxage=300"],
+            ["internal-variant-set", "origin"],
+        ]);
     });
 });

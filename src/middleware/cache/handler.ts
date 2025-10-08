@@ -15,7 +15,7 @@
  */
 
 import { Worker } from "../../interfaces/worker";
-import { assertCacheInit, assertKey } from "../../guards/cache";
+import { assertKey } from "../../guards/cache";
 import { getFilteredVary, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { CachePolicy } from "./policy";
 import { MethodRule } from "./rules/method";
@@ -29,32 +29,10 @@ import { CacheInit } from "../../interfaces/cache";
 import { VariantResponse } from "./variant";
 
 /**
- * Creates a Vary-aware caching middleware for Workers.
- *
- * This middleware:
- * - Caches `GET` requests **only**.
- * - Respects the `Vary` header of responses, ensuring that requests
- *   with different headers (e.g., `Origin`) receive the correct cached response.
- * - Skips caching for non-cacheable responses (e.g., error responses or
- *   responses with `Vary: *`).
- *
- * @param init Optional cache configuration object.
- * @param init.name Optional name of the cache to use. If omitted, the default cache is used.
- * @param init.getKey Optional function to compute a custom cache key from a request.
- *
- * @returns A `Middleware` instance that can be used in a Worker pipeline.
- */
-export function cache(init: Partial<CacheInit> = {}): Middleware {
-    assertCacheInit(init);
-
-    return new CacheHandler(init);
-}
-
-/**
  * Cache Middleware Implementation
  * @see {@link cache}
  */
-class CacheHandler implements Middleware {
+export class CacheHandler implements Middleware {
     private readonly init: CacheInit;
 
     constructor(init: CacheInit) {
@@ -204,9 +182,7 @@ class CacheHandler implements Middleware {
             worker.ctx.waitUntil(
                 cache.put(getVaryKey(request, variantResponse.vary, key), response),
             );
-            worker.ctx.waitUntil(
-                cache.put(getVaryKey(request, [], key), response),
-            );
+            worker.ctx.waitUntil(cache.put(getVaryKey(request, [], key), response));
             return;
         }
     }
