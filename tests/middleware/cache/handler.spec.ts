@@ -277,7 +277,7 @@ describe("cache middleware unit tests", () => {
         expect(text).toBe("");
     });
 
-    it("converts a non-variant response to a variant", async () => {
+    it("converts a non-variant response to a variant enabled cache entry", async () => {
         vi.spyOn(CacheHandler.prototype, "getCached").mockResolvedValue(undefined);
 
         const request = new Request(VALID_URL, {
@@ -300,6 +300,7 @@ describe("cache middleware unit tests", () => {
             ["cache-control", "public, s-maxage=300"],
             ["internal-variant-set", "origin"],
         ]);
+        expect(await responses[0]!.text()).toBe("");
         expectHeadersEqual(responses[1]!.headers, [
             ["content-type", "text/plain;charset=UTF-8"],
             ["vary", "Origin"],
