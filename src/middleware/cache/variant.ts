@@ -33,7 +33,7 @@ export class VariantResponse extends WorkerResponse {
 
     private constructor(vary: string[]) {
         if (vary.length === 0) {
-            throw new Error("Can not create a variant response with no vary elements.");
+            throw new Error("Cannot create a variant response with no vary elements.");
         }
         super();
         this.setHeader(HttpHeader.INTERNAL_VARIANT_SET, vary);

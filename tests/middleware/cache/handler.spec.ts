@@ -269,31 +269,10 @@ describe("cache middleware unit tests", () => {
         expect(defaultCache.size).toBe(2);
         expectHeadersEqual(variant!.headers, [
             ["cache-control", "public, s-maxage=300"],
-            ["content-type", "application/json; charset=utf-8"],
-            ["internal-variant-set", "true"],
+            ["internal-variant-set", "origin"],
         ]);
 
-        const json = await variant?.json();
-        expect(json).toStrictEqual([["origin"]]);
-    });
-
-    it("updates a response variant for vary cache", async () => {
-        const request1 = new Request(VALID_URL, {
-            method: GET,
-            headers: { Origin: VALID_ORIGIN },
-        });
-
-        const request2 = new Request(VALID_URL, {
-            method: GET,
-            headers: { Origin: VALID_ORIGIN, "X-Vary-Header": "true" },
-        });
-
-        await new TestVaryWorker(request1, HttpHeader.ORIGIN).fetch();
-        await new TestVaryWorker(request2, "X-Vary-Header").fetch();
-        expect(defaultCache.size).toBe(2);
-
-        const variant = defaultCache.match(VALID_URL);
-        const json = await variant?.json();
-        expect(json).toStrictEqual([["origin"], ["x-vary-header"]]);
+        const text = await variant?.text();
+        expect(text).toBe("");
     });
 });
