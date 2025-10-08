@@ -44,6 +44,13 @@ describe("variant response unit tests", () => {
                 "The source response is not a Variant Response",
             );
         });
+
+        it("restores the variant from a response with cache control", async () => {
+            const original = VariantResponse.new(["Origin"]);
+            original.cache = { "s-maxage": 100 };
+            const restored = VariantResponse.restore(await original.response());
+            expect(restored.cache).toStrictEqual({ "s-maxage": 100 });
+        });
     });
 
     describe("append", () => {
