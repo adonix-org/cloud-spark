@@ -282,10 +282,7 @@ describe("cache middleware unit tests", () => {
         await new TestVaryWorker(request, HttpHeader.ORIGIN).fetch();
         const variant = defaultCache.match(VALID_URL);
         expect(defaultCache.size).toBe(2);
-        expectHeadersEqual(variant!.headers, [
-            ["cache-control", "public, s-maxage=300"],
-            ["internal-variant-set", "origin"],
-        ]);
+        expectHeadersEqual(variant!.headers, [["internal-variant-set", "origin"]]);
 
         const text = await variant?.text();
         expect(text).toBe("");
@@ -310,10 +307,7 @@ describe("cache middleware unit tests", () => {
 
         await new TestVaryWorker(request, "Origin").fetch();
         const responses = defaultCache.matchAll();
-        expectHeadersEqual(responses[0]!.headers, [
-            ["cache-control", "public, s-maxage=300"],
-            ["internal-variant-set", "origin"],
-        ]);
+        expectHeadersEqual(responses[0]!.headers, [["internal-variant-set", "origin"]]);
         expect(await responses[0]!.text()).toBe("");
         expectHeadersEqual(responses[1]!.headers, [
             ["content-type", "text/plain;charset=UTF-8"],
@@ -337,16 +331,12 @@ describe("cache middleware unit tests", () => {
 
         const response = defaultCache.match(VALID_URL);
         expect(defaultCache.size).toBe(2);
-        expectHeadersEqual(response!.headers, [
-            ["cache-control", "public, s-maxage=300"],
-            ["internal-variant-set", "origin"],
-        ]);
+        expectHeadersEqual(response!.headers, [["internal-variant-set", "origin"]]);
 
         await new TestVaryWorker(request, "Origin, X-Vary-Header-1").fetch();
         const responses = defaultCache.matchAll();
         expect(responses.length).toBe(3);
         expectHeadersEqual(responses[0]!.headers, [
-            ["cache-control", "public, s-maxage=300"],
             ["internal-variant-set", "origin, x-vary-header-1"],
         ]);
         expect(await responses[0]!.text()).toBe("");
@@ -372,16 +362,12 @@ describe("cache middleware unit tests", () => {
 
         const response = defaultCache.match(VALID_URL);
         expect(defaultCache.size).toBe(2);
-        expectHeadersEqual(response!.headers, [
-            ["cache-control", "public, s-maxage=300"],
-            ["internal-variant-set", "origin"],
-        ]);
+        expectHeadersEqual(response!.headers, [["internal-variant-set", "origin"]]);
 
         await new TestVaryWorker(request, "Origin, X-Vary-Header-1").fetch();
         const responses = defaultCache.matchAll();
         expect(responses.length).toBe(3);
         expectHeadersEqual(responses[0]!.headers, [
-            ["cache-control", "public, s-maxage=300"],
             ["internal-variant-set", "origin, x-vary-header-1"],
         ]);
         expect(await responses[0]!.text()).toBe("");

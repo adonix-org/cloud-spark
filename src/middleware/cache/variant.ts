@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-import { CacheControl } from "../../constants/cache";
 import { HttpHeader } from "../../constants/headers";
-import { Time } from "../../constants/time";
 import { WorkerResponse } from "../../responses";
 import { getHeaderValues } from "../../utils/headers";
 import { getCacheControl } from "./utils";
 
-const DEFAULT_TTL = 5 * Time.Minute;
-
-const DEFAULT_CACHE: CacheControl = {
-    public: true,
-    "s-maxage": DEFAULT_TTL,
-} as const;
-
 export class VariantResponse extends WorkerResponse {
-    public override cache: CacheControl = { ...DEFAULT_CACHE };
     private _isModified = false;
 
     private constructor(vary: string[]) {
@@ -74,13 +64,25 @@ export class VariantResponse extends WorkerResponse {
         return response.headers.has(HttpHeader.INTERNAL_VARIANT_SET);
     }
 
-    public refreshCache(response: Response): void {
+    /**
+     * Ensures this variant response will not expire before the TTL of the given response.
+     * Only updates TTL if the response explicitly provides s-maxage or max-age.
+     * Does nothing if neither header is present.
+     *
+     * @param response - The response whose TTL should be considered
+     */
+    public expireAfter(response: Response): void {
         const incoming = getCacheControl(response.headers);
-        const incomingTTL = incoming["s-maxage"] ?? DEFAULT_TTL;
-        const currentTTL = this.cache["s-maxage"] ?? DEFAULT_TTL;
 
-        if (incomingTTL > currentTTL) {
-            this.cache["s-maxage"] = incomingTTL;
+        const incomingTTL = incoming["s-maxage"] ?? incoming["max-age"];
+        if (incomingTTL === undefined) return;
+
+        const currentTTL = this.cache?.["s-maxage"];
+
+        if (currentTTL === undefined || incomingTTL > currentTTL) {
+            this.cache = {
+                "s-maxage": incomingTTL,
+            };
             this._isModified = true;
         }
     }
