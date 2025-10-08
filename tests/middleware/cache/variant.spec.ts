@@ -22,7 +22,7 @@ describe("variant response unit tests", () => {
         expect(() => VariantResponse.new([])).toThrow("The filtered vary array is empty.");
     });
 
-    it("throws if created the filtered vary is empty", () => {
+    it("throws if the filtered vary is empty", () => {
         expect(() => VariantResponse.new(["accept-encoding"])).toThrow(
             "The filtered vary array is empty.",
         );
