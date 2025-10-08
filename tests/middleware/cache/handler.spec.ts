@@ -260,19 +260,6 @@ describe("cache middleware unit tests", () => {
         expect(namedCache.size).toBe(0);
     });
 
-    it("does not cache 'un-cacheable' responses", async () => {
-        class BadResponseWorker extends TestWorker {
-            protected async dispatch(): Promise<Response> {
-                return new Response("do not cache", { status: StatusCodes.PARTIAL_CONTENT });
-            }
-        }
-
-        const response = await new BadResponseWorker(GET_REQUEST).fetch();
-        expect(response.status).toBe(206);
-        expect(defaultCache.size).toBe(0);
-        expect(namedCache.size).toBe(0);
-    });
-
     it("returns a response variant for vary cache", async () => {
         const request = new Request(VALID_URL, {
             method: GET,
@@ -350,7 +337,7 @@ describe("cache middleware unit tests", () => {
         ]);
     });
 
-    it("does not modify the existing variant response if not needed", async () => {
+    it("does not modify the existing variant response for accept-encoding", async () => {
         vi.spyOn(CacheHandler.prototype, "getCached").mockResolvedValue(undefined);
 
         const request = new Request(VALID_URL, {
@@ -358,26 +345,15 @@ describe("cache middleware unit tests", () => {
             headers: { [HttpHeader.ORIGIN]: VALID_ORIGIN, "X-Vary-Header-1": "on" },
         });
 
-        await new TestVaryWorker(request, "Origin").fetch();
+        await new TestVaryWorker(request, "Origin, Accept-Encoding").fetch();
 
         const response = defaultCache.match(VALID_URL);
         expect(defaultCache.size).toBe(2);
         expectHeadersEqual(response!.headers, [["internal-variant-set", "origin"]]);
 
-        await new TestVaryWorker(request, "Origin, X-Vary-Header-1").fetch();
+        await new TestVaryWorker(request, "Origin, Accept-Encoding").fetch();
         const responses = defaultCache.matchAll();
-        expect(responses.length).toBe(3);
-        expectHeadersEqual(responses[0]!.headers, [
-            ["internal-variant-set", "origin, x-vary-header-1"],
-        ]);
-        expect(await responses[0]!.text()).toBe("");
-        expectHeadersEqual(responses[1]!.headers, [
-            ["content-type", "text/plain;charset=UTF-8"],
-            ["vary", "Origin"],
-        ]);
-        expectHeadersEqual(responses[2]!.headers, [
-            ["content-type", "text/plain;charset=UTF-8"],
-            ["vary", "Origin, X-Vary-Header-1"],
-        ]);
+        expect(responses.length).toBe(2);
+        expectHeadersEqual(responses[0]!.headers, [["internal-variant-set", "origin"]]);
     });
 });

@@ -269,7 +269,7 @@ describe("cache utils unit tests ", () => {
             expect(decoded1.search).toBe(decoded2.search);
         });
 
-        it("handles non-ASCII characters in URL and headers", () => {
+        it("handles non-ascii characters in URL and headers", () => {
             const url = new URL("https://example.com/foö?x=ü");
             const request = new Request(url, { headers: { "X-Custom": "ñ" } });
             const vary = ["X-Custom"];
