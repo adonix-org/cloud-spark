@@ -18,7 +18,7 @@ import { CacheControl } from "../../constants";
 import { HttpHeader } from "../../constants/headers";
 import { WorkerResponse } from "../../responses";
 import { getHeaderValues } from "../../utils/headers";
-import { getCacheControl } from "./utils";
+import { getCacheControl, getFilteredVary } from "./utils";
 
 export class VariantResponse extends WorkerResponse {
     private _isModified = false;
@@ -28,11 +28,11 @@ export class VariantResponse extends WorkerResponse {
             throw new Error("Cannot create a variant response with no vary elements.");
         }
         super();
-        this.setHeader(HttpHeader.INTERNAL_VARIANT_SET, vary);
+        this.setHeader(HttpHeader.INTERNAL_VARIANT_SET, getFilteredVary(vary));
     }
 
     public static new(vary: string[]): VariantResponse {
-        return new VariantResponse(vary);
+        return new VariantResponse(getFilteredVary(vary));
     }
 
     public static restore(source: Response): VariantResponse {
@@ -60,7 +60,7 @@ export class VariantResponse extends WorkerResponse {
 
     public append(vary: string[]): void {
         const before = this.vary.length;
-        this.mergeHeader(HttpHeader.INTERNAL_VARIANT_SET, vary);
+        this.mergeHeader(HttpHeader.INTERNAL_VARIANT_SET, getFilteredVary(vary));
         this._isModified = this.vary.length !== before;
     }
 
