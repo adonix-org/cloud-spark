@@ -197,8 +197,22 @@ describe("cache middleware unit tests", () => {
         const key = getVaryKey(request, getVaryHeader(response), new URL(VALID_URL));
 
         expect(defaultCache.size).toBe(2);
-
         expect(defaultCache.match(key)).toBeDefined();
+    });
+
+    it("retuns a 'vary aware' response", async () => {
+        const request = new Request(VALID_URL, { method: GET, headers: { Origin: VALID_ORIGIN } });
+
+        await new TestVaryWorker(request, "Origin").fetch();
+        const response = await new TestVaryWorker(request, "Origin").fetch();
+        const key = getVaryKey(request, getVaryHeader(response), new URL(VALID_URL));
+
+        expect(defaultCache.size).toBe(2);
+        expect(defaultCache.match(key)).toBeDefined();
+        expectHeadersEqual(response.headers, [
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["vary", "Origin"],
+        ]);
     });
 
     it("does not store vary 'accept-encoding' as a distinct response", async () => {
@@ -259,7 +273,7 @@ describe("cache middleware unit tests", () => {
         expect(namedCache.size).toBe(0);
     });
 
-    it("creates a response variant for vary cache", async () => {
+    it("returns a response variant for vary cache", async () => {
         const request = new Request(VALID_URL, {
             method: GET,
             headers: { [HttpHeader.ORIGIN]: VALID_ORIGIN },
