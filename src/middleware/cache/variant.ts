@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CacheControl } from "../../constants";
 import { HttpHeader } from "../../constants/headers";
 import { WorkerResponse } from "../../responses";
 import { getHeaderValues } from "../../utils/headers";
@@ -39,11 +40,14 @@ export class VariantResponse extends WorkerResponse {
             throw new Error("The source response is not a Variant Response");
         }
 
-        const response = VariantResponse.new(
+        const variant = VariantResponse.new(
             getHeaderValues(source.headers, HttpHeader.INTERNAL_VARIANT_SET),
         );
-        response.cache = getCacheControl(source.headers);
-        return response;
+
+        const cacheControl = source.headers.get(HttpHeader.CACHE_CONTROL);
+        if (cacheControl) variant.cache = CacheControl.parse(cacheControl);
+
+        return variant;
     }
 
     public get vary(): string[] {
