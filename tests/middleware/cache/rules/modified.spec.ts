@@ -15,14 +15,17 @@
  */
 
 import { ModifiedSinceRule, UnmodifiedSinceRule } from "@src/middleware/cache/rules/modified";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import * as utils from "@src/middleware/cache/rules/utils";
+import { beforeEach, describe, expect, it } from "vitest";
+import { StatusCodes } from "@src/constants";
 
-describe("modified cache rules unit tests", () => {
+describe("Last-Modified-based cache validation rules", () => {
     let response: Response;
 
     beforeEach(() => {
-        response = new Response("ok", { status: 200 });
+        response = new Response("ok", {
+            status: 200,
+            headers: { "Last-Modified": new Date("2025-10-05T12:41:17Z").toUTCString() },
+        });
     });
 
     describe("modified since rule unit tests", () => {
@@ -33,43 +36,33 @@ describe("modified cache rules unit tests", () => {
         });
 
         it("returns response if no if-modified-since header", async () => {
-            const request = {
-                request: { headers: new Headers() },
-            } as any;
-            const response = new Response("ok", {
-                headers: { "Last-Modified": new Date().toUTCString() },
-            });
-            const result = await rule.apply(request, async () => response);
+            const worker = { request: new Request("https://x", { headers: {} }) } as any;
+            const result = await rule.apply(worker, async () => response);
             expect(result).toBe(response);
         });
 
-        it("returns 304 if response is fresh compared to if-modified-since", async () => {
-            vi.spyOn(utils, "toDate")
-                .mockReturnValueOnce(Date.now()) // response header
-                .mockReturnValueOnce(Date.now() + 1000); // request header, slightly ahead
+        it("returns 304 if response not newer than if-modified-since", async () => {
+            const since = new Date("2025-10-05T12:42:17Z").toUTCString();
+            const worker = {
+                request: new Request("https://x", { headers: { "If-Modified-Since": since } }),
+            } as any;
 
-            const result = await rule.apply(
-                { request: { headers: new Headers() } } as any,
-                async () => response,
-            );
-            expect(result).toBeInstanceOf(Response);
-            expect(result?.status).toBe(304);
+            const result = await rule.apply(worker, async () => response);
+            expect(result?.status).toBe(StatusCodes.NOT_MODIFIED);
         });
 
-        it("returns undefined if response is stale compared to if-modified-since", async () => {
-            vi.spyOn(utils, "toDate")
-                .mockReturnValueOnce(Date.now() - 1000) // response header, older
-                .mockReturnValueOnce(Date.now() - 2000); // request header
+        it("returns undefined if response is newer than if-modified-since", async () => {
+            const since = new Date("2025-10-05T12:40:17Z").toUTCString();
+            const worker = {
+                request: new Request("https://x", { headers: { "If-Modified-Since": since } }),
+            } as any;
 
-            const result = await rule.apply(
-                { request: { headers: new Headers() } } as any,
-                async () => response,
-            );
+            const result = await rule.apply(worker, async () => response);
             expect(result).toBeUndefined();
         });
     });
 
-    describe("unmodified since rule unit tests", () => {
+    describe("UnmodifiedSinceRule", () => {
         let rule: UnmodifiedSinceRule;
 
         beforeEach(() => {
@@ -77,50 +70,34 @@ describe("modified cache rules unit tests", () => {
         });
 
         it("returns response if no if-unmodified-since header", async () => {
-            const request = {
-                request: { headers: new Headers() },
-            } as any;
-            const response = new Response("ok", {
-                headers: { "Last-Modified": new Date().toUTCString() },
-            });
-            const result = await rule.apply(request, async () => response);
+            const worker = { request: new Request("https://x", { headers: {} }) } as any;
+            const result = await rule.apply(worker, async () => response);
             expect(result).toBe(response);
         });
 
-        it("returns 412 if response has been modified since header date", async () => {
-            const fixedResponseTimestamp = Date.parse("2025-10-05T12:41:17Z"); // response header, newer
-            const fixedRequestTimestamp = Date.parse("2025-10-05T12:40:17Z"); // request header, earlier
+        it("returns 412 if response newer than if-unmodified-since", async () => {
+            const since = new Date("2025-10-05T12:40:17Z").toUTCString(); // earlier
+            const worker = {
+                request: new Request("https://x", { headers: { "If-Unmodified-Since": since } }),
+            } as any;
 
-            vi.spyOn(utils, "toDate")
-                .mockReturnValueOnce(fixedResponseTimestamp) // response header, newer
-                .mockReturnValueOnce(fixedRequestTimestamp); // request header
-
-            const result = await rule.apply(
-                { request: { headers: new Headers() } } as any,
-                async () => response,
-            );
-
-            expect(result).toBeInstanceOf(Response);
-            expect(result?.status).toBe(412);
-
-            const lastModifiedStr = new Date(fixedResponseTimestamp).toUTCString();
-
-            expect(await result?.json()).toStrictEqual({
-                status: 412,
+            const result = await rule.apply(worker, async () => response);
+            expect(result?.status).toBe(StatusCodes.PRECONDITION_FAILED);
+            const json = await result!.json();
+            expect(json).toStrictEqual({
+                details: "Last-Modified: Sun, 05 Oct 2025 12:41:17 GMT",
                 error: "Precondition Failed",
-                details: `Last-Modified: ${lastModifiedStr}`,
+                status: 412,
             });
         });
 
-        it("returns response if response is not modified since header date", async () => {
-            vi.spyOn(utils, "toDate")
-                .mockReturnValueOnce(Date.now() - 1000) // response header, older
-                .mockReturnValueOnce(Date.now()); // request header
+        it("returns response if response older than if-unmodified-since", async () => {
+            const since = new Date("2025-10-05T12:42:17Z").toUTCString();
+            const worker = {
+                request: new Request("https://x", { headers: { "If-Unmodified-Since": since } }),
+            } as any;
 
-            const result = await rule.apply(
-                { request: { headers: new Headers() } } as any,
-                async () => response,
-            );
+            const result = await rule.apply(worker, async () => response);
             expect(result).toBe(response);
         });
     });
