@@ -78,7 +78,7 @@ export class CacheHandler implements Middleware {
 
         const response = await next();
 
-        this.setCached(cache, worker, response);
+        worker.ctx.waitUntil(this.setCached(cache, worker.request, response.clone()));
         return response;
     }
 
@@ -96,7 +96,7 @@ export class CacheHandler implements Middleware {
     public async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
         const key = this.getCacheKey(request);
 
-        const response = await cache.match(key);
+        const response = await cache.match(key.toString());
         if (!response) return undefined;
         if (!VariantResponse.isVariantResponse(response)) return response;
 
@@ -130,25 +130,23 @@ export class CacheHandler implements Middleware {
      * @param worker - The Worker instance containing the request and execution context.
      * @param response - The Response object to cache.
      */
-    public async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
-        if (!isCacheable(worker.request, response)) return;
+    public async setCached(cache: Cache, request: Request, response: Response): Promise<void> {
+        if (!isCacheable(request, response)) return;
 
-        const request = worker.request;
         const key = this.getCacheKey(request);
         const vary = getFilteredVary(getVaryHeader(response));
         const cached = await cache.match(key);
-        const clone = response.clone();
         const isCachedVariant = cached && VariantResponse.isVariantResponse(cached);
 
         if (!cached) {
             if (vary.length === 0) {
-                cache.put(key, clone);
+                await cache.put(key.toString(), response);
                 return;
             }
             const variantResponse = VariantResponse.new(vary);
             variantResponse.expireAfter(response);
-            worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-            worker.ctx.waitUntil(cache.put(getVaryKey(request, variantResponse.vary, key), clone));
+            await cache.put(key, await variantResponse.response());
+            await cache.put(getVaryKey(request, variantResponse.vary, key), response);
             return;
         }
 
@@ -158,15 +156,15 @@ export class CacheHandler implements Middleware {
             if (vary.length > 0) {
                 variantResponse.append(vary);
                 if (variantResponse.isModified) {
-                    worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
+                    await cache.put(key, await variantResponse.response());
                 }
             }
-            worker.ctx.waitUntil(cache.put(getVaryKey(request, variantResponse.vary, key), clone));
+            await cache.put(getVaryKey(request, variantResponse.vary, key), response);
             return;
         }
 
         if (vary.length === 0) {
-            cache.put(key, clone);
+            await cache.put(key, response);
             return;
         }
 
@@ -177,9 +175,9 @@ export class CacheHandler implements Middleware {
         const variantResponse = VariantResponse.new(vary);
         variantResponse.expireAfter(cached);
         variantResponse.expireAfter(response);
-        worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-        worker.ctx.waitUntil(cache.put(getVaryKey(request, variantResponse.vary, key), clone));
-        worker.ctx.waitUntil(cache.put(getVaryKey(request, [], key), cached.clone()));
+        await cache.put(key, await variantResponse.response());
+        await cache.put(getVaryKey(request, variantResponse.vary, key), response);
+        await cache.put(getVaryKey(request, [], key), cached);
     }
 
     /**

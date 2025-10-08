@@ -42,7 +42,7 @@
         "prebuild": "mkdir -p ./types",
         "build": "npm run types && tsup",
         "dev-types": "wrangler types --config wrangler.local.jsonc ./types/cloudflare.d.ts",
-        "dev": "npm run dev-types && wrangler dev --config wrangler.local.jsonc",
+        "dev": "npm run dev-types && wrangler dev --config wrangler.local.jsonc --log-level debug",
         "test": "npm run build && vitest",
         "coverage": "vitest run --coverage"
     },
