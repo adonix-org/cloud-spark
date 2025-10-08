@@ -133,23 +133,22 @@ export class CacheHandler implements Middleware {
     public async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
         if (!isCacheable(worker.request, response)) return;
 
-        const key = this.getCacheKey(worker.request);
+        const request = worker.request;
+        const key = this.getCacheKey(request);
         const vary = getFilteredVary(getVaryHeader(response));
         const cached = await cache.match(key);
-        const request = worker.request;
+        const clone = response.clone();
         const isCachedVariant = cached && VariantResponse.isVariantResponse(cached);
 
         if (!cached) {
             if (vary.length === 0) {
-                cache.put(key, response.clone());
+                cache.put(key, clone);
                 return;
             }
             const variantResponse = VariantResponse.new(vary);
             variantResponse.expireAfter(response);
             worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-            worker.ctx.waitUntil(
-                cache.put(getVaryKey(request, variantResponse.vary, key), response.clone()),
-            );
+            worker.ctx.waitUntil(cache.put(getVaryKey(request, variantResponse.vary, key), clone));
             return;
         }
 
@@ -162,14 +161,12 @@ export class CacheHandler implements Middleware {
                     worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
                 }
             }
-            worker.ctx.waitUntil(
-                cache.put(getVaryKey(request, variantResponse.vary, key), response.clone()),
-            );
+            worker.ctx.waitUntil(cache.put(getVaryKey(request, variantResponse.vary, key), clone));
             return;
         }
 
         if (vary.length === 0) {
-            cache.put(key, response.clone());
+            cache.put(key, clone);
             return;
         }
 
@@ -181,9 +178,7 @@ export class CacheHandler implements Middleware {
         variantResponse.expireAfter(cached);
         variantResponse.expireAfter(response);
         worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-        worker.ctx.waitUntil(
-            cache.put(getVaryKey(request, variantResponse.vary, key), response.clone()),
-        );
+        worker.ctx.waitUntil(cache.put(getVaryKey(request, variantResponse.vary, key), clone));
         worker.ctx.waitUntil(cache.put(getVaryKey(request, [], key), cached.clone()));
     }
 
