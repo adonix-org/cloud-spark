@@ -171,7 +171,10 @@ export class CacheHandler implements Middleware {
             return;
         }
 
-        // Convert a non-variant into a variant.
+        // We have an existing cache entry that is non-variant, but the response
+        // being processed has a vary header. Create and cache a new variant
+        // response that replaces the cached non-variant response. Then save both
+        // the new reponse and the cached response with variant keys.
         const variantResponse = VariantResponse.new(vary);
         worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
         worker.ctx.waitUntil(cache.put(getVaryKey(request, variantResponse.vary, key), response));
