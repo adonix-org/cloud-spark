@@ -16,18 +16,12 @@
 
 import { CacheControl } from "../../constants/cache";
 import { HttpHeader } from "../../constants/headers";
-import { MediaType, UTF8_CHARSET } from "../../constants/media";
 import { Time } from "../../constants/time";
-import { assertVariantSet } from "../../guards/cache";
 import { WorkerResponse } from "../../responses";
-import { stringArraysEqual } from "../../utils/compare";
-import { withCharset } from "../../utils/media";
+import { getHeaderValues } from "../../utils/headers";
 import { getCacheControl } from "./utils";
 
-export type VariantSet = string[][];
-
 const DEFAULT_TTL = 5 * Time.Minute;
-const BUFFER_SECONDS = 30;
 
 const DEFAULT_CACHE: CacheControl = {
     public: true,
@@ -36,97 +30,50 @@ const DEFAULT_CACHE: CacheControl = {
 
 export class VariantResponse extends WorkerResponse {
     public override cache: CacheControl = { ...DEFAULT_CACHE };
-    private variants: VariantSet = [];
 
-    private constructor() {
+    private constructor(vary: string[]) {
+        if (vary.length === 0) {
+            throw new Error("Can not create a variant response with no vary elements.");
+        }
         super();
-        this.mediaType = withCharset(MediaType.JSON, UTF8_CHARSET);
-        this.setHeader(HttpHeader.INTERNAL_VARIANT_SET, "true");
+        this.setHeader(HttpHeader.INTERNAL_VARIANT_SET, vary);
     }
 
-    public static new(): VariantResponse {
-        return new VariantResponse();
+    public static new(vary: string[]): VariantResponse {
+        return new VariantResponse(vary);
     }
 
-    public static async restore(source: Response): Promise<VariantResponse> {
+    public static restore(source: Response): VariantResponse {
         if (!VariantResponse.isVariantResponse(source)) {
             throw new Error("The source response is not a Variant Response");
         }
 
-        const response = VariantResponse.new();
-        response.cache = { ...DEFAULT_CACHE, ...getCacheControl(source.headers) };
-
-        const json = await source.clone().json();
-        assertVariantSet(json);
-        response.variants = json;
-
+        const response = VariantResponse.new(
+            getHeaderValues(source.headers, HttpHeader.INTERNAL_VARIANT_SET),
+        );
+        response.cache = getCacheControl(source.headers);
         return response;
     }
 
-    public override async response(): Promise<Response> {
-        this.addCacheHeader();
-        this.addContentType();
-        return new Response(JSON.stringify(this.variants), this.responseInit);
+    public get vary(): string[] {
+        return getHeaderValues(this.headers, HttpHeader.INTERNAL_VARIANT_SET);
+    }
+
+    public append(vary: string[]): void {
+        this.mergeHeader(HttpHeader.INTERNAL_VARIANT_SET, vary);
+    }
+
+    public static isVariantResponse(response: Response): boolean {
+        return response.headers.has(HttpHeader.INTERNAL_VARIANT_SET);
     }
 
     public refreshCache(response: Response): void {
         const incoming = getCacheControl(response.headers);
-        const incomingTTL = (incoming["s-maxage"] ?? DEFAULT_TTL) + BUFFER_SECONDS;
+        const incomingTTL = incoming["s-maxage"] ?? DEFAULT_TTL;
         const currentTTL = this.cache["s-maxage"] ?? DEFAULT_TTL;
 
         if (incomingTTL > currentTTL) {
             this.cache["s-maxage"] = incomingTTL;
         }
-    }
-
-    public append(vary: string[]): void {
-        if (!this.match(vary)) this.variants.push(vary);
-    }
-
-    public match(vary: string[]): string[] | undefined {
-        for (const variant of this.variants) {
-            if (stringArraysEqual(variant, vary)) {
-                return variant;
-            }
-        }
-        return undefined;
-    }
-
-    public intersect_maybe(requestHeaders: string[]): string[] | undefined {
-        let bestMatch: string[] | undefined = undefined;
-        let maxMatches = 0;
-
-        for (const variant of this.variants) {
-            const matches = variant.filter((h) => requestHeaders.includes(h)).length;
-
-            if (matches > maxMatches) {
-                maxMatches = matches;
-                bestMatch = variant;
-            }
-        }
-
-        return maxMatches > 0 ? bestMatch : undefined;
-    }
-    public intersect(requestHeaders: string[]): string[] | undefined {
-        let bestMatch: string[] | undefined;
-        let maxMatches = 0; // start at 0, not -1
-
-        for (const variant of this.variants) {
-            const matches = variant.filter((h) => requestHeaders.includes(h)).length;
-
-            if (matches > maxMatches) {
-                maxMatches = matches;
-                bestMatch = variant;
-            } else if (matches === maxMatches && variant.length === 0) {
-                bestMatch = variant;
-            }
-        }
-
-        // Only return if there was at least one matching header
-        return maxMatches > 0 ? bestMatch : undefined;
-    }
-
-    public static isVariantResponse(response: Response): boolean {
-        return response.headers.has(HttpHeader.INTERNAL_VARIANT_SET);
     }
 }

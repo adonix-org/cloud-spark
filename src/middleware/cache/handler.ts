@@ -27,7 +27,6 @@ import { Middleware } from "../../interfaces/middleware";
 import { sortSearchParams } from "./keys";
 import { CacheInit } from "../../interfaces/cache";
 import { VariantResponse } from "./variant";
-import { getHeaderKeys } from "../../utils/headers";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.
@@ -116,18 +115,12 @@ class CacheHandler implements Middleware {
     public async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
         const key = this.getCacheKey(request);
 
-        console.log(key.toString());
-
         const response = await cache.match(key);
         if (!response) return undefined;
         if (!VariantResponse.isVariantResponse(response)) return response;
 
-        const variantResponse = await VariantResponse.restore(response);
-        const match = variantResponse.intersect(getHeaderKeys(request.headers));
-        console.log(match);
-        if (!match) return undefined;
-
-        const varyKey = getVaryKey(request, match, key);
+        const vary = VariantResponse.restore(response).vary;
+        const varyKey = getVaryKey(request, vary, key);
         return cache.match(varyKey);
     }
 
@@ -150,76 +143,67 @@ class CacheHandler implements Middleware {
 
         const key = this.getCacheKey(worker.request);
         const vary = getFilteredVary(getVaryHeader(response));
-        const existing = await cache.match(key);
+        const cached = await cache.match(key);
+        const request = worker.request;
 
-        if (vary.length === 0 && !existing) {
-            // There are no meaningful vary headers on the response and
-            // there is no existing cached response.
-            // Store the non-vary response as is.
-            worker.ctx.waitUntil(cache.put(key, response.clone()));
+        if (!cached && vary.length === 0) {
+            // We have no cached response and the first one we see does not vary.
+            // Cache the response as is.
+            cache.put(key, response);
             return;
         }
 
-        if (vary.length === 0 && existing && !VariantResponse.isVariantResponse(existing)) {
-            // There are no meaningful vary headers on the response and
-            // the cached response is non-variant.
-            // Store the non-vary response as is.
-            worker.ctx.waitUntil(cache.put(key, response.clone()));
-            return;
-        }
-
-        if (vary.length === 0 && existing && VariantResponse.isVariantResponse(existing)) {
-            // There are no meaningful vary headers on the response and
-            // the cached response is a variant response. We need to add
-            // the empty variant case if it doesn't already exist.
-            const variantResponse = await VariantResponse.restore(existing);
-            if (!variantResponse.match([])) {
-                variantResponse.append([]);
-                worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-            }
-            worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, [], key), response.clone()));
-            return;
-        }
-
-        if (vary.length > 0 && !existing) {
-            // There ARE meaningful vary headers on the response and the
-            // existing variant response does NOT exist.
-            // Create a new variant response for this vary response.
-            const variantResponse = VariantResponse.new();
-            variantResponse.append(vary);
+        if (!cached && vary.length > 0) {
+            // We have no cached response and the first one we see does vary.
+            // Create a new variant response and cache the actual response with
+            // a key generated from the vary headers.
+            const variantResponse = VariantResponse.new(vary);
             worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
             worker.ctx.waitUntil(
-                cache.put(getVaryKey(worker.request, vary, key), response.clone()),
+                cache.put(getVaryKey(request, variantResponse.vary, key), response),
             );
             return;
         }
 
-        if (vary.length > 0 && existing && !VariantResponse.isVariantResponse(existing)) {
-            // There ARE meaningful vary headers on the response and the
-            // existing cached response is a simple non-vary response.
-            // We need to convert it to a variant response and overwrite it
-            // while saving the existing response with an empty vary key (as
-            // it did not have vary to begin with).
-            const variantResponse = await VariantResponse.new();
-            variantResponse.append([]);
-            variantResponse.append(vary);
-            worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-            worker.ctx.waitUntil(cache.put(getVaryKey(worker.request, [], key), existing));
+        if (cached && vary.length === 0 && VariantResponse.isVariantResponse(cached)) {
+            // The cached response is already a variant response and does not need to be
+            // updated. Just store the new response with the generated key.
+            const variantResponse = VariantResponse.restore(cached);
+            worker.ctx.waitUntil(
+                cache.put(getVaryKey(request, variantResponse.vary, key), response),
+            );
             return;
         }
 
-        if (vary.length > 0 && existing && VariantResponse.isVariantResponse(existing)) {
-            // There ARE meaningful vary headers on the response and the
-            // the existing cached response is a variant response.
-            // Update the variant response if no matches found and save.
-            // Save the new response with the meaningful vary keys.
-            const variantResponse = await VariantResponse.restore(existing);
-            if (!variantResponse.match(vary)) {
-                variantResponse.append(vary);
-                worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-            }
+        if (cached && vary.length > 0 && VariantResponse.isVariantResponse(cached)) {
+            // The cached resposne is already a variant response, so update it with
+            // the newly seen vary elements and save the actual response with a key
+            // gnerated from the vary headers.
+            const variantResponse = VariantResponse.restore(cached);
+            variantResponse.append(vary);
+            worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
             worker.ctx.waitUntil(
-                cache.put(getVaryKey(worker.request, vary, key), response.clone()),
+                cache.put(getVaryKey(request, variantResponse.vary, key), response),
+            );
+            return;
+        }
+
+        if (cached && vary.length === 0 && !VariantResponse.isVariantResponse(cached)) {
+            // The cached response is non-variant and does not vary based on the
+            // response we are currently processing. Overwrite the cached response.
+            cache.put(key, response);
+            return;
+        }
+
+        if (cached && vary.length > 0 && !VariantResponse.isVariantResponse(cached)) {
+            // The cached response is non-variant but now needs to be converted into
+            // a variant response. Create the new variant response and overwrite the
+            // cached response. Save the response with a new vary key.
+            // TODO: do we also save what was cached and if so with what key?
+            const variantResponse = VariantResponse.new(vary);
+            worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
+            worker.ctx.waitUntil(
+                cache.put(getVaryKey(request, variantResponse.vary, key), response),
             );
             return;
         }
