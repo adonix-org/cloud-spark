@@ -45,6 +45,8 @@ export async function options(worker: Worker, cors: CorsConfig): Promise<Respons
     setAllowHeaders(options.headers, cors);
     setMaxAge(options.headers, cors);
 
+    setVaryOrigin(options.headers, cors);
+
     return options.response();
 }
 
@@ -75,7 +77,15 @@ export async function apply(
         setExposedHeaders(clone.headers, cors);
     }
 
+    setVaryOrigin(clone.headers, cors);
+
     return clone.response();
+}
+
+export function setVaryOrigin(headers: Headers, cors: CorsConfig) {
+    if (!allowAllOrigins(cors)) {
+        mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
+    }
 }
 
 /**
@@ -89,11 +99,11 @@ export async function apply(
 export function setAllowOrigin(headers: Headers, cors: CorsConfig, origin: string): void {
     if (allowAllOrigins(cors)) {
         setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, ALLOW_ALL_ORIGINS);
-    } else {
-        if (cors.allowedOrigins.includes(origin)) {
-            setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-        }
-        mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
+        return;
+    }
+
+    if (cors.allowedOrigins.includes(origin)) {
+        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
     }
 }
 

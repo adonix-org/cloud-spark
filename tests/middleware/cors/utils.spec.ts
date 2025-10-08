@@ -33,6 +33,7 @@ import {
     setAllowOrigin,
     setExposedHeaders,
     setMaxAge,
+    setVaryOrigin,
     skipCors,
 } from "@src/middleware/cors/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -57,10 +58,7 @@ describe("cors utils unit tests", () => {
                 { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
                 "http://localhost",
             );
-            expectHeadersEqual(headers, [
-                ["access-control-allow-origin", "http://localhost"],
-                ["vary", "Origin"],
-            ]);
+            expectHeadersEqual(headers, [["access-control-allow-origin", "http://localhost"]]);
         });
 
         it("does not add the header for invalid origin", () => {
@@ -69,30 +67,31 @@ describe("cors utils unit tests", () => {
                 { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
                 "http://localhost.invalid",
             );
+            expectHeadersEqual(headers, []);
+        });
+    });
+
+    describe("set vary origin function", () => {
+        it("adds vary header when allowed origins is not *", () => {
+            setVaryOrigin(headers, { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] });
             expectHeadersEqual(headers, [["vary", "Origin"]]);
         });
 
-        it("correctly merges vary header for a valid origin", () => {
-            headers.set(HttpHeader.VARY, "Accept");
-            setAllowOrigin(
-                headers,
-                { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
-                "http://localhost",
-            );
-            expectHeadersEqual(headers, [
-                ["vary", "Accept, Origin"],
-                ["access-control-allow-origin", "http://localhost"],
-            ]);
+        it("does not add vary header when allowed origins is *", () => {
+            setVaryOrigin(headers, { ...defaultCorsConfig, allowedOrigins: ["*"] });
+            expectHeadersEqual(headers, []);
         });
 
-        it("correctly merges vary header for an invalid origin", () => {
+        it("correctly merges vary header when allowed origin is not *", () => {
             headers.set(HttpHeader.VARY, "Accept");
-            setAllowOrigin(
-                headers,
-                { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] },
-                "http://localhost.invalid",
-            );
+            setVaryOrigin(headers, { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] });
             expectHeadersEqual(headers, [["vary", "Accept, Origin"]]);
+        });
+
+        it("preserves existing vary header when allowed origin is *", () => {
+            headers.set(HttpHeader.VARY, "Accept");
+            setVaryOrigin(headers, { ...defaultCorsConfig, allowedOrigins: ["*"] });
+            expectHeadersEqual(headers, [["vary", "Accept"]]);
         });
     });
 
