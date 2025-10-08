@@ -141,14 +141,14 @@ export class CacheHandler implements Middleware {
 
         if (!cached) {
             if (vary.length === 0) {
-                cache.put(key, response);
+                cache.put(key, response.clone());
                 return;
             }
             const variantResponse = VariantResponse.new(vary);
             variantResponse.expireAfter(response);
             worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
             worker.ctx.waitUntil(
-                cache.put(getVaryKey(request, variantResponse.vary, key), response),
+                cache.put(getVaryKey(request, variantResponse.vary, key), response.clone()),
             );
             return;
         }
@@ -163,13 +163,13 @@ export class CacheHandler implements Middleware {
                 }
             }
             worker.ctx.waitUntil(
-                cache.put(getVaryKey(request, variantResponse.vary, key), response),
+                cache.put(getVaryKey(request, variantResponse.vary, key), response.clone()),
             );
             return;
         }
 
         if (vary.length === 0) {
-            cache.put(key, response);
+            cache.put(key, response.clone());
             return;
         }
 
@@ -181,8 +181,10 @@ export class CacheHandler implements Middleware {
         variantResponse.expireAfter(cached);
         variantResponse.expireAfter(response);
         worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-        worker.ctx.waitUntil(cache.put(getVaryKey(request, variantResponse.vary, key), response));
-        worker.ctx.waitUntil(cache.put(getVaryKey(request, [], key), cached));
+        worker.ctx.waitUntil(
+            cache.put(getVaryKey(request, variantResponse.vary, key), response.clone()),
+        );
+        worker.ctx.waitUntil(cache.put(getVaryKey(request, [], key), cached.clone()));
     }
 
     /**
