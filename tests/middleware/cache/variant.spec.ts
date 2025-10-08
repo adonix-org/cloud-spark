@@ -19,8 +19,12 @@ import { describe, expect, it } from "vitest";
 
 describe("variant response unit tests", () => {
     it("throws if created with empty vary", () => {
-        expect(() => VariantResponse.new([])).toThrow(
-            "Cannot create a variant response with no vary elements.",
+        expect(() => VariantResponse.new([])).toThrow("The filtered vary array is empty.");
+    });
+
+    it("throws if created the filtered vary is empty", () => {
+        expect(() => VariantResponse.new(["accept-encoding"])).toThrow(
+            "The filtered vary array is empty.",
         );
     });
 

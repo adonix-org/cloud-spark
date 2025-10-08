@@ -24,11 +24,13 @@ export class VariantResponse extends WorkerResponse {
     private _isModified = false;
 
     private constructor(vary: string[]) {
-        if (vary.length === 0) {
-            throw new Error("Cannot create a variant response with no vary elements.");
+        const filtered = getFilteredVary(vary);
+        if (filtered.length === 0) {
+            throw new Error("The filtered vary array is empty.");
         }
+
         super();
-        this.setHeader(HttpHeader.INTERNAL_VARIANT_SET, getFilteredVary(vary));
+        this.setHeader(HttpHeader.INTERNAL_VARIANT_SET, filtered);
     }
 
     public static new(vary: string[]): VariantResponse {
