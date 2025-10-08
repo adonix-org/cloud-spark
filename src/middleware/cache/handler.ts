@@ -83,12 +83,15 @@ export class CacheHandler implements Middleware {
     }
 
     /**
-     * Retrieves a cached response for a given request.
-     * - Checks both the base cache key and any Vary-specific keys.
+     * Attempts to retrieve a cached response for the given request.
      *
-     * @param cache The Cache object to check.
-     * @param request The request to retrieve a cached response for.
-     * @returns A cached Response if available, otherwise `undefined`.
+     * Checks the base cache key first. If the cached response is a `VariantResponse`,
+     * it computes the variant-specific key using the `Vary` headers and returns
+     * the corresponding cached response. Otherwise, returns the base cached response.
+     *
+     * @param cache - The Cache object to query.
+     * @param request - The Request object for which to retrieve a cached response.
+     * @returns A Promise resolving to the cached Response if found, or `undefined` if not cached.
      */
     public async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
         const key = this.getCacheKey(request);
@@ -103,18 +106,29 @@ export class CacheHandler implements Middleware {
     }
 
     /**
-     * Caches a response if it is cacheable.
+     * Stores a response in the cache for the given request, handling `Vary` headers
+     * and response variants.
      *
-     * Behavior:
-     * - Always stores the response under the main cache key. This ensures that
-     *   the response’s Vary headers are available for later cache lookups.
-     * - If the response varies based on certain request headers (per the Vary header),
-     *   also stores a copy under a Vary-specific cache key so future requests
-     *   with matching headers can retrieve the correct response.
+     * The method follows these rules:
+     * 1. If the response is not cacheable, it returns immediately.
+     * 2. If no cached entry exists:
+     *    - If the response has no `Vary` headers, the response is cached directly.
+     *    - If there are `Vary` headers, a `VariantResponse` is created to track
+     *      which headers affect caching, and both the variant placeholder and the
+     *      actual response are stored.
+     * 3. If a cached entry exists and is a `VariantResponse`:
+     *    - The `Vary` headers are merged into the variant record.
+     *    - The variant-specific response is updated in the cache.
+     * 4. If a cached entry exists but is not a variant and the new response has `Vary` headers:
+     *    - The cached non-variant is converted into a `VariantResponse`.
+     *    - The new response and the original cached response are stored under appropriate variant keys.
      *
-     * @param cache The Cache object to store the response in.
-     * @param worker The Worker instance containing the request and context.
-     * @param response The Response to cache.
+     * Uses `worker.ctx.waitUntil` to asynchronously update the cache without delaying
+     * the response to the client.
+     *
+     * @param cache - The Cache object where the response should be stored.
+     * @param worker - The Worker instance containing the request and execution context.
+     * @param response - The Response object to cache.
      */
     public async setCached(cache: Cache, worker: Worker, response: Response): Promise<void> {
         if (!isCacheable(worker.request, response)) return;
@@ -123,18 +137,13 @@ export class CacheHandler implements Middleware {
         const vary = getFilteredVary(getVaryHeader(response));
         const cached = await cache.match(key);
         const request = worker.request;
+        const isCachedVariant = cached && VariantResponse.isVariantResponse(cached);
 
-        if (!cached && vary.length === 0) {
-            // We have no cached response and the first one we see does not vary.
-            // Cache the response as is.
-            cache.put(key, response);
-            return;
-        }
-
-        if (!cached && vary.length > 0) {
-            // We have no cached response and the first one we see does vary.
-            // Create a new variant response and cache the actual response with
-            // a key generated from the vary headers.
+        if (!cached) {
+            if (vary.length === 0) {
+                cache.put(key, response);
+                return;
+            }
             const variantResponse = VariantResponse.new(vary);
             worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
             worker.ctx.waitUntil(
@@ -143,24 +152,13 @@ export class CacheHandler implements Middleware {
             return;
         }
 
-        if (cached && vary.length === 0 && VariantResponse.isVariantResponse(cached)) {
-            // The cached response is already a variant response and does not need to be
-            // updated. Just store the new response with the generated key.
+        if (isCachedVariant) {
             const variantResponse = VariantResponse.restore(cached);
-            worker.ctx.waitUntil(
-                cache.put(getVaryKey(request, variantResponse.vary, key), response),
-            );
-            return;
-        }
-
-        if (cached && vary.length > 0 && VariantResponse.isVariantResponse(cached)) {
-            // The cached response is already a variant response, so update it with
-            // the newly seen vary elements and save the actual response with a key
-            // generated from the vary headers.
-            const variantResponse = VariantResponse.restore(cached);
-            variantResponse.append(vary);
-            if (variantResponse.isModified) {
-                worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
+            if (vary.length > 0) {
+                variantResponse.append(vary);
+                if (variantResponse.isModified) {
+                    worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
+                }
             }
             worker.ctx.waitUntil(
                 cache.put(getVaryKey(request, variantResponse.vary, key), response),
@@ -168,26 +166,16 @@ export class CacheHandler implements Middleware {
             return;
         }
 
-        if (cached && vary.length === 0 && !VariantResponse.isVariantResponse(cached)) {
-            // The cached response is non-variant and does not vary based on the
-            // response we are currently processing. Overwrite the cached response.
+        if (vary.length === 0) {
             cache.put(key, response);
             return;
         }
 
-        if (cached && vary.length > 0 && !VariantResponse.isVariantResponse(cached)) {
-            // The cached response is non-variant but now needs to be converted into
-            // a variant response. Create the new variant response and overwrite the
-            // cached response. Save the new response and cached response with new
-            // vary keys.
-            const variantResponse = VariantResponse.new(vary);
-            worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
-            worker.ctx.waitUntil(
-                cache.put(getVaryKey(request, variantResponse.vary, key), response),
-            );
-            worker.ctx.waitUntil(cache.put(getVaryKey(request, [], key), cached));
-            return;
-        }
+        // Convert a non-variant into a variant.
+        const variantResponse = VariantResponse.new(vary);
+        worker.ctx.waitUntil(cache.put(key, await variantResponse.response()));
+        worker.ctx.waitUntil(cache.put(getVaryKey(request, variantResponse.vary, key), response));
+        worker.ctx.waitUntil(cache.put(getVaryKey(request, [], key), cached));
     }
 
     /**
