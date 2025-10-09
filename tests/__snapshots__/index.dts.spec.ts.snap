@@ -750,7 +750,7 @@ declare class ClonedResponse extends WorkerResponse {
 /**
  * Copies the response, but with null body and status 304 Not Modified.
  */
-declare class NotModified extends ClonedResponse {
+declare class NotModified extends WorkerResponse {
     constructor(response: Response);
 }
 /**

@@ -154,9 +154,8 @@ export class ClonedResponse extends WorkerResponse {
 export class NotModified extends WorkerResponse {
     constructor(response: Response) {
         super();
-        this.headers = new Headers(response.headers);
         this.status = StatusCodes.NOT_MODIFIED;
-        this.statusText = getReasonPhrase(StatusCodes.NOT_MODIFIED);
+        this.headers = new Headers(response.headers);
     }
 }
 
