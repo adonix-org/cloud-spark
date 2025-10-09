@@ -2,10 +2,10 @@ import { describe, it, beforeEach, expect } from "vitest";
 import { ctx, defaultCache, namedCache } from "@mock";
 import { CacheHandler } from "@src/middleware/cache/handler";
 import { GET, POST } from "@src/constants/methods";
-import { getVaryKey, getVaryHeader } from "@src/middleware/cache/utils";
+import { getVaryKey } from "@src/middleware/cache/utils";
 import { sortSearchParams } from "@src/middleware";
 import { CacheInit } from "@src/interfaces";
-import { GET_REQUEST } from "@common";
+import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN } from "@common";
 
 const init: CacheInit = { getKey: sortSearchParams };
 
@@ -91,21 +91,12 @@ describe("cache middleware", () => {
 
     it("stores and returns vary-aware responses", async () => {
         const handler = new CacheHandler(init);
-        const req = new Request("https://localhost/", {
-            method: GET,
-            headers: { Origin: "https://example.com" },
-        });
-        const worker = new MockWorker(req);
+        const worker = new MockWorker(GET_REQUEST_WITH_ORIGIN);
 
         const response = new Response("from dispatch", { headers: { Vary: "Origin" } });
         await handler.setCached(defaultCache, worker.request, response);
 
-        const key = getVaryKey(
-            worker.request,
-            getVaryHeader(response),
-            new URL(worker.request.url),
-        );
-        const cached = await defaultCache.match(key);
+        const cached = await handler.getCached(defaultCache, worker.request);
         expect(cached).toBeDefined();
         expect(await cached?.text()).toBe("from dispatch");
         expect(defaultCache.size).toBe(2);
