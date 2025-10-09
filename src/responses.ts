@@ -151,9 +151,10 @@ export class ClonedResponse extends WorkerResponse {
 /**
  * Copies the response, but with null body and status 304 Not Modified.
  */
-export class NotModified extends ClonedResponse {
+export class NotModified extends WorkerResponse {
     constructor(response: Response) {
-        super(response);
+        super();
+        this.headers = new Headers(response.headers);
         this.status = StatusCodes.NOT_MODIFIED;
         this.statusText = getReasonPhrase(StatusCodes.NOT_MODIFIED);
     }
