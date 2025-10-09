@@ -78,7 +78,7 @@ export class CacheHandler implements Middleware {
 
         const response = await next();
 
-        worker.ctx.waitUntil(this.setCached(cache, worker.request, response.clone()));
+        worker.ctx.waitUntil(this.setCached(cache, worker.request, response));
         return response;
     }
 
@@ -128,43 +128,44 @@ export class CacheHandler implements Middleware {
      *
      * @param cache - The Cache object where the response should be stored.
      * @param worker - The Worker instance containing the request and execution context.
-     * @param response - The Response object to cache.
+     * @param clone - The Response object to cache.
      */
     public async setCached(cache: Cache, request: Request, response: Response): Promise<void> {
         if (!isCacheable(request, response)) return;
 
         const key = this.getCacheKey(request);
-        const vary = getFilteredVary(getVaryHeader(response));
+        const clone = response.clone();
+        const vary = getFilteredVary(getVaryHeader(clone));
         const cached = await cache.match(key);
         const isCachedVariant = cached && VariantResponse.isVariantResponse(cached);
 
         if (!cached) {
             if (vary.length === 0) {
-                await cache.put(key.toString(), response);
+                await cache.put(key.toString(), clone);
                 return;
             }
             const variantResponse = VariantResponse.new(vary);
-            variantResponse.expireAfter(response);
+            variantResponse.expireAfter(clone);
             await cache.put(key, await variantResponse.response());
-            await cache.put(getVaryKey(request, variantResponse.vary, key), response);
+            await cache.put(getVaryKey(request, variantResponse.vary, key), clone);
             return;
         }
 
         if (isCachedVariant) {
             const variantResponse = VariantResponse.restore(cached);
-            variantResponse.expireAfter(response);
+            variantResponse.expireAfter(clone);
             if (vary.length > 0) {
                 variantResponse.append(vary);
                 if (variantResponse.isModified) {
                     await cache.put(key, await variantResponse.response());
                 }
             }
-            await cache.put(getVaryKey(request, variantResponse.vary, key), response);
+            await cache.put(getVaryKey(request, variantResponse.vary, key), clone);
             return;
         }
 
         if (vary.length === 0) {
-            await cache.put(key, response);
+            await cache.put(key, clone);
             return;
         }
 
@@ -174,9 +175,9 @@ export class CacheHandler implements Middleware {
         // the new response and the cached response with generated variant keys.
         const variantResponse = VariantResponse.new(vary);
         variantResponse.expireAfter(cached);
-        variantResponse.expireAfter(response);
+        variantResponse.expireAfter(clone);
         await cache.put(key, await variantResponse.response());
-        await cache.put(getVaryKey(request, variantResponse.vary, key), response);
+        await cache.put(getVaryKey(request, variantResponse.vary, key), clone);
         await cache.put(getVaryKey(request, [], key), cached);
     }
 
