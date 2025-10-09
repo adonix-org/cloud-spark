@@ -101,13 +101,13 @@ export function getCacheControl(headers: Headers): CacheControl {
  * - Deduplicates
  * - Converts all values to lowercase
  * - Sorts lexicographically
+ * - Removes `Vary` headers to ignore for caching.
  *
  * @param response The Response object containing headers.
  * @returns An array of normalized header names from the Vary header.
  */
 export function getVaryHeader(response: Response): string[] {
-    const values = getHeaderValues(response.headers, HttpHeader.VARY);
-    return Array.from(new Set(values.map((v) => v.toLowerCase()))).sort(lexCompare);
+    return getFilteredVary(getHeaderValues(response.headers, HttpHeader.VARY));
 }
 
 /**
@@ -118,9 +118,11 @@ export function getVaryHeader(response: Response): string[] {
  * @returns Array of headers used for computing cache variations.
  */
 export function getFilteredVary(vary: string[]): string[] {
-    return vary
+    const values = vary
         .map((h) => h.toLowerCase())
-        .filter((value) => value !== HttpHeader.ACCEPT_ENCODING.toLowerCase());
+        .filter((value) => value !== HttpHeader.ACCEPT_ENCODING.toLowerCase())
+        .sort(lexCompare);
+    return Array.from(new Set(values));
 }
 
 /**
@@ -150,8 +152,7 @@ export function getFilteredVary(vary: string[]): string[] {
 export function getVaryKey(request: Request, vary: string[], key: URL): string {
     const varyPairs: [string, string][] = [];
     const filtered = getFilteredVary(vary);
-
-    filtered.sort(lexCompare);
+    
     for (const header of filtered) {
         const value = request.headers.get(header);
         if (value !== null) {

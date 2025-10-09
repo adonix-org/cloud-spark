@@ -142,19 +142,28 @@ describe("cache utils unit tests ", () => {
         });
 
         it("splits multiple comma-separated values and sorts them", () => {
-            const headers = new Headers({ Vary: "Origin, Accept-Encoding, " });
+            const headers = new Headers({ Vary: "Origin, Accept-Language, " });
             const response = new Response(null, { headers });
 
-            expect(getVaryHeader(response)).toEqual(["accept-encoding", "origin"]);
+            expect(getVaryHeader(response)).toEqual(["accept-language", "origin"]);
         });
 
         it("deduplicates repeated values", () => {
+            const headers = new Headers({
+                Vary: "Origin, origin, ACCEPT-LANGUAGE, accept-language",
+            });
+            const response = new Response(null, { headers });
+
+            expect(getVaryHeader(response)).toEqual(["accept-language", "origin"]);
+        });
+
+        it("filters accept-encoding values", () => {
             const headers = new Headers({
                 Vary: "Origin, origin, ACCEPT-ENCODING, accept-encoding",
             });
             const response = new Response(null, { headers });
 
-            expect(getVaryHeader(response)).toEqual(["accept-encoding", "origin"]);
+            expect(getVaryHeader(response)).toEqual(["origin"]);
         });
 
         it("returns empty array if vary header is missing", () => {
@@ -180,17 +189,17 @@ describe("cache utils unit tests ", () => {
 
         it("removes 'accept-encoding' among other headers", () => {
             const input = ["Origin", "Accept-Encoding", "Content-Type"];
-            expect(getFilteredVary(input)).toEqual(["origin", "content-type"]);
+            expect(getFilteredVary(input)).toEqual(["content-type", "origin"]);
         });
 
         it("removes 'accept-encoding' case-insensitively", () => {
             const input = ["origin", "ACCEPT-ENCODING", "content-type"];
-            expect(getFilteredVary(input)).toEqual(["origin", "content-type"]);
+            expect(getFilteredVary(input)).toEqual(["content-type", "origin"]);
         });
 
         it("returns lowercased headers if none are 'accept-encoding'", () => {
             const input = ["Origin", "Content-Type"];
-            expect(getFilteredVary(input)).toEqual(["origin", "content-type"]);
+            expect(getFilteredVary(input)).toEqual(["content-type", "origin"]);
         });
 
         it("returns empty array if input is empty", () => {
