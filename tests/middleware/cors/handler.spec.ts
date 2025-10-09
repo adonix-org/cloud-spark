@@ -75,7 +75,7 @@ describe("cors middleware unit tests", () => {
         expectHeadersEqual(response.headers, [
             ["access-control-allow-origin", "https://localhost"],
             ["content-type", "text/plain;charset=UTF-8"],
-            ["vary", "Origin"],
+            ["vary", "origin"],
         ]);
     });
 
@@ -84,7 +84,7 @@ describe("cors middleware unit tests", () => {
         const response = await worker.fetch();
         expectHeadersEqual(response.headers, [
             ["content-type", "text/plain;charset=UTF-8"],
-            ["vary", "Origin"],
+            ["vary", "origin"],
         ]);
     });
 
@@ -125,7 +125,7 @@ describe("cors middleware unit tests", () => {
         const response = await worker.fetch();
         expect(await response.text()).toBe("");
         expectHeadersEqual(response.headers, [
-            ["access-control-allow-headers", "Content-Type"],
+            ["access-control-allow-headers", "content-type"],
             ["access-control-allow-origin", "*"],
             ["access-control-max-age", "300"],
         ]);

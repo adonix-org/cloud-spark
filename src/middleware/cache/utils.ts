@@ -152,16 +152,37 @@ export function getFilteredVary(vary: string[]): string[] {
 export function getVaryKey(request: Request, vary: string[], key: URL): string {
     const varyPairs: [string, string][] = [];
     const filtered = getFilteredVary(vary);
-    
+
     for (const header of filtered) {
         const value = request.headers.get(header);
         if (value !== null) {
-            varyPairs.push([header, value]);
+            varyPairs.push([header, normalizeVaryValue(header, value)]);
         }
     }
 
     const encoded = base64UrlEncode(JSON.stringify([key.toString(), varyPairs]));
     return new URL(encoded, VARY_CACHE_URL).toString();
+}
+
+/**
+ * Normalizes the value of a header used in a Vary key.
+ *
+ * Only lowercases headers that are defined as case-insensitive
+ * by HTTP standards and commonly used for content negotiation.
+ *
+ * @param name - The header name (case-insensitive).
+ * @param value - The header value as received from the request.
+ * @returns The normalized header value.
+ */
+export function normalizeVaryValue(name: string, value: string): string {
+    switch (name.toLowerCase()) {
+        case HttpHeader.ACCEPT:
+        case HttpHeader.ACCEPT_LANGUAGE:
+        case HttpHeader.ORIGIN:
+            return value.toLowerCase();
+        default:
+            return value;
+    }
 }
 
 /**

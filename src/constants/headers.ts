@@ -18,45 +18,47 @@
  * Internally used headers.
  */
 export namespace HttpHeader {
-    export const ACCEPT_ENCODING = "Accept-Encoding";
-    export const ACCEPT_RANGES = "Accept-Ranges";
-    export const ALLOW = "Allow";
-    export const AUTHORIZATION = "Authorization";
-    export const CACHE_CONTROL = "Cache-Control";
-    export const CONNECTION = "Connection";
-    export const CONTENT_DISPOSITION = "Content-Disposition";
-    export const CONTENT_ENCODING = "Content-Encoding";
-    export const CONTENT_LANGUAGE = "Content-Language";
-    export const CONTENT_LENGTH = "Content-Length";
-    export const CONTENT_RANGE = "Content-Range";
-    export const CONTENT_TYPE = "Content-Type";
-    export const CONTENT_MD5 = "Content-MD5";
-    export const COOKIE = "Cookie";
-    export const ETAG = "ETag";
-    export const IF_MATCH = "If-Match";
-    export const IF_MODIFIED_SINCE = "If-Modified-Since";
-    export const IF_NONE_MATCH = "If-None-Match";
-    export const IF_UNMODIFIED_SINCE = "If-Unmodified-Since";
-    export const LAST_MODIFIED = "Last-Modified";
-    export const ORIGIN = "Origin";
-    export const RANGE = "Range";
-    export const SET_COOKIE = "Set-Cookie";
-    export const VARY = "Vary";
+    export const ACCEPT = "accept";
+    export const ACCEPT_ENCODING = "accept-encoding";
+    export const ACCEPT_LANGUAGE = "accept-language";
+    export const ACCEPT_RANGES = "accept-ranges";
+    export const ALLOW = "allow";
+    export const AUTHORIZATION = "authorization";
+    export const CACHE_CONTROL = "cache-control";
+    export const CONNECTION = "connection";
+    export const CONTENT_DISPOSITION = "content-disposition";
+    export const CONTENT_ENCODING = "content-encoding";
+    export const CONTENT_LANGUAGE = "content-language";
+    export const CONTENT_LENGTH = "content-length";
+    export const CONTENT_RANGE = "content-range";
+    export const CONTENT_TYPE = "content-type";
+    export const CONTENT_MD5 = "content-md5";
+    export const COOKIE = "cookie";
+    export const ETAG = "etag";
+    export const IF_MATCH = "if-match";
+    export const IF_MODIFIED_SINCE = "if-modified-since";
+    export const IF_NONE_MATCH = "if-none-match";
+    export const IF_UNMODIFIED_SINCE = "if-unmodified-since";
+    export const LAST_MODIFIED = "last-modified";
+    export const ORIGIN = "origin";
+    export const RANGE = "range";
+    export const SET_COOKIE = "set-cookie";
+    export const VARY = "vary";
 
     // Cors Headers
-    export const ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-    export const ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
-    export const ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
-    export const ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    export const ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
-    export const ACCESS_CONTROL_MAX_AGE = "Access-Control-Max-Age";
+    export const ACCESS_CONTROL_ALLOW_CREDENTIALS = "access-control-allow-credentials";
+    export const ACCESS_CONTROL_ALLOW_HEADERS = "access-control-allow-headers";
+    export const ACCESS_CONTROL_ALLOW_METHODS = "access-control-allow-methods";
+    export const ACCESS_CONTROL_ALLOW_ORIGIN = "access-control-allow-origin";
+    export const ACCESS_CONTROL_EXPOSE_HEADERS = "access-control-expose-headers";
+    export const ACCESS_CONTROL_MAX_AGE = "access-control-max-age";
 
     // Websocket Headers
-    export const SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version";
-    export const UPGRADE = "Upgrade";
+    export const SEC_WEBSOCKET_VERSION = "sec-websocket-version";
+    export const UPGRADE = "upgrade";
 
     // Internal Headers
-    export const INTERNAL_VARIANT_SET = "Internal-Variant-Set";
+    export const INTERNAL_VARIANT_SET = "internal-variant-set";
 }
 
 /**

@@ -77,7 +77,7 @@ describe("cors utils unit tests", () => {
                 ["access-control-allow-methods", "POST"],
                 ["access-control-allow-origin", "https://foo.com"],
                 ["access-control-max-age", "86400"],
-                ["vary", "Origin"],
+                ["vary", "origin"],
             ]);
         });
 
@@ -134,7 +134,7 @@ describe("cors utils unit tests", () => {
                 ["access-control-allow-origin", "https://foo.com"],
                 ["access-control-expose-headers", "x-header-1"],
                 ["content-type", "text/plain;charset=UTF-8"],
-                ["vary", "Origin"],
+                ["vary", "origin"],
                 ["x-header-2", "preserved"],
             ]);
         });
@@ -192,7 +192,7 @@ describe("cors utils unit tests", () => {
     describe("set vary origin function", () => {
         it("adds vary header when allowed origins is not *", () => {
             setVaryOrigin(headers, { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] });
-            expectHeadersEqual(headers, [["vary", "Origin"]]);
+            expectHeadersEqual(headers, [["vary", "origin"]]);
         });
 
         it("does not add vary header when allowed origins is *", () => {
@@ -201,15 +201,15 @@ describe("cors utils unit tests", () => {
         });
 
         it("correctly merges vary header when allowed origin is not *", () => {
-            headers.set(HttpHeader.VARY, "Accept");
+            headers.set(HttpHeader.VARY, "accept");
             setVaryOrigin(headers, { ...defaultCorsConfig, allowedOrigins: ["http://localhost"] });
-            expectHeadersEqual(headers, [["vary", "Accept, Origin"]]);
+            expectHeadersEqual(headers, [["vary", "accept, origin"]]);
         });
 
         it("preserves existing vary header when allowed origin is *", () => {
-            headers.set(HttpHeader.VARY, "Accept");
+            headers.set(HttpHeader.VARY, "accept");
             setVaryOrigin(headers, { ...defaultCorsConfig, allowedOrigins: ["*"] });
-            expectHeadersEqual(headers, [["vary", "Accept"]]);
+            expectHeadersEqual(headers, [["vary", "accept"]]);
         });
     });
 
@@ -292,7 +292,7 @@ describe("cors utils unit tests", () => {
     describe("set allow headers function", () => {
         it("sets the default allow headers from default cors config", () => {
             setAllowHeaders(headers, defaultCorsConfig);
-            expectHeadersEqual(headers, [["access-control-allow-headers", "Content-Type"]]);
+            expectHeadersEqual(headers, [["access-control-allow-headers", "content-type"]]);
         });
 
         it("sets the allow headers from cors init config", () => {
