@@ -47,6 +47,7 @@ const VARY_WILDCARD = "*";
  *   - The response status is `200 OK`.
  *   - The request method is `GET`.
  *   - The response does not have a `Vary` header containing `*`.
+ *   - The response has no TTL specified in max-age or s-maxage.
  *   - Neither the request nor the response has `Cache-Control: no-store`.
  *   - The response is not marked `private` and does not specify `max-age=0`.
  *   - The request does **not** include sensitive headers such as `Authorization` or `Cookie`.
@@ -65,16 +66,18 @@ export function isCacheable(request: Request, response: Response): boolean {
     if (response.status !== StatusCodes.OK) return false;
     if (request.method !== GET) return false;
 
+    if (request.headers.has(HttpHeader.AUTHORIZATION)) return false;
+    if (request.headers.has(HttpHeader.COOKIE)) return false;
+
     const requestCacheControl = getCacheControl(request.headers);
     if (requestCacheControl["no-store"]) return false;
 
     const responseCacheControl = getCacheControl(response.headers);
+    const ttl = responseCacheControl["s-maxage"] ?? responseCacheControl["max-age"];
+    if (ttl === undefined || ttl === 0) return false;
     if (responseCacheControl["no-store"]) return false;
-    if (responseCacheControl["max-age"] === 0) return false;
     if (responseCacheControl["private"]) return false;
 
-    if (request.headers.has(HttpHeader.AUTHORIZATION)) return false;
-    if (request.headers.has(HttpHeader.COOKIE)) return false;
     if (response.headers.has(HttpHeader.SET_COOKIE)) return false;
     if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
 
