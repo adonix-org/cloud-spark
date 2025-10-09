@@ -14,7 +14,7 @@ class MockWorker {
     ctx: ExecutionContext = ctx;
 }
 
-describe("cache middleware", () => {
+describe("cache middleware unit tests", () => {
     beforeEach(() => {
         defaultCache.clear();
         namedCache.clear();
