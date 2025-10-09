@@ -5,7 +5,7 @@ import { GET, POST } from "@src/constants/methods";
 import { getVaryKey } from "@src/middleware/cache/utils";
 import { sortSearchParams } from "@src/middleware";
 import { CacheInit } from "@src/interfaces";
-import { GET_REQUEST, GET_REQUEST_WITH_ORIGIN } from "@common";
+import { expectHeadersEqual, GET_REQUEST, GET_REQUEST_WITH_ORIGIN } from "@common";
 
 const init: CacheInit = { getKey: sortSearchParams };
 
@@ -35,6 +35,28 @@ describe("cache middleware", () => {
         const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
         expect(await res.text()).toBe("cached-response");
         expect(defaultCache.size).toBe(1);
+    });
+
+    it("returns cached response if present in named cache", async () => {
+        await namedCache.put("https://localhost/", new Response("cached-response"));
+        const handler = new CacheHandler({ ...init, name: "named-cache" });
+        const worker = new MockWorker(GET_REQUEST);
+        const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
+        expect(await res.text()).toBe("cached-response");
+        expect(namedCache.size).toBe(1);
+    });
+
+    it("overwrites cached response if present", async () => {
+        await defaultCache.put("https://localhost/", new Response("cached-response"));
+        const handler = new CacheHandler(init);
+        const worker = new MockWorker(GET_REQUEST);
+
+        const update = new Response("overwrite-response");
+        await handler.setCached(defaultCache, worker.request, update);
+
+        expect(defaultCache.size).toBe(1);
+        const cached = defaultCache.matchAll()[0];
+        expect(await cached.text()).toBe("overwrite-response");
     });
 
     it("returns response from default cache miss", async () => {
@@ -100,6 +122,26 @@ describe("cache middleware", () => {
         expect(cached).toBeDefined();
         expect(await cached?.text()).toBe("from dispatch");
         expect(defaultCache.size).toBe(2);
+    });
+
+    it("updates and stores the variant response", async () => {
+        const handler = new CacheHandler(init);
+        const worker = new MockWorker(GET_REQUEST_WITH_ORIGIN);
+
+        const response = new Response("from dispatch", { headers: { Vary: "Origin" } });
+        await handler.setCached(defaultCache, worker.request, response);
+
+        const update = new Response("from dispatch", {
+            headers: { Vary: "Origin, Accept-Language" },
+        });
+        await handler.setCached(defaultCache, worker.request, update);
+        expect(defaultCache.size).toBe(2);
+
+        const responses = defaultCache.matchAll();
+        expectHeadersEqual(responses[0].headers, [
+            ["internal-variant-set", "accept-language, origin"],
+        ]);
+        expect(defaultCache.match(worker.request.url));
     });
 
     it("converts existing non-variant response to variant when new vary appears", async () => {
