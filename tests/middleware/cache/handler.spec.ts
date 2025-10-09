@@ -14,6 +14,15 @@ class MockWorker {
     ctx = ctx;
 }
 
+function cacheableResponse(body: string, headers?: HeadersInit): Response {
+    return new Response(body, {
+        headers: {
+            "cache-control": "max-age=60",
+            ...headers,
+        },
+    });
+}
+
 describe("cache middleware unit tests", () => {
     beforeEach(() => {
         defaultCache.clear();
@@ -27,7 +36,9 @@ describe("cache middleware unit tests", () => {
     it("returns fresh response when cache is empty", async () => {
         const handler = new CacheHandler(init);
         const worker = new MockWorker(GET_REQUEST);
-        const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
+        const res = await handler.handle(worker as any, async () =>
+            cacheableResponse("fresh-response"),
+        );
         await ctx.flush();
 
         expect(await res.text()).toBe("fresh-response");
@@ -35,10 +46,12 @@ describe("cache middleware unit tests", () => {
     });
 
     it("returns cached response if present", async () => {
-        await defaultCache.put("https://localhost/", new Response("cached-response"));
+        await defaultCache.put("https://localhost/", cacheableResponse("cached-response"));
         const handler = new CacheHandler(init);
         const worker = new MockWorker(GET_REQUEST);
-        const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
+        const res = await handler.handle(worker as any, async () =>
+            cacheableResponse("fresh-response"),
+        );
         await ctx.flush();
 
         expect(await res.text()).toBe("cached-response");
@@ -46,10 +59,12 @@ describe("cache middleware unit tests", () => {
     });
 
     it("returns cached response if present in named cache", async () => {
-        await namedCache.put("https://localhost/", new Response("cached-response"));
+        await namedCache.put("https://localhost/", cacheableResponse("cached-response"));
         const handler = new CacheHandler({ ...init, name: "named-cache" });
         const worker = new MockWorker(GET_REQUEST);
-        const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
+        const res = await handler.handle(worker as any, async () =>
+            cacheableResponse("fresh-response"),
+        );
         await ctx.flush();
 
         expect(await res.text()).toBe("cached-response");
@@ -57,11 +72,11 @@ describe("cache middleware unit tests", () => {
     });
 
     it("overwrites cached response if present", async () => {
-        await defaultCache.put("https://localhost/", new Response("cached-response"));
+        await defaultCache.put("https://localhost/", cacheableResponse("cached-response"));
         const handler = new CacheHandler(init);
         const worker = new MockWorker(GET_REQUEST);
 
-        const update = new Response("overwrite-response");
+        const update = cacheableResponse("overwrite-response");
         await handler.setCached(defaultCache, worker.request, update);
 
         expect(defaultCache.size).toBe(1);
@@ -73,7 +88,7 @@ describe("cache middleware unit tests", () => {
         const handler = new CacheHandler(init);
         const worker = new MockWorker(GET_REQUEST);
 
-        const response = new Response("from dispatch");
+        const response = cacheableResponse("from dispatch");
         await handler.setCached(defaultCache, worker.request, response);
 
         const cached = await handler.getCached(defaultCache, worker.request);
@@ -85,7 +100,7 @@ describe("cache middleware unit tests", () => {
         const handler = new CacheHandler({ name: "named-cache", ...init });
         const worker = new MockWorker(GET_REQUEST);
 
-        const response = new Response("named response");
+        const response = cacheableResponse("named response");
         await handler.setCached(namedCache, worker.request, response);
 
         const cached = await handler.getCached(namedCache, worker.request);
@@ -99,7 +114,7 @@ describe("cache middleware unit tests", () => {
         const req = new Request("https://localhost/", { method: POST });
         const worker = new MockWorker(req);
 
-        const response = new Response("post response");
+        const response = cacheableResponse("post response");
         await handler.setCached(defaultCache, worker.request, response);
 
         const cached = await handler.getCached(defaultCache, worker.request);
@@ -125,7 +140,7 @@ describe("cache middleware unit tests", () => {
         const handler = new CacheHandler(init);
         const worker = new MockWorker(GET_REQUEST_WITH_ORIGIN);
 
-        const response = new Response("from dispatch", { headers: { Vary: "Origin" } });
+        const response = cacheableResponse("from dispatch", { Vary: "Origin" });
         await handler.setCached(defaultCache, worker.request, response);
 
         const cached = await handler.getCached(defaultCache, worker.request);
@@ -138,17 +153,16 @@ describe("cache middleware unit tests", () => {
         const handler = new CacheHandler(init);
         const worker = new MockWorker(GET_REQUEST_WITH_ORIGIN);
 
-        const response = new Response("from dispatch", { headers: { Vary: "Origin" } });
+        const response = cacheableResponse("from dispatch", { Vary: "Origin" });
         await handler.setCached(defaultCache, worker.request, response);
 
-        const update = new Response("from dispatch", {
-            headers: { Vary: "Origin, Accept-Language" },
-        });
+        const update = cacheableResponse("from dispatch", { Vary: "Origin, Accept-Language" });
         await handler.setCached(defaultCache, worker.request, update);
         expect(defaultCache.size).toBe(2);
 
         const responses = defaultCache.matchAll();
         expectHeadersEqual(responses[0].headers, [
+            ["cache-control", "s-maxage=60"],
             ["internal-variant-set", "accept-language, origin"],
         ]);
     });
@@ -161,9 +175,9 @@ describe("cache middleware unit tests", () => {
         });
         const worker = new MockWorker(req);
 
-        await handler.setCached(defaultCache, worker.request, new Response("base"));
+        await handler.setCached(defaultCache, worker.request, cacheableResponse("base"));
 
-        const varyResponse = new Response("variant", { headers: { Vary: "Origin" } });
+        const varyResponse = cacheableResponse("variant", { Vary: "Origin" });
         await handler.setCached(defaultCache, worker.request, varyResponse);
 
         expect(defaultCache.size).toBe(3);
@@ -181,7 +195,7 @@ describe("cache middleware unit tests", () => {
         });
         const worker = new MockWorker(req);
 
-        const response = new Response("variant", { headers: { Vary: "accept-encoding, Origin" } });
+        const response = cacheableResponse("variant", { Vary: "accept-encoding, Origin" });
         await handler.setCached(defaultCache, worker.request, response);
 
         expect(defaultCache.size).toBe(2);
