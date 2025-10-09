@@ -22,11 +22,23 @@ export const env: any = {} as const;
 /**
  * ExecutionContext
  */
-export const ctx: ExecutionContext = {
-    waitUntil: () => {},
-    passThroughOnException: () => {},
-    props: () => {},
-} as const;
+export const ctx: ExecutionContext<unknown> & { flush: () => Promise<void> } = (() => {
+    const promises: Promise<any>[] = [];
+
+    return {
+        waitUntil: (p: Promise<any>) => {
+            promises.push(p);
+        },
+        flush: async () => {
+            while (promises.length) {
+                const copy = promises.splice(0, promises.length);
+                await Promise.all(copy);
+            }
+        },
+        passThroughOnException: () => {},
+        props: () => ({}),
+    };
+})();
 
 /**
  * Cache
@@ -36,6 +48,10 @@ class InMemoryCache {
 
     get size(): number {
         return Object.keys(this.store).length;
+    }
+
+    get keys(): string[] {
+        return Object.keys(this.store);
     }
 
     get isEmpty(): boolean {
@@ -71,8 +87,8 @@ class InMemoryCache {
     }
 }
 
-export const defaultCache = new InMemoryCache();
-export const namedCache = new InMemoryCache();
+export const defaultCache = new InMemoryCache() as any;
+export const namedCache = new InMemoryCache() as any;
 
 const caches = {
     default: defaultCache,
