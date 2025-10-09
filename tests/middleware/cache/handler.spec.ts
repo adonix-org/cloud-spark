@@ -1,16 +1,18 @@
 import { describe, it, beforeEach, expect } from "vitest";
-import { defaultCache, namedCache } from "@mock";
+import { ctx, defaultCache, namedCache } from "@mock";
 import { CacheHandler } from "@src/middleware/cache/handler";
 import { GET, POST } from "@src/constants/methods";
 import { getVaryKey, getVaryHeader } from "@src/middleware/cache/utils";
 import { sortSearchParams } from "@src/middleware";
 import { CacheInit } from "@src/interfaces";
+import { GET_REQUEST } from "@common";
+
+const init: CacheInit = { getKey: sortSearchParams };
 
 class MockWorker {
     constructor(public request: Request) {}
+    ctx: ExecutionContext = ctx;
 }
-
-const init: CacheInit = { getKey: sortSearchParams };
 
 describe("cache middleware", () => {
     beforeEach(() => {
@@ -18,10 +20,26 @@ describe("cache middleware", () => {
         namedCache.clear();
     });
 
+    it("returns fresh response when cache is empty", async () => {
+        const handler = new CacheHandler(init);
+        const worker = new MockWorker(GET_REQUEST);
+        const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
+        expect(await res.text()).toBe("fresh-response");
+        expect(defaultCache.size).toBe(1);
+    });
+
+    it("returns cached response if present", async () => {
+        await defaultCache.put("https://localhost/", new Response("cached-response"));
+        const handler = new CacheHandler(init);
+        const worker = new MockWorker(GET_REQUEST);
+        const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
+        expect(await res.text()).toBe("cached-response");
+        expect(defaultCache.size).toBe(1);
+    });
+
     it("returns response from default cache miss", async () => {
         const handler = new CacheHandler(init);
-        const req = new Request("https://localhost/", { method: GET });
-        const worker = new MockWorker(req);
+        const worker = new MockWorker(GET_REQUEST);
 
         const response = new Response("from dispatch");
         await handler.setCached(defaultCache, worker.request, response);
@@ -33,8 +51,7 @@ describe("cache middleware", () => {
 
     it("respects named cache", async () => {
         const handler = new CacheHandler({ name: "named-cache", ...init });
-        const req = new Request("https://localhost/", { method: GET });
-        const worker = new MockWorker(req);
+        const worker = new MockWorker(GET_REQUEST);
 
         const response = new Response("named response");
         await handler.setCached(namedCache, worker.request, response);
@@ -45,7 +62,7 @@ describe("cache middleware", () => {
         expect(defaultCache.size).toBe(0);
     });
 
-    it("does not cache non-GET responses", async () => {
+    it("does not cache non-get responses", async () => {
         const handler = new CacheHandler(init);
         const req = new Request("https://localhost/", { method: POST });
         const worker = new MockWorker(req);
@@ -60,8 +77,7 @@ describe("cache middleware", () => {
 
     it("does not cache responses with no-store or private headers", async () => {
         const handler = new CacheHandler(init);
-        const req = new Request("https://localhost/", { method: GET });
-        const worker = new MockWorker(req);
+        const worker = new MockWorker(GET_REQUEST);
 
         const headers = new Headers({ "cache-control": "no-store, private" });
         const response = new Response("un-cacheable", { headers });
@@ -103,14 +119,12 @@ describe("cache middleware", () => {
         });
         const worker = new MockWorker(req);
 
-        // first response without vary
         await handler.setCached(defaultCache, worker.request, new Response("base"));
 
-        // second response with vary
         const varyResponse = new Response("variant", { headers: { Vary: "Origin" } });
         await handler.setCached(defaultCache, worker.request, varyResponse);
 
-        expect(defaultCache.size).toBe(3); // base + variant placeholder + variant
+        expect(defaultCache.size).toBe(3);
         const cachedVariant = await defaultCache.match(
             getVaryKey(req, ["origin"], new URL(req.url)),
         );
@@ -128,7 +142,7 @@ describe("cache middleware", () => {
         const response = new Response("variant", { headers: { Vary: "accept-encoding, Origin" } });
         await handler.setCached(defaultCache, worker.request, response);
 
-        expect(defaultCache.size).toBe(2); // base + Origin variant only
+        expect(defaultCache.size).toBe(2);
         const cachedVariant = await defaultCache.match(
             getVaryKey(req, ["origin"], new URL(req.url)),
         );
