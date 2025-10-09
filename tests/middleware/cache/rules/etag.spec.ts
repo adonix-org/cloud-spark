@@ -18,6 +18,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { IfMatchRule, IfNoneMatchRule } from "@src/middleware/cache/rules/etag";
 import * as utils from "@src/middleware/cache/rules/utils";
 
+
 describe("etag cache rules unit tests", () => {
     let response: Response;
 
