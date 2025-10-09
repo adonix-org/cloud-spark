@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, expect } from "vitest";
+import { describe, it, beforeEach, expect, afterEach } from "vitest";
 import { ctx, defaultCache, namedCache } from "@mock";
 import { CacheHandler } from "@src/middleware/cache/handler";
 import { GET, POST } from "@src/constants/methods";
@@ -18,6 +18,10 @@ describe("cache middleware unit tests", () => {
     beforeEach(() => {
         defaultCache.clear();
         namedCache.clear();
+    });
+
+    afterEach(async () => {
+        await ctx.flush();
     });
 
     it("returns fresh response when cache is empty", async () => {
