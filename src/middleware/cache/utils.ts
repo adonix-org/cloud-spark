@@ -120,7 +120,7 @@ export function getVaryHeader(response: Response): string[] {
 export function getFilteredVary(vary: string[]): string[] {
     const values = vary
         .map((h) => h.toLowerCase())
-        .filter((value) => value !== HttpHeader.ACCEPT_ENCODING.toLowerCase())
+        .filter((value) => value !== HttpHeader.ACCEPT_ENCODING)
         .sort(lexCompare);
     return Array.from(new Set(values));
 }
