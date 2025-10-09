@@ -54,7 +54,7 @@
         "tsup": "^8.5.0",
         "typescript": "^5.9.3",
         "vitest": "^3.2.4",
-        "wrangler": "^4.42.1"
+        "wrangler": "^4.42.2"
     },
     "dependencies": {
         "cache-control-parser": "^2.0.6",
