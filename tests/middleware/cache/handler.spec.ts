@@ -151,7 +151,6 @@ describe("cache middleware unit tests", () => {
         expectHeadersEqual(responses[0].headers, [
             ["internal-variant-set", "accept-language, origin"],
         ]);
-        expect(defaultCache.match(worker.request.url));
     });
 
     it("converts existing non-variant response to variant when new vary appears", async () => {
