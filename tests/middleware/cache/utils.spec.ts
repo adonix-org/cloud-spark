@@ -23,6 +23,7 @@ import {
     getVaryHeader,
     getVaryKey,
     isCacheable,
+    normalizeVaryValue,
 } from "@src/middleware/cache/utils";
 import { StatusCodes } from "http-status-codes";
 import { describe, expect, it } from "vitest";
@@ -300,6 +301,41 @@ describe("cache utils unit tests ", () => {
             const decoded = decodeVaryKey(key);
 
             expect(decoded.search).toBe("");
+        });
+    });
+
+    describe("normalize vary value function", () => {
+        it("lowercases values for accept header", () => {
+            expect(normalizeVaryValue(HttpHeader.ACCEPT, "TEXT/HTML")).toBe("text/html");
+            expect(normalizeVaryValue("AcCePt", "ApPlIcAtIoN/JSON")).toBe("application/json");
+            expect(normalizeVaryValue(HttpHeader.ACCEPT, "image/Avif")).toBe("image/avif");
+        });
+
+        it("lowercases values for accept-language header", () => {
+            expect(normalizeVaryValue(HttpHeader.ACCEPT_LANGUAGE, "EN-US")).toBe("en-us");
+            expect(normalizeVaryValue("accept-language", "fr-FR")).toBe("fr-fr");
+            expect(normalizeVaryValue("ACCEPT-LANGUAGE", "fr-ÇA")).toBe("fr-ça");
+        });
+
+        it("lowercases values for origin header", () => {
+            expect(normalizeVaryValue(HttpHeader.ORIGIN, "HTTPS://EXAMPLE.COM")).toBe(
+                "https://example.com",
+            );
+            expect(normalizeVaryValue("origin", "http://foo.bar")).toBe("http://foo.bar");
+        });
+
+        it("does not modify other headers", () => {
+            expect(normalizeVaryValue("user-agent", "Chrome")).toBe("Chrome");
+            expect(normalizeVaryValue("Referer", "HTTPS://EXAMPLE.COM")).toBe(
+                "HTTPS://EXAMPLE.COM",
+            );
+            expect(normalizeVaryValue("X-Custom-Header", "SomeValue")).toBe("SomeValue");
+            expect(normalizeVaryValue("X-Locale", "fr-ÇA")).toBe("fr-ÇA");
+        });
+
+        it("handles empty string values", () => {
+            expect(normalizeVaryValue(HttpHeader.ACCEPT, "")).toBe("");
+            expect(normalizeVaryValue("user-agent", "")).toBe("");
         });
     });
 
