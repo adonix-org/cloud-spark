@@ -11,7 +11,7 @@ const init: CacheInit = { getKey: sortSearchParams };
 
 class MockWorker {
     constructor(public request: Request) {}
-    ctx: ExecutionContext = ctx;
+    ctx = ctx;
 }
 
 describe("cache middleware unit tests", () => {
@@ -24,6 +24,8 @@ describe("cache middleware unit tests", () => {
         const handler = new CacheHandler(init);
         const worker = new MockWorker(GET_REQUEST);
         const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
+        await ctx.flush();
+
         expect(await res.text()).toBe("fresh-response");
         expect(defaultCache.size).toBe(1);
     });
@@ -33,6 +35,8 @@ describe("cache middleware unit tests", () => {
         const handler = new CacheHandler(init);
         const worker = new MockWorker(GET_REQUEST);
         const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
+        await ctx.flush();
+
         expect(await res.text()).toBe("cached-response");
         expect(defaultCache.size).toBe(1);
     });
@@ -42,6 +46,8 @@ describe("cache middleware unit tests", () => {
         const handler = new CacheHandler({ ...init, name: "named-cache" });
         const worker = new MockWorker(GET_REQUEST);
         const res = await handler.handle(worker as any, async () => new Response("fresh-response"));
+        await ctx.flush();
+
         expect(await res.text()).toBe("cached-response");
         expect(namedCache.size).toBe(1);
     });
