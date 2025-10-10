@@ -43,11 +43,10 @@ export async function options(
     if (origin) {
         setAllowOrigin(copy.headers, cors, origin);
         setAllowCredentials(copy.headers, cors, origin);
+        setAllowMethods(copy.headers, worker);
+        setAllowHeaders(copy.headers, cors);
+        setMaxAge(copy.headers, cors);
     }
-
-    setAllowMethods(copy.headers, worker);
-    setAllowHeaders(copy.headers, cors);
-    setMaxAge(copy.headers, cors);
 
     setVaryOrigin(copy.headers, cors);
 
@@ -129,11 +128,7 @@ export function setAllowCredentials(headers: Headers, cors: CorsConfig, origin: 
 }
 
 /**
- * Sets the `Access-Control-Allow-Methods` header for a `CORS` response,
- * but only for non-simple methods.
- *
- * Simple methods (`GET`, `HEAD`, `OPTIONS`) are automatically allowed by the
- * `CORS` spec, so this function only adds methods beyond those.
+ * Sets the `Access-Control-Allow-Methods` header for a `CORS` response.
  *
  * @param headers - The Headers object to modify.
  * @param worker - The Worker instance used to retrieve allowed methods.
