@@ -80,7 +80,8 @@ export async function apply(
     setVaryOrigin(headers, cors);
 
     return new Response(response.body, {
-        ...response,
+        status: response.status,
+        statusText: response.statusText,
         headers,
     });
 }
