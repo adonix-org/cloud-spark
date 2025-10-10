@@ -25,6 +25,7 @@ import {
     OctetStream,
     R2ObjectStream,
     NotModified,
+    CopyResponse,
 } from "@src/responses";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { assertDefined, expectHeadersEqual, VALID_URL } from "./test-utils/common";
@@ -90,6 +91,49 @@ describe("response unit tests", () => {
         );
 
         expect(CacheControl.parse(h)["max-age"]).toBe(65);
+    });
+
+    it("copies an existing response", async () => {
+        const response = new Response("Hello", {
+            headers: { "cache-control": "max-age=300" },
+            status: StatusCodes.FORBIDDEN,
+            statusText: "Testing",
+        });
+        const copy = new CopyResponse(response);
+        expectHeadersEqual(copy.headers, [
+            ["cache-control", "max-age=300"],
+            ["content-type", "text/plain;charset=UTF-8"],
+        ]);
+        expect(copy.status).toBe(StatusCodes.FORBIDDEN);
+        expect(copy.statusText).toBe("Testing");
+
+        const newResponse = await copy.response();
+        expectHeadersEqual(newResponse.headers, [
+            ["cache-control", "max-age=300"],
+            ["content-type", "text/plain;charset=UTF-8"],
+        ]);
+        expect(newResponse.status).toBe(StatusCodes.FORBIDDEN);
+        expect(newResponse.statusText).toBe("Testing");
+    });
+
+    it("overrides an existing response cache control header", async () => {
+        const response = new Response("Hello", {
+            headers: { "cache-control": "max-age=300" },
+            status: StatusCodes.OK,
+            statusText: "Good",
+        });
+        const copy = await new CopyResponse(response, {
+            public: true,
+            "max-age": 100,
+            "s-maxage": 200,
+        }).response();
+
+        expectHeadersEqual(copy.headers, [
+            ["cache-control", "public, max-age=100, s-maxage=200"],
+            ["content-type", "text/plain;charset=UTF-8"],
+        ]);
+        expect(copy.status).toBe(StatusCodes.OK);
+        expect(copy.statusText).toBe("Good");
     });
 
     it("correctly merges a value to an existing header", async () => {
