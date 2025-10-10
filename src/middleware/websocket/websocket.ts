@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-export * from "./websocket";
+import { Middleware } from "../../interfaces/middleware";
+import { WebSocketHandler } from "./handler";
+
+export function websocket(path: string = "/"): Middleware {
+    return new WebSocketHandler(path);
+}

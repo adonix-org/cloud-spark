@@ -18,7 +18,7 @@ import { describe, expect, it } from "vitest";
 import { ALL_METHODS, VALID_ORIGIN } from "@common";
 import { ctx, env } from "@mock";
 import { BasicWorker } from "@src/workers/basic";
-import { websocket } from "@src/middleware/websocket/handler";
+import { websocket } from "@src/middleware/websocket/websocket";
 import { Method, POST } from "@src/constants/methods";
 import { StatusCodes } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
@@ -109,7 +109,7 @@ describe("websocket middleware unit tests", () => {
         const worker = new TestWorker(request);
         const response = await worker.fetch();
         expect(await response.json()).toStrictEqual({
-            details: "Missing or invalid Connection header",
+            details: "Missing or invalid 'Connection' header",
             error: "Bad Request",
             status: 400,
         });
@@ -126,7 +126,7 @@ describe("websocket middleware unit tests", () => {
         const worker = new TestWorker(request);
         const response = await worker.fetch();
         expect(await response.json()).toStrictEqual({
-            details: "Missing or invalid Upgrade header",
+            details: "Missing or invalid 'Upgrade' header",
             error: "Bad Request",
             status: 400,
         });
@@ -160,7 +160,7 @@ describe("websocket middleware unit tests", () => {
         const worker = new TestWorker(request, "/connect");
         const response = await worker.fetch();
         expect(await response.json()).toStrictEqual({
-            details: "Missing or invalid Upgrade header",
+            details: "Missing or invalid 'Upgrade' header",
             error: "Bad Request",
             status: 400,
         });

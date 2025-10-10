@@ -20,11 +20,7 @@ import { Middleware } from "../../interfaces/middleware";
 import { Worker } from "../../interfaces/worker";
 import { hasConnectionHeader, hasUpgradeHeader, hasWebSocketVersion } from "./utils";
 
-export function websocket(path: string = "/"): Middleware {
-    return new WebSocketHandler(path);
-}
-
-class WebSocketHandler implements Middleware {
+export class WebSocketHandler implements Middleware {
     constructor(private readonly path: string) {}
 
     public handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
@@ -38,10 +34,10 @@ class WebSocketHandler implements Middleware {
 
         const headers = worker.request.headers;
         if (!hasConnectionHeader(headers)) {
-            return new BadRequest("Missing or invalid Connection header").response();
+            return new BadRequest("Missing or invalid 'Connection' header").response();
         }
         if (!hasUpgradeHeader(headers)) {
-            return new BadRequest("Missing or invalid Upgrade header").response();
+            return new BadRequest("Missing or invalid 'Upgrade' header").response();
         }
         if (!hasWebSocketVersion(headers)) {
             return new UpgradeRequired().response();
