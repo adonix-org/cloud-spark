@@ -39,8 +39,8 @@ abstract class BaseResponse {
     /** Optional status text. Defaults to standard reason phrase. */
     public statusText?: string;
 
-    /** Enable websocket responses. */
-    public webSocket: WebSocket | null = null;
+    /** Optional websocket property. */
+    public webSocket?: WebSocket | null;
 
     /** Default media type of the response body. */
     public mediaType: string = withCharset(MediaType.PLAIN_TEXT, UTF8_CHARSET);
