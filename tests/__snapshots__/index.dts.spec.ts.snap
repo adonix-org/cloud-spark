@@ -573,7 +573,8 @@ declare abstract class MiddlewareWorker extends BaseWorker {
      */
     use(...middleware: Middleware[]): this;
     /**
-     * Executes the middleware chain and dispatches the request.
+     * Executes the middleware chain and dispatches the request if the method
+     * is allowed by the worker.
      *
      * @returns The Response produced by the last middleware or \`dispatch()\`.
      */

@@ -27,10 +27,6 @@ export abstract class BasicWorker extends MiddlewareWorker {
      * Entry point to handle a fetch request.
      */
     public override async fetch(): Promise<Response> {
-        if (!this.isAllowed(this.request.method)) {
-            return this.response(MethodNotAllowed, this);
-        }
-
         try {
             await this.init();
             return await super.fetch();

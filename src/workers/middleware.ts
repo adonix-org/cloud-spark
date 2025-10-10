@@ -17,6 +17,7 @@
 import { BaseWorker } from "./base";
 import { assertMiddleware } from "../guards/middleware";
 import { Middleware } from "../interfaces/middleware";
+import { MethodNotAllowed } from "../errors";
 
 /** Base worker for handling middleware chains. */
 export abstract class MiddlewareWorker extends BaseWorker {
@@ -49,14 +50,20 @@ export abstract class MiddlewareWorker extends BaseWorker {
     }
 
     /**
-     * Executes the middleware chain and dispatches the request.
+     * Executes the middleware chain and dispatches the request if the method
+     * is allowed by the worker.
      *
      * @returns The Response produced by the last middleware or `dispatch()`.
      */
     public override async fetch(): Promise<Response> {
         const chain = this.middlewares.reduceRight(
             (next, handler) => () => handler.handle(this, next),
-            () => this.dispatch(),
+            () => {
+                if (!this.isAllowed(this.request.method)) {
+                    return this.response(MethodNotAllowed, this);
+                }
+                return this.dispatch();
+            },
         );
         return chain();
     }
