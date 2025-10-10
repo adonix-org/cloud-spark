@@ -56,15 +56,16 @@ export async function options(
 /**
  * Applies `CORS` headers to an existing response.
  *
- * Useful for normal (non-preflight) responses where the response
- * should include `CORS` headers based on the request origin.
- *
  * @param response - The original Response object.
  * @param worker - The Worker handling the request.
  * @param cors - The `CORS` configuration.
  * @returns A new Response object with `CORS` headers applied.
  */
-export async function apply(response: Response, worker: Worker, cors: CorsConfig): Promise<Response> {
+export async function apply(
+    response: Response,
+    worker: Worker,
+    cors: CorsConfig,
+): Promise<Response> {
     const copy = new CopyResponse(response);
     const origin = getOrigin(worker.request);
 
@@ -81,7 +82,16 @@ export async function apply(response: Response, worker: Worker, cors: CorsConfig
     return copy.response();
 }
 
-export function setVaryOrigin(headers: Headers, cors: CorsConfig) {
+/**
+ * Adds `Vary: Origin` when CORS is restricted to specific origins.
+ * This ensures caches differentiate responses by request origin.
+ *
+ * Skipped when all origins are allowed.
+ *
+ * @param headers - The headers object to modify.
+ * @param cors - The `CORS` configuration.
+ */
+export function setVaryOrigin(headers: Headers, cors: CorsConfig): void {
     if (!allowAllOrigins(cors)) {
         mergeHeader(headers, HttpHeader.VARY, HttpHeader.ORIGIN);
     }
