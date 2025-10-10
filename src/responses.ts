@@ -364,7 +364,7 @@ export class R2ObjectStream extends OctetStream {
  */
 export class WebSocketUpgrade extends WorkerResponse {
     constructor(client: WebSocket) {
-        super(null);
+        super();
         this.status = StatusCodes.SWITCHING_PROTOCOLS;
         this.webSocket = client;
     }
