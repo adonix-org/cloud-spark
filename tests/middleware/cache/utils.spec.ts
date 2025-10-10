@@ -66,6 +66,18 @@ describe("cache utils unit tests ", () => {
             expect(isCacheable(req, resp)).toBe(false);
         });
 
+        it("returns false if response cache-control not present", () => {
+            const req = makeRequest(GET);
+            const resp = makeResponse();
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if response cache-control max-age or s-maxage not present", () => {
+            const req = makeRequest(GET);
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "public" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
         it("returns false if response cache-control max-age is 0", () => {
             const req = makeRequest();
             const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "max-age=0" });
@@ -80,7 +92,10 @@ describe("cache utils unit tests ", () => {
 
         it("throws an error if response has content-range header", () => {
             const req = makeRequest();
-            const resp = makeResponse(StatusCodes.OK, { "Content-Range": "bytes 0-99/100" });
+            const resp = makeResponse(StatusCodes.OK, {
+                "Cache-Control": "max-age=60",
+                "Content-Range": "bytes 0-99/100",
+            });
             expect(() => isCacheable(req, resp)).toThrow();
         });
 

@@ -72,6 +72,7 @@ export function isCacheable(request: Request, response: Response): boolean {
     const requestCacheControl = getCacheControl(request.headers);
     if (requestCacheControl["no-store"]) return false;
 
+    if (!response.headers.has(HttpHeader.CACHE_CONTROL)) return false;
     const responseCacheControl = getCacheControl(response.headers);
     const ttl = responseCacheControl["s-maxage"] ?? responseCacheControl["max-age"];
     if (ttl === undefined || ttl === 0) return false;
