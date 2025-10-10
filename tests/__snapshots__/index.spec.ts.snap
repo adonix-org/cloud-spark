@@ -5,7 +5,6 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "BadRequest",
   "BasicWorker",
   "CacheControl",
-  "ClonedResponse",
   "DELETE",
   "Forbidden",
   "GET",

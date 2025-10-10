@@ -138,19 +138,6 @@ export abstract class WorkerResponse extends CacheResponse {
 }
 
 /**
- * Wraps an existing Response and clones its body, headers, and status.
- */
-export class ClonedResponse extends WorkerResponse {
-    constructor(response: Response, cache?: CacheControl) {
-        const clone = response.clone();
-        super(clone.body, cache);
-        this.headers = new Headers(clone.headers);
-        this.status = clone.status;
-        this.statusText = clone.statusText;
-    }
-}
-
-/**
  * Copies the response, but with null body and status 304 Not Modified.
  */
 export class NotModified extends WorkerResponse {

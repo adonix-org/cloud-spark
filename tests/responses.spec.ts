@@ -20,7 +20,6 @@ import {
     JsonResponse,
     HtmlResponse,
     TextResponse,
-    ClonedResponse,
     Head,
     WebSocketUpgrade,
     OctetStream,
@@ -70,18 +69,6 @@ describe("response unit tests", () => {
         expect(r.headers.get(HttpHeader.CONTENT_TYPE)).toBe("text/plain; charset=utf-8");
         const text = await r.text();
         expect(text).toBe("Hello");
-    });
-
-    it("clones response headers and body in cloned response", async () => {
-        const original = new Response("Test", {
-            headers: { "X-Test": "ok" },
-            status: StatusCodes.ACCEPTED,
-        });
-        const resp = new ClonedResponse(original);
-        const r = await resp.response();
-        expect(r.status).toBe(StatusCodes.ACCEPTED);
-        expect(r.headers.get("X-Test")).toBe("ok");
-        expect(await r.text()).toBe("Test");
     });
 
     it("returns headers but empty body in head response", async () => {
