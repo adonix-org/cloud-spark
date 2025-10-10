@@ -23,7 +23,7 @@ import {
 } from "@common";
 import { WS_WEBSOCKET } from "@src/constants/websocket";
 import { HttpHeader } from "@src/constants/headers";
-import { DELETE, GET, HEAD, OPTIONS, POST, PUT } from "@src/constants/methods";
+import { DELETE, GET, OPTIONS, POST, PUT } from "@src/constants/methods";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import {
     apply,
@@ -68,13 +68,14 @@ describe("cors utils unit tests", () => {
                 exposedHeaders: [],
             };
 
-            const response = await options(worker as any, cors);
+            const source = new Response(null, { status: 204 });
+            const response = await options(source, worker as any, cors);
 
             expect(response).toBeInstanceOf(Response);
             expect(response.status).toBe(204);
             expectHeadersEqual(response.headers, [
                 ["access-control-allow-credentials", "true"],
-                ["access-control-allow-methods", "POST"],
+                ["access-control-allow-methods", "GET, OPTIONS, POST"],
                 ["access-control-allow-origin", "https://foo.com"],
                 ["access-control-max-age", "86400"],
                 ["vary", "origin"],
@@ -98,14 +99,14 @@ describe("cors utils unit tests", () => {
                 allowedHeaders: ["x-header-1"],
                 exposedHeaders: ["x-header-2, x-header-3"],
             };
-
-            const response = await options(worker as any, cors);
+            const source = new Response(null, { status: 204 });
+            const response = await options(source, worker as any, cors);
 
             expect(response).toBeInstanceOf(Response);
             expect(response.status).toBe(204);
             expectHeadersEqual(response.headers, [
                 ["access-control-allow-headers", "x-header-1"],
-                ["access-control-allow-methods", "POST"],
+                ["access-control-allow-methods", "GET, OPTIONS, POST"],
                 ["access-control-allow-origin", "*"],
                 ["access-control-max-age", "86400"],
             ]);
@@ -256,14 +257,6 @@ describe("cors utils unit tests", () => {
     });
 
     describe("set allow methods function", () => {
-        it("does not add the header for simple methods", () => {
-            const worker = {
-                getAllowedMethods: vi.fn(() => [GET, HEAD, OPTIONS]),
-            } as any;
-            setAllowMethods(headers, worker);
-            expectHeadersEqual(headers, []);
-        });
-
         it("adds the header for non-simple method", () => {
             const worker = {
                 getAllowedMethods: vi.fn(() => [POST]),
@@ -275,14 +268,6 @@ describe("cors utils unit tests", () => {
         it("adds the header for non-simple methods", () => {
             const worker = {
                 getAllowedMethods: vi.fn(() => [POST, PUT, DELETE]),
-            } as any;
-            setAllowMethods(headers, worker);
-            expectHeadersEqual(headers, [["access-control-allow-methods", "DELETE, POST, PUT"]]);
-        });
-
-        it("filters the header values to remove non-simple methods", () => {
-            const worker = {
-                getAllowedMethods: vi.fn(() => [POST, PUT, DELETE, GET, OPTIONS]),
             } as any;
             setAllowMethods(headers, worker);
             expectHeadersEqual(headers, [["access-control-allow-methods", "DELETE, POST, PUT"]]);

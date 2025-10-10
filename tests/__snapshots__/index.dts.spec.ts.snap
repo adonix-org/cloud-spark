@@ -78,7 +78,7 @@ interface CacheInit {
 }
 
 /**
- * User-supplied options for configuring\`CORS\`behavior.
+ * User-supplied options for configuring \`CORS\` behavior.
  *
  * This is a partial form of {@link CorsConfig}, meaning you only need
  * to provide the options you want to override. Any missing values will
@@ -405,7 +405,7 @@ declare function sortSearchParams(request: Request): URL;
 declare function stripSearchParams(request: Request): URL;
 
 /**
- * Creates a\`CORS\`middleware instance.
+ * Creates a \`CORS\` middleware instance.
  *
  * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
  * for incoming requests, including preflight \`OPTIONS\` requests, and adds
@@ -602,7 +602,7 @@ declare abstract class BasicWorker extends MiddlewareWorker {
     protected patch(): Promise<Response>;
     /** Override and implement this method for \`DELETE\` requests. */
     protected delete(): Promise<Response>;
-    /** Returns a default empty \`OPTIONS\` response. */
+    /** Returns the default \`OPTIONS\` response. */
     protected options(): Promise<Response>;
     /**
      * Default handler for \`HEAD\` requests.
@@ -874,10 +874,10 @@ declare class Head extends WorkerResponse {
     constructor(get: Response);
 }
 /**
- * Response for \`OPTIONS\` preflight requests.
+ * Response for \`OPTIONS\` requests.
  */
 declare class Options extends WorkerResponse {
-    constructor();
+    constructor(worker: Worker);
 }
 
 /**

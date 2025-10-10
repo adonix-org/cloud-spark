@@ -114,7 +114,7 @@ describe("cors middleware unit tests", () => {
         expectHeadersEqual(response.headers, []);
     });
 
-    it("intercepts the options preflight request and returns the response", async () => {
+    it("appends cors options to the default options response", async () => {
         const request = new Request(VALID_URL, {
             method: "OPTIONS",
             headers: {
@@ -126,8 +126,10 @@ describe("cors middleware unit tests", () => {
         expect(await response.text()).toBe("");
         expectHeadersEqual(response.headers, [
             ["access-control-allow-headers", "content-type"],
+            ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "*"],
             ["access-control-max-age", "300"],
+            ["allow", "GET, HEAD, OPTIONS"],
         ]);
     });
 });
