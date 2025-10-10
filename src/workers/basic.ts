@@ -83,9 +83,9 @@ export abstract class BasicWorker extends MiddlewareWorker {
         return this.response(MethodNotImplemented, this);
     }
 
-    /** Returns a default empty `OPTIONS` response. */
+    /** Returns the default `OPTIONS` response. */
     protected async options(): Promise<Response> {
-        return this.response(Options);
+        return this.response(Options, this);
     }
 
     /**

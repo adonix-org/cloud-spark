@@ -20,7 +20,7 @@ import { Middleware } from "../../interfaces/middleware";
 import { CorsHandler } from "./handler";
 
 /**
- * Creates a`CORS`middleware instance.
+ * Creates a `CORS` middleware instance.
  *
  * This middleware automatically handles Cross-Origin Resource Sharing (CORS)
  * for incoming requests, including preflight `OPTIONS` requests, and adds

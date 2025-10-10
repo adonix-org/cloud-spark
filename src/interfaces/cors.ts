@@ -15,7 +15,7 @@
  */
 
 /**
- * User-supplied options for configuring`CORS`behavior.
+ * User-supplied options for configuring `CORS` behavior.
  *
  * This is a partial form of {@link CorsConfig}, meaning you only need
  * to provide the options you want to override. Any missing values will

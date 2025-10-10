@@ -22,6 +22,8 @@ import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "./cons
 import { OctetStreamInit } from "./interfaces/response";
 import { withCharset } from "./utils/media";
 import { assertOctetStreamInit } from "./guards/responses";
+import { assertMethods } from "./guards/methods";
+import { Worker } from "./interfaces";
 
 /**
  * Base class for building HTTP responses.
@@ -381,11 +383,15 @@ export class Head extends WorkerResponse {
 }
 
 /**
- * Response for `OPTIONS` preflight requests.
+ * Response for `OPTIONS` requests.
  */
 export class Options extends WorkerResponse {
-    constructor() {
+    constructor(worker: Worker) {
+        const allowed = worker.getAllowedMethods();
+        assertMethods(allowed);
+
         super();
         this.status = StatusCodes.NO_CONTENT;
+        this.setHeader(HttpHeader.ALLOW, allowed);
     }
 }

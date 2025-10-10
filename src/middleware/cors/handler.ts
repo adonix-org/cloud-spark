@@ -30,7 +30,7 @@ export class CorsHandler implements Middleware {
     private readonly config: CorsConfig;
 
     /**
-     * Create a new`CORS`middleware instance.
+     * Create a new `CORS` middleware instance.
      *
      * @param init - Partial configuration to override the defaults. Any values
      *               not provided will use `defaultCorsConfig`.
@@ -40,21 +40,21 @@ export class CorsHandler implements Middleware {
     }
 
     /**
-     * Applies`CORS`headers to a request.
+     * Applies `CORS` headers to a request.
      *
      * - Returns a preflight response for `OPTIONS` requests.
-     * - For other methods, calls `next()` and applies`CORS`headers to the result.
+     * - For other methods, calls `next()` and applies `CORS` headers to the result.
      *
      * @param worker - The Worker handling the request.
      * @param next - Function to invoke the next middleware.
-     * @returns Response with`CORS`headers applied.
+     * @returns Response with `CORS` headers applied.
      */
     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
-        if (worker.request.method === OPTIONS) {
-            return options(worker, this.config);
-        }
-
         const response = await next();
+
+        if (worker.request.method === OPTIONS) {
+            return options(response, worker, this.config);
+        }
 
         if (skipCors(response)) return response;
 
