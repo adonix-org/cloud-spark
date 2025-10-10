@@ -18,9 +18,9 @@ import { HttpHeader } from "../../constants/headers";
 import { assertMethods } from "../../guards/methods";
 import { CorsConfig } from "../../interfaces/cors";
 import { Worker } from "../../interfaces/worker";
+import { CopyResponse } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/headers";
 import { ALLOW_ALL_ORIGINS, SKIP_CORS_STATUSES } from "./constants";
-import { CorsResponse } from "./responses";
 
 /**
  * Handles a `CORS` preflight `OPTIONS` request.
@@ -37,21 +37,21 @@ export async function options(
     worker: Worker,
     cors: CorsConfig,
 ): Promise<Response> {
-    const options = new CorsResponse(response);
+    const copy = new CopyResponse(response);
     const origin = getOrigin(worker.request);
 
     if (origin) {
-        setAllowOrigin(options.headers, cors, origin);
-        setAllowCredentials(options.headers, cors, origin);
+        setAllowOrigin(copy.headers, cors, origin);
+        setAllowCredentials(copy.headers, cors, origin);
     }
 
-    setAllowMethods(options.headers, worker);
-    setAllowHeaders(options.headers, cors);
-    setMaxAge(options.headers, cors);
+    setAllowMethods(copy.headers, worker);
+    setAllowHeaders(copy.headers, cors);
+    setMaxAge(copy.headers, cors);
 
-    setVaryOrigin(options.headers, cors);
+    setVaryOrigin(copy.headers, cors);
 
-    return options.response();
+    return copy.response();
 }
 
 /**
@@ -65,21 +65,21 @@ export async function options(
  * @param cors - The `CORS` configuration.
  * @returns A new Response object with `CORS` headers applied.
  */
-export async function apply(source: Response, worker: Worker, cors: CorsConfig): Promise<Response> {
-    const response = new CorsResponse(source);
+export async function apply(response: Response, worker: Worker, cors: CorsConfig): Promise<Response> {
+    const copy = new CopyResponse(response);
     const origin = getOrigin(worker.request);
 
-    deleteCorsHeaders(response.headers);
+    deleteCorsHeaders(copy.headers);
 
     if (origin) {
-        setAllowOrigin(response.headers, cors, origin);
-        setAllowCredentials(response.headers, cors, origin);
-        setExposedHeaders(response.headers, cors);
+        setAllowOrigin(copy.headers, cors, origin);
+        setAllowCredentials(copy.headers, cors, origin);
+        setExposedHeaders(copy.headers, cors);
     }
 
-    setVaryOrigin(response.headers, cors);
+    setVaryOrigin(copy.headers, cors);
 
-    return response.response();
+    return copy.response();
 }
 
 export function setVaryOrigin(headers: Headers, cors: CorsConfig) {

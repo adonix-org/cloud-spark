@@ -138,6 +138,19 @@ export abstract class WorkerResponse extends CacheResponse {
 }
 
 /**
+ * Copies an existing response for mutation. Pass in a CacheControl 
+ * to override any existing header.
+ */
+export class CopyResponse extends WorkerResponse {
+    constructor(response: Response, cache?: CacheControl) {
+        super(response.body, cache);
+        this.status = response.status;
+        this.statusText = response.statusText;
+        this.headers = new Headers(response.headers);
+    }
+}
+
+/**
  * Copies the response, but with null body and status 304 Not Modified.
  */
 export class NotModified extends WorkerResponse {
