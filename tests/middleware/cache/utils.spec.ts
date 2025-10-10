@@ -50,7 +50,7 @@ describe("cache utils unit tests ", () => {
 
         it("returns false if vary header contains *", () => {
             const req = makeRequest();
-            const resp = makeResponse(StatusCodes.OK, { Vary: "*" });
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "max-age=60", Vary: "*" });
             expect(isCacheable(req, resp)).toBe(false);
         });
 
