@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { WSAttachment, WebSocketConnection } from "../interfaces/websocket";
+import { WebSocketConnection, WSAttachment } from "../interfaces/websocket";
+
 import { BaseWebSocket } from "./base";
 
 export abstract class RestoredConnectionBase<A extends WSAttachment>

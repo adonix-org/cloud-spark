@@ -20,6 +20,7 @@ import { CorsConfig } from "../../interfaces/cors";
 import { Worker } from "../../interfaces/worker";
 import { CopyResponse } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/headers";
+
 import { ALLOW_ALL_ORIGINS, SKIP_CORS_STATUSES } from "./constants";
 
 /**

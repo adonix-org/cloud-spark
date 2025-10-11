@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import { HttpHeader } from "../../../constants/headers";
 import { PreconditionFailed } from "../../../errors";
 import { NotModified } from "../../../responses";
+
 import { CacheValidators } from "./interfaces";
-import { isPreconditionFailed, isNotModified } from "./utils";
+import { isNotModified, isPreconditionFailed } from "./utils";
 import { ValidationRule } from "./validation";
-import { HttpHeader } from "../../../constants/headers";
 
 abstract class MatchRule extends ValidationRule<string> {
     protected override getHeader(response: Response): string | undefined {

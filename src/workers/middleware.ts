@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { BaseWorker } from "./base";
+import { MethodNotAllowed } from "../errors";
 import { assertMiddleware } from "../guards/middleware";
 import { Middleware } from "../interfaces/middleware";
-import { MethodNotAllowed } from "../errors";
+
+import { BaseWorker } from "./base";
 
 /** Base worker for handling middleware chains. */
 export abstract class MiddlewareWorker extends BaseWorker {

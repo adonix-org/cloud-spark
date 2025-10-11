@@ -15,9 +15,10 @@
  */
 
 import { HttpHeader } from "../../../constants/headers";
-import { getHeaderValues } from "../../../utils/headers";
-import { ByteRange, CacheValidators } from "./interfaces";
 import { isNumber, isString } from "../../../guards/basic";
+import { getHeaderValues } from "../../../utils/headers";
+
+import { ByteRange, CacheValidators } from "./interfaces";
 
 const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
 const ETAG_WEAK_PREFIX = "W/";

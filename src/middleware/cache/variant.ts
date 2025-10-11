@@ -18,6 +18,7 @@ import { CacheControl } from "../../constants";
 import { HttpHeader } from "../../constants/headers";
 import { WorkerResponse } from "../../responses";
 import { getHeaderValues } from "../../utils/headers";
+
 import { getCacheControl, getFilteredVary } from "./utils";
 
 export class VariantResponse extends WorkerResponse {

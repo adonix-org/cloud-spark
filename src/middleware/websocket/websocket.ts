@@ -15,6 +15,7 @@
  */
 
 import { Middleware } from "../../interfaces/middleware";
+
 import { WebSocketHandler } from "./handler";
 
 export function websocket(path: string = "/"): Middleware {

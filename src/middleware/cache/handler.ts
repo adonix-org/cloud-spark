@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import { Worker } from "../../interfaces/worker";
 import { assertKey } from "../../guards/cache";
-import { getFilteredVary, getVaryHeader, getVaryKey, isCacheable } from "./utils";
-import { CachePolicy } from "./policy";
-import { MethodRule } from "./rules/method";
-import { RangeRule } from "./rules/range";
-import { IfMatchRule, IfNoneMatchRule } from "./rules/etag";
-import { ModifiedSinceRule, UnmodifiedSinceRule } from "./rules/modified";
-import { CacheControlRule } from "./rules/control";
-import { Middleware } from "../../interfaces/middleware";
-import { sortSearchParams } from "./keys";
 import { CacheInit } from "../../interfaces/cache";
+import { Middleware } from "../../interfaces/middleware";
+import { Worker } from "../../interfaces/worker";
+
+import { sortSearchParams } from "./keys";
+import { CachePolicy } from "./policy";
+import { CacheControlRule } from "./rules/control";
+import { IfMatchRule, IfNoneMatchRule } from "./rules/etag";
+import { MethodRule } from "./rules/method";
+import { ModifiedSinceRule, UnmodifiedSinceRule } from "./rules/modified";
+import { RangeRule } from "./rules/range";
+import { getFilteredVary, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { VariantResponse } from "./variant";
 
 /**

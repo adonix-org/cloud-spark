@@ -15,6 +15,7 @@
  */
 
 import { CloseCode, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES } from "../constants/websocket";
+
 import { isNumber, isString } from "./basic";
 
 export function isBinary(value: unknown): value is ArrayBuffer | ArrayBufferView {

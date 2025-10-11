@@ -15,7 +15,9 @@
  */
 
 import { StatusCodes } from "http-status-codes";
+
 import { Worker } from "../../../interfaces/worker";
+
 import { CacheRule } from "./interfaces";
 import { getContentLength, getRange } from "./utils";
 

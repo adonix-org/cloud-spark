@@ -15,6 +15,7 @@
  */
 
 import { CacheInit } from "../interfaces/cache";
+
 import { isString } from "./basic";
 
 /**

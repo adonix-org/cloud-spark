@@ -15,6 +15,7 @@
  */
 
 import { Worker } from "../../interfaces/worker";
+
 import { CacheRule } from "./rules/interfaces";
 
 export class CachePolicy {

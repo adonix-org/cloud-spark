@@ -16,6 +16,7 @@
 
 import { assertSerializable, isSendable, safeCloseCode, safeReason } from "../guards/websocket";
 import { WSAttachment } from "../interfaces/websocket";
+
 import { WebSocketEvents } from "./events";
 
 export abstract class BaseWebSocket<A extends WSAttachment> extends WebSocketEvents {

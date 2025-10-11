@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { WSAttachment, WebSocketConnection } from "../interfaces/websocket";
+import { WebSocketConnection, WSAttachment } from "../interfaces/websocket";
+
 import { NewConnectionBase } from "./new";
 import { RestoredConnectionBase } from "./restore";
 

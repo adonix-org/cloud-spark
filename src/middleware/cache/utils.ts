@@ -16,10 +16,11 @@
  */
 
 import { StatusCodes } from "http-status-codes";
+
+import { CacheControl, GET } from "../../constants";
 import { HttpHeader } from "../../constants/headers";
 import { lexCompare } from "../../utils/compare";
 import { getHeaderValues } from "../../utils/headers";
-import { CacheControl, GET } from "../../constants";
 
 /** Base URL used for constructing cache keys. Only used internally. */
 const VARY_CACHE_URL = "https://vary";

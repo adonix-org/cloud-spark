@@ -15,15 +15,16 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
+
 import { CacheControl } from "./constants/cache";
-import { setHeader, mergeHeader, filterHeaders } from "./utils/headers";
-import { UTF8_CHARSET, MediaType } from "./constants/media";
 import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "./constants/headers";
-import { OctetStreamInit } from "./interfaces/response";
-import { withCharset } from "./utils/media";
-import { assertOctetStreamInit } from "./guards/responses";
+import { MediaType, UTF8_CHARSET } from "./constants/media";
 import { assertMethods } from "./guards/methods";
+import { assertOctetStreamInit } from "./guards/responses";
 import { Worker } from "./interfaces";
+import { OctetStreamInit } from "./interfaces/response";
+import { filterHeaders, mergeHeader, setHeader } from "./utils/headers";
+import { withCharset } from "./utils/media";
 
 /**
  * Base class for building HTTP responses.

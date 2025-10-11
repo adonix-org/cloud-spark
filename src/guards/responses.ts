@@ -15,6 +15,7 @@
  */
 
 import { OctetStreamInit } from "../interfaces";
+
 import { isNumber } from "./basic";
 
 /**

@@ -17,6 +17,7 @@
 import { assertCorsInit } from "../../guards/cors";
 import { CorsInit } from "../../interfaces/cors";
 import { Middleware } from "../../interfaces/middleware";
+
 import { CorsHandler } from "./handler";
 
 /**

@@ -17,6 +17,7 @@
 import { assertCacheInit } from "../../guards/cache";
 import { CacheInit } from "../../interfaces/cache";
 import { Middleware } from "../../interfaces/middleware";
+
 import { CacheHandler } from "./handler";
 
 /**

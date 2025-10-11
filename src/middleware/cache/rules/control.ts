@@ -15,8 +15,9 @@
  */
 
 import { Worker } from "../../../interfaces";
-import { CacheRule } from "./interfaces";
 import { getCacheControl } from "../utils";
+
+import { CacheRule } from "./interfaces";
 import { hasCacheValidator } from "./utils";
 
 export class CacheControlRule implements CacheRule {

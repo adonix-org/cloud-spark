@@ -15,6 +15,7 @@
  */
 
 import { Method } from "../constants/methods";
+
 import { isString } from "./basic";
 
 /**

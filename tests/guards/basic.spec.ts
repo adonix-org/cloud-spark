@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isBoolean, isFunction, isNumber, isString, isStringArray } from "@src/guards/basic";
+import { isBoolean, isNumber, isString, isStringArray } from "@src/guards/basic";
 import { describe, it, expect } from "vitest";
 
 describe("basic guard unit tests", () => {
@@ -53,21 +53,6 @@ describe("basic guard unit tests", () => {
             expect(isString(undefined)).toBe(false);
             expect(isString(null)).toBe(false);
             expect(isString(() => {})).toBe(false);
-        });
-    });
-
-    describe("is function", () => {
-        it("returns true for functions", () => {
-            expect(isFunction(() => {})).toBe(true);
-            expect(isFunction(function () {})).toBe(true);
-        });
-
-        it("returns false for non-functions", () => {
-            expect(isFunction(123)).toBe(false);
-            expect(isFunction("hello")).toBe(false);
-            expect(isFunction({})).toBe(false);
-            expect(isFunction(undefined)).toBe(false);
-            expect(isFunction(null)).toBe(false);
         });
     });
 

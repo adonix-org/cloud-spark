@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { MethodNotAllowed, InternalServerError, MethodNotImplemented } from "../errors";
-import { MiddlewareWorker } from "./middleware";
+import { GET, HEAD, Method, OPTIONS } from "../constants/methods";
+import { InternalServerError, MethodNotAllowed, MethodNotImplemented } from "../errors";
 import { Head, Options } from "../responses";
-import { Method, GET, HEAD, OPTIONS } from "../constants/methods";
+
+import { MiddlewareWorker } from "./middleware";
 
 /**
  * Basic worker class providing HTTP method dispatching and error handling.

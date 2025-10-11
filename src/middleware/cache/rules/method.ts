@@ -17,6 +17,7 @@
 import { GET, HEAD } from "../../../constants";
 import { Worker } from "../../../interfaces";
 import { Head } from "../../../responses";
+
 import { CacheRule } from "./interfaces";
 
 export class MethodRule implements CacheRule {

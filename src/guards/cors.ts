@@ -15,6 +15,7 @@
  */
 
 import { CorsInit } from "../interfaces/cors";
+
 import { isBoolean, isNumber, isStringArray } from "./basic";
 
 /**

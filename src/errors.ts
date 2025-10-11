@@ -15,13 +15,14 @@
  */
 
 import { getReasonPhrase, StatusCodes } from "http-status-codes";
-import { JsonResponse } from "./responses";
-import { ErrorJson } from "./interfaces/error";
-import { Worker } from "./interfaces/worker";
+
 import { CacheControl } from "./constants/cache";
 import { HttpHeader } from "./constants/headers";
-import { assertMethods } from "./guards/methods";
 import { WS_VERSION } from "./constants/websocket";
+import { assertMethods } from "./guards/methods";
+import { ErrorJson } from "./interfaces/error";
+import { Worker } from "./interfaces/worker";
+import { JsonResponse } from "./responses";
 
 /**
  * Generic HTTP error response.

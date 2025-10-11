@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { BasicWorker } from "./basic";
+import { Method } from "../constants/methods";
 import { NotFound } from "../errors";
-import { Routes } from "../routes";
 import { RouteHandler, RouteTable } from "../interfaces/route";
 import { WorkerClass } from "../interfaces/worker";
+import { Routes } from "../routes";
+
 import { BaseWorker } from "./base";
-import { Method } from "../constants/methods";
+import { BasicWorker } from "./basic";
+
 
 /**
  * Base worker supporting route-based request handling.

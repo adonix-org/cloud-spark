@@ -17,9 +17,10 @@
 import { HttpHeader } from "../../../constants/headers";
 import { PreconditionFailed } from "../../../errors";
 import { NotModified } from "../../../responses";
-import { ValidationRule } from "./validation";
+
 import { CacheValidators } from "./interfaces";
 import { toDate } from "./utils";
+import { ValidationRule } from "./validation";
 
 abstract class LastModifiedRule extends ValidationRule<number> {
     protected override getHeader(response: Response): number | undefined {
