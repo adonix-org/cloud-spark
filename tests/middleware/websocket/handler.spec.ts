@@ -34,6 +34,7 @@ class TestWorker extends BasicWorker {
     ) {
         super(request, env, ctx);
     }
+
     protected init(): void {
         this.use(websocket(this.path));
     }
@@ -75,6 +76,20 @@ describe("websocket middleware unit tests", () => {
             },
         });
         const worker = new TestWorker(request, "/connect");
+        const response = await worker.fetch();
+        expect(response.status).toBe(StatusCodes.OK);
+        expect(await response.text()).toBe(GET_DISPATCH);
+    });
+
+    it("allows a valid websocket request to pass through path-to-regex path", async () => {
+        const request = new Request(VALID_ORIGIN + "/connect/100/chat", {
+            headers: {
+                [HttpHeader.CONNECTION]: WS_UPGRADE,
+                [HttpHeader.UPGRADE]: WS_WEBSOCKET,
+                [HttpHeader.SEC_WEBSOCKET_VERSION]: WS_VERSION,
+            },
+        });
+        const worker = new TestWorker(request, "/connect/:id/chat");
         const response = await worker.fetch();
         expect(response.status).toBe(StatusCodes.OK);
         expect(await response.text()).toBe(GET_DISPATCH);
