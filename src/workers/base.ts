@@ -108,6 +108,7 @@ export abstract class BaseWorker implements Worker {
      * @returns A Promise resolving to the {@link Response} object
      */
     protected async response<
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Ctor extends new (...args: any[]) => { response(): Promise<Response> },
     >(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor>): Promise<Response> {
         return new ResponseClass(...args).response();

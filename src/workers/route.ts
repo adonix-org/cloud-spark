@@ -99,7 +99,7 @@ export abstract class RouteWorker extends BasicWorker {
      * @returns `true` if `handler` is a subclass of `BaseWorker` at runtime, `false` otherwise.
      */
     private static isWorkerClass(handler: RouteHandler): handler is WorkerClass {
-        return BaseWorker.prototype.isPrototypeOf(handler.prototype);
+        return Object.prototype.isPrototypeOf.call(BaseWorker.prototype, handler.prototype);
     }
 
     protected override async get(): Promise<Response> {

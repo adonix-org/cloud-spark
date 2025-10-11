@@ -1,6 +1,5 @@
 .vscode
 .DS_Store
-artifacts/
 debug/
 dist/
 types/

@@ -15,7 +15,7 @@
  */
 
 import { CacheInit } from "../interfaces/cache";
-import { isFunction, isString } from "./basic";
+import { isString } from "./basic";
 
 /**
  * Asserts that a value is a valid {@link CacheInit} object.
@@ -61,9 +61,11 @@ export function assertCacheName(value: unknown): asserts value is string | undef
  * @param value - The value to check.
  * @throws TypeError If the value is defined but not a function.
  */
-export function assertGetKey(value: unknown): asserts value is Function | undefined {
+export function assertGetKey(
+    value: unknown,
+): asserts value is (request: Request) => URL | undefined {
     if (value === undefined) return;
-    if (!isFunction(value)) {
+    if (typeof value !== "function") {
         throw new TypeError("getKey must be a function.");
     }
 }

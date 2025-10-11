@@ -34,15 +34,6 @@ export function isString(value: unknown): value is string {
     return typeof value === "string";
 }
 
-/**
- * Checks if a value is a function.
- *
- * @param value - The value to check.
- * @returns `true` if the value is a function, otherwise `false`.
- */
-export function isFunction(value: unknown): value is Function {
-    return typeof value === "function";
-}
 
 /**
  * Checks if a value is a valid number (not NaN).
