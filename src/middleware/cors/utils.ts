@@ -40,6 +40,8 @@ export async function options(
     const copy = new CopyResponse(response);
     const origin = getOrigin(worker.request);
 
+    setVaryOrigin(copy.headers, cors);
+
     if (origin) {
         setAllowOrigin(copy.headers, cors, origin);
         setAllowCredentials(copy.headers, cors, origin);
@@ -47,8 +49,6 @@ export async function options(
         setAllowHeaders(copy.headers, cors);
         setMaxAge(copy.headers, cors);
     }
-
-    setVaryOrigin(copy.headers, cors);
 
     return copy.response();
 }
@@ -69,6 +69,7 @@ export async function apply(
     const copy = new CopyResponse(response);
     const origin = getOrigin(worker.request);
 
+    setVaryOrigin(copy.headers, cors);
     deleteCorsHeaders(copy.headers);
 
     if (origin) {
@@ -76,8 +77,6 @@ export async function apply(
         setAllowCredentials(copy.headers, cors, origin);
         setExposedHeaders(copy.headers, cors);
     }
-
-    setVaryOrigin(copy.headers, cors);
 
     return copy.response();
 }
