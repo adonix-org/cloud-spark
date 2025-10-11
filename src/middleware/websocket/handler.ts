@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { match } from "path-to-regexp";
 import { GET } from "../../constants/methods";
 import { BadRequest, UpgradeRequired } from "../../errors";
 import { Middleware } from "../../interfaces/middleware";
@@ -28,7 +29,7 @@ export class WebSocketHandler implements Middleware {
             return next();
         }
 
-        if (this.getPath(worker.request) !== this.path) {
+        if (!this.isMatch(worker.request)) {
             return next();
         }
 
@@ -46,7 +47,7 @@ export class WebSocketHandler implements Middleware {
         return next();
     }
 
-    private getPath(request: Request): string {
-        return new URL(request.url).pathname;
+    private isMatch(request: Request): boolean {
+        return match(this.path)(new URL(request.url).pathname) !== false;
     }
 }
