@@ -6,10 +6,7 @@ import importPlugin from "eslint-plugin-import";
 
 export default defineConfig([
     {
-        ignores: ["tests/**.*"],
-    },
-    {
-        files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+        files: ["src/**/*.{js,mjs,cjs,ts,mts,cts}"],
         plugins: { js, import: importPlugin },
         extends: ["js/recommended"],
         languageOptions: { globals: globals.browser },
