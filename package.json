@@ -39,14 +39,14 @@
     },
     "scripts": {
         "types": "wrangler types --config wrangler.jsonc ./types/cloudflare.d.ts",
-        "prebuild": "mkdir -p ./types",
+        "prebuild": "npm run lint && mkdir -p ./types",
         "build": "npm run types && tsup",
         "dev-types": "wrangler types --config wrangler.local.jsonc ./types/cloudflare.d.ts",
         "dev": "npm run dev-types && wrangler dev --config wrangler.local.jsonc",
         "dev-debug": "npm run dev-types && wrangler dev --config wrangler.local.jsonc --log-level debug",
         "test": "npm run build && vitest",
         "coverage": "npm run build && vitest run --coverage",
-        "lint": "npx eslint ./src"
+        "lint": "eslint ./src"
     },
     "devDependencies": {
         "@eslint/js": "^9.37.0",
