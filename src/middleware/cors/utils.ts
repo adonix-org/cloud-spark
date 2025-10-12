@@ -83,7 +83,7 @@ export async function apply(
 }
 
 /**
- * Adds `Vary: Origin` when CORS is restricted to specific origins.
+ * Adds `Vary: Origin` when `CORS` is restricted to specific origins.
  * This ensures caches differentiate responses by request origin.
  *
  * Skipped when all origins are allowed.
