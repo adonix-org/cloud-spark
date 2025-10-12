@@ -1,4 +1,3 @@
-import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import { defineConfig } from "eslint/config";
@@ -6,10 +5,9 @@ import importPlugin from "eslint-plugin-import";
 
 export default defineConfig([
     {
-        files: ["src/**/*.{js,mjs,cjs,ts,mts,cts}"],
-        plugins: { js, import: importPlugin },
-        extends: ["js/recommended"],
-        languageOptions: { globals: globals.browser },
+        files: ["src/**/*.ts"],
+        plugins: { import: importPlugin },
+        extends: [tseslint.configs.recommended],
         rules: {
             "import/order": [
                 "error",
@@ -31,7 +29,7 @@ export default defineConfig([
             "sort-imports": [
                 "error",
                 {
-                    ignoreDeclarationSort: true, // leave import statements order to `import/order`
+                    ignoreDeclarationSort: true,
                     ignoreCase: true,
                     memberSyntaxSortOrder: ["none", "all", "multiple", "single"],
                     allowSeparatedGroups: false,
@@ -39,5 +37,4 @@ export default defineConfig([
             ],
         },
     },
-    tseslint.configs.recommended,
 ]);

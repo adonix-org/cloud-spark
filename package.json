@@ -45,7 +45,8 @@
         "dev": "npm run dev-types && wrangler dev --config wrangler.local.jsonc",
         "dev-debug": "npm run dev-types && wrangler dev --config wrangler.local.jsonc --log-level debug",
         "test": "npm run build && vitest",
-        "coverage": "npm run build && vitest run --coverage"
+        "coverage": "npm run build && vitest run --coverage",
+        "lint": "npx eslint ./src"
     },
     "devDependencies": {
         "@eslint/js": "^9.37.0",
