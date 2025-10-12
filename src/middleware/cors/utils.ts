@@ -70,8 +70,8 @@ export async function apply(
     const copy = new CopyResponse(response);
     const origin = getOrigin(worker.request);
 
-    setVaryOrigin(copy.headers, cors);
     deleteCorsHeaders(copy.headers);
+    setVaryOrigin(copy.headers, cors);
 
     if (origin) {
         setAllowOrigin(copy.headers, cors, origin);
