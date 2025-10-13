@@ -26,6 +26,8 @@ import { IfMatchRule, IfNoneMatchRule } from "./rules/etag";
 import { MethodRule } from "./rules/method";
 import { ModifiedSinceRule, UnmodifiedSinceRule } from "./rules/modified";
 import { RangeRule } from "./rules/range";
+import { SecurityRule } from "./rules/security";
+import { UpgradeRule } from "./rules/upgrade";
 import { getFilteredVary, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { VariantResponse } from "./variant";
 
@@ -66,6 +68,8 @@ export class CacheHandler implements Middleware {
         const policy = new CachePolicy()
             .use(new CacheControlRule())
             .use(new MethodRule())
+            .use(new UpgradeRule())
+            .use(new SecurityRule())
             .use(new RangeRule())
             .use(new ModifiedSinceRule())
             .use(new IfNoneMatchRule())
