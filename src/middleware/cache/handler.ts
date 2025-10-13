@@ -128,9 +128,6 @@ export class CacheHandler implements Middleware {
      *    - The cached non-variant is converted into a `VariantResponse`.
      *    - The new response and the original cached response are stored under appropriate variant keys.
      *
-     * Uses `worker.ctx.waitUntil` to asynchronously update the cache without delaying
-     * the response to the client.
-     *
      * @param cache - The Cache object where the response should be stored.
      * @param worker - The Worker instance containing the request and execution context.
      * @param clone - The Response object to cache.
@@ -149,6 +146,7 @@ export class CacheHandler implements Middleware {
                 await cache.put(key.toString(), clone);
                 return;
             }
+
             const variantResponse = VariantResponse.new(vary);
             variantResponse.expireAfter(clone);
             await cache.put(key, await variantResponse.response());
