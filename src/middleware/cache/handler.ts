@@ -28,7 +28,7 @@ import { ModifiedSinceRule, UnmodifiedSinceRule } from "./rules/modified";
 import { RangeRule } from "./rules/range";
 import { SecurityRule } from "./rules/security";
 import { UpgradeRule } from "./rules/upgrade";
-import { getFilteredVary, getVaryHeader, getVaryKey, isCacheable } from "./utils";
+import { getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { VariantResponse } from "./variant";
 
 /**
@@ -137,7 +137,7 @@ export class CacheHandler implements Middleware {
 
         const key = this.getCacheKey(request);
         const clone = response.clone();
-        const vary = getFilteredVary(getVaryHeader(clone));
+        const vary = getVaryHeader(clone);
         const cached = await cache.match(key);
         const isCachedVariant = cached && VariantResponse.isVariantResponse(cached);
 
