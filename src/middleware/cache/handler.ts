@@ -143,7 +143,7 @@ export class CacheHandler implements Middleware {
 
         if (!cached) {
             if (vary.length === 0) {
-                await cache.put(key.toString(), clone);
+                await cache.put(key, clone);
                 return;
             }
 
