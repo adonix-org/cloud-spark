@@ -33,7 +33,6 @@ import { VariantResponse } from "./variant";
 
 /**
  * Cache Middleware Implementation
- * @see {@link cache}
  */
 export class CacheHandler implements Middleware {
     private readonly init: CacheInit;
