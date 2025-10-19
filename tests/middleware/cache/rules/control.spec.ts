@@ -19,7 +19,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import * as utils from "@src/middleware/cache/utils";
 import * as ruleUtils from "@src/middleware/cache/rules/utils";
 
-describe("CacheControlRule", () => {
+describe("cache control rule unit tests", () => {
     let rule: CacheControlRule;
     let worker: any;
     let next: () => Promise<Response | undefined>;

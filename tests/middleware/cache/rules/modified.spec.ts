@@ -18,7 +18,7 @@ import { ModifiedSinceRule, UnmodifiedSinceRule } from "@src/middleware/cache/ru
 import { beforeEach, describe, expect, it } from "vitest";
 import { StatusCodes } from "@src/constants";
 
-describe("Last-Modified-based cache validation rules", () => {
+describe("modifed rule unit tests", () => {
     let response: Response;
 
     beforeEach(() => {

@@ -60,12 +60,6 @@ describe("cache utils unit tests ", () => {
             expect(isCacheable(req, resp)).toBe(false);
         });
 
-        it("returns false if response cache-control contains no-store", () => {
-            const req = makeRequest();
-            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "no-store" });
-            expect(isCacheable(req, resp)).toBe(false);
-        });
-
         it("returns false if response cache-control not present", () => {
             const req = makeRequest(GET);
             const resp = makeResponse();
@@ -87,6 +81,18 @@ describe("cache utils unit tests ", () => {
         it("returns false if response cache-control contains private", () => {
             const req = makeRequest();
             const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "private, max-age=60" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if response cache-control contains no-store", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "no-store, max-age=1" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if response cache-control contains no-cache", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "no-cache, max-age=1" });
             expect(isCacheable(req, resp)).toBe(false);
         });
 

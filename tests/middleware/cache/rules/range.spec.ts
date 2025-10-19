@@ -19,7 +19,7 @@ import { RangeRule } from "@src/middleware/cache/rules/range";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as utils from "@src/middleware/cache/rules/utils";
 
-describe("RangeRule", () => {
+describe("range rule unit tests", () => {
     let rule: RangeRule;
     let worker: any;
     let next: any;

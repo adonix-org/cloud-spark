@@ -18,7 +18,7 @@ import { describe, it, expect } from "vitest";
 import { cache } from "@src/middleware/cache/cache";
 import { CacheHandler } from "@src/middleware/cache/handler";
 
-describe("cache factory", () => {
+describe("cache factory unit tests", () => {
     it("returns a cache handler instance with default config", () => {
         const mw = cache();
         expect(mw).toBeInstanceOf(CacheHandler);

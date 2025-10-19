@@ -28,7 +28,7 @@ import {
     toDate,
 } from "@src/middleware/cache/rules/utils";
 
-describe("cache rules utils unit tests ", () => {
+describe("rules utils unit tests ", () => {
     describe("get range function", () => {
         const makeRequest = (range?: string): Request =>
             new Request(VALID_URL, {

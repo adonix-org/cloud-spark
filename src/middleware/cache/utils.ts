@@ -80,7 +80,7 @@ export function isCacheable(request: Request, response: Response): boolean {
     if (responseCacheControl["no-store"]) return false;
     if (responseCacheControl["no-cache"]) return false;
     if (responseCacheControl["private"]) return false;
-
+    
     if (response.headers.has(HttpHeader.SET_COOKIE)) return false;
     if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
 

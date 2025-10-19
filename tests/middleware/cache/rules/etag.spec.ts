@@ -19,7 +19,7 @@ import { IfMatchRule, IfNoneMatchRule } from "@src/middleware/cache/rules/etag";
 import * as utils from "@src/middleware/cache/rules/utils";
 
 
-describe("etag cache rules unit tests", () => {
+describe("etag rule unit tests", () => {
     let response: Response;
 
     beforeEach(() => {
