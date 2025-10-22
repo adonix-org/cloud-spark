@@ -40,7 +40,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Dispatches the request to the method-specific handler.
      */
-    protected override async dispatch(): Promise<Response> {
+    protected override dispatch(): Promise<Response> {
         const method = this.request.method as Method;
         const handler: Record<Method, () => Promise<Response>> = {
             GET: () => this.get(),
@@ -56,32 +56,32 @@ export abstract class BasicWorker extends MiddlewareWorker {
     }
 
     /** Override and implement this method for `GET` requests. */
-    protected async get(): Promise<Response> {
+    protected get(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for `PUT` requests. */
-    protected async put(): Promise<Response> {
+    protected put(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for `POST` requests. */
-    protected async post(): Promise<Response> {
+    protected post(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for `PATCH` requests. */
-    protected async patch(): Promise<Response> {
+    protected patch(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for `DELETE` requests. */
-    protected async delete(): Promise<Response> {
+    protected delete(): Promise<Response> {
         return this.response(MethodNotImplemented, this);
     }
 
     /** Returns the default `OPTIONS` response. */
-    protected async options(): Promise<Response> {
+    protected options(): Promise<Response> {
         return this.response(Options, this);
     }
 
