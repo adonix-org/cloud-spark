@@ -22,13 +22,47 @@ import { CacheValidators } from "./interfaces";
 import { isNotModified, isPreconditionFailed } from "./utils";
 import { ValidationRule } from "./validation";
 
+/**
+ * Base class for ETag-based cache validation rules.
+ *
+ * `MatchRule` specializes `ValidationRule` to handle `ETag` headers.
+ * It extracts the `ETag` from the response and delegates validation
+ * to subclasses via the `response()` method.
+ *
+ * Subclasses implement the behavior for specific conditional requests,
+ * such as `If-Match` or `If-None-Match`.
+ */
 abstract class MatchRule extends ValidationRule<string> {
+    /**
+     * Extracts the `ETag` header from a response.
+     *
+     * @param response - The response to inspect.
+     * @returns The ETag string if present; otherwise `undefined`.
+     */
     protected override getHeader(response: Response): string | undefined {
         return response.headers.get(HttpHeader.ETAG) ?? undefined;
     }
 }
 
+/**
+ * Implements the `If-Match` conditional request validation.
+ *
+ * If the `If-Match` header is present and the response’s ETag does
+ * not match any of the listed values, the rule returns a
+ * `412 Precondition Failed` response.
+ *
+ * Otherwise, the original response is returned unchanged.
+ */
 export class IfMatchRule extends MatchRule {
+    /**
+     * Applies `If-Match` validation against the response’s ETag.
+     *
+     * @param response - The original response from cache.
+     * @param etag - The ETag extracted from the response.
+     * @param validators - Parsed cache validators from the request.
+     * @returns A `Response` with `412 Precondition Failed` if validation fails,
+     *          or the original response if the precondition passes.
+     */
     protected async response(
         response: Response,
         etag: string,
@@ -42,7 +76,26 @@ export class IfMatchRule extends MatchRule {
     }
 }
 
+/**
+ * Implements the `If-None-Match` conditional request validation.
+ *
+ * If the `If-None-Match` header is present and the response’s ETag matches
+ * one of the listed values, the rule returns a `304 Not Modified` response.
+ *
+ * If `If-None-Match` is present but does not match, the cache entry
+ * is considered invalid and `undefined` is returned.
+ */
 export class IfNoneMatchRule extends MatchRule {
+    /**
+     * Applies `If-None-Match` validation against the response’s ETag.
+     *
+     * @param response - The original response from cache.
+     * @param etag - The ETag extracted from the response.
+     * @param validators - Parsed cache validators from the request.
+     * @returns A `304 Not Modified` response if the resource is unmodified,
+     *          the original response if no validators are present,
+     *          or `undefined` if validation fails and the cache should not be used.
+     */
     protected async response(
         response: Response,
         etag: string,

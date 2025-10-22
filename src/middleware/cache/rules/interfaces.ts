@@ -25,10 +25,7 @@ import { Worker } from "../../../interfaces/worker";
  * - `end` is optional; if omitted, the range extends to the end of the resource.
  */
 export interface ByteRange {
-    /** Starting byte offset (inclusive). */
     start: number;
-
-    /** Optional ending byte offset (inclusive). */
     end?: number;
 }
 
@@ -44,7 +41,7 @@ export interface ByteRange {
  */
 export interface CacheRule {
     /**
-     * Applies the rule to a request/response pipeline.
+     * Applies the rule to a request/response cache pipeline.
      *
      * @param worker - The worker instance handling the current request.
      * @param next - A function that invokes the next rule or final handler.
