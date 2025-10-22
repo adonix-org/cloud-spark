@@ -42,6 +42,18 @@ class TestWorker extends RouteWorker {
 }
 
 describe("route worker unit tests", () => {
+    it("returns 404 if path not found", async () => {
+        const request = new Request("https://foo.bar/invalid/path");
+        const worker = new TestWorker(request);
+        const response = await worker.fetch();
+        const json = await response.json();
+        expect(json).toStrictEqual({
+            details: "",
+            error: "Not Found",
+            status: 404,
+        });
+    });
+
     it("handles initialization from a route table", async () => {
         class InitTestWorker extends TestWorker {
             constructor(request: Request) {
