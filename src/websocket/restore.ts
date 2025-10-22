@@ -18,6 +18,15 @@ import { WebSocketConnection, WSAttachment } from "../interfaces/websocket";
 
 import { BaseWebSocket } from "./base";
 
+/**
+ * Internal base for a WebSocket connection that has already been restored.
+ *
+ * - Marks the connection as accepted immediately upon construction.
+ * - Overrides acceptance methods to prevent re-accepting an already-active WebSocket.
+ * - Throws an error if `accept()` or `acceptWebSocket()` is called.
+ *
+ * @template A - Type of the attachment object for this connection.
+ */
 export abstract class RestoredConnectionBase<A extends WSAttachment>
     extends BaseWebSocket<A>
     implements WebSocketConnection<A>
@@ -27,10 +36,12 @@ export abstract class RestoredConnectionBase<A extends WSAttachment>
         this.accepted = true;
     }
 
+    /** Not supported for restored connections; throws an error. */
     public accept(): Readonly<WebSocket> {
         throw new Error("Do not call accept() on restore");
     }
 
+    /** Not supported for restored connections; throws an error. */
     public acceptWebSocket(): Readonly<WebSocket> {
         throw new Error("Do not call acceptWebSocket() on restore");
     }
