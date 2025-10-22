@@ -390,7 +390,7 @@ export class Head extends WorkerResponse {
  */
 export class Options extends WorkerResponse {
     constructor(worker: Worker) {
-        const allowed = Array.from(new Set([...worker.getAllowedMethods(), GET, HEAD]));
+        const allowed = Array.from(new Set([GET, HEAD, ...worker.getAllowedMethods()]));
         assertMethods(allowed);
 
         super();
