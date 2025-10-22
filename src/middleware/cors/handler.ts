@@ -23,32 +23,48 @@ import { defaultCorsConfig } from "./constants";
 import { apply, options, skipCors } from "./utils";
 
 /**
- * Cors Middleware Implementation
- * @see {@link cors}
+ * CORS Middleware Implementation
+ *
+ * Handles Cross-Origin Resource Sharing (CORS) for incoming requests.
+ *
+ * Behavior:
+ * - Invokes the downstream middleware for all requests first by calling `next()`.
+ * - If the request is an `OPTIONS` request (preflight), transforms the downstream
+ *   response into a preflight CORS response.
+ * - For other HTTP methods, applies CORS headers to the downstream response,
+ *   unless the response explicitly opts out via `skipCors`.
+ *
+ * This ensures that all responses comply with the configured CORS rules
+ * while still allowing downstream middleware to run for every request.
+ *
+ * @see {@link cors} for full configuration options and defaults.
  */
 export class CorsHandler implements Middleware {
-    /** The configuration used for this instance, with all defaults applied. */
+    /** The resolved CORS configuration for this middleware instance. */
     private readonly config: CorsConfig;
 
     /**
-     * Create a new `CORS` middleware instance.
+     * Constructs a new `CorsHandler` instance.
      *
-     * @param init - Partial configuration to override the defaults. Any values
-     *               not provided will use `defaultCorsConfig`.
+     * Merges the provided partial configuration with the default settings.
+     *
+     * @param init - Optional partial configuration to override defaults.
+     *               Any fields not provided will use `defaultCorsConfig`.
      */
     constructor(init?: CorsInit) {
         this.config = { ...defaultCorsConfig, ...init };
     }
 
     /**
-     * Applies `CORS` headers to a request.
+     * Applies CORS handling to an incoming request.
      *
-     * - Returns a preflight response for `OPTIONS` requests.
-     * - For other methods, calls `next()` and applies `CORS` headers to the result.
-     *
-     * @param worker - The Worker handling the request.
-     * @param next - Function to invoke the next middleware.
-     * @returns Response with `CORS` headers applied.
+     * @param worker - The Worker instance containing the request and context.
+     * @param next - Function invoking the next middleware in the chain.
+     * @returns A Response object with CORS headers applied.
+     *          - For `OPTIONS` requests, returns a preflight response based on
+     *            the downstream response.
+     *          - For other methods, returns the downstream response with
+     *            CORS headers applied, unless `skipCors` prevents it.
      */
     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         const response = await next();

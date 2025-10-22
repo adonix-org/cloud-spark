@@ -41,6 +41,7 @@ export async function options(
     const copy = new CopyResponse(response);
     const origin = getOrigin(worker.request);
 
+    deleteCorsHeaders(copy.headers);
     setVaryOrigin(copy.headers, cors);
 
     if (origin) {
@@ -220,10 +221,15 @@ export function deleteCorsHeaders(headers: Headers): void {
 }
 
 /**
- * Determines whether `CORS` headers should be skipped for a response.
+ * Determines whether CORS headers should be skipped for a response.
  *
- * @param response - The Response object to inspect
- * @returns `true` if `CORS` should be skipped, `false` otherwise
+ * Certain responses do not require CORS headers, such as:
+ * - Informational or protocol-level responses (1xx)
+ * - Redirect responses (3xx)
+ * - Responses initiating a protocol upgrade
+ *
+ * @param response - The Response object to inspect.
+ * @returns `true` if CORS headers should be omitted, `false` otherwise.
  */
 export function skipCors(response: Response): boolean {
     const { status, headers } = response;
