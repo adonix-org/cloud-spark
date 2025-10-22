@@ -16,7 +16,7 @@
 
 import { describe, it, expect, vi } from "vitest";
 import { env, ctx } from "@mock";
-import { ALL_METHODS, BASIC_METHODS, expectHeadersEqual, GET_REQUEST, VALID_URL } from "@common";
+import { ALL_METHODS, MUTATE_METHODS, expectHeadersEqual, GET_REQUEST, VALID_URL } from "@common";
 import { BasicWorker } from "@src/workers/basic";
 import { Method } from "@src/constants/methods";
 import { TextResponse } from "@src/responses";
@@ -34,7 +34,7 @@ class TestWorker extends BasicWorker {
 }
 
 describe("basic worker unit tests", () => {
-    it.each(BASIC_METHODS)("returns %s response", async (method) => {
+    it.each(MUTATE_METHODS)("returns %s response", async (method) => {
         const request = new Request(VALID_URL, { method });
         const worker = new TestWorker(request);
 
@@ -75,6 +75,19 @@ describe("basic worker unit tests", () => {
         expect(headResponse.statusText).toBe(getResponse.statusText);
         expectHeadersEqual(headResponse.headers, [...getResponse.headers.entries()]);
         expect(await headResponse.text()).toBe("");
+    });
+
+    it("returns 404 GET response", async () => {
+        const request = new Request(VALID_URL);
+        const worker = new TestWorker(request);
+
+        const response = await worker.fetch();
+        const json = await response.json();
+        expect(json).toStrictEqual({
+            details: "",
+            error: "Not Found",
+            status: 404,
+        });
     });
 
     it("returns epmty OPTIONS response", async () => {
