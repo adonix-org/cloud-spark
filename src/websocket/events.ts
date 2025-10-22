@@ -22,21 +22,46 @@ import {
     ExtendedEventType,
 } from "../interfaces/websocket";
 
+/**
+ * Base class for managing WebSocket events, including both standard WebSocket events
+ * and internal custom events (`open` and `warn`).
+ *
+ * This class wraps a native WebSocket instance (`server`) and provides:
+ * - Delegation of standard events (`message`, `close`, etc.)
+ * - Support for custom events used internally by the library:
+ *   - `open`: dispatched once when the connection is accepted
+ *   - `warn`: dispatched whenever a warning occurs
+ *
+ * Subclasses can call `warn()` or `open()` to trigger custom events.
+ */
 export abstract class WebSocketEvents {
+    /** The underlying WebSocket server instance being wrapped. */
     protected readonly server: WebSocket;
 
-    private static isCustomEvent(type: ExtendedEventType): boolean {
-        return ["open", "warn"].includes(type);
-    }
-
+    /** Internal map of custom event listeners. */
     private customListeners: {
         [K in ExtendedEventType]?: ((ev: ExtendedEventMap[K]) => void)[];
     } = {};
 
+    /**
+     * @param server - The native WebSocket instance to wrap.
+     */
     constructor(server: WebSocket) {
         this.server = server;
     }
 
+    /**
+     * Adds an event listener for either a standard WebSocket event or a custom event.
+     *
+     * - Custom events: `open`, `warn`
+     * - Standard events: `message`, `close`, `error`, etc.
+     *
+     * The `close` event is automatically set to `{ once: true }` if no options are provided.
+     *
+     * @param type - Event type to listen for.
+     * @param listener - Callback invoked when the event occurs.
+     * @param options - Optional event options (`once`).
+     */
     public addEventListener<K extends ExtendedEventType>(
         type: K,
         listener: ExtendedEventListener<K>,
@@ -59,6 +84,14 @@ export abstract class WebSocketEvents {
         }
     }
 
+    /**
+     * Removes a previously registered event listener.
+     *
+     * Works for both standard WebSocket events and custom events.
+     *
+     * @param type - Event type to remove.
+     * @param listener - Listener function to remove.
+     */
     public removeEventListener<K extends ExtendedEventType>(
         type: K,
         listener: ExtendedEventListener<K>,
@@ -77,6 +110,13 @@ export abstract class WebSocketEvents {
         }
     }
 
+    /**
+     * Dispatches a custom event to all registered listeners.
+     *
+     * @param type - The custom event type (`open` or `warn`).
+     * @param ev - Event object to pass to listeners.
+     * @param once - If `true`, all listeners for this event are removed after dispatch.
+     */
     private dispatch<K extends CustomEventType>(
         type: K,
         ev: ExtendedEventMap[K],
@@ -91,11 +131,29 @@ export abstract class WebSocketEvents {
         }
     }
 
+    /**
+     * Dispatches a `warn` event with a given message.
+     *
+     * Intended for internal use to notify listeners of warnings.
+     *
+     * @param msg - Warning message to emit.
+     */
     protected warn(msg: string) {
         this.dispatch("warn", { type: "warn", message: msg });
     }
 
+    /**
+     * Dispatches an `open` event.
+     *
+     * Intended to signal that the WebSocket has been accepted and is ready.
+     * This event is dispatched only once.
+     */
     protected open() {
         this.dispatch("open", new Event("open"), true);
+    }
+
+    /** Internal helper to determine if an event is a custom event. */
+    private static isCustomEvent(type: ExtendedEventType): boolean {
+        return ["open", "warn"].includes(type);
     }
 }

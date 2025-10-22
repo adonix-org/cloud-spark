@@ -18,7 +18,6 @@ import { isNumber, isString } from "../guards/basic";
 
 import { CloseCode, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES } from "./constants";
 
-
 /**
  * Normalizes a WebSocket close code to ensure it is safe to send.
  *
