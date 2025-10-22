@@ -26,12 +26,23 @@ import { ALLOW_ALL_ORIGINS, SKIP_CORS_STATUSES } from "./constants";
 /**
  * Handles a `CORS` preflight `OPTIONS` request.
  *
- * Sets the appropriate `CORS` headers based on the provided configuration
- * and the origin of the request.
+ * This function **modifies the provided response** to include the appropriate
+ * CORS headers based on the configuration and the request's origin.
  *
+ * Steps:
+ * 1. Clears any existing CORS headers from the response.
+ * 2. Sets `Vary: Origin` if needed for caching purposes.
+ * 3. If an `Origin` header is present in the request:
+ *    - Sets `Access-Control-Allow-Origin`
+ *    - Sets `Access-Control-Allow-Credentials`
+ *    - Sets `Access-Control-Allow-Methods`
+ *    - Sets `Access-Control-Allow-Headers`
+ *    - Sets `Access-Control-Max-Age`
+ *
+ * @param response - The original Response object to modify for the preflight.
  * @param worker - The Worker handling the request.
- * @param cors - The `CORS` configuration.
- * @returns A Response object for the preflight request.
+ * @param cors - The CORS configuration to apply.
+ * @returns A Response object suitable for responding to the preflight request.
  */
 export async function options(
     response: Response,
@@ -56,12 +67,24 @@ export async function options(
 }
 
 /**
- * Applies `CORS` headers to an existing response.
+ * Applies CORS headers to an existing response for non-preflight requests.
  *
- * @param response - The original Response object.
+ * This function **modifies the provided response** to include the appropriate
+ * CORS headers based on the configuration and the request's origin.
+ *
+ * Steps:
+ * 1. Clears any existing CORS headers from the response.
+ * 2. Sets `Vary: Origin` if needed for caching purposes.
+ * 3. If an `Origin` header is present in the request:
+ *    - Sets `Access-Control-Allow-Origin`
+ *    - Sets `Access-Control-Allow-Credentials`
+ *    - Sets `Access-Control-Expose-Headers`
+ *
+ * @param response - The original Response object to modify.
  * @param worker - The Worker handling the request.
- * @param cors - The `CORS` configuration.
- * @returns A new Response object with `CORS` headers applied.
+ * @param cors - The CORS configuration to apply.
+ * @returns A Response object with CORS headers applied, suitable for returning
+ *          to the client.
  */
 export async function apply(
     response: Response,
@@ -148,9 +171,7 @@ export function setAllowMethods(headers: Headers, worker: Worker): void {
     const allowed = worker.getAllowedMethods();
     assertMethods(allowed);
 
-    if (allowed.length > 0) {
-        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_METHODS, allowed);
-    }
+    setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_METHODS, allowed);
 }
 
 /**
@@ -182,9 +203,7 @@ export function setMaxAge(headers: Headers, cors: CorsConfig): void {
  * @param cors - The `CORS` configuration.
  */
 export function setAllowHeaders(headers: Headers, cors: CorsConfig): void {
-    if (cors.allowedHeaders.length > 0) {
-        setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_HEADERS, cors.allowedHeaders);
-    }
+    setHeader(headers, HttpHeader.ACCESS_CONTROL_ALLOW_HEADERS, cors.allowedHeaders);
 }
 
 /**
