@@ -52,10 +52,13 @@ export class CacheHandler implements Middleware {
      * Behavior:
      * - Opens the configured cache (or the default cache if none specified).
      * - Creates a `CachePolicy` with default rules (GET check, range check, ETag handling).
-     * - Executes the policy to determine if a cached response can be returned.
+     * - Executes the policy to determine if a cached response can be used.
      *   - If a cached response is found and valid per the rules, it is returned.
      *   - If no cached response is usable, the `next()` handler is invoked to fetch a fresh response.
      * - Stores the fresh response in the cache if it is cacheable.
+     *
+     * Note: The cache policy only checks if an existing cached response is usable.
+     *       It does not store the response; storage is handled later in `setCached()`.
      *
      * @param worker - The Worker instance containing the request and context.
      * @param next - Function to invoke the next middleware or origin fetch.
@@ -93,9 +96,12 @@ export class CacheHandler implements Middleware {
      * it computes the variant-specific key using the `Vary` headers and returns
      * the corresponding cached response. Otherwise, returns the base cached response.
      *
-     * @param cache - The Cache object to query.
-     * @param request - The Request object for which to retrieve a cached response.
-     * @returns A Promise resolving to the cached Response if found, or `undefined` if not cached.
+     * Returns `undefined` if no cached response exists or if the cached response
+     * fails validation (e.g., rules in `CachePolicy` would prevent it from being used).
+     *
+     * @param cache - The Cache to query.
+     * @param request - The Request for which to retrieve a cached response.
+     * @returns A Promise resolving to the cached Response if found and usable, or `undefined`.
      */
     public async getCached(cache: Cache, request: Request): Promise<Response | undefined> {
         const key = this.getCacheKey(request);
@@ -114,7 +120,7 @@ export class CacheHandler implements Middleware {
      * and response variants.
      *
      * The method follows these rules:
-     * 1. If the response is not cacheable, it returns immediately.
+     * 1. If the response is not cacheable (per `isCacheable`), it returns immediately.
      * 2. If no cached entry exists:
      *    - If the response has no `Vary` headers, the response is cached directly.
      *    - If there are `Vary` headers, a `VariantResponse` is created to track
@@ -123,13 +129,14 @@ export class CacheHandler implements Middleware {
      * 3. If a cached entry exists and is a `VariantResponse`:
      *    - The `Vary` headers are merged into the variant record.
      *    - The variant-specific response is updated in the cache.
+     *    - TTL is updated to match the most permissive TTL from the origin response.
      * 4. If a cached entry exists but is not a variant and the new response has `Vary` headers:
      *    - The cached non-variant is converted into a `VariantResponse`.
-     *    - The new response and the original cached response are stored under appropriate variant keys.
+     *    - Both the new response and the original cached response are stored under appropriate variant keys.
      *
-     * @param cache - The Cache object where the response should be stored.
+     * @param cache - The Cache where the response should be stored.
      * @param worker - The Worker instance containing the request and execution context.
-     * @param clone - The Response object to cache.
+     * @param response - The Response to cache.
      */
     public async setCached(cache: Cache, request: Request, response: Response): Promise<void> {
         if (!isCacheable(request, response)) return;
