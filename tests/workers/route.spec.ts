@@ -15,8 +15,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { ALL_METHODS, TestRoutes, VALID_URL } from "@common";
-import { Method } from "@src/constants/methods";
+import { TestRoutes, VALID_URL } from "@common";
+import { Method, POST, PUT } from "@src/constants/methods";
 import { RouteHandler } from "@src/interfaces/route";
 import { RouteWorker } from "@src/workers/route";
 import { ctx, env } from "@mock";
@@ -37,7 +37,7 @@ class TestWorker extends RouteWorker {
     }
 
     public override getAllowedMethods(): Method[] {
-        return ALL_METHODS;
+        return [PUT];
     }
 }
 
@@ -51,6 +51,30 @@ describe("route worker unit tests", () => {
             details: "",
             error: "Not Found",
             status: 404,
+        });
+    });
+
+    it("returns 405 if method not allowed", async () => {
+        const request = new Request(VALID_URL, { method: POST });
+        const worker = new TestWorker(request);
+        const response = await worker.fetch();
+        const json = await response.json();
+        expect(json).toStrictEqual({
+            details: "POST method not allowed.",
+            error: "Method Not Allowed",
+            status: 405,
+        });
+    });
+
+    it("returns 501 if method not implemented", async () => {
+        const request = new Request(VALID_URL, { method: PUT });
+        const worker = new TestWorker(request);
+        const response = await worker.fetch();
+        const json = await response.json();
+        expect(json).toStrictEqual({
+            details: "PUT method not implemented.",
+            error: "Not Implemented",
+            status: 501,
         });
     });
 
