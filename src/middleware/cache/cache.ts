@@ -34,7 +34,7 @@ import { CacheHandler } from "./handler";
  * @param init.name Optional name of the cache to use. If omitted, the default cache is used.
  * @param init.getKey Optional function to compute a custom cache key from a request.
  *
- * @returns A `Middleware` instance that can be used in a Worker pipeline.
+ * @returns A {@link Middleware} instance that can be used in your middleware chain.
  */
 export function cache(init: Partial<CacheInit> = {}): Middleware {
     assertCacheInit(init);

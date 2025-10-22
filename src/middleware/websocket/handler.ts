@@ -23,9 +23,35 @@ import { Worker } from "../../interfaces/worker";
 
 import { hasConnectionHeader, hasUpgradeHeader, hasWebSocketVersion } from "./utils";
 
+/**
+ * Middleware for validating WebSocket upgrade requests.
+ *
+ * - Only applies to `GET` requests.
+ * - Matches requests against a specific path using `path-to-regex` patterns.
+ * - Validates that the request contains required WebSocket headers:
+ *   - `Connection: Upgrade`
+ *   - `Upgrade: websocket`
+ *   - `Sec-WebSocket-Version` matches the expected version
+ * - Returns an error response if any validation fails.
+ * - Otherwise, passes control to the next middleware or origin handler.
+ */
 export class WebSocketHandler implements Middleware {
+    /**
+     * Creates a new WebSocketHandler for a specific path.
+     *
+     * @param path - The request path this handler should intercept for WebSocket upgrades.
+     *               Supports dynamic segments using `path-to-regex` syntax.
+     */
     constructor(private readonly path: string) {}
 
+    /**
+     * Handles an incoming request, validating WebSocket upgrade headers.
+     *
+     * @param worker - The Worker instance containing the request.
+     * @param next - Function to invoke the next middleware.
+     * @returns A Response object if the request fails WebSocket validation,
+     *          or the result of `next()` if the request is valid or does not match.
+     */
     public handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         if (worker.request.method !== GET) {
             return next();
@@ -49,6 +75,12 @@ export class WebSocketHandler implements Middleware {
         return next();
     }
 
+    /**
+     * Checks if the request path matches the configured path for this handler.
+     *
+     * @param request - The incoming Request object.
+     * @returns `true` if the request path matches, `false` otherwise.
+     */
     private isMatch(request: Request): boolean {
         return match(this.path)(new URL(request.url).pathname) !== false;
     }

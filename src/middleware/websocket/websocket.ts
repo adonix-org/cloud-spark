@@ -18,6 +18,30 @@ import { Middleware } from "../../interfaces/middleware";
 
 import { WebSocketHandler } from "./handler";
 
+/**
+ * Returns a middleware that validates incoming WebSocket upgrade requests.
+ *
+ * - Only validates the upgrade request; it does **not** perform the actual WebSocket upgrade.
+ * - Ensures the request:
+ *   - Uses the `GET` method.
+ *   - Matches the specified path, supporting `path-to-regex` style patterns
+ *     (e.g., `/chat/:name`).
+ *   - Contains required WebSocket headers:
+ *     - `Connection: Upgrade`
+ *     - `Upgrade: websocket`
+ *     - `Sec-WebSocket-Version` matches the expected version
+ * - Returns an error response if validation fails, otherwise passes control to
+ *   the next middleware or origin handler.
+ *
+ * @param path - The URL path to intercept for WebSocket upgrades. Defaults to `/`.
+ *               Supports dynamic segments using `path-to-regex` syntax.
+ * @returns A {@link Middleware} instance that can be used in your middleware chain.
+ *
+ * @example
+ * ```ts
+ * app.use(websocket("/chat/:name"));
+ * ```
+ */
 export function websocket(path: string = "/"): Middleware {
     return new WebSocketHandler(path);
 }

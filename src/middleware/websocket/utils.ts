@@ -18,18 +18,36 @@ import { HttpHeader } from "../../constants/headers";
 import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "../../constants/websocket";
 import { getHeaderValues } from "../../utils/headers";
 
+/**
+ * Checks if the `Connection` header includes the WebSocket upgrade token.
+ *
+ * @param headers - The Headers object to inspect.
+ * @returns `true` if a WebSocket upgrade is requested via `Connection` header, `false` otherwise.
+ */
 export function hasConnectionHeader(headers: Headers): boolean {
     return getHeaderValues(headers, HttpHeader.CONNECTION).some(
         (value) => value.toLowerCase() === WS_UPGRADE,
     );
 }
 
+/**
+ * Checks if the `Upgrade` header requests a WebSocket upgrade.
+ *
+ * @param headers - The Headers object to inspect.
+ * @returns `true` if the `Upgrade` header is set to `websocket`, `false` otherwise.
+ */
 export function hasUpgradeHeader(headers: Headers): boolean {
     return getHeaderValues(headers, HttpHeader.UPGRADE).some(
         (value) => value.toLowerCase() === WS_WEBSOCKET,
     );
 }
 
+/**
+ * Determines whether the request includes the correct WebSocket version.
+ *
+ * @param headers - The Headers object to inspect.
+ * @returns `true` if `Sec-WebSocket-Version` matches the expected version, `false` otherwise.
+ */
 export function hasWebSocketVersion(headers: Headers): boolean {
     return headers.get(HttpHeader.SEC_WEBSOCKET_VERSION)?.trim() === WS_VERSION;
 }

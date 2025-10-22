@@ -379,7 +379,7 @@ type RouteTable = Iterable<RouteTuple>;
  * @param init.name Optional name of the cache to use. If omitted, the default cache is used.
  * @param init.getKey Optional function to compute a custom cache key from a request.
  *
- * @returns A \`Middleware\` instance that can be used in a Worker pipeline.
+ * @returns A {@link Middleware} instance that can be used in your middleware chain.
  */
 declare function cache(init?: Partial<CacheInit>): Middleware;
 
@@ -416,6 +416,30 @@ declare function stripSearchParams(request: Request): URL;
  */
 declare function cors(init?: CorsInit): Middleware;
 
+/**
+ * Returns a middleware that validates incoming WebSocket upgrade requests.
+ *
+ * - Only validates the upgrade request; it does **not** perform the actual WebSocket upgrade.
+ * - Ensures the request:
+ *   - Uses the \`GET\` method.
+ *   - Matches the specified path, supporting \`path-to-regex\` style patterns
+ *     (e.g., \`/chat/:name\`).
+ *   - Contains required WebSocket headers:
+ *     - \`Connection: Upgrade\`
+ *     - \`Upgrade: websocket\`
+ *     - \`Sec-WebSocket-Version\` matches the expected version
+ * - Returns an error response if validation fails, otherwise passes control to
+ *   the next middleware or origin handler.
+ *
+ * @param path - The URL path to intercept for WebSocket upgrades. Defaults to \`/\`.
+ *               Supports dynamic segments using \`path-to-regex\` syntax.
+ * @returns A {@link Middleware} instance that can be used in your middleware chain.
+ *
+ * @example
+ * \`\`\`ts
+ * app.use(websocket("/chat/:name"));
+ * \`\`\`
+ */
 declare function websocket(path?: string): Middleware;
 
 type WarnEvent = {
