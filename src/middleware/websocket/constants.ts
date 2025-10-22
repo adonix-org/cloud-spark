@@ -16,7 +16,9 @@
 
 /** WebSocket upgrade header value */
 export const WS_UPGRADE = "upgrade";
+
 /** WebSocket protocol header value */
 export const WS_WEBSOCKET = "websocket";
+
 /** WebSocket protocol version */
 export const WS_VERSION = "13";
