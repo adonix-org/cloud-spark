@@ -17,18 +17,58 @@
 
 import { Worker } from "../../../interfaces/worker";
 
+/**
+ * Represents a byte range parsed from an HTTP `Range` header.
+ *
+ * Typically used to request partial content from a resource.
+ * - `start` marks the beginning of the range (inclusive).
+ * - `end` is optional; if omitted, the range extends to the end of the resource.
+ */
 export interface ByteRange {
+    /** Starting byte offset (inclusive). */
     start: number;
+
+    /** Optional ending byte offset (inclusive). */
     end?: number;
 }
 
+/**
+ * A rule that participates in the cache decision pipeline.
+ *
+ * Each `CacheRule` receives the active worker context and a
+ * `next()` callback representing the next stage in the chain.
+ * Implementations can:
+ * - Short-circuit the chain by returning a cached response.
+ * - Call `next()` to continue evaluation.
+ * - Modify the response before returning it.
+ */
 export interface CacheRule {
+    /**
+     * Applies the rule to a request/response pipeline.
+     *
+     * @param worker - The worker instance handling the current request.
+     * @param next - A function that invokes the next rule or final handler.
+     * @returns A cached response, or `undefined` if no cached response exists or can be used.
+     */
     apply(worker: Worker, next: () => Promise<Response | undefined>): Promise<Response | undefined>;
 }
 
+/**
+ * Parsed conditional request headers that influence cache validation.
+ *
+ * These headers determine whether a cached resource can be reused
+ * or if a fresh copy should be fetched.
+ */
 export interface CacheValidators {
+    /** Entity tags that must **not** match for a response to be considered valid (`If-None-Match`). */
     ifNoneMatch: string[];
+
+    /** Entity tags that **must** match for a response to be considered valid (`If-Match`). */
     ifMatch: string[];
+
+    /** Timestamp after which the resource is considered modified (`If-Modified-Since`). */
     ifModifiedSince: string | null;
+
+    /** Timestamp before which the resource must remain unmodified (`If-Unmodified-Since`). */
     ifUnmodifiedSince: string | null;
 }
