@@ -28,8 +28,7 @@ import { RestoredConnectionBase } from "./restore";
  * - Create new WebSocket connections (`create`) and attach arbitrary data.
  * - Accept connections using the standard WebSocket API (`accept`).
  * - Accept connections using the hibernatable WebSocket API (`acceptWebSocket`),
- *   which allows the connection to be put to sleep when inactive and woken up
- *   as needed.
+ *   which allows the connection to be put to sleep when inactive.
  * - Restore existing WebSockets into a managed session (`restore`, `restoreAll`),
  *   maintaining their hibernation state.
  * - Iterate over active connections or retrieve a connection by its WebSocket instance.
@@ -42,7 +41,7 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
     private readonly map = new Map<WebSocket, WebSocketConnection<A>>();
 
     /**
-     * Creates a new WebSocket connection and optionally attaches user data.
+     * Create a new WebSocket connection and optionally attach user data.
      *
      * @param attachment - Partial attachment object to initialize the connection with.
      * @returns A `WebSocketConnection` instance ready for accepting and sending messages.
@@ -90,7 +89,7 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
      * Restores multiple WebSockets into managed sessions at once.
      *
      * @param all - Array of WebSocket instances to restore.
-     * @returns Array of `WebSocketConnection` objects for each WebSocket.
+     * @returns Array of `WebSocketConnections` restored.
      */
     public restoreAll(all: WebSocket[]): ReadonlyArray<WebSocketConnection<A>> {
         const restored: WebSocketConnection<A>[] = [];
