@@ -15,7 +15,6 @@
  */
 
 import { Method } from "../constants/methods";
-import { NotFound } from "../errors";
 import { RouteHandler, RouteTable } from "../interfaces/route";
 import { WorkerClass } from "../interfaces/worker";
 import { Routes } from "../routes";
@@ -102,25 +101,5 @@ export abstract class RouteWorker extends BasicWorker {
      */
     private static isWorkerClass(handler: RouteHandler): handler is WorkerClass {
         return Object.prototype.isPrototypeOf.call(BaseWorker.prototype, handler.prototype);
-    }
-
-    protected override get(): Promise<Response> {
-        return this.response(NotFound);
-    }
-
-    protected override put(): Promise<Response> {
-        return this.response(NotFound);
-    }
-
-    protected override post(): Promise<Response> {
-        return this.response(NotFound);
-    }
-
-    protected override patch(): Promise<Response> {
-        return this.response(NotFound);
-    }
-
-    protected override delete(): Promise<Response> {
-        return this.response(NotFound);
     }
 }

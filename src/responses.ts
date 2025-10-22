@@ -19,6 +19,7 @@ import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import { CacheControl } from "./constants/cache";
 import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "./constants/headers";
 import { MediaType, UTF8_CHARSET } from "./constants/media";
+import { GET, HEAD } from "./constants/methods";
 import { assertMethods } from "./guards/methods";
 import { assertOctetStreamInit } from "./guards/responses";
 import { Worker } from "./interfaces";
@@ -389,7 +390,7 @@ export class Head extends WorkerResponse {
  */
 export class Options extends WorkerResponse {
     constructor(worker: Worker) {
-        const allowed = worker.getAllowedMethods();
+        const allowed = Array.from(new Set([...worker.getAllowedMethods(), GET, HEAD]));
         assertMethods(allowed);
 
         super();

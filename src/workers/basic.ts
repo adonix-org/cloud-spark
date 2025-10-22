@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { GET, HEAD, Method, OPTIONS } from "../constants/methods";
-import { InternalServerError, MethodNotAllowed, MethodNotImplemented } from "../errors";
+import { DELETE, GET, Method, OPTIONS, PATCH, POST, PUT } from "../constants/methods";
+import { InternalServerError, MethodNotAllowed, MethodNotImplemented, NotFound } from "../errors";
 import { Head, Options } from "../responses";
 
 import { MiddlewareWorker } from "./middleware";
@@ -57,27 +57,27 @@ export abstract class BasicWorker extends MiddlewareWorker {
 
     /** Override and implement this method for `GET` requests. */
     protected get(): Promise<Response> {
-        return this.response(MethodNotImplemented, this);
+        return this.response(NotFound);
     }
 
     /** Override and implement this method for `PUT` requests. */
     protected put(): Promise<Response> {
-        return this.response(MethodNotImplemented, this);
+        return this.defaultResponse(PUT);
     }
 
     /** Override and implement this method for `POST` requests. */
     protected post(): Promise<Response> {
-        return this.response(MethodNotImplemented, this);
+        return this.defaultResponse(POST);
     }
 
     /** Override and implement this method for `PATCH` requests. */
     protected patch(): Promise<Response> {
-        return this.response(MethodNotImplemented, this);
+        return this.defaultResponse(PATCH);
     }
 
     /** Override and implement this method for `DELETE` requests. */
     protected delete(): Promise<Response> {
-        return this.response(MethodNotImplemented, this);
+        return this.defaultResponse(DELETE);
     }
 
     /** Returns the default `OPTIONS` response. */
@@ -100,12 +100,31 @@ export abstract class BasicWorker extends MiddlewareWorker {
     }
 
     /**
-     * The DEFAULT allowed HTTP methods for subclasses are `GET`, `HEAD`, `OPTIONS`.
+     * Returns the HTTP methods allowed by this worker.
      *
-     * These defaults were selected for getting started quickly and can be
-     * overridden for each worker subclass.
+     * - GET and HEAD are always considered allowed per RFC 7231, even if not listed here.
+     * - OPTIONS is included by default since a default handler is implemented.
+     * - Subclasses can override this method to allow additional methods or change the defaults.
      */
     public getAllowedMethods(): Method[] {
-        return [GET, HEAD, OPTIONS];
+        return [OPTIONS];
+    }
+
+    /**
+     * Returns the correct response for an HTTP method that is either not allowed
+     * or allowed but not implemented by this worker.
+     *
+     * - Returns 405 Method Not Allowed if the method is not allowed.
+     * - Returns 501 Not Implemented if the method is allowed but the base class
+     *   does not implement it.
+     *
+     * @param method - The HTTP method being invoked.
+     * @returns Response with the appropriate status code.
+     */
+    private defaultResponse(method: Method): Promise<Response> {
+        if (!this.isAllowed(method)) {
+            return this.response(MethodNotAllowed, this);
+        }
+        return this.response(MethodNotImplemented, this);
     }
 }

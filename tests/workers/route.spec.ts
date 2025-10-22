@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { ALL_METHODS, BASIC_METHODS, TestRoutes, VALID_URL } from "@common";
+import { ALL_METHODS, TestRoutes, VALID_URL } from "@common";
 import { Method } from "@src/constants/methods";
 import { RouteHandler } from "@src/interfaces/route";
 import { RouteWorker } from "@src/workers/route";
@@ -42,20 +42,6 @@ class TestWorker extends RouteWorker {
 }
 
 describe("route worker unit tests", () => {
-    it.each(BASIC_METHODS)("returns %s response", async (method) => {
-        const request = new Request(VALID_URL, { method });
-        const worker = new TestWorker(request);
-
-        const response = await worker.fetch();
-        const json = await response.json();
-
-        expect(json).toStrictEqual({
-            status: 404,
-            error: "Not Found",
-            details: "",
-        });
-    });
-
     it("handles initialization from a route table", async () => {
         class InitTestWorker extends TestWorker {
             constructor(request: Request) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method } from "../constants/methods";
+import { GET, HEAD, Method } from "../constants/methods";
 import { assertMethods, isMethod } from "../guards/methods";
 import { FetchHandler } from "../interfaces/fetch";
 import { Worker, WorkerClass } from "../interfaces/worker";
@@ -62,13 +62,25 @@ export abstract class BaseWorker implements Worker {
     protected abstract dispatch(): Promise<Response>;
 
     /**
-     * Checks if the given HTTP method is allowed for this worker.
-     * @param method HTTP method string
-     * @returns true if the method is allowed
+     * Determines whether a given HTTP method is allowed for this worker.
+     *
+     * - GET and HEAD are **always allowed**, in compliance with RFC 7231,
+     *   even if they are not explicitly listed in `getAllowedMethods()`.
+     * - Other methods are allowed only if included in the array returned by
+     *   `getAllowedMethods()` and are valid HTTP methods.
+     *
+     * This check is used internally to enforce method constraints while
+     * preserving RFC compliance for mandatory methods.
+     *
+     * @param method - The HTTP method to check (e.g., "GET", "POST").
+     * @returns `true` if the method is allowed, `false` otherwise.
      */
     public isAllowed(method: string): boolean {
         const methods = this.getAllowedMethods();
         assertMethods(methods);
+
+        // GET and HEAD are always allowed per RFC
+        if (method === GET || method === HEAD) return true;
 
         return isMethod(method) && methods.includes(method);
     }

@@ -560,8 +560,7 @@ interface WebSocketConnection<A extends WSAttachment> {
  * - Create new WebSocket connections (\`create\`) and attach arbitrary data.
  * - Accept connections using the standard WebSocket API (\`accept\`).
  * - Accept connections using the hibernatable WebSocket API (\`acceptWebSocket\`),
- *   which allows the connection to be put to sleep when inactive and woken up
- *   as needed.
+ *   which allows the connection to be put to sleep when inactive.
  * - Restore existing WebSockets into a managed session (\`restore\`, \`restoreAll\`),
  *   maintaining their hibernation state.
  * - Iterate over active connections or retrieve a connection by its WebSocket instance.
@@ -573,7 +572,7 @@ declare class WebSocketSessions<A extends WSAttachment = WSAttachment> {
     /** @internal Map of active WebSocket to their connection wrapper. */
     private readonly map;
     /**
-     * Creates a new WebSocket connection and optionally attaches user data.
+     * Create a new WebSocket connection and optionally attach user data.
      *
      * @param attachment - Partial attachment object to initialize the connection with.
      * @returns A \`WebSocketConnection\` instance ready for accepting and sending messages.
@@ -590,7 +589,7 @@ declare class WebSocketSessions<A extends WSAttachment = WSAttachment> {
      * Restores multiple WebSockets into managed sessions at once.
      *
      * @param all - Array of WebSocket instances to restore.
-     * @returns Array of \`WebSocketConnection\` objects for each WebSocket.
+     * @returns Array of \`WebSocketConnections\` restored.
      */
     restoreAll(all: WebSocket[]): ReadonlyArray<WebSocketConnection<A>>;
     /**
@@ -667,9 +666,18 @@ declare abstract class BaseWorker implements Worker {
      */
     protected abstract dispatch(): Promise<Response>;
     /**
-     * Checks if the given HTTP method is allowed for this worker.
-     * @param method HTTP method string
-     * @returns true if the method is allowed
+     * Determines whether a given HTTP method is allowed for this worker.
+     *
+     * - GET and HEAD are **always allowed**, in compliance with RFC 7231,
+     *   even if they are not explicitly listed in \`getAllowedMethods()\`.
+     * - Other methods are allowed only if included in the array returned by
+     *   \`getAllowedMethods()\` and are valid HTTP methods.
+     *
+     * This check is used internally to enforce method constraints while
+     * preserving RFC compliance for mandatory methods.
+     *
+     * @param method - The HTTP method to check (e.g., "GET", "POST").
+     * @returns \`true\` if the method is allowed, \`false\` otherwise.
      */
     isAllowed(method: string): boolean;
     abstract getAllowedMethods(): Method[];
@@ -775,12 +783,25 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      */
     protected head(): Promise<Response>;
     /**
-     * The DEFAULT allowed HTTP methods for subclasses are \`GET\`, \`HEAD\`, \`OPTIONS\`.
+     * Returns the HTTP methods allowed by this worker.
      *
-     * These defaults were selected for getting started quickly and can be
-     * overridden for each worker subclass.
+     * - GET and HEAD are always considered allowed per RFC 7231, even if not listed here.
+     * - OPTIONS is included by default since a default handler is implemented.
+     * - Subclasses can override this method to allow additional methods or change the defaults.
      */
     getAllowedMethods(): Method[];
+    /**
+     * Returns the correct response for an HTTP method that is either not allowed
+     * or allowed but not implemented by this worker.
+     *
+     * - Returns 405 Method Not Allowed if the method is not allowed.
+     * - Returns 501 Not Implemented if the method is allowed but the base class
+     *   does not implement it.
+     *
+     * @param method - The HTTP method being invoked.
+     * @returns Response with the appropriate status code.
+     */
+    private defaultResponse;
 }
 
 /**
@@ -841,11 +862,6 @@ declare abstract class RouteWorker extends BasicWorker {
      * @returns \`true\` if \`handler\` is a subclass of \`BaseWorker\` at runtime, \`false\` otherwise.
      */
     private static isWorkerClass;
-    protected get(): Promise<Response>;
-    protected put(): Promise<Response>;
-    protected post(): Promise<Response>;
-    protected patch(): Promise<Response>;
-    protected delete(): Promise<Response>;
 }
 
 /**
