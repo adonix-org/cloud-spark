@@ -18,10 +18,10 @@ import { getReasonPhrase, StatusCodes } from "http-status-codes";
 
 import { CacheControl } from "./constants/cache";
 import { HttpHeader } from "./constants/headers";
-import { WS_VERSION } from "./constants/websocket";
 import { assertMethods } from "./guards/methods";
 import { ErrorJson } from "./interfaces/error";
 import { Worker } from "./interfaces/worker";
+import { WS_VERSION } from "./middleware/websocket/constants";
 import { JsonResponse } from "./responses";
 
 /**

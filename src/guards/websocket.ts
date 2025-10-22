@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { CloseCode, WS_MAX_CLOSE_CODE, WS_MAX_REASON_CHARS, WS_RESERVED_CODES } from "../constants/websocket";
-
-import { isNumber, isString } from "./basic";
+import { isString } from "./basic";
 
 export function isBinary(value: unknown): value is ArrayBuffer | ArrayBufferView {
     return value instanceof ArrayBuffer || ArrayBuffer.isView(value);
@@ -26,25 +24,6 @@ export function isSendable(value: unknown): value is string | ArrayBuffer | Arra
     if (isString(value)) return value.length > 0;
     if (isBinary(value)) return value.byteLength > 0;
     return false;
-}
-
-export function safeCloseCode(code?: number): number {
-    if (!isNumber(code)) return CloseCode.NORMAL;
-    if (isCodeInRange(code) && !isReservedCode(code)) return code;
-    return CloseCode.NORMAL;
-}
-
-export function isCodeInRange(code: number): boolean {
-    return code >= CloseCode.NORMAL && code <= WS_MAX_CLOSE_CODE;
-}
-
-export function isReservedCode(code: number): boolean {
-    return WS_RESERVED_CODES.has(code);
-}
-
-export function safeReason(reason?: string): string | undefined {
-    if (!isString(reason)) return;
-    return reason.replaceAll(/[^\x20-\x7E]/g, "").slice(0, WS_MAX_REASON_CHARS);
 }
 
 export function assertSerializable(value: unknown): asserts value is object {

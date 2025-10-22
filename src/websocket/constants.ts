@@ -1,0 +1,35 @@
+/*
+ * Copyright (C) 2025 Ty Busby
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** Max close code a user can send */
+export const WS_MAX_CLOSE_CODE = 4999;
+/** Max number of reason chars a user can send */
+export const WS_MAX_REASON_CHARS = 123;
+
+/** WebSocket close codes */
+export const CloseCode = {
+    NORMAL: 1000,
+    NO_STATUS: 1005,
+    ABNORMAL: 1006,
+    TLS_HANDSHAKE: 1015,
+} as const;
+
+/** WebSocket RESERVED close codes */
+export const WS_RESERVED_CODES = new Set<number>([
+    CloseCode.NO_STATUS,
+    CloseCode.ABNORMAL,
+    CloseCode.TLS_HANDSHAKE,
+]);

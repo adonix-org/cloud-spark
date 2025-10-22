@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { assertSerializable, isSendable, safeCloseCode, safeReason } from "../guards/websocket";
+import { assertSerializable, isSendable } from "../guards/websocket";
 import { WSAttachment } from "../interfaces/websocket";
 
 import { WebSocketEvents } from "./events";
+import { safeCloseCode, safeReason } from "./utils";
 
 export abstract class BaseWebSocket<A extends WSAttachment> extends WebSocketEvents {
     protected accepted = false;

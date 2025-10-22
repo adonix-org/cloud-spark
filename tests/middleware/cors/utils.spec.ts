@@ -21,7 +21,7 @@ import {
     VALID_ORIGIN,
     VALID_URL,
 } from "@common";
-import { WS_WEBSOCKET } from "@src/constants/websocket";
+import { WS_WEBSOCKET } from "@src/middleware/websocket/constants";
 import { HttpHeader } from "@src/constants/headers";
 import { DELETE, GET, OPTIONS, POST, PUT } from "@src/constants/methods";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";

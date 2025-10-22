@@ -22,7 +22,7 @@ import { websocket } from "@src/middleware/websocket/websocket";
 import { Method, POST } from "@src/constants/methods";
 import { StatusCodes } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
-import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "@src/constants/websocket";
+import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "@src/middleware/websocket/constants";
 
 const GET_DISPATCH = "GET Dispatch";
 const POST_DISPATCH = "POST Dispatch";

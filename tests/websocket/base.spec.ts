@@ -16,7 +16,7 @@
 
 import { BaseWebSocket } from "@src/websocket/base";
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import * as safe from "@src/guards/websocket";
+import * as safe from "@src/websocket/utils";
 
 interface Id {
     id: string;

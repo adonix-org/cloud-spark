@@ -20,22 +20,3 @@ export const WS_UPGRADE = "upgrade";
 export const WS_WEBSOCKET = "websocket";
 /** WebSocket protocol version */
 export const WS_VERSION = "13";
-/** Max close code a user can send */
-export const WS_MAX_CLOSE_CODE = 4999;
-/** Max number of reason chars a user can send */
-export const WS_MAX_REASON_CHARS = 123;
-
-/** WebSocket close codes */
-export const CloseCode = {
-    NORMAL: 1000,
-    NO_STATUS: 1005,
-    ABNORMAL: 1006,
-    TLS_HANDSHAKE: 1015,
-} as const;
-
-/** WebSocket RESERVED close codes */
-export const WS_RESERVED_CODES = new Set<number>([
-    CloseCode.NO_STATUS,
-    CloseCode.ABNORMAL,
-    CloseCode.TLS_HANDSHAKE,
-]);
