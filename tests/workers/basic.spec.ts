@@ -33,8 +33,14 @@ class TestWorker extends BasicWorker {
     }
 }
 
+class SimpleTestWorker extends TestWorker {
+    public override getAllowedMethods(): Method[] {
+        return [];
+    }
+}
+
 describe("basic worker unit tests", () => {
-    it.each(MUTATE_METHODS)("returns %s response", async (method) => {
+    it.each(MUTATE_METHODS)("returns %s 501 response", async (method) => {
         const request = new Request(VALID_URL, { method });
         const worker = new TestWorker(request);
 
@@ -45,6 +51,23 @@ describe("basic worker unit tests", () => {
             status: 501,
             error: "Not Implemented",
             details: `${method} method not implemented.`,
+        });
+
+        const json = await response.json();
+        expect(json).toStrictEqual(expectedJson(method));
+    });
+
+    it.each(MUTATE_METHODS)("returns %s 405 response", async (method) => {
+        const request = new Request(VALID_URL, { method });
+        const worker = new SimpleTestWorker(request);
+
+        const response = await worker.fetch();
+        expect(response).toBeInstanceOf(Response);
+
+        const expectedJson = (method: Method) => ({
+            status: 405,
+            error: "Method Not Allowed",
+            details: `${method} method not allowed.`,
         });
 
         const json = await response.json();

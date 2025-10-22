@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DELETE, GET, Method, OPTIONS, PATCH, POST, PUT } from "../constants/methods";
+import { GET, Method, OPTIONS } from "../constants/methods";
 import { InternalServerError, MethodNotAllowed, MethodNotImplemented, NotFound } from "../errors";
 import { Head, Options } from "../responses";
 
@@ -62,22 +62,22 @@ export abstract class BasicWorker extends MiddlewareWorker {
 
     /** Override and implement this method for `PUT` requests. */
     protected put(): Promise<Response> {
-        return this.defaultResponse(PUT);
+        return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for `POST` requests. */
     protected post(): Promise<Response> {
-        return this.defaultResponse(POST);
+        return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for `PATCH` requests. */
     protected patch(): Promise<Response> {
-        return this.defaultResponse(PATCH);
+        return this.response(MethodNotImplemented, this);
     }
 
     /** Override and implement this method for `DELETE` requests. */
     protected delete(): Promise<Response> {
-        return this.defaultResponse(DELETE);
+        return this.response(MethodNotImplemented, this);
     }
 
     /** Returns the default `OPTIONS` response. */
@@ -108,23 +108,5 @@ export abstract class BasicWorker extends MiddlewareWorker {
      */
     public getAllowedMethods(): Method[] {
         return [OPTIONS];
-    }
-
-    /**
-     * Returns the correct response for an HTTP method that is either not allowed
-     * or allowed but not implemented by this worker.
-     *
-     * - Returns 405 Method Not Allowed if the method is not allowed.
-     * - Returns 501 Not Implemented if the method is allowed but the base class
-     *   does not implement it.
-     *
-     * @param method - The HTTP method being invoked.
-     * @returns Response with the appropriate status code.
-     */
-    private defaultResponse(method: Method): Promise<Response> {
-        if (!this.isAllowed(method)) {
-            return this.response(MethodNotAllowed, this);
-        }
-        return this.response(MethodNotImplemented, this);
     }
 }

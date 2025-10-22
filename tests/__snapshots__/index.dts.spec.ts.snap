@@ -790,18 +790,6 @@ declare abstract class BasicWorker extends MiddlewareWorker {
      * - Subclasses can override this method to allow additional methods or change the defaults.
      */
     getAllowedMethods(): Method[];
-    /**
-     * Returns the correct response for an HTTP method that is either not allowed
-     * or allowed but not implemented by this worker.
-     *
-     * - Returns 405 Method Not Allowed if the method is not allowed.
-     * - Returns 501 Not Implemented if the method is allowed but the base class
-     *   does not implement it.
-     *
-     * @param method - The HTTP method being invoked.
-     * @returns Response with the appropriate status code.
-     */
-    private defaultResponse;
 }
 
 /**
