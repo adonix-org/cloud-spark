@@ -21,7 +21,24 @@ import { Worker } from "../../../interfaces/worker";
 import { CacheRule } from "./interfaces";
 import { getContentLength, getRange } from "./utils";
 
+/**
+ * Ensures cached responses can satisfy requests with a `Range` header.
+ *
+ * - Only full or full-from-start ranges are eligible.
+ * - Requests with non-zero `start`, zero `end`, or mismatched `end` values
+ *   bypass the cache (`undefined` is returned).
+ * - Requests without a `Range` header, or with open-ended ranges from 0,
+ *   pass the cached response to the next rule in the chain.
+ */
 export class RangeRule implements CacheRule {
+    /**
+     * Applies range-based cache validation.
+     *
+     * @param worker - The worker context containing the request.
+     * @param next - Function invoking the next cache rule or returning a cached response.
+     * @returns The cached response if it satisfies the requested range,
+     *          or `undefined` if the cache cannot be used.
+     */
     public async apply(
         worker: Worker,
         next: () => Promise<Response | undefined>,

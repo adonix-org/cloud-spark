@@ -20,7 +20,22 @@ import { getCacheControl } from "../utils";
 import { CacheRule } from "./interfaces";
 import { hasCacheValidator } from "./utils";
 
+/**
+ * Determines cache eligibility based on request `Cache-Control` headers.
+ *
+ * - `no-store` always prevents using the cache.
+ * - `no-cache` or `max-age=0` prevent using the cache **unless** conditional validators
+ *   (e.g., `If-None-Match`, `If-Modified-Since`) are present.
+ * - Otherwise, the request passes to the next rule in the chain.
+ */
 export class CacheControlRule implements CacheRule {
+    /**
+     * Applies cache-control header validation to determine cache usability.
+     *
+     * @param worker - The worker context containing the request.
+     * @param next - Function invoking the next cache rule or returning a cached response.
+     * @returns The cached response if allowed by cache-control, or `undefined` if the cache cannot be used.
+     */
     public async apply(
         worker: Worker,
         next: () => Promise<Response | undefined>,

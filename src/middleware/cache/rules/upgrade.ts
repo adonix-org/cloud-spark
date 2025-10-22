@@ -19,7 +19,20 @@ import { Worker } from "../../../interfaces";
 
 import { CacheRule } from "./interfaces";
 
+/**
+ * Prevents using the cache for requests that include the `Upgrade` header.
+ *
+ * - If the `Upgrade` header is present, the cache is bypassed.
+ * - Otherwise, the request passes to the next rule in the chain.
+ */
 export class UpgradeRule implements CacheRule {
+    /**
+     * Applies the upgrade-header validation.
+     *
+     * @param worker - The worker context containing the request.
+     * @param next - Function invoking the next cache rule or returning a cached response.
+     * @returns The cached response if allowed, or `undefined` if the cache cannot be used.
+     */
     public async apply(
         worker: Worker,
         next: () => Promise<Response | undefined>,

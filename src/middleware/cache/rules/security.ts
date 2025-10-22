@@ -19,7 +19,20 @@ import { Worker } from "../../../interfaces";
 
 import { CacheRule } from "./interfaces";
 
+/**
+ * Prevents using the cache for requests that contain sensitive headers.
+ *
+ * - Requests with `Authorization` or `Cookie` headers bypass the cache.
+ * - Otherwise, the request passes to the next rule in the chain.
+ */
 export class SecurityRule implements CacheRule {
+    /**
+     * Applies security-based cache validation.
+     *
+     * @param worker - The worker context containing the request.
+     * @param next - Function invoking the next cache rule or returning a cached response.
+     * @returns The cached response if allowed, or `undefined` if the cache cannot be used.
+     */
     public async apply(
         worker: Worker,
         next: () => Promise<Response | undefined>,

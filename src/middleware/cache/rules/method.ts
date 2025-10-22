@@ -20,7 +20,23 @@ import { Head } from "../../../responses";
 
 import { CacheRule } from "./interfaces";
 
+/**
+ * Determines cache eligibility based on the HTTP method.
+ *
+ * - `GET` requests pass the cached response to the next rule in the chain.
+ * - `HEAD` requests convert a cached `GET` response into a `HEAD` response
+ *   before passing it along.
+ * - All other methods bypass the cache and return `undefined`.
+ */
 export class MethodRule implements CacheRule {
+    /**
+     * Applies method-based cache validation.
+     *
+     * @param worker - The worker context containing the request.
+     * @param next - Function invoking the next cache rule or returning a cached response.
+     * @returns The cached response if eligible, a transformed `HEAD` response,
+     *          or `undefined` if the cache cannot be used.
+     */
     public async apply(
         worker: Worker,
         next: () => Promise<Response | undefined>,
