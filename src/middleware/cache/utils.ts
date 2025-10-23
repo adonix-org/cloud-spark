@@ -80,9 +80,13 @@ export function isCacheable(request: Request, response: Response): boolean {
     if (responseCacheControl["no-store"]) return false;
     if (responseCacheControl["no-cache"]) return false;
     if (responseCacheControl["private"]) return false;
-    
+
     if (response.headers.has(HttpHeader.SET_COOKIE)) return false;
     if (getVaryHeader(response).includes(VARY_WILDCARD)) return false;
+
+    if (response.headers.has(HttpHeader.INTERNAL_VARIANT_SET)) {
+        throw new Error("Found conflicting vary header.");
+    }
 
     if (response.headers.has(HttpHeader.CONTENT_RANGE)) {
         throw new Error("Found content-range header on 200 OK. Must use 206 Partial Content");
