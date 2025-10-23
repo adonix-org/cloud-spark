@@ -60,6 +60,18 @@ describe("cache utils unit tests ", () => {
             expect(isCacheable(req, resp)).toBe(false);
         });
 
+        it("returns false if request has Cookie header", () => {
+            const req = makeRequest(GET, { Cookie: "session=abc123" });
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "public, max-age=3600" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
+        it("returns false if request has Authorization header", () => {
+            const req = makeRequest(GET, { Authorization: "Bearer token" });
+            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "public, max-age=3600" });
+            expect(isCacheable(req, resp)).toBe(false);
+        });
+
         it("returns false if response cache-control not present", () => {
             const req = makeRequest(GET);
             const resp = makeResponse();
@@ -105,16 +117,13 @@ describe("cache utils unit tests ", () => {
             expect(() => isCacheable(req, resp)).toThrow();
         });
 
-        it("returns false if request has Cookie header", () => {
-            const req = makeRequest(GET, { Cookie: "session=abc123" });
-            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "public, max-age=3600" });
-            expect(isCacheable(req, resp)).toBe(false);
-        });
-
-        it("returns false if request has Authorization header", () => {
-            const req = makeRequest(GET, { Authorization: "Bearer token" });
-            const resp = makeResponse(StatusCodes.OK, { "Cache-Control": "public, max-age=3600" });
-            expect(isCacheable(req, resp)).toBe(false);
+        it("throws an error if response has reserved header", () => {
+            const req = makeRequest();
+            const resp = makeResponse(StatusCodes.OK, {
+                "Cache-Control": "max-age=60",
+                [HttpHeader.INTERNAL_VARIANT_SET]: "abc",
+            });
+            expect(() => isCacheable(req, resp)).toThrow();
         });
 
         it("returns false if response has Set-Cookie header", () => {
@@ -124,15 +133,6 @@ describe("cache utils unit tests ", () => {
                 "Set-Cookie": "session=abc123; Path=/",
             });
             expect(isCacheable(req, resp)).toBe(false);
-        });
-
-        it("throws an error if response has reserved header", () => {
-            const req = makeRequest();
-            const resp = makeResponse(StatusCodes.OK, {
-                "Cache-Control": "max-age=60",
-                [HttpHeader.INTERNAL_VARIANT_SET]: "abc",
-            });
-            expect(() => isCacheable(req, resp)).toThrow();
         });
 
         it("returns true for standard cacheable GET 200 response", () => {
