@@ -850,6 +850,10 @@ declare abstract class RouteWorker extends BasicWorker {
      * @returns \`true\` if \`handler\` is a subclass of \`BaseWorker\` at runtime, \`false\` otherwise.
      */
     private static isWorkerClass;
+    protected put(): Promise<Response>;
+    protected post(): Promise<Response>;
+    protected patch(): Promise<Response>;
+    protected delete(): Promise<Response>;
 }
 
 /**

@@ -15,14 +15,17 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { TestRoutes, VALID_URL } from "@common";
-import { Method, POST, PUT } from "@src/constants/methods";
+import { DEFAULT_METHODS, MUTATE_METHODS, TestRoutes, VALID_URL } from "@common";
+import { Method } from "@src/constants/methods";
 import { RouteHandler } from "@src/interfaces/route";
 import { RouteWorker } from "@src/workers/route";
 import { ctx, env } from "@mock";
 
 class TestWorker extends RouteWorker {
-    constructor(request: Request) {
+    constructor(
+        request: Request,
+        public methods = DEFAULT_METHODS,
+    ) {
         super(request, env, ctx);
     }
 
@@ -37,15 +40,18 @@ class TestWorker extends RouteWorker {
     }
 
     public override getAllowedMethods(): Method[] {
-        return [PUT];
+        return this.methods;
     }
 }
 
 describe("route worker unit tests", () => {
-    it("returns 404 if path not found", async () => {
-        const request = new Request("https://foo.bar/invalid/path");
+    it("returns get 404 response", async () => {
+        const request = new Request(VALID_URL);
         const worker = new TestWorker(request);
+
         const response = await worker.fetch();
+        expect(response).toBeInstanceOf(Response);
+
         const json = await response.json();
         expect(json).toStrictEqual({
             details: "",
@@ -54,27 +60,35 @@ describe("route worker unit tests", () => {
         });
     });
 
-    it("returns 405 if method not allowed", async () => {
-        const request = new Request(VALID_URL, { method: POST });
+    it.each(MUTATE_METHODS)("returns %s 405 response", async (method) => {
+        const request = new Request(VALID_URL, { method });
         const worker = new TestWorker(request);
+
         const response = await worker.fetch();
-        const json = await response.json();
-        expect(json).toStrictEqual({
-            details: "POST method not allowed.",
-            error: "Method Not Allowed",
+        expect(response).toBeInstanceOf(Response);
+
+        const expectedJson = (method: Method) => ({
             status: 405,
+            error: "Method Not Allowed",
+            details: `${method} method not allowed.`,
         });
+
+        const json = await response.json();
+        expect(json).toStrictEqual(expectedJson(method));
     });
 
-    it("returns 501 if method not implemented", async () => {
-        const request = new Request(VALID_URL, { method: PUT });
-        const worker = new TestWorker(request);
+    it.each(MUTATE_METHODS)("returns %s 404 response for non-get", async (method) => {
+        const request = new Request(VALID_URL, { method });
+        const worker = new TestWorker(request, MUTATE_METHODS);
+
         const response = await worker.fetch();
+        expect(response).toBeInstanceOf(Response);
+
         const json = await response.json();
         expect(json).toStrictEqual({
-            details: "PUT method not implemented.",
-            error: "Not Implemented",
-            status: 501,
+            details: "",
+            error: "Not Found",
+            status: 404,
         });
     });
 
