@@ -673,9 +673,6 @@ declare abstract class BaseWorker implements Worker {
      * - Other methods are allowed only if included in the array returned by
      *   \`getAllowedMethods()\` and are valid HTTP methods.
      *
-     * This check is used internally to enforce method constraints while
-     * preserving RFC compliance for mandatory methods.
-     *
      * @param method - The HTTP method to check (e.g., "GET", "POST").
      * @returns \`true\` if the method is allowed, \`false\` otherwise.
      */
