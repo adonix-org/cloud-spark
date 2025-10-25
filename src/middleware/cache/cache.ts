@@ -26,7 +26,7 @@ import { CacheHandler } from "./handler";
  * This middleware:
  * - Caches `GET` requests **only**.
  * - Respects the `Vary` header of responses, ensuring that requests
- *   with different headers (e.g., `Origin`) receive the correct cached response.
+ *   with different headers (e.g., `Accept-Language`) receive the correct cached response.
  * - Skips caching for non-cacheable responses (e.g., error responses or
  *   responses with `Vary: *`).
  *
