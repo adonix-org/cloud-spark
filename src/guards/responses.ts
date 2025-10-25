@@ -33,9 +33,8 @@ import { isNumber } from "./basic";
  * Acts as a TypeScript type predicate, so after calling it, `value` is narrowed to `OctetStreamInit`.
  *
  * @param value - The value to validate as `OctetStreamInit`.
- * @throws {TypeError} If the value is not a non-null object.
- * @throws {RangeError} If `size`, `offset`, or `length` are invalid.
- * @returns `true` if the value is a valid `OctetStreamInit`.
+ * @throws TypeError If the value is not a non-null object.
+ * @throws RangeError If `size`, `offset`, or `length` are invalid.
  */
 export function assertOctetStreamInit(value: unknown): asserts value is OctetStreamInit {
     if (typeof value !== "object" || value === null) {

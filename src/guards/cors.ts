@@ -24,6 +24,7 @@ import { isBoolean, isNumber, isStringArray } from "./basic";
  * Checks only the fields that are present, since CorsInit is Partial<CorsConfig>.
  *
  * @param value - The value to check.
+ * @throws TypeError If `value` is not a valid {@link CorsInit}.
  */
 export function assertCorsInit(value: unknown): asserts value is CorsInit {
     if (value === undefined) return;

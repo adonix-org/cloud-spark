@@ -56,7 +56,7 @@ export function isMethodArray(value: unknown): value is Method[] {
  * within the calling scope.
  *
  * @param value - The value to check.
- * @throws TypeError If `value` is not a valid method array.
+ * @throws TypeError If `value` is not a valid {@link Method} array.
  */
 export function assertMethods(value: unknown): asserts value is Method[] {
     if (!isMethodArray(value)) {
