@@ -470,7 +470,6 @@ type ExtendedEventType = keyof ExtendedEventMap;
 type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEventMap[K]) => void;
 /**
  * Represents a user-defined attachment object that can be associated with a WebSocket connection.
- * Typically used to store metadata or state for the connection.
  */
 type WSAttachment = object;
 /**
@@ -508,12 +507,17 @@ interface WebSocketConnection<A extends WSAttachment> {
     acceptWebSocket(ctx: DurableObjectState, tags?: string[]): Readonly<WebSocket>;
     /**
      * Retrieves the user-defined attachment object associated with this connection.
+     *
+     * The returned object is a read-only view of the attachment to prevent
+     * accidental mutation. To modify the attachment, call {@link attach}.
+     *
+     * @returns A read-only view of the current attachment.
      */
     get attachment(): Readonly<A>;
     /**
      * Attaches a user-defined object to this WebSocket connection.
      *
-     * @param attachment - Object containing metadata or state to attach.
+     * @param attachment - Object containing the metadata to attach.
      */
     attach(attachment: A): void;
     /**
@@ -833,7 +837,8 @@ declare abstract class RouteWorker extends BasicWorker {
      * - If the handler is a Worker class, a new instance is created and its \`fetch()\` is called.
      * - If the handler is a callback function, it is invoked with the extracted path parameters.
      *
-     * If no route matches, the request is passed to the parent \`dispatch()\` handler.
+     * If no route matches, the request is passed to the superclass ({@link BasicWorker})
+     * \`dispatch()\` handler.
      *
      * @returns A \`Promise<Response>\` from the matched handler or parent dispatch.
      */
