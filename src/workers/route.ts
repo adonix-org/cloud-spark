@@ -76,7 +76,8 @@ export abstract class RouteWorker extends BasicWorker {
      * - If the handler is a Worker class, a new instance is created and its `fetch()` is called.
      * - If the handler is a callback function, it is invoked with the extracted path parameters.
      *
-     * If no route matches, the request is passed to the parent `dispatch()` handler.
+     * If no route matches, the request is passed to the superclass ({@link BasicWorker})
+     * `dispatch()` handler.
      *
      * @returns A `Promise<Response>` from the matched handler or parent dispatch.
      */
