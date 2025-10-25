@@ -17,9 +17,9 @@
 /**
  * Represents a warning event emitted by a WebSocket.
  */
-export type WarnEvent = { 
-    type: "warn"; 
-    message: string; 
+export type WarnEvent = {
+    type: "warn";
+    message: string;
 };
 
 /**
@@ -49,7 +49,6 @@ export type ExtendedEventListener<K extends ExtendedEventType> = (ev: ExtendedEv
 
 /**
  * Represents a user-defined attachment object that can be associated with a WebSocket connection.
- * Typically used to store metadata or state for the connection.
  */
 export type WSAttachment = object;
 
@@ -92,13 +91,18 @@ export interface WebSocketConnection<A extends WSAttachment> {
 
     /**
      * Retrieves the user-defined attachment object associated with this connection.
+     *
+     * The returned object is a read-only view of the attachment to prevent
+     * accidental mutation. To modify the attachment, call {@link attach}.
+     *
+     * @returns A read-only view of the current attachment.
      */
     get attachment(): Readonly<A>;
 
     /**
      * Attaches a user-defined object to this WebSocket connection.
      *
-     * @param attachment - Object containing metadata or state to attach.
+     * @param attachment - Object containing the metadata to attach.
      */
     attach(attachment: A): void;
 
