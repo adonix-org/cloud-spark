@@ -121,8 +121,6 @@ export interface WebSocketConnection<A extends WSAttachment> {
      */
     close(code?: number, reason?: string): void;
 
-    // Event Handling
-
     /**
      * Registers an event listener for a WebSocket event.
      *
