@@ -100,7 +100,7 @@ describe("websocket sessions unit tests", () => {
         expect([...sessions.keys()]).toEqual(expect.arrayContaining([ws1, ws2]));
     });
 
-    it("closes a 'new' websocket and unregisters it", () => {
+    it("closes a 'new' websocket and un-registers it", () => {
         const con = sessions.create();
         con.accept();
 
@@ -111,7 +111,7 @@ describe("websocket sessions unit tests", () => {
         expect([...sessions.values()].length).toBe(0);
     });
 
-    it("closes a 'restored' websocket and unregisters it", () => {
+    it("closes a 'restored' websocket and un-registers it", () => {
         const ws = new MockWebSocket();
         const con = sessions.restore(ws);
 

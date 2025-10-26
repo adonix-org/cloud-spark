@@ -172,7 +172,7 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
         this.map.set(ws, con);
     }
 
-    /** Unregisters a connection internally. */
+    /** Un-registers a connection internally. */
     private unregister(ws: WebSocket): boolean {
         return this.map.delete(ws);
     }
