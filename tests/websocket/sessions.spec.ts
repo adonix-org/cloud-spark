@@ -68,6 +68,23 @@ describe("websocket sessions unit tests", () => {
         expect(sessions.get(ws)).toBe(con);
     });
 
+    it("selects multiple websockets with select", () => {
+        for (let i = 0; i < 10; i++) {
+            const con = sessions.create();
+            con.accept();
+        }
+
+        const keys = [...sessions.keys()];
+        expect(keys.length).toBe(10);
+
+        const subset = sessions.select(keys.slice(0, 5));
+        expect(subset.length).toBe(5);
+
+        for (let i = 0; i < subset.length; i++) {
+            expect(sessions.get(keys[i]!)).toBe(subset[i]);
+        }
+    });
+
     it("restores multiple websockets with restore all", () => {
         const ws1 = new MockWebSocket();
         const ws2 = new MockWebSocket();
