@@ -603,9 +603,29 @@ declare class WebSocketSessions<A extends WSAttachment = WSAttachment> {
      * @returns Corresponding \`WebSocketConnection\` or \`undefined\` if not managed.
      */
     get(ws: WebSocket): WebSocketConnection<A> | undefined;
-    /** Returns an iterator over all active \`WebSocketConnection\`s. */
+    /**
+     * Selects the managed \`WebSocketConnection\` objects corresponding to the given WebSockets.
+     *
+     * @param sockets - Array of WebSocket instances to resolve.
+     * @returns Array of corresponding \`WebSocketConnection\` objects.
+     */
+    select(sockets: WebSocket[]): WebSocketConnection<A>[];
+    /**
+     * Returns an iterator over all active \`WebSocketConnection\` objects
+     * managed by this session.
+     *
+     * Useful for iterating over all connections to perform actions such as
+     * broadcasting messages.
+     *
+     * @returns Iterable iterator of all active \`WebSocketConnection\` objects.
+     */
     values(): IterableIterator<WebSocketConnection<A>>;
-    /** Returns an iterator over all active WebSocket instances. */
+    /**
+     * Returns an iterator over all active raw \`WebSocket\` instances
+     * currently tracked by this session.
+     *
+     * @returns Iterable iterator of all active \`WebSocket\` instances.
+     */
     keys(): IterableIterator<WebSocket>;
     /**
      * Closes a managed WebSocket connection with optional code and reason.

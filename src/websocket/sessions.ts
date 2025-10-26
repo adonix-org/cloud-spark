@@ -109,12 +109,40 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
         return this.map.get(ws);
     }
 
-    /** Returns an iterator over all active `WebSocketConnection`s. */
+    /**
+     * Selects the managed `WebSocketConnection` objects corresponding to the given WebSockets.
+     *
+     * @param sockets - Array of WebSocket instances to resolve.
+     * @returns Array of corresponding `WebSocketConnection` objects.
+     */
+    public select(sockets: WebSocket[]): WebSocketConnection<A>[] {
+        const result: WebSocketConnection<A>[] = [];
+        for (const ws of sockets) {
+            const conn = this.map.get(ws);
+            if (conn) result.push(conn);
+        }
+        return result;
+    }
+
+    /**
+     * Returns an iterator over all active `WebSocketConnection` objects
+     * managed by this session.
+     *
+     * Useful for iterating over all connections to perform actions such as
+     * broadcasting messages.
+     *
+     * @returns Iterable iterator of all active `WebSocketConnection` objects.
+     */
     public values(): IterableIterator<WebSocketConnection<A>> {
         return this.map.values();
     }
 
-    /** Returns an iterator over all active WebSocket instances. */
+    /**
+     * Returns an iterator over all active raw `WebSocket` instances
+     * currently tracked by this session.
+     *
+     * @returns Iterable iterator of all active `WebSocket` instances.
+     */
     public keys(): IterableIterator<WebSocket> {
         return this.map.keys();
     }
