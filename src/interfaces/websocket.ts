@@ -73,7 +73,6 @@ export interface WebSocketConnection<A extends WSAttachment> {
 
     /**
      * Accepts the WebSocket connection if not already accepted.
-     * Typically called internally after upgrade validation.
      *
      * @returns The readonly native WebSocket instance.
      */
@@ -81,7 +80,7 @@ export interface WebSocketConnection<A extends WSAttachment> {
 
     /**
      * Accepts the WebSocket connection in the context of a Durable Object.
-     * Optionally associates tags for monitoring or routing.
+     * Optionally associates tags for filtering.
      *
      * @param ctx - DurableObjectState for the WebSocket.
      * @param tags - Optional list of string tags.
