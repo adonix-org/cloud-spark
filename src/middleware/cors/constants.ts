@@ -19,6 +19,10 @@ import { HttpHeader } from "../../constants/headers";
 import { Time } from "../../constants/time";
 import { CorsConfig } from "../../interfaces/cors";
 
+/**
+ * A wildcard value used in the CORS `Access-Control-Allow-Origin` header
+ * to permit requests from **any** origin.
+ */
 export const ALLOW_ALL_ORIGINS = "*";
 
 /**
