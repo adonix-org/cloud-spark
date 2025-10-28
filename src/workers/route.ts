@@ -104,19 +104,19 @@ export abstract class RouteWorker extends BasicWorker {
         return Object.prototype.isPrototypeOf.call(BaseWorker.prototype, handler.prototype);
     }
 
-    protected put(): Promise<Response> {
+    protected override put(): Promise<Response> {
         return this.response(NotFound);
     }
 
-    protected post(): Promise<Response> {
+    protected override post(): Promise<Response> {
         return this.response(NotFound);
     }
 
-    protected patch(): Promise<Response> {
+    protected override patch(): Promise<Response> {
         return this.response(NotFound);
     }
 
-    protected delete(): Promise<Response> {
+    protected override delete(): Promise<Response> {
         return this.response(NotFound);
     }
 }
