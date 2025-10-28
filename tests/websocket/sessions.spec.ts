@@ -85,6 +85,20 @@ describe("websocket sessions unit tests", () => {
         }
     });
 
+    it("selects only registered websockets with select", () => {
+        const con = sessions.create();
+        con.accept();
+
+        const keys = [...sessions.keys()];
+        keys.push(new MockWebSocket());
+        expect(keys.length).toBe(2);
+
+        const subset = sessions.select(keys);
+        expect(subset.length).toBe(1);
+
+        expect(sessions.get(keys[0]!)).toBe(subset[0]);
+    });
+
     it("restores multiple websockets with restore all", () => {
         const ws1 = new MockWebSocket();
         const ws2 = new MockWebSocket();
