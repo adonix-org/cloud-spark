@@ -111,6 +111,23 @@ describe("cors utils unit tests", () => {
                 ["access-control-max-age", "86400"],
             ]);
         });
+
+        it("returns an empty preflight response for no origin", async () => {
+            const worker = {
+                request: new Request(VALID_URL, {
+                    method: "OPTIONS",
+                }),
+                getAllowedMethods: () => {
+                    return [GET, POST, OPTIONS];
+                },
+            };
+            const source = new Response(null);
+            const response = await options(source, worker as any, defaultCorsConfig);
+
+            expect(response).toBeInstanceOf(Response);
+            expect(response.status).toBe(200);
+            expectHeadersEqual(response.headers, []);
+        });
     });
 
     describe("apply function", () => {
