@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { describe, expect, it } from "vitest";
 import { cors } from "@src/middleware";
 import { CorsHandler } from "@src/middleware/cors/handler";
-import { describe, expect, it } from "vitest";
 
 describe("cors middleware factory unit tests", () => {
     it("returns a cors middleware instance", () => {
