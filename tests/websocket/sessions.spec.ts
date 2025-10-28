@@ -137,6 +137,10 @@ describe("websocket sessions unit tests", () => {
         expect(sessions.get(ws)).toBeUndefined();
     });
 
+    it("ignores any unregistered websockets on close", () => {
+        expect(sessions.close(new MockWebSocket())).toBe(false);
+    });
+
     it("iterates over connections using symbol.iterator", () => {
         const con1 = sessions.create();
         const con2 = sessions.create();
