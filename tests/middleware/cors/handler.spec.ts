@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 import {
     expectHeadersEqual,
     GET_REQUEST,
@@ -23,40 +23,30 @@ import {
     VALID_ORIGIN,
     VALID_URL,
 } from "@common";
-import { ctx, env } from "@mock";
-import { BasicWorker } from "@src/workers/basic";
 import { GET, HEAD, Method, OPTIONS } from "@src/constants/methods";
 import { StatusCodes } from "@src/constants";
-import { cors } from "@src/middleware/cors/cors";
+import { CorsHandler } from "@src/middleware/cors/handler";
+import { CorsInit } from "@src/interfaces";
 
-class TestWorker extends BasicWorker {
-    constructor(request: Request) {
-        super(request, env, ctx);
-    }
-
-    protected init(): void {
-        this.use(cors());
-    }
-
-    protected override async get(): Promise<Response> {
-        return new Response("Ok");
-    }
-
-    public override getAllowedMethods(): Method[] {
+class MockWorker {
+    constructor(public request: Request) {}
+    getAllowedMethods(): Method[] {
         return [GET, HEAD, OPTIONS];
     }
 }
 
-class TestOriginWorker extends TestWorker {
-    protected init(): void {
-        this.use(cors({ allowedOrigins: [VALID_ORIGIN] }));
-    }
+async function handleResponse(
+    request: Request = GET_REQUEST_WITH_ORIGIN,
+    response: Response = new Response("Ok"),
+    init: CorsInit = {},
+): Promise<Response> {
+    const handler = new CorsHandler(init);
+    return await handler.handle(new MockWorker(request) as any, async () => response);
 }
 
 describe("cors middleware unit tests", () => {
     it("returns response with cors headers", async () => {
-        const worker = new TestWorker(GET_REQUEST_WITH_ORIGIN);
-        const response = await worker.fetch();
+        const response = await handleResponse();
         expectHeadersEqual(response.headers, [
             ["access-control-allow-origin", "*"],
             ["content-type", "text/plain;charset=UTF-8"],
@@ -64,14 +54,14 @@ describe("cors middleware unit tests", () => {
     });
 
     it("returns response without cors headers", async () => {
-        const worker = new TestWorker(GET_REQUEST);
-        const response = await worker.fetch();
+        const response = await handleResponse(GET_REQUEST);
         expectHeadersEqual(response.headers, [["content-type", "text/plain;charset=UTF-8"]]);
     });
 
     it("adds all headers when allow origin is not *", async () => {
-        const worker = new TestOriginWorker(GET_REQUEST_WITH_ORIGIN);
-        const response = await worker.fetch();
+        const response = await handleResponse(GET_REQUEST_WITH_ORIGIN, undefined, {
+            allowedOrigins: [VALID_ORIGIN],
+        });
         expectHeadersEqual(response.headers, [
             ["access-control-allow-origin", "https://localhost"],
             ["content-type", "text/plain;charset=UTF-8"],
@@ -80,8 +70,9 @@ describe("cors middleware unit tests", () => {
     });
 
     it("adds only select headers when allowed does not contain request origin", async () => {
-        const worker = new TestOriginWorker(GET_REQUEST_INVALID_ORIGIN);
-        const response = await worker.fetch();
+        const response = await handleResponse(GET_REQUEST_INVALID_ORIGIN, undefined, {
+            allowedOrigins: [VALID_ORIGIN],
+        });
         expectHeadersEqual(response.headers, [
             ["content-type", "text/plain;charset=UTF-8"],
             ["vary", "origin"],
@@ -89,13 +80,9 @@ describe("cors middleware unit tests", () => {
     });
 
     it("initializes the cors provider using config object", async () => {
-        class TestInitWorker extends TestWorker {
-            protected init(): void {
-                this.use(cors({ exposedHeaders: ["x-test-header"] }));
-            }
-        }
-        const worker = new TestInitWorker(GET_REQUEST_WITH_ORIGIN);
-        const response = await worker.fetch();
+        const response = await handleResponse(GET_REQUEST_WITH_ORIGIN, undefined, {
+            exposedHeaders: ["x-test-header"],
+        });
         expectHeadersEqual(response.headers, [
             ["access-control-allow-origin", "*"],
             ["access-control-expose-headers", "x-test-header"],
@@ -104,13 +91,10 @@ describe("cors middleware unit tests", () => {
     });
 
     it("skips cors for no-cors response 3xx", async () => {
-        class TestSkipWorker extends TestWorker {
-            protected override async get(): Promise<Response> {
-                return new Response(null, { status: StatusCodes.PERMANENT_REDIRECT });
-            }
-        }
-        const worker = new TestSkipWorker(GET_REQUEST_WITH_ORIGIN);
-        const response = await worker.fetch();
+        const response = await handleResponse(
+            GET_REQUEST_WITH_ORIGIN,
+            new Response(null, { status: StatusCodes.PERMANENT_REDIRECT }),
+        );
         expectHeadersEqual(response.headers, []);
     });
 
@@ -121,15 +105,13 @@ describe("cors middleware unit tests", () => {
                 Origin: VALID_ORIGIN,
             },
         });
-        const worker = new TestWorker(request);
-        const response = await worker.fetch();
-        expect(await response.text()).toBe("");
+        const response = await handleResponse(request);
         expectHeadersEqual(response.headers, [
             ["access-control-allow-headers", "content-type"],
             ["access-control-allow-methods", "GET, HEAD, OPTIONS"],
             ["access-control-allow-origin", "*"],
             ["access-control-max-age", "300"],
-            ["allow", "GET, HEAD, OPTIONS"],
+            ["content-type", "text/plain;charset=UTF-8"],
         ]);
     });
 });

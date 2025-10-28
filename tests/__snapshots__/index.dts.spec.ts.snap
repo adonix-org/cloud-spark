@@ -639,7 +639,7 @@ declare class WebSocketSessions<A extends WSAttachment = WSAttachment> {
     [Symbol.iterator](): IterableIterator<WebSocketConnection<A>>;
     /** Registers a connection internally. */
     private register;
-    /** Unregisters a connection internally. */
+    /** Un-registers a connection internally. */
     private unregister;
 }
 
