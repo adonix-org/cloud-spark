@@ -111,6 +111,20 @@ describe("middleware unit tests", () => {
         expect(log).toStrictEqual(["pre-first", "pre-second", "post-first"]);
     });
 
+    it("adds a header to the response", async () => {
+        class HeaderWorker extends TestWorker {
+            init() {
+                this.use(new AddHeader());
+            }
+        }
+
+        const response = await new HeaderWorker(GET_REQUEST).fetch();
+        expectHeadersEqual(response.headers, [
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["x-custom-header", "true"],
+        ]);
+    });
+
     it("interrupts middleware processing when unauthorized", async () => {
         const worker = new AuthWorker(GET_REQUEST);
         const response = await worker.fetch();
