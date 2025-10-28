@@ -183,6 +183,60 @@ describe("cache middleware unit tests", () => {
         ]);
     });
 
+    it("skips updating the variant response if no vary in response", async () => {
+        const handler = new CacheHandler(init);
+        const worker = new MockWorker(GET_REQUEST_WITH_ORIGIN);
+
+        const response = cacheableResponse("from dispatch", { Vary: "Origin" });
+        await handler.setCached(defaultCache, worker.request, response);
+
+        const update = cacheableResponse("from dispatch");
+        await handler.setCached(defaultCache, new Request(GET_REQUEST), update);
+        expect(defaultCache.size).toBe(3);
+
+        const responses = defaultCache.matchAll();
+        expectHeadersEqual(responses[0].headers, [
+            ["cache-control", "s-maxage=60"],
+            ["internal-variant-set", "origin"],
+        ]);
+    });
+
+    it("skips updating the variant response if same vary in response", async () => {
+        const handler = new CacheHandler(init);
+        const worker = new MockWorker(GET_REQUEST_WITH_ORIGIN);
+
+        const response = cacheableResponse("from dispatch", { Vary: "Origin" });
+        await handler.setCached(defaultCache, worker.request, response);
+
+        const update = cacheableResponse("from dispatch", { Vary: "Origin" });
+        await handler.setCached(defaultCache, new Request(GET_REQUEST), update);
+        expect(defaultCache.size).toBe(3);
+
+        const responses = defaultCache.matchAll();
+        expectHeadersEqual(responses[0].headers, [
+            ["cache-control", "s-maxage=60"],
+            ["internal-variant-set", "origin"],
+        ]);
+    });
+
+    it("skips updating the variant response if vary contains header to ignore", async () => {
+        const handler = new CacheHandler(init);
+        const worker = new MockWorker(GET_REQUEST_WITH_ORIGIN);
+
+        const response = cacheableResponse("from dispatch", { Vary: "Origin" });
+        await handler.setCached(defaultCache, worker.request, response);
+
+        const update = cacheableResponse("from dispatch", { Vary: "Origin, Accept-Encoding" });
+        await handler.setCached(defaultCache, new Request(GET_REQUEST), update);
+        expect(defaultCache.size).toBe(3);
+
+        const responses = defaultCache.matchAll();
+        expectHeadersEqual(responses[0].headers, [
+            ["cache-control", "s-maxage=60"],
+            ["internal-variant-set", "origin"],
+        ]);
+    });
+
     it("converts existing non-variant response to variant when new vary appears", async () => {
         const handler = new CacheHandler(init);
         const req = new Request("https://localhost/", {
