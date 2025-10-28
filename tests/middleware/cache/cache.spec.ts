@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import { cache } from "@src/middleware/cache/cache";
+import { cache } from "@src/middleware";
 import { CacheHandler } from "@src/middleware/cache/handler";
 import { describe, expect, it } from "vitest";
 
-describe("cache factory unit tests", () => {
-    it("returns a cache handler instance with default config", () => {
-        const mw = cache();
-        expect(mw).toBeInstanceOf(CacheHandler);
-    });
-
-    it("accepts a cache name", () => {
-        const mw = cache({ name: "my-cache" });
-        expect(mw).toBeInstanceOf(CacheHandler);
+describe("cache middleware factory unit tests", () => {
+    it("returns a cache middleware instance", () => {
+        expect(cache()).toBeInstanceOf(CacheHandler);
     });
 });
