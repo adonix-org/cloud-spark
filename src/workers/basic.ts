@@ -29,7 +29,6 @@ export abstract class BasicWorker extends MiddlewareWorker {
      */
     public override async fetch(): Promise<Response> {
         try {
-            await this.init();
             return await super.fetch();
         } catch (error) {
             console.error(error);

@@ -17,22 +17,23 @@
 import { describe, it, expect } from "vitest";
 import { env, ctx } from "@mock";
 import { BODY_INIT, expectHeadersEqual, GET_REQUEST } from "@common";
-import { BasicWorker } from "@src/workers/basic";
 import { Unauthorized } from "@src/errors";
 import { Worker } from "@src/interfaces/worker";
 import { Middleware } from "@src/interfaces/middleware";
+import { MiddlewareWorker } from "@src/workers/middleware";
+import { GET, HEAD, Method, OPTIONS } from "@src/constants";
 
-class TestWorker extends BasicWorker {
+class TestWorker extends MiddlewareWorker {
     constructor(request: Request) {
         super(request, env, ctx);
     }
 
-    protected init(): void {
-        this.use(new AddHeader());
-    }
-
     protected override async dispatch(): Promise<Response> {
         return new Response(BODY_INIT);
+    }
+
+    public getAllowedMethods(): Method[] {
+        return [GET, HEAD, OPTIONS];
     }
 }
 
@@ -57,11 +58,12 @@ class AuthHandler implements Middleware {
     }
 }
 
-class TestMiddleware implements Middleware {
+class LogMiddleware implements Middleware {
     constructor(
-        private name: string,
-        private log: string[],
+        public name: string,
+        public log: string[],
     ) {}
+
     async handle(_worker: Worker, next: () => Promise<Response>): Promise<Response> {
         this.log.push(`pre-${this.name}`);
         const response = await next();
@@ -73,8 +75,8 @@ class TestMiddleware implements Middleware {
 describe("middleware unit tests", () => {
     it("executes the middleware in the onion pattern", async () => {
         const log: string[] = [];
-        const mw1 = new TestMiddleware("first", log);
-        const mw2 = new TestMiddleware("second", log);
+        const mw1 = new LogMiddleware("first", log);
+        const mw2 = new LogMiddleware("second", log);
 
         class OrderWorker extends TestWorker {
             init() {
@@ -89,7 +91,7 @@ describe("middleware unit tests", () => {
 
     it("short-circuits when a middleware returns early", async () => {
         const log: string[] = [];
-        const mw1 = new TestMiddleware("first", log);
+        const mw1 = new LogMiddleware("first", log);
         const mw2: Middleware = {
             handle: async (_worker, _next) => {
                 log.push("pre-second");
@@ -107,16 +109,6 @@ describe("middleware unit tests", () => {
         const response = await new ShortCircuitWorker(GET_REQUEST).fetch();
         expect(await response.text()).toBe("short circuited");
         expect(log).toStrictEqual(["pre-first", "pre-second", "post-first"]);
-    });
-
-    it("adds a custom header to the response", async () => {
-        const worker = new TestWorker(GET_REQUEST);
-        const response = await worker.fetch();
-
-        expectHeadersEqual(response.headers, [
-            ["content-type", "text/plain;charset=UTF-8"],
-            ["x-custom-header", "true"],
-        ]);
     });
 
     it("interrupts middleware processing when unauthorized", async () => {

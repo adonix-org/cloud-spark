@@ -56,7 +56,12 @@ export abstract class MiddlewareWorker extends BaseWorker {
      *
      * @returns The Response produced by the last middleware or `dispatch()`.
      */
-    public override fetch(): Promise<Response> {
+    public override async fetch(): Promise<Response> {
+        /**
+         * Allow subclasses to add middleware to be used for the request.
+         */
+        await this.init();
+
         const chain = this.middlewares.reduceRight(
             (next, handler) => () => handler.handle(this, next),
             () => {
