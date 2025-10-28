@@ -68,6 +68,17 @@ describe("WebSocketEvents unit tests", () => {
         expect(listener).not.toHaveBeenCalled();
     });
 
+    it("ignores non-registered custom listener on remove", () => {
+        const listener = vi.fn();
+
+        expect(() => {
+            con.removeEventListener("warn", () => {});
+            con.addEventListener("warn", listener);
+            con.removeEventListener("warn", listener);
+            con.removeEventListener("warn", () => {});
+        }).not.toThrow();
+    });
+
     it("delegates server 'close' event and enforces once", () => {
         const listener = vi.fn();
         con.addEventListener("close", listener);
