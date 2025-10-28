@@ -37,8 +37,8 @@ class MockWorker {
 
 async function handleResponse(
     request: Request = GET_REQUEST_WITH_ORIGIN,
-    response: Response = new Response("Ok"),
     init: CorsInit = {},
+    response: Response = new Response("Ok"),
 ): Promise<Response> {
     const handler = new CorsHandler(init);
     return await handler.handle(new MockWorker(request) as any, async () => response);
@@ -59,7 +59,7 @@ describe("cors middleware unit tests", () => {
     });
 
     it("adds all headers when allow origin is not *", async () => {
-        const response = await handleResponse(GET_REQUEST_WITH_ORIGIN, undefined, {
+        const response = await handleResponse(GET_REQUEST_WITH_ORIGIN, {
             allowedOrigins: [VALID_ORIGIN],
         });
         expectHeadersEqual(response.headers, [
@@ -70,7 +70,7 @@ describe("cors middleware unit tests", () => {
     });
 
     it("adds only select headers when allowed does not contain request origin", async () => {
-        const response = await handleResponse(GET_REQUEST_INVALID_ORIGIN, undefined, {
+        const response = await handleResponse(GET_REQUEST_INVALID_ORIGIN, {
             allowedOrigins: [VALID_ORIGIN],
         });
         expectHeadersEqual(response.headers, [
@@ -80,7 +80,7 @@ describe("cors middleware unit tests", () => {
     });
 
     it("initializes the cors provider using config object", async () => {
-        const response = await handleResponse(GET_REQUEST_WITH_ORIGIN, undefined, {
+        const response = await handleResponse(GET_REQUEST_WITH_ORIGIN, {
             exposedHeaders: ["x-test-header"],
         });
         expectHeadersEqual(response.headers, [
@@ -93,6 +93,7 @@ describe("cors middleware unit tests", () => {
     it("skips cors for no-cors response 3xx", async () => {
         const response = await handleResponse(
             GET_REQUEST_WITH_ORIGIN,
+            undefined,
             new Response(null, { status: StatusCodes.PERMANENT_REDIRECT }),
         );
         expectHeadersEqual(response.headers, []);

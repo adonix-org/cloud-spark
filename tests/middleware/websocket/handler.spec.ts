@@ -29,13 +29,9 @@ class MockWorker {
     }
 }
 
-async function handleResponse(
-    request: Request,
-    response: Response = new Response("Ok"),
-    path: string = "/",
-): Promise<Response> {
+async function handleResponse(request: Request, path: string = "/"): Promise<Response> {
     const handler = new WebSocketHandler(path);
-    return await handler.handle(new MockWorker(request) as any, async () => response);
+    return await handler.handle(new MockWorker(request) as any, async () => new Response("Ok"));
 }
 
 describe("websocket middleware unit tests", () => {
@@ -60,7 +56,7 @@ describe("websocket middleware unit tests", () => {
                 [HttpHeader.SEC_WEBSOCKET_VERSION]: WS_VERSION,
             },
         });
-        const response = await handleResponse(request, undefined, "/connect");
+        const response = await handleResponse(request, "/connect");
         expect(response.status).toBe(StatusCodes.OK);
         expect(await response.text()).toBe("Ok");
     });
@@ -74,7 +70,7 @@ describe("websocket middleware unit tests", () => {
             },
         });
 
-        const response = await handleResponse(request, undefined, "/connect/:id/chat");
+        const response = await handleResponse(request, "/connect/:id/chat");
         expect(response.status).toBe(StatusCodes.OK);
         expect(await response.text()).toBe("Ok");
     });
@@ -90,7 +86,7 @@ describe("websocket middleware unit tests", () => {
 
     it("allows a get request to pass through if path does not match", async () => {
         const request = new Request(VALID_ORIGIN + "/fetch");
-        const response = await handleResponse(request, undefined, "/connect");
+        const response = await handleResponse(request, "/connect");
         expect(response.status).toBe(StatusCodes.OK);
         expect(await response.text()).toBe("Ok");
     });
@@ -151,7 +147,7 @@ describe("websocket middleware unit tests", () => {
                 [HttpHeader.SEC_WEBSOCKET_VERSION]: WS_VERSION,
             },
         });
-        const response = await handleResponse(request, undefined, "/connect");
+        const response = await handleResponse(request, "/connect");
         expect(await response.json()).toStrictEqual({
             details: "Missing or invalid 'Upgrade' header",
             error: "Bad Request",
