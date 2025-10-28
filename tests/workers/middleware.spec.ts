@@ -16,7 +16,7 @@
 
 import { describe, it, expect } from "vitest";
 import { env, ctx } from "@mock";
-import { BODY_INIT, expectHeadersEqual, GET_REQUEST } from "@common";
+import { expectHeadersEqual, GET_REQUEST } from "@common";
 import { Unauthorized } from "@src/errors";
 import { Worker } from "@src/interfaces/worker";
 import { Middleware } from "@src/interfaces/middleware";
@@ -29,7 +29,7 @@ class TestWorker extends MiddlewareWorker {
     }
 
     protected override async dispatch(): Promise<Response> {
-        return new Response(BODY_INIT);
+        return new Response("Ok");
     }
 
     public getAllowedMethods(): Method[] {
