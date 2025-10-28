@@ -138,7 +138,11 @@ describe("websocket sessions unit tests", () => {
     });
 
     it("ignores any unregistered websockets on close", () => {
-        expect(sessions.close(new MockWebSocket())).toBe(false);
+        const ws = new MockWebSocket();
+        const spy = vi.spyOn(ws, "close");
+
+        expect(sessions.close(ws)).toBe(false);
+        expect(spy).not.toHaveBeenCalled();
     });
 
     it("iterates over connections using symbol.iterator", () => {
