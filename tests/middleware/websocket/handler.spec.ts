@@ -16,40 +16,26 @@
 
 import { describe, expect, it } from "vitest";
 import { ALL_METHODS, VALID_ORIGIN } from "@common";
-import { ctx, env } from "@mock";
-import { BasicWorker } from "@src/workers/basic";
-import { websocket } from "@src/middleware/websocket/websocket";
 import { Method, POST } from "@src/constants/methods";
 import { StatusCodes } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
 import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "@src/middleware/websocket/constants";
+import { WebSocketHandler } from "@src/middleware/websocket/handler";
 
-const GET_DISPATCH = "GET Dispatch";
-const POST_DISPATCH = "POST Dispatch";
-
-class TestWorker extends BasicWorker {
-    constructor(
-        request: Request,
-        public readonly path = "/",
-    ) {
-        super(request, env, ctx);
-    }
-
-    protected init(): void {
-        this.use(websocket(this.path));
-    }
-
-    protected override async get(): Promise<Response> {
-        return new Response(GET_DISPATCH);
-    }
-
-    protected override async post(): Promise<Response> {
-        return new Response(POST_DISPATCH);
-    }
-
-    public override getAllowedMethods(): Method[] {
+class MockWorker {
+    constructor(public request: Request) {}
+    getAllowedMethods(): Method[] {
         return ALL_METHODS;
     }
+}
+
+async function handleResponse(
+    request: Request,
+    response: Response = new Response("Ok"),
+    path: string = "/",
+): Promise<Response> {
+    const handler = new WebSocketHandler(path);
+    return await handler.handle(new MockWorker(request) as any, async () => response);
 }
 
 describe("websocket middleware unit tests", () => {
@@ -61,10 +47,9 @@ describe("websocket middleware unit tests", () => {
                 [HttpHeader.SEC_WEBSOCKET_VERSION]: WS_VERSION,
             },
         });
-        const worker = new TestWorker(request);
-        const response = await worker.fetch();
+        const response = await handleResponse(request);
         expect(response.status).toBe(StatusCodes.OK);
-        expect(await response.text()).toBe(GET_DISPATCH);
+        expect(await response.text()).toBe("Ok");
     });
 
     it("allows a valid websocket request to pass through provided path", async () => {
@@ -75,10 +60,9 @@ describe("websocket middleware unit tests", () => {
                 [HttpHeader.SEC_WEBSOCKET_VERSION]: WS_VERSION,
             },
         });
-        const worker = new TestWorker(request, "/connect");
-        const response = await worker.fetch();
+        const response = await handleResponse(request, undefined, "/connect");
         expect(response.status).toBe(StatusCodes.OK);
-        expect(await response.text()).toBe(GET_DISPATCH);
+        expect(await response.text()).toBe("Ok");
     });
 
     it("allows a valid websocket request to pass through path-to-regex path", async () => {
@@ -89,28 +73,26 @@ describe("websocket middleware unit tests", () => {
                 [HttpHeader.SEC_WEBSOCKET_VERSION]: WS_VERSION,
             },
         });
-        const worker = new TestWorker(request, "/connect/:id/chat");
-        const response = await worker.fetch();
+
+        const response = await handleResponse(request, undefined, "/connect/:id/chat");
         expect(response.status).toBe(StatusCodes.OK);
-        expect(await response.text()).toBe(GET_DISPATCH);
+        expect(await response.text()).toBe("Ok");
     });
 
     it("allows a non-get (post) request to pass through default path", async () => {
         const request = new Request(VALID_ORIGIN, {
             method: POST,
         });
-        const worker = new TestWorker(request);
-        const response = await worker.fetch();
+        const response = await handleResponse(request);
         expect(response.status).toBe(StatusCodes.OK);
-        expect(await response.text()).toBe(POST_DISPATCH);
+        expect(await response.text()).toBe("Ok");
     });
 
     it("allows a get request to pass through if path does not match", async () => {
         const request = new Request(VALID_ORIGIN + "/fetch");
-        const worker = new TestWorker(request, "/connect");
-        const response = await worker.fetch();
+        const response = await handleResponse(request, undefined, "/connect");
         expect(response.status).toBe(StatusCodes.OK);
-        expect(await response.text()).toBe(GET_DISPATCH);
+        expect(await response.text()).toBe("Ok");
     });
 
     it("blocks a websocket request with incorrect connection header", async () => {
@@ -121,8 +103,7 @@ describe("websocket middleware unit tests", () => {
                 [HttpHeader.SEC_WEBSOCKET_VERSION]: WS_VERSION,
             },
         });
-        const worker = new TestWorker(request);
-        const response = await worker.fetch();
+        const response = await handleResponse(request);
         expect(await response.json()).toStrictEqual({
             details: "Missing or invalid 'Connection' header",
             error: "Bad Request",
@@ -138,8 +119,7 @@ describe("websocket middleware unit tests", () => {
                 [HttpHeader.SEC_WEBSOCKET_VERSION]: WS_VERSION,
             },
         });
-        const worker = new TestWorker(request);
-        const response = await worker.fetch();
+        const response = await handleResponse(request);
         expect(await response.json()).toStrictEqual({
             details: "Missing or invalid 'Upgrade' header",
             error: "Bad Request",
@@ -155,8 +135,7 @@ describe("websocket middleware unit tests", () => {
                 [HttpHeader.SEC_WEBSOCKET_VERSION]: "12",
             },
         });
-        const worker = new TestWorker(request);
-        const response = await worker.fetch();
+        const response = await handleResponse(request);
         expect(await response.json()).toStrictEqual({
             details: "",
             error: "Upgrade Required",
@@ -172,8 +151,7 @@ describe("websocket middleware unit tests", () => {
                 [HttpHeader.SEC_WEBSOCKET_VERSION]: WS_VERSION,
             },
         });
-        const worker = new TestWorker(request, "/connect");
-        const response = await worker.fetch();
+        const response = await handleResponse(request, undefined, "/connect");
         expect(await response.json()).toStrictEqual({
             details: "Missing or invalid 'Upgrade' header",
             error: "Bad Request",
