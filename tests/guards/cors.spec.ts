@@ -15,7 +15,7 @@
  */
 
 import { assertCorsInit } from "@src/guards/cors";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("cors guard unit tests", () => {
     describe("assert cors init", () => {

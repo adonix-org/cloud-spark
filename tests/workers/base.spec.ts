@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import { env, ctx } from "@mock";
 import { BODY_INIT, GET_REQUEST, VALID_URL } from "@common";
-import { BaseWorker } from "@src/workers/base";
+import { ctx, env } from "@mock";
 import { Method } from "@src/constants/methods";
+import { BaseWorker } from "@src/workers/base";
+import { beforeEach, describe, expect, it } from "vitest";
 
 class TestWorker extends BaseWorker {
     public getAllowedMethods(): Method[] {

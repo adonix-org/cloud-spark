@@ -15,7 +15,7 @@
  */
 
 import { NewConnectionBase } from "@src/websocket/new";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 class TestConnection extends NewConnectionBase<{}> {
     getAccepted() {

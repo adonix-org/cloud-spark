@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
 import { assertOctetStreamInit } from "@src/guards/responses";
+import { describe, expect, it } from "vitest";
 
 describe("responses guard unit tests", () => {
     describe("assert octet stream init function", () => {

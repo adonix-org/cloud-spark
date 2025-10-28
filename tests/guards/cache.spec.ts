@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
+import { VALID_URL } from "@common";
 import { assertCacheInit, assertCacheName, assertGetKey, assertKey } from "@src/guards/cache";
 import { CacheInit } from "@src/interfaces/cache";
-import { VALID_URL } from "@common";
+import { describe, expect, it } from "vitest";
 
 describe("cache guard unit tests", () => {
     describe("assert cache init function", () => {

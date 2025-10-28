@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { beforeEach, describe, expect, it } from "vitest";
+import { StatusCodes } from "@src/constants";
 import { Worker } from "@src/interfaces/worker";
 import { CachePolicy } from "@src/middleware/cache/policy";
-import { StatusCodes } from "@src/constants";
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("cache policy unit tests", () => {
     let worker: Worker;

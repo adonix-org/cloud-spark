@@ -16,7 +16,7 @@
 
 import { MockWebSocket } from "@mock";
 import { WebSocketSessions } from "@src/websocket/sessions";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("websocket sessions unit tests", () => {
     let sessions: WebSocketSessions;

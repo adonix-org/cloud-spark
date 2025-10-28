@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
 import { ALL_METHODS, VALID_ORIGIN } from "@common";
-import { Method, POST } from "@src/constants/methods";
 import { StatusCodes } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
+import { Method, POST } from "@src/constants/methods";
 import { WS_UPGRADE, WS_VERSION, WS_WEBSOCKET } from "@src/middleware/websocket/constants";
 import { WebSocketHandler } from "@src/middleware/websocket/handler";
+import { describe, expect, it } from "vitest";
 
 class MockWorker {
     constructor(public request: Request) {}

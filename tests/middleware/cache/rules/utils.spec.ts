@@ -15,7 +15,6 @@
  */
 
 import { VALID_URL } from "@common";
-import { describe, expect, it } from "vitest";
 import {
     found,
     getCacheValidators,
@@ -27,6 +26,7 @@ import {
     normalizeEtag,
     toDate,
 } from "@src/middleware/cache/rules/utils";
+import { describe, expect, it } from "vitest";
 
 describe("rules utils unit tests ", () => {
     describe("get range function", () => {

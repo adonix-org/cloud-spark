@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { describe, it, beforeEach, expect } from "vitest";
+import { expectHeadersEqual } from "@common";
 import {
     filterHeaders,
     getHeaderKeys,
@@ -22,7 +22,7 @@ import {
     mergeHeader,
     setHeader,
 } from "@src/utils/headers";
-import { expectHeadersEqual } from "@common";
+import { beforeEach, describe, expect, it } from "vitest";
 
 describe("header functions unit tests", () => {
     let headers: Headers;

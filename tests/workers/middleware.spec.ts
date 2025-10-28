@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
-import { env, ctx } from "@mock";
 import { expectHeadersEqual, GET_REQUEST } from "@common";
-import { Unauthorized } from "@src/errors";
-import { Worker } from "@src/interfaces/worker";
-import { Middleware } from "@src/interfaces/middleware";
-import { MiddlewareWorker } from "@src/workers/middleware";
+import { ctx, env } from "@mock";
 import { GET, HEAD, Method, OPTIONS } from "@src/constants";
+import { Unauthorized } from "@src/errors";
+import { Middleware } from "@src/interfaces/middleware";
+import { Worker } from "@src/interfaces/worker";
+import { MiddlewareWorker } from "@src/workers/middleware";
+import { describe, expect, it } from "vitest";
 
 class TestWorker extends MiddlewareWorker {
     constructor(request: Request) {

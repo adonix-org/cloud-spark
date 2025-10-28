@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { IfMatchRule, IfNoneMatchRule } from "@src/middleware/cache/rules/etag";
 import * as utils from "@src/middleware/cache/rules/utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 
 describe("etag rule unit tests", () => {

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { describe, expect, it, vi } from "vitest";
-import { UpgradeRule } from "@src/middleware/cache/rules/upgrade";
 import { SecurityRule } from "@src/middleware/cache/rules/security";
+import { UpgradeRule } from "@src/middleware/cache/rules/upgrade";
+import { describe, expect, it, vi } from "vitest";
 
 describe("upgrade rule unit tests", () => {
     it("returns undefined for cookie requests", async () => {

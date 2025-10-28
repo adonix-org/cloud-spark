@@ -16,7 +16,7 @@
 
 import { MockWebSocket } from "@mock";
 import { WebSocketEvents } from "@src/websocket/events";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 class TestConnection extends WebSocketEvents {
     triggerWarn(msg: string) {

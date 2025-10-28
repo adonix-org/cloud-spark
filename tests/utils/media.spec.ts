@@ -15,7 +15,7 @@
  */
 
 import { withCharset } from "@src/utils/media";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("media function unit tests", () => {
     describe("with charset function", () => {

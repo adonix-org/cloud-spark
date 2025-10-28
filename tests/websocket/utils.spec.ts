@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
-import { safeCloseCode, isCodeInRange, isReservedCode, safeReason } from "@src/websocket/utils";
 import {
     CloseCode,
-    WS_RESERVED_CODES,
     WS_MAX_CLOSE_CODE,
     WS_MAX_REASON_CHARS,
+    WS_RESERVED_CODES,
 } from "@src/websocket/constants";
+import { isCodeInRange, isReservedCode, safeCloseCode, safeReason } from "@src/websocket/utils";
+import { describe, expect, it } from "vitest";
 
 describe("websocket utils unit tests", () => {
     describe("safe close code function", () => {

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
 import * as IndexExports from "@src/index";
 import { lexCompare } from "@src/utils/compare";
+import { describe, expect, it } from "vitest";
 
 describe("exported symbols tests", () => {
     it("ensures that no exported symbol is undefined", () => {

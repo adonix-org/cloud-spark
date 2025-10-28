@@ -21,9 +21,10 @@ import {
     VALID_ORIGIN,
     VALID_URL,
 } from "@common";
-import { WS_WEBSOCKET } from "@src/middleware/websocket/constants";
+import { StatusCodes } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
 import { DELETE, GET, OPTIONS, POST, PUT } from "@src/constants/methods";
+import { CorsConfig } from "@src/interfaces";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import {
     apply,
@@ -38,9 +39,8 @@ import {
     setVaryOrigin,
     skipCors,
 } from "@src/middleware/cors/utils";
+import { WS_WEBSOCKET } from "@src/middleware/websocket/constants";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { StatusCodes } from "@src/constants";
-import { CorsConfig } from "@src/interfaces";
 
 describe("cors utils unit tests", () => {
     let headers: Headers;

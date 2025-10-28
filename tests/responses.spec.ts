@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, vi } from "vitest";
+import { CacheControl } from "@src/constants/cache";
+import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "@src/constants/headers";
+import { MediaType } from "@src/constants/media";
+import { MethodNotAllowed } from "@src/errors";
 import {
-    SuccessResponse,
-    JsonResponse,
-    HtmlResponse,
-    TextResponse,
+    CopyResponse,
     Head,
-    WebSocketUpgrade,
+    HtmlResponse,
+    JsonResponse,
+    NotModified,
     OctetStream,
     R2ObjectStream,
-    NotModified,
-    CopyResponse,
+    SuccessResponse,
+    TextResponse,
+    WebSocketUpgrade,
 } from "@src/responses";
-import { StatusCodes, getReasonPhrase } from "http-status-codes";
+import { getReasonPhrase, StatusCodes } from "http-status-codes";
+import { describe, expect, it, vi } from "vitest";
+
 import { assertDefined, expectHeadersEqual, VALID_URL } from "./test-utils/common";
-import { MethodNotAllowed } from "@src/errors";
-import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "@src/constants/headers";
-import { CacheControl } from "@src/constants/cache";
-import { MediaType } from "@src/constants/media";
+
 
 const mockWorker = {
     request: new Request(VALID_URL),

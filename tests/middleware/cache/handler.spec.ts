@@ -1,11 +1,11 @@
-import { describe, it, beforeEach, expect, afterEach } from "vitest";
-import { ctx, defaultCache, namedCache } from "@mock";
-import { CacheHandler } from "@src/middleware/cache/handler";
-import { GET, POST } from "@src/constants/methods";
-import { getVaryKey } from "@src/middleware/cache/utils";
-import { sortSearchParams } from "@src/middleware";
-import { CacheInit } from "@src/interfaces";
 import { expectHeadersEqual, GET_REQUEST, GET_REQUEST_WITH_ORIGIN } from "@common";
+import { ctx, defaultCache, namedCache } from "@mock";
+import { GET, POST } from "@src/constants/methods";
+import { CacheInit } from "@src/interfaces";
+import { sortSearchParams } from "@src/middleware";
+import { CacheHandler } from "@src/middleware/cache/handler";
+import { getVaryKey } from "@src/middleware/cache/utils";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 const init: CacheInit = { getKey: sortSearchParams };
 

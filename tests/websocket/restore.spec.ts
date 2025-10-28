@@ -16,7 +16,7 @@
 
 import { MockWebSocket } from "@mock";
 import { RestoredConnectionBase } from "@src/websocket/restore";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 class TestConnection extends RestoredConnectionBase<{}> {
     getAccepted() {

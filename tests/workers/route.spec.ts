@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
 import { DEFAULT_METHODS, MUTATE_METHODS, TestRoutes, VALID_URL } from "@common";
+import { ctx, env } from "@mock";
 import { Method } from "@src/constants/methods";
 import { RouteHandler } from "@src/interfaces/route";
 import { RouteWorker } from "@src/workers/route";
-import { ctx, env } from "@mock";
+import { describe, expect, it } from "vitest";
 
 class TestWorker extends RouteWorker {
     constructor(

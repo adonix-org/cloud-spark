@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import { assertDefined, TestRoutes, VALID_URL } from "./test-utils/common";
 import { Method } from "@src/constants/methods";
 import { RouteTable } from "@src/interfaces/route";
 import { Routes } from "@src/routes";
+import { beforeEach, describe, expect, it } from "vitest";
+
+import { assertDefined, TestRoutes, VALID_URL } from "./test-utils/common";
 
 const init: RouteTable = [
     [Method.GET, "/one", TestRoutes.one],

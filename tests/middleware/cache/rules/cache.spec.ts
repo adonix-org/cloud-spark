@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
 import { cache } from "@src/middleware/cache/cache";
 import { CacheHandler } from "@src/middleware/cache/handler";
+import { describe, expect, it } from "vitest";
 
 describe("cache factory unit tests", () => {
     it("returns a cache handler instance with default config", () => {

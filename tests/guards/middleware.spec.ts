@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
 import { assertMiddleware } from "@src/guards/middleware";
 import { Middleware } from "@src/interfaces/middleware";
+import { describe, expect, it } from "vitest";
 
 describe("middleware guard unit tests", () => {
     class TestMiddleware implements Middleware {

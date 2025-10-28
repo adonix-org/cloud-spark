@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { describe, it } from "vitest";
 import {
     expectHeadersEqual,
     GET_REQUEST,
@@ -23,10 +22,11 @@ import {
     VALID_ORIGIN,
     VALID_URL,
 } from "@common";
-import { GET, HEAD, Method, OPTIONS } from "@src/constants/methods";
 import { StatusCodes } from "@src/constants";
-import { CorsHandler } from "@src/middleware/cors/handler";
+import { GET, HEAD, Method, OPTIONS } from "@src/constants/methods";
 import { CorsInit } from "@src/interfaces";
+import { CorsHandler } from "@src/middleware/cors/handler";
+import { describe, it } from "vitest";
 
 class MockWorker {
     constructor(public request: Request) {}

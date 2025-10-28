@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, vi } from "vitest";
-import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import {
     BadRequest,
-    Unauthorized,
     Forbidden,
-    NotFound,
-    MethodNotAllowed,
     InternalServerError,
-    NotImplemented,
+    MethodNotAllowed,
     MethodNotImplemented,
-    ServiceUnavailable,
-    UpgradeRequired,
+    NotFound,
+    NotImplemented,
     PreconditionFailed,
+    ServiceUnavailable,
+    Unauthorized,
+    UpgradeRequired,
 } from "@src/errors";
 import { ErrorJson } from "@src/interfaces/error";
+import { getReasonPhrase, StatusCodes } from "http-status-codes";
+import { describe, expect, it, vi } from "vitest";
 
 const worker = {
     request: { method: "POST" },

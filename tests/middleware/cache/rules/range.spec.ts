@@ -16,8 +16,8 @@
 
 import { StatusCodes } from "@src/constants";
 import { RangeRule } from "@src/middleware/cache/rules/range";
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import * as utils from "@src/middleware/cache/rules/utils";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("range rule unit tests", () => {
     let rule: RangeRule;

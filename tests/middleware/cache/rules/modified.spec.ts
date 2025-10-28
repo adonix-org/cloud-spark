@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { StatusCodes } from "@src/constants";
 import { ModifiedSinceRule, UnmodifiedSinceRule } from "@src/middleware/cache/rules/modified";
 import { beforeEach, describe, expect, it } from "vitest";
-import { StatusCodes } from "@src/constants";
 
 describe("modifed rule unit tests", () => {
     let response: Response;

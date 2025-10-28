@@ -15,9 +15,9 @@
  */
 
 import { CacheControlRule } from "@src/middleware/cache/rules/control";
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import * as utils from "@src/middleware/cache/utils";
 import * as ruleUtils from "@src/middleware/cache/rules/utils";
+import * as utils from "@src/middleware/cache/utils";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 describe("cache control rule unit tests", () => {
     let rule: CacheControlRule;

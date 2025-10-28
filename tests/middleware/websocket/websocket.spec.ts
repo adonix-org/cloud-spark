@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
 import { websocket } from "@src/middleware";
 import { WebSocketHandler } from "@src/middleware/websocket/handler";
+import { describe, expect, it } from "vitest";
 
 describe("websocket middleware factory unit tests", () => {
     it("returns a middleware instance", () => {

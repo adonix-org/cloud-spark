@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { describe, it, expect, vi } from "vitest";
-import { env, ctx } from "@mock";
-import { ALL_METHODS, MUTATE_METHODS, expectHeadersEqual, GET_REQUEST, VALID_URL } from "@common";
-import { BasicWorker } from "@src/workers/basic";
-import { Method } from "@src/constants/methods";
-import { TextResponse } from "@src/responses";
+import { ALL_METHODS, expectHeadersEqual, GET_REQUEST, MUTATE_METHODS, VALID_URL } from "@common";
+import { ctx, env } from "@mock";
 import { StatusCodes } from "@src/constants";
 import { CacheControl } from "@src/constants/cache";
+import { Method } from "@src/constants/methods";
+import { TextResponse } from "@src/responses";
+import { BasicWorker } from "@src/workers/basic";
+import { describe, expect, it, vi } from "vitest";
 
 class TestWorker extends BasicWorker {
     constructor(request: Request) {

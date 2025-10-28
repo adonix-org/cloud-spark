@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
-import { isBinary, isSendable, assertSerializable } from "@src/guards/websocket";
+import { assertSerializable, isBinary, isSendable } from "@src/guards/websocket";
+import { describe, expect, it } from "vitest";
 
 const bufferView = new Uint8Array([1, 2, 3]);
 

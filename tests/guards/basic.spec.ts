@@ -15,7 +15,7 @@
  */
 
 import { isBoolean, isNumber, isString, isStringArray } from "@src/guards/basic";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 describe("basic guard unit tests", () => {
     describe("is string array", () => {
