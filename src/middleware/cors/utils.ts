@@ -44,7 +44,7 @@ import { ALLOW_ALL_ORIGINS, SKIP_CORS_STATUSES } from "./constants";
  * @param cors - The CORS configuration to apply.
  * @returns A Response object suitable for responding to the preflight request.
  */
-export async function options(
+export function options(
     response: Response,
     worker: Worker,
     cors: CorsConfig,
@@ -86,7 +86,7 @@ export async function options(
  * @returns A Response object with CORS headers applied, suitable for returning
  *          to the client.
  */
-export async function apply(
+export function apply(
     response: Response,
     worker: Worker,
     cors: CorsConfig,

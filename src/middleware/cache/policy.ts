@@ -55,7 +55,7 @@ export class CachePolicy {
      * @returns The cached response if allowed by all rules, or `undefined`
      *          if the cache cannot be used.
      */
-    public async execute(
+    public execute(
         worker: Worker,
         getCached: () => Promise<Response | undefined>,
     ): Promise<Response | undefined> {
