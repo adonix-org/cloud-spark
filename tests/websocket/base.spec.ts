@@ -63,6 +63,7 @@ describe("base websocket unit tests", () => {
         con = new TestConnection();
         con.addEventListener("warn", (event) => warnings.push(event.message));
         con.client.addEventListener("message", (event) => messages.push(event.data));
+        vi.clearAllMocks();
     });
 
     it("can send a message to the client", () => {
@@ -266,12 +267,12 @@ describe("base websocket unit tests", () => {
         const spyCode = vi.spyOn(safe, "safeCloseCode");
         const spyReason = vi.spyOn(safe, "safeReason");
 
-        con.client.close(1060, "bye bye");
+        con.client.close(1060, "bye");
 
         expect(spyCode).toHaveBeenCalledOnce();
         expect(spyCode).toHaveBeenCalledWith(1060);
 
         expect(spyReason).toHaveBeenCalledOnce();
-        expect(spyReason).toHaveBeenCalledWith("bye bye");
+        expect(spyReason).toHaveBeenCalledWith("bye");
     });
 });
