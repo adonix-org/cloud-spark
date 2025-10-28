@@ -118,8 +118,8 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
     public select(sockets: WebSocket[]): WebSocketConnection<A>[] {
         const result: WebSocketConnection<A>[] = [];
         for (const ws of sockets) {
-            const conn = this.map.get(ws);
-            if (conn) result.push(conn);
+            const con = this.map.get(ws);
+            if (con) result.push(con);
         }
         return result;
     }
