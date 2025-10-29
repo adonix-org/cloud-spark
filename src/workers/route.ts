@@ -43,7 +43,7 @@ export abstract class RouteWorker extends BasicWorker {
      * - A Worker subclass that will handle the request.
      *
      * @param method  - HTTP method for the route (`GET`, `POST`, etc.).
-     * @param path    - URL path pattern (Express-style, e.g., "/users/:id").
+     * @param path    - URL path pattern (path-to-regex, e.g., "/users/:id").
      * @param handler - The function or Worker class to run when the route matches.
      * @returns The current worker instance, allowing method chaining.
      */
@@ -57,7 +57,7 @@ export abstract class RouteWorker extends BasicWorker {
      *
      * Each route should be a tuple `[method, path, handler]` where:
      * - `method`  - HTTP method for the route (`GET`, `POST`, etc.).
-     * - `path`    - URL path pattern (Express-style, e.g., "/users/:id").
+     * - `path`    - URL path pattern (path-to-regex e.g., "/users/:id").
      * - `handler` - A function that receives URL parameters or a Worker subclass
      *               that will handle the request.
      *
