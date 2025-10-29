@@ -64,7 +64,7 @@ export abstract class BaseWorker implements Worker {
     /**
      * Determines whether a given HTTP method is allowed for this worker.
      *
-     * - GET and HEAD are **always allowed**, in compliance with RFC 7231,
+     * - GET and HEAD are **always allowed**, in compliance with RFC 9110,
      *   even if they are not explicitly listed in `getAllowedMethods()`.
      * - Other methods are allowed only if included in the array returned by
      *   `getAllowedMethods()` and are valid HTTP methods.

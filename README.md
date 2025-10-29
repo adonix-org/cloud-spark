@@ -98,7 +98,7 @@ Override this method to handle `GET` requests.
 Handles `HEAD` requests.
 
 - **Default behavior:** Performs a `GET` request internally and strips the body.
-- **Notes:** Rarely needs to be overridden; ensures compliance with RFC 7231.
+- **Notes:** Rarely needs to be overridden; ensures compliance with [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2).
 
 #### `post(): Promise<Response>`
 

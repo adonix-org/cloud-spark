@@ -101,7 +101,7 @@ export abstract class BasicWorker extends MiddlewareWorker {
     /**
      * Returns the HTTP methods allowed by this worker.
      *
-     * - GET and HEAD are always allowed per RFC 7231, even if subclasses do not include them here.
+     * - GET and HEAD are always allowed per RFC 9110, even if subclasses do not include them here.
      * - OPTIONS is included by default since a default handler is implemented.
      * - Subclasses can override this method to allow additional methods or change the defaults.
      */
