@@ -68,16 +68,23 @@ And it's ready on http://localhost:8787
 
 ## :arrow_right: Basic Worker
 
-As shown in the [Quickstart](#rocket-quickstart), the Basic Worker simply maps the individual request methods to an implementation method that can be overridden in your worker.
+As shown in the [Quickstart](#rocket-quickstart), BasicWorker is the base class for building Cloudflare Workers with this library. It handles common tasks, including:
 
-### Worker Method
+- Dispatching incoming HTTP requests to the corresponding handler (GET, POST, PUT, etc.).
+- Catching unhandled errors and returning a structured 500 InternalServerError.
+- Providing defaults for standard HTTP behavior, such as HEAD requests and OPTIONS responses.
+- Ensuring type safety and consistent response formatting.
+
+Subclasses only need to implement the HTTP methods that their Worker will handle. Each method can be overridden independently, and additional functionality such as middleware can be added as needed.
+
+## :hammer_and_wrench: Basic Worker API
 
 #### `getAllowedMethods(): Method[]`
-Returns the HTTP methods supported by this Worker.  
-- **Default:** `[GET, HEAD, OPTIONS]`  
-- **Notes:** Subclasses can override to allow additional methods. Used by the default `OPTIONS` handler and CORS responses.
 
-### HTTP Methods
+Returns the HTTP methods supported by this Worker.
+
+- **Default:** `[GET, HEAD, OPTIONS]`
+- **Notes:** Subclasses must override to allow additional methods. Any request using a method not listed will automatically return a `405 Method Not Allowed` response.
 
 #### `get(): Promise<Response>`
 
@@ -127,8 +134,6 @@ Override to handle `OPTIONS` requests.
 
 - **Default behavior:** Returns `200 OK` with the `Allow` header listing supported methods.
 - **Notes:** `GET`, `HEAD`, and `OPTIONS` are included by default.
-
----
 
 <br>
 
