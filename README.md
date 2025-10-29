@@ -1,4 +1,4 @@
-# ⚡️Cloud Spark
+# Cloud⚡️Spark
 
 [![npm version](https://img.shields.io/npm/v/@adonix.org/cloud-spark.svg?color=blue)](https://www.npmjs.com/package/@adonix.org/cloud-spark)
 [![Apache 2.0 License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/adonix-org/cloud-spark/blob/main/LICENSE)
@@ -9,9 +9,22 @@
 
 **_Ignite_** your Cloudflare Workers with a type-safe library for rapid development.
 
-If you are new to _Cloudflare Workers_, create a free [Cloudflare account](https://dash.cloudflare.com/sign-up) and install their command line interface [Wrangler](#cowboy_hat_face-wrangler). Detailed worker documentation can also be found [here](https://developers.cloudflare.com/workers/).
+Get instant access to common essentials:
 
-Then let's get started!
+- Method & Route dispatch
+- CORS
+- Caching
+- WebSockets
+
+And then explore:
+
+- Custom Middleware
+- Nested Workers
+- Advanced Routing
+
+:bulb: If you are new to _Cloudflare Workers_, create a free [Cloudflare account](https://dash.cloudflare.com/sign-up) and install their command line interface [Wrangler](#cowboy_hat_face-wrangler). Detailed worker documentation can also be found [here](https://developers.cloudflare.com/workers/).
+
+<br>
 
 ## :package: Install
 
@@ -54,6 +67,68 @@ And it's ready on http://localhost:8787
 <br>
 
 ## :arrow_right: Basic Worker
+
+As shown in the [Quickstart](#rocket-quickstart), the Basic Worker simply maps the individual request methods to an implementation method that can be overridden in your worker.
+
+### Worker Method
+
+#### `getAllowedMethods(): Method[]`
+Returns the HTTP methods supported by this Worker.  
+- **Default:** `[GET, HEAD, OPTIONS]`  
+- **Notes:** Subclasses can override to allow additional methods. Used by the default `OPTIONS` handler and CORS responses.
+
+### HTTP Methods
+
+#### `get(): Promise<Response>`
+
+Override this method to handle `GET` requests.
+
+- **Default behavior:** Returns a `404 Not Found`.
+- **Notes:** Typically used to return content or data for read requests.
+
+#### `head(): Promise<Response>`
+
+Handles `HEAD` requests.
+
+- **Default behavior:** Performs a `GET` request internally and strips the body.
+- **Notes:** Rarely needs to be overridden; ensures compliance with RFC 7231.
+
+#### `post(): Promise<Response>`
+
+Override to handle `POST` requests.
+
+- **Default behavior:** Returns `501 Method Not Implemented`.
+- **Notes:** Ideal for form submissions, JSON payloads, or resource creation.
+
+#### `put(): Promise<Response>`
+
+Override to handle `PUT` requests.
+
+- **Default behavior:** Returns `501 Method Not Implemented`.
+- **Notes:** Used for full resource creation or replacement.
+
+#### `patch(): Promise<Response>`
+
+Override to handle `PATCH` requests.
+
+- **Default behavior:** Returns `501 Method Not Implemented`.
+- **Notes:** Used for partial updates to existing resources.
+
+#### `delete(): Promise<Response>`
+
+Override to handle `DELETE` requests.
+
+- **Default behavior:** Returns `501 Method Not Implemented`.
+- **Notes:** Used to remove resources.
+
+#### `options(): Promise<Response>`
+
+Override to handle `OPTIONS` requests.
+
+- **Default behavior:** Returns `200 OK` with the `Allow` header listing supported methods.
+- **Notes:** `GET`, `HEAD`, and `OPTIONS` are included by default.
+
+---
 
 <br>
 
