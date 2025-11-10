@@ -88,7 +88,7 @@ export class MyWorker extends BasicWorker {
      * Override to allow additional method support for the worker.
      * Default: GET, HEAD, OPTIONS
      *
-     * For OPTIONS requests, default response:
+     * For OPTIONS requests, the default response is:
      *     204 No Content
      *     "Allow" response header contains the allowed methods
      *
