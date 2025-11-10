@@ -80,9 +80,16 @@ Subclasses only need to implement the HTTP methods that their Worker will handle
 Building on the [Quickstart](#rocket-quickstart), here is a more detailed example:
 
 :page_facing_up: index.ts
+
 ```ts
 import { BasicWorker, JsonResponse, Method, POST, TextResponse } from "@adonix.org/cloud-spark";
 
+/**
+ * To access to the Cloudflare runtime properties:
+ *   • this.request — the incoming Request
+ *   • this.env — environment bindings (KV, R2, etc.)
+ *   • this.ctx — the execution context for background tasks
+ */
 export class MyWorker extends BasicWorker {
     /**
      * Override to allow additional method support for the worker.
@@ -106,16 +113,16 @@ export class MyWorker extends BasicWorker {
     }
 
     /**
-     * Called when the request method is GET.
+     * Example handler for GET requests that returns a simple
+     * text response.
      */
     protected override get(): Promise<Response> {
         return this.response(TextResponse, "Hello from Cloud Spark!");
     }
 
     /**
-     * Called when the request method is POST.
-     *
-     * This example simply returns the JSON payload from the request.
+     * Example handler for POST requests that echoes the
+     * incoming JSON.
      */
     protected override async post(): Promise<Response> {
         const json = await this.request.json();
@@ -132,7 +139,7 @@ export class MyWorker extends BasicWorker {
      *    protected override patch(): Promise<Response>
      *    protected override delete(): Promise<Response>
      *
-     * Default implementations provided but can be overridden for:
+     * Implementations are provided but can be overridden for:
      *    protected override head(): Promise<Response>
      *    protected override options(): Promise<Response>
      */
