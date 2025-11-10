@@ -77,63 +77,72 @@ As shown in the [Quickstart](#rocket-quickstart), BasicWorker is the base class 
 
 Subclasses only need to implement the HTTP methods that their Worker will handle. Each method can be overridden independently, and additional functionality such as middleware can be added as needed.
 
-## :hammer_and_wrench: Basic Worker API
+Building on the [Quickstart](#rocket-quickstart), here is a more detailed example:
 
-#### `getAllowedMethods(): Method[]`
+:page_facing_up: index.ts
+```ts
+import { BasicWorker, JsonResponse, Method, POST, TextResponse } from "@adonix.org/cloud-spark";
 
-Returns the HTTP methods supported by this Worker.
+export class MyWorker extends BasicWorker {
+    /**
+     * Override to allow additional method support for the worker.
+     * Default: GET, HEAD, OPTIONS
+     *
+     * For OPTIONS requests, by default:
+     *     204 No Content
+     *     Allow header contains the allowed methods
+     *
+     * If a request arrives with a method not listed:
+     *     405 Method Not Allowed
+     *
+     * If an implementation is not provided for an allowed method:
+     *     GET or HEAD: 404 Not Found
+     *     All other methods: 501 Not Implemented
+     *
+     * This example adds POST method support to the defaults.
+     */
+    public override getAllowedMethods(): Method[] {
+        return [...super.getAllowedMethods(), POST];
+    }
 
-- **Default:** `[GET, HEAD, OPTIONS]`
-- **Notes:** Subclasses must override to allow additional methods. Any request using a method not listed will automatically return a `405 Method Not Allowed` response.
+    /**
+     * Called when the request method is GET.
+     */
+    protected override get(): Promise<Response> {
+        return this.response(TextResponse, "Hello from Cloud Spark!");
+    }
 
-#### `get(): Promise<Response>`
+    /**
+     * Called when the request method is POST.
+     *
+     * This example simply returns the JSON payload from the request.
+     */
+    protected override async post(): Promise<Response> {
+        const json = await this.request.json();
+        // Do something with the request JSON.
 
-Override this method to handle `GET` requests.
+        return this.response(JsonResponse, json);
+    }
 
-- **Default behavior:** Returns a `404 Not Found`.
-- **Notes:** Typically used to return content or data for read requests.
+    /**
+     * All supported BasicWorker methods:
+     *    protected override get(): Promise<Response>
+     *    protected override put(): Promise<Response>
+     *    protected override post(): Promise<Response>
+     *    protected override patch(): Promise<Response>
+     *    protected override delete(): Promise<Response>
+     *
+     * Default implementations provided but can be overridden for:
+     *    protected override head(): Promise<Response>
+     *    protected override options(): Promise<Response>
+     */
+}
 
-#### `head(): Promise<Response>`
-
-Handles `HEAD` requests.
-
-- **Default behavior:** Performs a `GET` request internally and strips the body.
-- **Notes:** Rarely needs to be overridden; ensures compliance with [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html#section-9.3.2).
-
-#### `post(): Promise<Response>`
-
-Override to handle `POST` requests.
-
-- **Default behavior:** Returns `501 Method Not Implemented`.
-- **Notes:** Ideal for form submissions, JSON payloads, or resource creation.
-
-#### `put(): Promise<Response>`
-
-Override to handle `PUT` requests.
-
-- **Default behavior:** Returns `501 Method Not Implemented`.
-- **Notes:** Used for full resource creation or replacement.
-
-#### `patch(): Promise<Response>`
-
-Override to handle `PATCH` requests.
-
-- **Default behavior:** Returns `501 Method Not Implemented`.
-- **Notes:** Used for partial updates to existing resources.
-
-#### `delete(): Promise<Response>`
-
-Override to handle `DELETE` requests.
-
-- **Default behavior:** Returns `501 Method Not Implemented`.
-- **Notes:** Used to remove resources.
-
-#### `options(): Promise<Response>`
-
-Override to handle `OPTIONS` requests.
-
-- **Default behavior:** Returns `200 OK` with the `Allow` header listing supported methods.
-- **Notes:** `GET`, `HEAD`, and `OPTIONS` are included by default.
+/**
+ * Connects this worker to the Cloudflare runtime.
+ */
+export default MyWorker.ignite();
+```
 
 <br>
 
