@@ -132,7 +132,7 @@ export class MyWorker extends BasicWorker {
     }
 
     /**
-     * All supported BasicWorker methods:
+     * Supported BasicWorker request methods:
      *    protected override get(): Promise<Response>
      *    protected override put(): Promise<Response>
      *    protected override post(): Promise<Response>
