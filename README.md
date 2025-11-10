@@ -155,13 +155,19 @@ export default MyWorker.ignite();
 
 ## :twisted_rightwards_arrows: Route Worker
 
-RouteWorker builds on [BasicWorker](#arrow_right-basic-worker) to provide route-based request handling making it easy to define multiple endpoints in a single Worker. It provides:
+RouteWorker extends [BasicWorker](#arrow_right-basic-worker) to provide route-based request handling making it easy to define multiple endpoints in a single Worker. It provides:
 
 - Registering routes individually or in bulk.
-- Matching incoming requests to registered routes based on HTTP method and path.
+- Matching incoming requests to registered routes by HTTP method and path.
 - Support for URL path patterns using [path-to-regex](https://github.com/pillarjs/path-to-regexp) syntax.
 - Dispatching requests to either a callback function or another Worker.
 
+Example:
+
+:page_facing_up: index.ts
+
+```ts
+```
 <br>
 
 ## :left_right_arrow: Web Sockets
