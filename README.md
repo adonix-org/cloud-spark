@@ -155,7 +155,7 @@ export default MyWorker.ignite();
 
 ## :twisted_rightwards_arrows: Route Worker
 
-RouteWorker builds on [BasicWorker](#️arrow_right-basic-worker) to provide route-based request handling making it easy to define multiple endpoints in a single Worker. It provides:
+RouteWorker builds on [BasicWorker](#arrow_right-basic-worker) to provide route-based request handling making it easy to define multiple endpoints in a single Worker. It provides:
 
 - Registering routes individually or in bulk.
 - Matching incoming requests to registered routes based on HTTP method and path.
