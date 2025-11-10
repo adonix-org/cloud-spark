@@ -93,11 +93,13 @@ import { BasicWorker, JsonResponse, Method, POST, TextResponse } from "@adonix.o
 export class MyWorker extends BasicWorker {
     /**
      * Override to allow additional method support for the worker.
+     * GET and HEAD requests are always allowed.
+     * 
      * Default: GET, HEAD, OPTIONS
      *
      * For OPTIONS requests, the default response is:
      *     204 No Content
-     *     "Allow" response header contains the allowed methods
+     *     "Allow" response header contains all allowed methods.
      *
      * If a requested method is not listed, the response is:
      *     405 Method Not Allowed
