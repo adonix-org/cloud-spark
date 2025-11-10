@@ -88,14 +88,14 @@ export class MyWorker extends BasicWorker {
      * Override to allow additional method support for the worker.
      * Default: GET, HEAD, OPTIONS
      *
-     * For OPTIONS requests, by default:
+     * For OPTIONS requests, default response:
      *     204 No Content
-     *     Allow header contains the allowed methods
+     *     "Allow" response header contains the allowed methods
      *
-     * If a request arrives with a method not listed:
+     * If a requested method is not listed, the response is:
      *     405 Method Not Allowed
      *
-     * If an implementation is not provided for an allowed method:
+     * If an allowed method isn’t implemented, the response is:
      *     GET or HEAD: 404 Not Found
      *     All other methods: 501 Not Implemented
      *
