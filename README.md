@@ -71,9 +71,10 @@ And it's ready on http://localhost:8787
 As shown in the [Quickstart](#rocket-quickstart), BasicWorker is the base class for building Cloudflare Workers with this library. It handles common tasks, including:
 
 - Dispatching incoming HTTP requests to the corresponding handler (GET, POST, PUT, etc.).
-- Catching unhandled errors and returning a structured 500 InternalServerError.
 - Providing defaults for standard HTTP behavior, such as HEAD requests and OPTIONS responses.
 - Ensuring type safety and consistent response formatting.
+- Support for built-in and custom middleware.
+- Catching unhandled errors.
 
 Subclasses only need to implement the HTTP methods that their Worker will handle. Each method can be overridden independently, and additional functionality such as middleware can be added as needed.
 
