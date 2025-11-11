@@ -85,7 +85,7 @@ Building on the [Quickstart](#rocket-quickstart), here is a more detailed exampl
 import { BasicWorker, JsonResponse, Method, POST, TextResponse } from "@adonix.org/cloud-spark";
 
 /**
- * To access to the Cloudflare runtime properties:
+ * To access the Cloudflare runtime properties:
  *   • this.request — the incoming Request
  *   • this.env — environment bindings (KV, R2, etc.)
  *   • this.ctx — the execution context for background tasks
