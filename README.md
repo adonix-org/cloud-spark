@@ -76,7 +76,7 @@ As shown in the [Quickstart](#rocket-quickstart), BasicWorker is the base class 
 - Support for built-in and custom middleware.
 - Catching unhandled errors.
 
-Subclasses only need to implement the HTTP methods that their Worker will handle. Each method can be overridden independently, and additional functionality such as middleware can be added as needed.
+Subclasses only need to implement the HTTP methods that their Worker will handle. Each method can be overridden independently, and additional functionality such as [middleware](#gear-middleware) can be added as needed.
 
 Building on the [Quickstart](#rocket-quickstart), here is a more detailed example:
 
@@ -95,7 +95,7 @@ export class MyWorker extends BasicWorker {
     /**
      * Override to allow additional method support for the worker.
      * GET and HEAD requests are always allowed.
-     * 
+     *
      * Default: GET, HEAD, OPTIONS
      *
      * For OPTIONS requests, the default response is:
@@ -170,7 +170,9 @@ Example:
 :page_facing_up: index.ts
 
 ```ts
+
 ```
+
 <br>
 
 ## :left_right_arrow: Web Sockets
