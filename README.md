@@ -170,7 +170,61 @@ Example:
 :page_facing_up: index.ts
 
 ```ts
+import { BasicWorker, GET, PathParams, RouteWorker, TextResponse } from "@adonix.org/cloud-spark";
 
+/**
+ * An example worker with path routing.
+ */
+class GreetingWorker extends RouteWorker {
+    /**
+     * Called before request processing to enable worker
+     * initialization without overriding the constructor.
+     */
+    protected override init(): void {
+        /**
+         * Example of path-to-regex and local method routing.
+         */
+        this.route(GET, "/hello/:name", this.hello);
+
+        /**
+         * Example of nesting a BasicWorker under this route.
+         */
+        this.route(GET, "/goodbye", GoodbyeWorker);
+    }
+
+    /**
+     * Path parameters are provided via path-to-regex parsing
+     * of the request path.
+     *
+     * For example, http://localhost:8787/hello/Inigo will yield the
+     * text response "Hello Inigo!"
+     */
+    protected hello(params: PathParams): Promise<Response> {
+        return this.response(TextResponse, `Hello ${params["name"]}!`);
+    }
+}
+
+/**
+ * An example nested BasicWorker.
+ *
+ * The original request, env, and ctx are passed to the nested
+ * worker via the constructor.
+ *
+ * RouteWorkers may also be nested to access path parameters.
+ */
+class GoodbyeWorker extends BasicWorker {
+    /**
+     * GET handler for the "/goodbye" path.
+     */
+    protected override get(): Promise<Response> {
+        return this.response(TextResponse, "Goodbye!");
+    }
+}
+
+/**
+ * Connects GreetingWorker to the Cloudflare runtime.
+ */
+export default GreetingWorker.ignite();
 ```
 
 <br>
