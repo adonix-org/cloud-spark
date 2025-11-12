@@ -214,11 +214,11 @@ export default GreetingWorker.ignite();
 
 <br>
 
-## :left_right_arrow: Web Sockets
+## :gear: Middleware
 
 <br>
 
-## :gear: Middleware
+## :left_right_arrow: Web Sockets
 
 <br>
 
