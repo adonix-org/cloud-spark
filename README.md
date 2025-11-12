@@ -9,7 +9,7 @@
 
 **_Ignite_** your Cloudflare Workers with a type-safe library for rapid development.
 
-CloudSpark provides a clean, type-safe foundation for building Cloudflare Workers. It works equally well for simple workers or projects that grow in complexity, helping keep code organized and functionality scalable. Get started quickly without wrestling with boilerplate, while still having the flexibility to extend and customize your workers as needed. CloudSpark is lightweight and designed to let you focus on writing real logic.
+CloudSpark provides a clean, type-safe foundation for building Cloudflare Workers. It works equally well for simple workers or projects that grow in complexity, helping keep code organized and functionality scalable. CloudSpark is lightweight and designed to let you focus on writing real logic.
 
 :bulb: If you are new to _Cloudflare Workers_, create a free [Cloudflare account](https://dash.cloudflare.com/sign-up) and install their command line interface [Wrangler](#cowboy_hat_face-wrangler). Detailed worker documentation can also be found [here](https://developers.cloudflare.com/workers/).
 
