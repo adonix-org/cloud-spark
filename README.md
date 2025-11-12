@@ -187,7 +187,7 @@ class GreetingWorker extends RouteWorker {
         this.route(GET, "/hello/:name", this.hello);
 
         /**
-         * Example of nesting a BasicWorker under this route.
+         * Example of simple path to a nested worker.
          */
         this.route(GET, "/goodbye", GoodbyeWorker);
     }
