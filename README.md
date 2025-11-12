@@ -36,22 +36,16 @@ npm install @adonix.org/cloud-spark
 
 ## :rocket: Quickstart
 
-:page_facing_up: hello-world.ts
+:page_facing_up: index.ts
 
 ```ts
 import { BasicWorker, TextResponse } from "@adonix.org/cloud-spark";
 
-export class HelloWorld extends BasicWorker {
+class HelloWorld extends BasicWorker {
     get() {
         return this.response(TextResponse, "Hi from Cloud Spark!");
     }
 }
-```
-
-:page_facing_up: index.ts
-
-```ts
-import { HelloWorld } from "./hello-world";
 
 export default HelloWorld.ignite();
 ```
