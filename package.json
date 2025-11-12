@@ -65,7 +65,7 @@
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.46.3",
         "vitest": "^4.0.8",
-        "wrangler": "^4.46.0"
+        "wrangler": "^4.47.0"
     },
     "dependencies": {
         "cache-control-parser": "^2.0.6",
