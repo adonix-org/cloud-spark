@@ -63,7 +63,7 @@ As shown in the [Quickstart](#rocket-quickstart), BasicWorker is the base class 
 
 Subclasses only need to implement the HTTP methods that their Worker will handle. Each method can be overridden independently, and additional functionality such as [middleware](#gear-middleware) can be added as needed.
 
-Building on the [Quickstart](#rocket-quickstart), here is a more detailed example:
+Building on the [Quickstart](#rocket-quickstart), what follows is a more complete example:
 
 :page_facing_up: index.ts
 
