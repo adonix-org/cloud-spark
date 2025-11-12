@@ -196,8 +196,8 @@ class GreetingWorker extends RouteWorker {
      * Path parameters are provided via path-to-regex parsing
      * of the request path.
      *
-     * For example, http://localhost:8787/hello/Inigo will yield the
-     * text response "Hello Inigo!"
+     * For example, http://localhost:8787/hello/Inigo will yield
+     * the text response "Hello Inigo!"
      */
     protected hello(params: PathParams): Promise<Response> {
         return this.response(TextResponse, `Hello ${params["name"]}!`);
