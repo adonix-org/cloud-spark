@@ -422,7 +422,7 @@ declare function cors(init?: CorsInit): Middleware;
  * - Only validates the upgrade request; it does **not** perform the actual WebSocket upgrade.
  * - Ensures the request:
  *   - Uses the \`GET\` method.
- *   - Matches the specified path, supporting \`path-to-regex\` style patterns
+ *   - Matches the specified path, supporting \`path-to-regexp\` style patterns
  *     (e.g., \`/chat/:name\`).
  *   - Contains required WebSocket headers:
  *     - \`Connection: Upgrade\`
@@ -432,7 +432,7 @@ declare function cors(init?: CorsInit): Middleware;
  *   the next middleware or origin handler.
  *
  * @param path - The URL path to intercept for WebSocket upgrades. Defaults to \`/\`.
- *               Supports dynamic segments using \`path-to-regex\` syntax.
+ *               Supports dynamic segments using \`path-to-regexp\` syntax.
  * @returns A {@link Middleware} instance that can be used in your middleware chain.
  *
  * @example
@@ -831,7 +831,7 @@ declare abstract class RouteWorker extends BasicWorker {
      * - A Worker subclass that will handle the request.
      *
      * @param method  - HTTP method for the route (\`GET\`, \`POST\`, etc.).
-     * @param path    - URL path pattern (path-to-regex, e.g., "/users/:id").
+     * @param path    - URL path pattern (path-to-regexp, e.g., "/users/:id").
      * @param handler - The function or Worker class to run when the route matches.
      * @returns The current worker instance, allowing method chaining.
      */
@@ -841,7 +841,7 @@ declare abstract class RouteWorker extends BasicWorker {
      *
      * Each route should be a tuple \`[method, path, handler]\` where:
      * - \`method\`  - HTTP method for the route (\`GET\`, \`POST\`, etc.).
-     * - \`path\`    - URL path pattern (path-to-regex e.g., "/users/:id").
+     * - \`path\`    - URL path pattern (path-to-regexp e.g., "/users/:id").
      * - \`handler\` - A function that receives URL parameters or a Worker subclass
      *               that will handle the request.
      *

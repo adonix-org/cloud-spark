@@ -27,7 +27,7 @@ import { hasConnectionHeader, hasUpgradeHeader, hasWebSocketVersion } from "./ut
  * Middleware for validating WebSocket upgrade requests.
  *
  * - Only applies to `GET` requests.
- * - Matches requests against a specific path using `path-to-regex` patterns.
+ * - Matches requests against a specific path using `path-to-regexp` patterns.
  * - Validates that the request contains required WebSocket headers:
  *   - `Connection: Upgrade`
  *   - `Upgrade: websocket`
@@ -40,7 +40,7 @@ export class WebSocketHandler implements Middleware {
      * Creates a new WebSocketHandler for a specific path.
      *
      * @param path - The request path this handler should intercept for WebSocket upgrades.
-     *               Supports dynamic segments using `path-to-regex` syntax.
+     *               Supports dynamic segments using `path-to-regexp` syntax.
      */
     constructor(private readonly path: string) {}
 

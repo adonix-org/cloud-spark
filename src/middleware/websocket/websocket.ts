@@ -24,7 +24,7 @@ import { WebSocketHandler } from "./handler";
  * - Only validates the upgrade request; it does **not** perform the actual WebSocket upgrade.
  * - Ensures the request:
  *   - Uses the `GET` method.
- *   - Matches the specified path, supporting `path-to-regex` style patterns
+ *   - Matches the specified path, supporting `path-to-regexp` style patterns
  *     (e.g., `/chat/:name`).
  *   - Contains required WebSocket headers:
  *     - `Connection: Upgrade`
@@ -34,7 +34,7 @@ import { WebSocketHandler } from "./handler";
  *   the next middleware or origin handler.
  *
  * @param path - The URL path to intercept for WebSocket upgrades. Defaults to `/`.
- *               Supports dynamic segments using `path-to-regex` syntax.
+ *               Supports dynamic segments using `path-to-regexp` syntax.
  * @returns A {@link Middleware} instance that can be used in your middleware chain.
  *
  * @example

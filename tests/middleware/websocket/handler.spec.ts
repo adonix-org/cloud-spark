@@ -61,7 +61,7 @@ describe("websocket middleware unit tests", () => {
         expect(await response.text()).toBe("Ok");
     });
 
-    it("allows a valid websocket request to pass through path-to-regex path", async () => {
+    it("allows a valid websocket request to pass through path-to-regexp path", async () => {
         const request = new Request(VALID_ORIGIN + "/connect/100/chat", {
             headers: {
                 [HttpHeader.CONNECTION]: WS_UPGRADE,
