@@ -403,11 +403,15 @@ export default ChatWorker.ignite();
 
 ### Custom
 
+Create custom middleware by implementing the [Middleware](https://github.com/adonix-org/cloud-spark/blob/main/src/interfaces/middleware.ts) interface and its single *handle* method, then register it with your worker. Within your middlware, you can inspect requests and modify responses or short-circuit procesing entirely.
+
+Here is a simple example:
+
 ```ts
 import { BadRequest, CopyResponse, Middleware, Worker } from "@adonix.org/cloud-spark";
 
 /**
- * Custom middleware demo.
+ * Custom middleware example.
  *
  * Demonstrates several key middleware capabilities:
  * 1. Inspect the incoming request.
@@ -463,15 +467,18 @@ class PoweredBy implements Middleware {
 
 /**
  * Convenience helper for adding the middleware with optional name parameter.
- * 
+ *
  * this.use(poweredby());
  *    or
- * this.use(poweredby("My Project"));
+ * this.use(poweredby("My Project Name"));
  */
 export function poweredby(name?: string): Middleware {
     return new PoweredBy(name);
 }
 ```
+
+### Ordering
+
 
 <br>
 

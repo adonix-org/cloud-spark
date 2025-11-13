@@ -336,9 +336,9 @@ export class R2ObjectStream extends OctetStream {
      * This function normalizes a Cloudflare R2 `R2Range` into the shape expected
      * by `OctetStream`. It handles the following cases:
      *
-     * - No range provided → returns `{ size }` (full content).
-     * - `suffix` range → calculates the offset and length from the end of the file.
-     * - Explicit `offset` and/or `length` → passed through as-is.
+     * - No range provided: returns `{ size }` (full content).
+     * - `suffix` range: calculates the offset and length from the end of the file.
+     * - Explicit `offset` and/or `length`: passed through as-is.
      *
      * @param size - The total size of the file/object.
      * @param range - Optional range to extract (from R2). Can be:
