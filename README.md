@@ -270,7 +270,7 @@ CloudSpark includes built-in caching middleware that stores responses for improv
 - Responses with `Vary` headers are fully supported, so the cache respects variations based on headers like `Accept-Language`.
 - Responses that **do not** include user-specific data (such as Set-Cookie or requests with Authorization/Cookie headers).
 
-Other types of responses (non-GET, errors, partial content, or requests marked no-store) are never cached. This ensures caching is safe, consistent with HTTP standards, and compatible with Cloudflare’s caching behavior.
+Other types of responses (non-GET, errors, partial content, or requests marked no-store) are never cached. This ensures caching is safe and consistent with HTTP standards.
 
 Enable the built-in cache middleware as follows:
 
@@ -295,11 +295,14 @@ class MyWorker extends BasicWorker {
          * 	name — the name of the cache storage to use. If omitted,
          *         the default cache is used.
          *  getKey — a function that maps the incoming request to a
-         *           cache key.
+         *           cache key. 
+         *           Built-in key functions include:
+         *               • sortSearchParams (Default)
+         *               • stripSearchParams
          *
          * this.use(cache({
          *     name: "my-cache",
-         *     getKey: (req) => new URL(req.url),
+         *     getKey: stripSearchParams,
          * }));
          *
          */
