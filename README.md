@@ -218,11 +218,52 @@ export default GreetingWorker.ignite();
 
 Middleware extends your worker’s behavior in a modular way. Each middleware can inspect the incoming request, return a custom response early, or modify the response produced by later handlers. It’s a simple way to add logic such as authentication checks, request logging, or response transformations without touching your core code.
 
-CloudSpark includes built-in middleware for common functionality like caching and CORS, and you can easily create your own to handle things unique to your application.
+CloudSpark includes built-in middleware for common functionality like caching and CORS, and you can easily create your own to handle behavior specific to your application.
 
 ### CORS
 
+Enable the built-in CORS middleware as follows:
+
+:page_facing_up: index.ts
+
+```ts
+import { BasicWorker, cors } from "@adonix.org/cloud-spark";
+
+class MyWorker extends BasicWorker {
+    /**
+     * Register middleware in the init method.
+     */
+    protected override init(): void {
+        /**
+         * Create and register the built-in CORS middleware
+         * with default options:
+         *
+         * {
+         *   allowedOrigins: ["*"],
+         *   allowedHeaders: ["Content-Type"],
+         *   exposedHeaders: [],
+         *   allowCredentials: false,
+         *   maxAge: 300,
+         * }
+         *
+         */
+        this.use(cors());
+
+        /**
+         * To override specific default CORS options:
+         *
+         * this.use(cors({ allowedOrigins: ["https://www.adonix.org"], maxAge: 604800 }));
+         *
+         */
+    }
+}
+```
+
+:bulb: The middleware adds CORS headers to the response **ONLY** if the request includes an `Origin` header.
+
 ### Cache
+
+### WebSocket
 
 ### Custom
 
