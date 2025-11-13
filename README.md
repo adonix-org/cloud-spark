@@ -212,6 +212,8 @@ class GoodbyeWorker extends BasicWorker {
 export default GreetingWorker.ignite();
 ```
 
+:bulb: Requests with no matching route fall back to the corresponding [BasicWorker](#arrow_right-basic-worker) method.
+
 <br>
 
 ## :gear: Middleware
@@ -295,7 +297,7 @@ class MyWorker extends BasicWorker {
          * 	name — the name of the cache storage to use. If omitted,
          *         the default cache is used.
          *  getKey — a function that maps the incoming request to a
-         *           cache key. 
+         *           cache key.
          *           Built-in key functions include:
          *               • sortSearchParams (Default)
          *               • stripSearchParams
@@ -337,6 +339,14 @@ export default MyWorker.ignite();
 :bulb: The `cf-cache-status` response header will contain **HIT** when serving from the cache.
 
 ### WebSocket
+
+Enable the built-in websocket middleware as follows:
+
+:page_facing_up: index.ts
+
+```ts
+
+```
 
 ### Custom
 
