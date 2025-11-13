@@ -48,7 +48,7 @@ const VARY_WILDCARD = "*";
  *   - The response status is `200 OK`.
  *   - The request method is `GET`.
  *   - The response does not have a `Vary` header containing `*`.
- *   - The response has no TTL specified in max-age or s-maxage.
+ *   - The response has TTL specified in max-age or s-maxage.
  *   - Neither the request nor the response has `Cache-Control: no-store`.
  *   - The response is not marked `private` and does not specify `max-age=0`.
  *   - The request does **not** include sensitive headers such as `Authorization` or `Cookie`.

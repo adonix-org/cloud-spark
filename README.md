@@ -263,6 +263,13 @@ class MyWorker extends BasicWorker {
 
 ### Cache
 
+Enable the built-in cache middleware as follows:
+
+:page_facing_up: index.ts
+
+```ts
+```
+
 ### WebSocket
 
 ### Custom
