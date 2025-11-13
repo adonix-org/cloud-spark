@@ -380,7 +380,7 @@ class ChatWorker extends RouteWorker {
     /**
      * Handles WebSocket upgrade requests.
      *
-     * Expects a DurableObject binding named CHAT 
+     * Expects a DurableObject binding named CHAT
      * in wrangler.jsonc
      */
     protected upgrade(params: PathParams): Promise<Response> {
@@ -388,7 +388,7 @@ class ChatWorker extends RouteWorker {
         const chat = this.env.CHAT;
 
         /**
-         * Request has already been validated by the 
+         * Request has already been validated by the
          * WebSocket middleware.
          */
         return chat.get(chat.idFromName(room)).fetch(this.request);
@@ -402,6 +402,76 @@ export default ChatWorker.ignite();
 ```
 
 ### Custom
+
+```ts
+import { BadRequest, CopyResponse, Middleware, Worker } from "@adonix.org/cloud-spark";
+
+/**
+ * Custom middleware demo.
+ *
+ * Demonstrates several key middleware capabilities:
+ * 1. Inspect the incoming request.
+ * 2. Short-circuit and return a response early.
+ * 3. Modify the outgoing response headers.
+ * 4. Accept constructor parameters for customization.
+ */
+class PoweredBy implements Middleware {
+    /**
+     * Optional constructor parameter to customize the "X-Powered-By" header.
+     */
+    constructor(private readonly name = "CloudSpark") {}
+
+    public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
+        /**
+         * Inspect the request: grab the User-Agent header.
+         */
+        const userAgent = worker.request.headers.get("User-Agent")?.trim();
+
+        /**
+         * Short-circuit: if the User-Agent is missing, immediately return a 400 Bad Request.
+         */
+        if (!userAgent) {
+            return new BadRequest(`Request ${worker.request.url} is missing User-Agent`).response();
+        }
+
+        /**
+         * Call the next middleware/handler.
+         */
+        const response = await next();
+
+        /**
+         * Wrap the response in a mutable copy.
+         */
+        const copy = new CopyResponse(response);
+
+        /**
+         * Add headers showing middleware effects:
+         * - Echo the request's User-Agent header
+         * - Customizable powered-by header
+         * - Timestamp in UTC
+         */
+        copy.setHeader("X-User-Agent", userAgent);
+        copy.setHeader("X-Powered-By", this.name);
+        copy.setHeader("X-Processed-At", new Date().toUTCString());
+
+        /**
+         * Return the modified response.
+         */
+        return copy.response();
+    }
+}
+
+/**
+ * Convenience helper for adding the middleware with optional name parameter.
+ * 
+ * this.use(poweredby());
+ *    or
+ * this.use(poweredby("My Project"));
+ */
+export function poweredby(name?: string): Middleware {
+    return new PoweredBy(name);
+}
+```
 
 <br>
 
