@@ -147,7 +147,7 @@ RouteWorker extends [BasicWorker](#arrow_right-basic-worker) to provide route-ba
 
 - Registering routes individually or in bulk.
 - Matching incoming requests to registered routes by HTTP method and path.
-- Support for URL path patterns using [path-to-regex](https://github.com/pillarjs/path-to-regexp) syntax.
+- Support for URL path patterns using [path-to-regexp](https://github.com/pillarjs/path-to-regexp) syntax.
 - Dispatching requests to either a callback function or another Worker.
 
 Example:
@@ -167,7 +167,7 @@ class GreetingWorker extends RouteWorker {
      */
     protected override init(): void {
         /**
-         * Example of path-to-regex and local method routing.
+         * Example of path-to-regexp and local method routing.
          */
         this.route(GET, "/hello/:name", this.hello);
 
@@ -178,7 +178,7 @@ class GreetingWorker extends RouteWorker {
     }
 
     /**
-     * Path parameters are provided via path-to-regex parsing
+     * Path parameters are provided via path-to-regexp parsing
      * of the request path.
      *
      * For example, http://localhost:8787/hello/Inigo will yield
