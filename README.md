@@ -440,7 +440,7 @@ class PoweredBy implements Middleware {
         }
 
         /**
-         * Call the next middleware/handler.
+         * Calls the next middleware or worker dispatch method.
          */
         const response = await next();
 
