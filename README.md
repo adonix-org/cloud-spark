@@ -56,7 +56,7 @@ And it's ready on http://localhost:8787
 As shown in the [Quickstart](#rocket-quickstart), BasicWorker is the base class for building Cloudflare Workers with CloudSpark. It handles common tasks, including:
 
 - Dispatching incoming HTTP requests to the corresponding handler (GET, POST, PUT, etc.).
-- Providing defaults for standard HTTP behavior, such as HEAD requests and OPTIONS responses.
+- Providing defaults for standard HTTP behavior, such as HEAD and OPTIONS requests.
 - Ensuring type safety and consistent response formatting.
 - Support for built-in and custom middleware.
 - Catching unhandled errors.
