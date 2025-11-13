@@ -224,7 +224,7 @@ CloudSpark includes built-in middleware for common functionality like caching an
 
 ### CORS
 
-Enable the built-in CORS middleware as follows:
+Register the built-in CORS middleware as follows:
 
 :page_facing_up: index.ts
 
@@ -274,7 +274,7 @@ CloudSpark includes built-in caching middleware that stores responses for improv
 
 Other types of responses (non-GET, errors, partial content, or requests marked no-store) are never cached. This ensures caching is safe and consistent with HTTP standards.
 
-Enable the built-in cache middleware as follows:
+Register the built-in cache middleware as follows:
 
 :page_facing_up: index.ts
 
@@ -362,7 +362,7 @@ import { GET, PathParams, RouteWorker, websocket } from "@adonix.org/cloud-spark
 
 class ChatWorker extends RouteWorker {
     /**
-     * Register the route and middleware.
+     * Register both the upgrade route and middleware.
      */
     protected override init(): void {
         /**
