@@ -263,11 +263,48 @@ class MyWorker extends BasicWorker {
 
 ### Cache
 
+CloudSpark includes built-in caching middleware that stores responses for improving performance. Only responses that are safe to cache are stored, including:
+
+- Responses to GET requests with a 200 OK status.
+- Responses that specify a time-to-live via `Cache-Control` headers (max-age or s-maxage).
+- Responses with `Vary` headers are fully supported, so the cache respects variations based on headers like `Accept-Language`.
+- Responses don’t include user-specific data (such as Set-Cookie or requests with Authorization/Cookie headers).
+
+Other types of responses (non-GET, errors, partial content, or requests marked no-store) are never cached. This ensures caching is safe, consistent with HTTP standards, and compatible with Cloudflare’s caching behavior.
+
 Enable the built-in cache middleware as follows:
 
 :page_facing_up: index.ts
 
 ```ts
+import { BasicWorker, cache } from "@adonix.org/cloud-spark";
+
+class MyWorker extends BasicWorker {
+    /**
+     * Enable middleware in the worker init method.
+     */
+    protected override init(): void {
+        /**
+         * Create and register the built-in cache middleware.
+         */
+        this.use(cache());
+
+        /**
+         * Optionally pass configution to the cache function:
+         *
+         * 	name — the name of the cache storage to use. If omitted,
+         *         the default cache is used.
+         *  getKey — a function that maps the incoming request to a
+         *           cache key.
+         *
+         * this.use(cache({
+         *     name: "my-cache",
+         *     getKey: (req) => new URL(req.url),
+         * }));
+         *
+         */
+    }
+}
 ```
 
 ### WebSocket
