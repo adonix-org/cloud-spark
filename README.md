@@ -432,7 +432,8 @@ class PoweredBy implements Middleware {
         const userAgent = worker.request.headers.get("User-Agent")?.trim();
 
         /**
-         * Short-circuit: if the User-Agent is missing, immediately return a 400 Bad Request.
+         * Short-circuit: if the User-Agent is missing, immediately
+         * return a 400 Bad Request.
          */
         if (!userAgent) {
             return new BadRequest(`Missing User-Agent`).response();
