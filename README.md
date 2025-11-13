@@ -277,7 +277,7 @@ Enable the built-in cache middleware as follows:
 :page_facing_up: index.ts
 
 ```ts
-import { BasicWorker, cache } from "@adonix.org/cloud-spark";
+import { BasicWorker, cache, CacheControl, JsonResponse, Time } from "@adonix.org/cloud-spark";
 
 class MyWorker extends BasicWorker {
     /**
@@ -290,7 +290,7 @@ class MyWorker extends BasicWorker {
         this.use(cache());
 
         /**
-         * Optionally pass configution to the cache function:
+         * Optionally pass settings to the cache function:
          *
          * 	name — the name of the cache storage to use. If omitted,
          *         the default cache is used.
@@ -304,8 +304,34 @@ class MyWorker extends BasicWorker {
          *
          */
     }
+
+    /**
+     * Create a cacheable response.
+     */
+    protected override get(): Promise<Response> {
+        /**
+         * Example JSON message.
+         */
+        const json = {
+            message: "Hi from Cloud Spark!",
+            timestamp: new Date().toLocaleString(),
+        };
+
+        /**
+         * Cache the response for 10 seconds.
+         */
+        const cc: CacheControl = {
+            "s-maxage": 10 * Time.Second,
+        };
+
+        return this.response(JsonResponse, json, cc);
+    }
 }
+
+export default MyWorker.ignite();
 ```
+
+:bulb: The `cf-cache-status` response header will contain **HIT** when serving from the cache.
 
 ### WebSocket
 
