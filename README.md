@@ -435,7 +435,7 @@ class PoweredBy implements Middleware {
          * Short-circuit: if the User-Agent is missing, immediately return a 400 Bad Request.
          */
         if (!userAgent) {
-            return new BadRequest(`Request ${worker.request.url} is missing User-Agent`).response();
+            return new BadRequest(`Missing User-Agent`).response();
         }
 
         /**
