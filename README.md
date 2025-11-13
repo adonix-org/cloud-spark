@@ -403,7 +403,7 @@ export default ChatWorker.ignite();
 
 ### Custom
 
-Create custom middleware by implementing the [Middleware](https://github.com/adonix-org/cloud-spark/blob/main/src/interfaces/middleware.ts) interface and its single *handle* method, then register it with your worker. Within your middlware, you can inspect requests and modify responses or short-circuit procesing entirely.
+Create custom middleware by implementing the [Middleware](https://github.com/adonix-org/cloud-spark/blob/main/src/interfaces/middleware.ts) interface and its single _handle_ method, then register it with your worker. Within your middlware, you can inspect requests and modify responses or short-circuit procesing entirely.
 
 Here is a simple example:
 
@@ -414,10 +414,10 @@ import { BadRequest, CopyResponse, Middleware, Worker } from "@adonix.org/cloud-
  * Custom middleware example.
  *
  * Demonstrates several key middleware capabilities:
- * 1. Inspect the incoming request.
- * 2. Short-circuit and return a response early.
- * 3. Modify the outgoing response headers.
- * 4. Accept constructor parameters for customization.
+ * 1. Accept constructor parameters for customization.
+ * 2. Inspect the incoming request.
+ * 3. Short-circuit and return a response early.
+ * 4. Modify the outgoing response headers.
  */
 class PoweredBy implements Middleware {
     /**
@@ -476,9 +476,6 @@ export function poweredby(name?: string): Middleware {
     return new PoweredBy(name);
 }
 ```
-
-### Ordering
-
 
 <br>
 
