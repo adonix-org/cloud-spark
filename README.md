@@ -467,7 +467,8 @@ class PoweredBy implements Middleware {
 }
 
 /**
- * Convenience helper for adding the middleware with optional name parameter.
+ * Convenience helper for adding the middleware with
+ * optional name parameter.
  *
  * this.use(poweredby());
  *    or
