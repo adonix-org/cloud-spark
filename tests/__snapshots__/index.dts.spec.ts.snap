@@ -728,7 +728,7 @@ declare abstract class BaseWorker implements Worker {
      * @param args Additional constructor arguments
      * @returns A Promise resolving to the {@link Response} object
      */
-    response<Ctor extends new (...args: any[]) => {
+    protected response<Ctor extends new (...args: any[]) => {
         response(): Promise<Response>;
     }>(ResponseClass: Ctor, ...args: ConstructorParameters<Ctor>): Promise<Response>;
     /**
