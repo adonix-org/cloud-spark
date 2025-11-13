@@ -268,7 +268,7 @@ CloudSpark includes built-in caching middleware that stores responses for improv
 - Responses to GET requests with a 200 OK status.
 - Responses that specify a time-to-live via `Cache-Control` headers (max-age or s-maxage).
 - Responses with `Vary` headers are fully supported, so the cache respects variations based on headers like `Accept-Language`.
-- Responses don’t include user-specific data (such as Set-Cookie or requests with Authorization/Cookie headers).
+- Responses that **do not** include user-specific data (such as Set-Cookie or requests with Authorization/Cookie headers).
 
 Other types of responses (non-GET, errors, partial content, or requests marked no-store) are never cached. This ensures caching is safe, consistent with HTTP standards, and compatible with Cloudflare’s caching behavior.
 
