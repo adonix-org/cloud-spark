@@ -343,7 +343,7 @@ export default MyWorker.ignite();
 
 ### WebSocket
 
-The WebSocket middleware ensures upgrade requests are valid before they reach your handler. You can provide a path (default `"/"`) and register multiple instances for multiple paths. Invalid upgrade requests are intercepted, and the correct error response is returned.
+The WebSocket middleware ensures upgrade requests are valid before they reach your handler. You can provide a path (default: `"/"`) and register multiple instances for multiple paths. Invalid upgrade requests are intercepted, and the correct error response is returned.
 
 A valid WebSocket upgrade request must use the `GET` method and include the following:
 
@@ -353,7 +353,7 @@ A valid WebSocket upgrade request must use the `GET` method and include the foll
 | Upgrade               | websocket |
 | Sec-WebSocket-Version | 13        |
 
-Enable the built-in websocket middleware as follows:
+Register the built-in websocket middleware as follows:
 
 :page_facing_up: index.ts
 
@@ -371,7 +371,8 @@ class ChatWorker extends RouteWorker {
         this.route(GET, "/chat/:room", this.upgrade);
 
         /**
-         * Register WebSocket middleware for the same path.
+         * Register WebSocket middleware to match the
+         * upgrade route.
          */
         this.use(websocket("/chat/:room"));
     }
@@ -379,14 +380,16 @@ class ChatWorker extends RouteWorker {
     /**
      * Handles WebSocket upgrade requests.
      *
-     * Assumes a Durable Object binding named CHAT.
+     * Expects a DurableObject binding named CHAT 
+     * in wrangler.jsonc
      */
     protected upgrade(params: PathParams): Promise<Response> {
         const room = params["room"];
         const chat = this.env.CHAT;
 
         /**
-         * Request has already been validated by the WebSocket middleware.
+         * Request has already been validated by the 
+         * WebSocket middleware.
          */
         return chat.get(chat.idFromName(room)).fetch(this.request);
     }
