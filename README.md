@@ -333,6 +333,9 @@ class MyWorker extends BasicWorker {
     }
 }
 
+/**
+ * Connects MyWorker to the Cloudflare runtime.
+ */
 export default MyWorker.ignite();
 ```
 
@@ -340,12 +343,59 @@ export default MyWorker.ignite();
 
 ### WebSocket
 
+The WebSocket middleware ensures upgrade requests are valid before they reach your handler. You can provide a path (default `"/"`) and register multiple instances for multiple paths. Invalid upgrade requests are intercepted, and the correct error response is returned.
+
+A valid WebSocket upgrade request must use the `GET` method and include the following:
+
+| Header                | Value     |
+| --------------------- | --------- |
+| Connection            | Upgrade   |
+| Upgrade               | websocket |
+| Sec-WebSocket-Version | 13        |
+
 Enable the built-in websocket middleware as follows:
 
 :page_facing_up: index.ts
 
 ```ts
+import { GET, PathParams, RouteWorker, websocket } from "@adonix.org/cloud-spark";
 
+class ChatWorker extends RouteWorker {
+    /**
+     * Register the route and middleware.
+     */
+    protected override init(): void {
+        /**
+         * Route for WebSocket upgrades.
+         */
+        this.route(GET, "/chat/:room", this.upgrade);
+
+        /**
+         * Register WebSocket middleware for the same path.
+         */
+        this.use(websocket("/chat/:room"));
+    }
+
+    /**
+     * Handles WebSocket upgrade requests.
+     *
+     * Assumes a Durable Object binding named CHAT.
+     */
+    protected upgrade(params: PathParams): Promise<Response> {
+        const room = params["room"];
+        const chat = this.env.CHAT;
+
+        /**
+         * Request has already been validated by the WebSocket middleware.
+         */
+        return chat.get(chat.idFromName(room)).fetch(this.request);
+    }
+}
+
+/**
+ * Connects ChatWorker to the Cloudflare runtime.
+ */
+export default ChatWorker.ignite();
 ```
 
 ### Custom
