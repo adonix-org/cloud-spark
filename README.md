@@ -61,7 +61,7 @@ As shown in the [Quickstart](#rocket-quickstart), BasicWorker is the base class 
 - Support for built-in and custom middleware.
 - Catching unhandled errors.
 
-Subclasses only need to implement the HTTP methods that their Worker will handle. Each method can be overridden independently, and additional functionality such as [middleware](#gear-middleware) can be added as needed.
+Subclasses only need to implement the HTTP methods that their worker will handle. Each method can be overridden independently, and additional functionality such as [middleware](#gear-middleware) can be added as needed.
 
 Building on the [Quickstart](#rocket-quickstart), what follows is a more complete example:
 
@@ -143,12 +143,12 @@ export default MyWorker.ignite();
 
 ## :twisted_rightwards_arrows: Route Worker
 
-RouteWorker extends [BasicWorker](#arrow_right-basic-worker) to provide route-based request handling making it easy to define multiple endpoints in a single Worker. It provides:
+RouteWorker extends [BasicWorker](#arrow_right-basic-worker) to provide route-based request handling making it easy to define multiple endpoints in a single worker. It provides:
 
 - Registering routes individually or in bulk.
 - Matching incoming requests to registered routes by HTTP method and path.
 - Support for URL path patterns using [path-to-regexp](https://github.com/pillarjs/path-to-regexp) syntax.
-- Dispatching requests to either a callback function or another Worker.
+- Dispatching requests to either a callback function or another worker.
 
 Example:
 
@@ -215,6 +215,10 @@ export default GreetingWorker.ignite();
 <br>
 
 ## :gear: Middleware
+
+Middleware extends your worker’s behavior in a modular way. Each middleware can inspect the incoming request, return a custom response early, or modify the response produced by later handlers. It’s a simple way to add logic such as authentication checks, request logging, or response transformations without touching your core code.
+
+CloudSpark includes built-in middleware for common functionality like caching and CORS, and you can easily create your own to handle things unique to your application.
 
 ### CORS
 
