@@ -90,7 +90,7 @@ export class MyWorker extends BasicWorker {
      * If a requested method is not listed, the response is:
      *     405 Method Not Allowed
      *
-     * If an allowed method isn’t implemented, the response is:
+     * If an allowed method is not implemented, the response is:
      *     GET or HEAD: 404 Not Found
      *     All other methods: 501 Not Implemented
      *
