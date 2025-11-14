@@ -414,10 +414,10 @@ import { BadRequest, CopyResponse, Middleware, Worker } from "@adonix.org/cloud-
  * Custom middleware example.
  *
  * Demonstrates several key middleware capabilities:
- * 1. Accept constructor parameters for customization.
- * 2. Inspect the incoming request.
- * 3. Short-circuit and return a response early.
- * 4. Modify the outgoing response headers.
+ *   • Options via constructor parameters.
+ *   • Inspection of the incoming request.
+ *   • Short-circuiting by returning a response directly.
+ *   • Modifying outgoing responses dispatched by the worker.
  */
 class PoweredBy implements Middleware {
     /**
@@ -432,8 +432,8 @@ class PoweredBy implements Middleware {
         const userAgent = worker.request.headers.get("User-Agent")?.trim();
 
         /**
-         * Short-circuit: if the User-Agent is missing, immediately
-         * return a 400 Bad Request.
+         * If the User-Agent is missing, short-circuit by directly
+         * returning 400 Bad Request.
          */
         if (!userAgent) {
             return new BadRequest(`Missing User-Agent`).response();
@@ -450,10 +450,7 @@ class PoweredBy implements Middleware {
         const copy = new CopyResponse(response);
 
         /**
-         * Add headers showing middleware effects:
-         * - Echo the request's User-Agent header
-         * - Customizable powered-by header
-         * - Timestamp in UTC
+         * Append custom headers to the response.
          */
         copy.setHeader("X-User-Agent", userAgent);
         copy.setHeader("X-Powered-By", this.name);
@@ -467,12 +464,13 @@ class PoweredBy implements Middleware {
 }
 
 /**
- * Convenience helper for registering the middleware with
- * optional name parameter.
+ * Factory function for registering the middleware, with an optional
+ * name parameter. Workers interact only with the `Middleware` interface,
+ * never the concrete implementation.
  *
- * this.use(poweredby());
- *    or
- * this.use(poweredby("My Project Name"));
+ * Example:
+ *   this.use(poweredby());
+ *   this.use(poweredby("My Project Name"));
  */
 export function poweredby(name?: string): Middleware {
     return new PoweredBy(name);
