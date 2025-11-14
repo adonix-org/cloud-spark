@@ -465,8 +465,8 @@ class PoweredBy implements Middleware {
 
 /**
  * Factory function for registering the middleware, with an optional
- * name parameter. Workers interact only with the `Middleware` interface,
- * never the concrete implementation.
+ * name parameter. Workers interact with the `Middleware` interface,
+ * and not the concrete implementation.
  *
  * Example:
  *   this.use(poweredby());
