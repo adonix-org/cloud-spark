@@ -427,7 +427,7 @@ class PoweredBy implements Middleware {
 
     public async handle(worker: Worker, next: () => Promise<Response>): Promise<Response> {
         /**
-         * Inspect the request: grab the User-Agent header.
+         * Extract the User-Agent header from the request.
          */
         const userAgent = worker.request.headers.get("User-Agent")?.trim();
 
