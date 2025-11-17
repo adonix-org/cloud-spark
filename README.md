@@ -41,7 +41,7 @@ class HelloWorld extends BasicWorker {
 export default HelloWorld.ignite();
 ```
 
-:computer: Now run the worker locally
+:computer: Now to run the worker locally:
 
 ```bash
 wrangler dev
