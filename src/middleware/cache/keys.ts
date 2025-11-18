@@ -26,9 +26,7 @@
  */
 export function sortSearchParams(request: Request): URL {
     const url = new URL(request.url);
-    const params = new URLSearchParams([...url.searchParams.entries()]);
-    params.sort();
-    url.search = params.toString();
+    url.searchParams.sort();
     url.hash = "";
     return url;
 }
