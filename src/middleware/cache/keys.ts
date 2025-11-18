@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-import { lexCompare } from "../../utils/compare";
-
 /**
  * Returns a new URL with its query parameters sorted into a stable order.
  *
@@ -28,10 +26,9 @@ import { lexCompare } from "../../utils/compare";
  */
 export function sortSearchParams(request: Request): URL {
     const url = new URL(request.url);
-    const sorted = new URLSearchParams(
-        [...url.searchParams.entries()].sort(([a], [b]) => lexCompare(a, b)),
-    );
-    url.search = sorted.toString();
+    const params = new URLSearchParams([...url.searchParams.entries()]);
+    params.sort();
+    url.search = params.toString();
     url.hash = "";
     return url;
 }
