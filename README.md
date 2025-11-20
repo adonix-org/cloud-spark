@@ -65,7 +65,7 @@ cd ./hello-world
 
 npm install @adonix.org/cloud-spark
 
-# Open project in IDE, for example, VS Code:
+# Open project in your IDE, for example, VS Code:
 code .
 ```
 
