@@ -27,6 +27,37 @@ npm install @adonix.org/cloud-spark
 
 ## :rocket: Quickstart
 
+:computer: Use [Wrangler](#cowboy_hat_face-wrangler) to create a new project:
+
+```bash
+wrangler init
+
+╭ Create an application with Cloudflare Step 1 of 3
+│
+├ In which directory do you want to create your application?
+│ dir ./hello-world
+│
+├ What would you like to start with?
+│ category Hello World example
+│
+├ Which template would you like to use?
+│ type Worker only
+│
+├ Which language do you want to use?
+│ lang TypeScript
+│
+├ Copying template files
+│ files copied to project directory
+│
+├ Updating name in `package.json`
+│ updated `package.json`
+│
+├ Installing dependencies
+│ installed via `npm install`
+│
+╰ Application created
+```
+
 :page_facing_up: index.ts
 
 ```ts
