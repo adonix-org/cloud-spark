@@ -478,7 +478,7 @@ class PoweredBy implements Middleware {
          * returning 400 Bad Request.
          */
         if (!userAgent) {
-            return new BadRequest(`Missing User-Agent`).response();
+            return new BadRequest("Missing User-Agent").response();
         }
 
         /**
