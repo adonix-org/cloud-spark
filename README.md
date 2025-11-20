@@ -58,6 +58,17 @@ wrangler init
 ╰ Application created
 ```
 
+:computer: [Install](#package-install) cloud-spark:
+
+```bash
+cd ./hello-world
+
+npm install @adonix.org/cloud-spark
+
+# Open project in IDE, for example, VS Code:
+code .
+```
+
 :page_facing_up: index.ts
 
 ```ts
