@@ -29,7 +29,7 @@ import { WebSocketHandler } from "./handler";
  *   - Contains required WebSocket headers:
  *     - `Connection: Upgrade`
  *     - `Upgrade: websocket`
- *     - `Sec-WebSocket-Version` matches the expected version
+ *     - `Sec-WebSocket-Version: 13`
  * - Returns an error response if validation fails, otherwise passes control to
  *   the next middleware or origin handler.
  *
