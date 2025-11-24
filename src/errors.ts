@@ -47,6 +47,21 @@ export class HttpError extends JsonResponse {
     }
 }
 
+/**
+ * Creates a structured error response without exposing the error
+ * details to the client. Links the sent response to the logged
+ * error via a generated correlation UUID.
+ *
+ * Status defaults to 500 Internal Server Error.
+ */
+export class LoggedHttpError extends HttpError {
+    constructor(error: unknown, status: StatusCodes = StatusCodes.INTERNAL_SERVER_ERROR) {
+        const uuid = crypto.randomUUID();
+        console.error(uuid, error);
+        super(status, uuid);
+    }
+}
+
 /** 400 Bad Request error response. */
 export class BadRequest extends HttpError {
     constructor(details?: string) {

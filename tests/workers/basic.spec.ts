@@ -172,17 +172,16 @@ describe("basic worker unit tests", () => {
         const response = await worker.fetch();
 
         expect(response).toBeInstanceOf(Response);
-        const expectedJson = {
-            status: 500,
-            error: "Internal Server Error",
-            details: "",
-        };
-        expect(await response.json()).toStrictEqual(expectedJson);
 
+        const [uuid, loggedError] = consoleSpy.mock.calls[0]!;
         expect(consoleSpy).toHaveBeenCalled();
-        const loggedError = consoleSpy.mock.calls[0]![0];
         expect(loggedError).toBeInstanceOf(Error);
         expect(loggedError.message).toContain("Log but do not expose in the response");
         consoleSpy.mockRestore();
+
+        const json = await response.json();
+        expect(json).toHaveProperty("status", 500);
+        expect(json).toHaveProperty("error", "Internal Server Error");
+        expect(json).toHaveProperty("details", uuid);
     });
 });

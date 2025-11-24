@@ -1086,6 +1086,16 @@ declare class HttpError extends JsonResponse {
      */
     constructor(status: StatusCodes, details?: string | undefined);
 }
+/**
+ * Creates a structured error response without exposing the error
+ * details to the client. Links the sent response to the logged
+ * error via a generated correlation UUID.
+ *
+ * Status defaults to 500 Internal Server Error.
+ */
+declare class LoggedHttpError extends HttpError {
+    constructor(error: unknown, status?: StatusCodes);
+}
 /** 400 Bad Request error response. */
 declare class BadRequest extends HttpError {
     constructor(details?: string);
@@ -1131,6 +1141,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, type CacheInit, CopyResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, type Middleware, NotFound, NotImplemented, NotModified, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, PreconditionFailed, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, cache, cors, sortSearchParams, stripSearchParams, websocket };
+export { BadRequest, BasicWorker, CacheControl, type CacheInit, CopyResponse, type CorsConfig, type CorsInit, DELETE, type ErrorJson, Forbidden, GET, HEAD, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, LoggedHttpError, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, type Middleware, NotFound, NotImplemented, NotModified, OPTIONS, OctetStream, type OctetStreamInit, Options, PATCH, POST, PUT, type PathParams, PreconditionFailed, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketSessions, WebSocketUpgrade, type Worker, type WorkerClass, WorkerResponse, cache, cors, sortSearchParams, stripSearchParams, websocket };
 "
 `;

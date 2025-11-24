@@ -15,6 +15,7 @@ exports[`exported symbols tests > matches the exported symbols snapshot 1`] = `
   "HttpError",
   "InternalServerError",
   "JsonResponse",
+  "LoggedHttpError",
   "Method",
   "MethodNotAllowed",
   "MethodNotImplemented",
