@@ -50,7 +50,7 @@ export class HttpError extends JsonResponse {
 /**
  * Creates a structured error response without exposing the error
  * details to the client. Links the sent response to the logged
- * error via a generated correlation UUID.
+ * error via a generated correlation ID.
  *
  * Status defaults to 500 Internal Server Error.
  */
