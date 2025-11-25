@@ -103,7 +103,7 @@ As shown in the [Quickstart](#rocket-quickstart), BasicWorker is the base class 
 - Support for built-in and custom middleware.
 - Catching unhandled errors.
 
-Subclasses only need to implement the HTTP methods that their worker will handle. Each method can be overridden independently, and additional functionality such as [middleware](#gear-middleware) can be added as needed.
+Subclasses only need to implement the HTTP methods their worker will handle. Each method can be overridden independently, and additional functionality such as [middleware](#gear-middleware) can be added as needed.
 
 Building on the [Quickstart](#rocket-quickstart), what follows is a more complete example:
 
