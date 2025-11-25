@@ -101,9 +101,10 @@ export interface WebSocketConnection<A extends WSAttachment> {
     /**
      * Attaches a user-defined object to this WebSocket connection.
      *
-     * @param attachment - Object containing the metadata to attach.
+     * @param attachment - Partial object containing metadata to attach,
+     * or null to clear the attachment.
      */
-    attach(attachment: A): void;
+    attach(attachment?: Partial<A> | null): void;
 
     /**
      * Sends a message to the connected WebSocket client.
