@@ -514,10 +514,14 @@ interface WebSocketConnection<A extends WSAttachment> {
      */
     get attachment(): Readonly<A>;
     /**
-     * Attaches a user-defined object to this WebSocket connection.
+     * Attaches or updates a user-defined object on this connection.
      *
-     * @param attachment - Partial object containing metadata to attach,
-     * or null to clear the attachment.
+     * Passing a partial object merges the new properties into the existing
+     * attachment, leaving other fields unchanged. Pass \`null\` to clear
+     * the attachment entirely.
+     *
+     * @param attachment - Partial object containing metadata to attach or update,
+     *                     or \`null\` to clear the attachment.
      */
     attach(attachment?: Partial<A> | null): void;
     /**
