@@ -710,7 +710,7 @@ export default ChatWorker.ignite();
 wrangler dev
 ```
 
-:bulb: Tools like [Postman](https://www.postman.com) can then be used to create and join a local chat room:
+:bulb: Apps like [Postman](https://www.postman.com/downloads/) can then be used to create and join a local chat room:
 
 ###
 
