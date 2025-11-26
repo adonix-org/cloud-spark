@@ -704,6 +704,15 @@ class ChatWorker extends RouteWorker {
 export default ChatWorker.ignite();
 ```
 
+:bulb: Tools like [Postman](https://www.postman.com) may be used to create a chat room:
+
+```
+ws://localhost:8787/chat/fencing?name=Inigo
+```
+```
+ws://localhost:8787/chat/fencing?name=Wesley
+```
+
 <br>
 
 ## :cowboy_hat_face: Wrangler
