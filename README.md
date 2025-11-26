@@ -525,7 +525,7 @@ export function poweredby(name?: string): Middleware {
 
 Simplify [WebSocket](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#_top) session management with CloudSpark.
 
-- Type-safe session attachments
+- Type-safe session metadata
 - Support for [Hibernation WebSocket API](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#durable-objects-hibernation-websocket-api) (recommended)
 - Support for [Standard WebSocket API](https://developers.cloudflare.com/workers/runtime-apis/websockets/)
 - [Middleware](#websocket) for Upgrade request validation
