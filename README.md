@@ -446,6 +446,8 @@ class ChatWorker extends RouteWorker {
 export default ChatWorker.ignite();
 ```
 
+:bulb: See the complete WebSocket example [here](#left_right_arrow-web-sockets).
+
 ### Custom
 
 Create custom middleware by implementing the [Middleware](https://github.com/adonix-org/cloud-spark/blob/main/src/interfaces/middleware.ts) interface and its single _handle_ method, then register it with your worker. Within your middleware, you can inspect requests and modify responses or short-circuit processing entirely.
