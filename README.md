@@ -11,7 +11,7 @@
 
 CloudSpark provides a logical foundation for building Cloudflare Workers. It works well for simple workers or projects that grow in complexity, helping keep code organized and functionality scalable. It is lightweight and designed to let you focus on the logic that powers your worker.
 
-:bulb: If you are new to _Cloudflare Workers_, create a free [Cloudflare account](https://dash.cloudflare.com/sign-up) and install their command line interface [Wrangler](#cowboy_hat_face-wrangler).
+:bulb: If you are new to _Cloudflare Workers_, create a free [Cloudflare account](https://dash.cloudflare.com/sign-up) and install their command line interface [Wrangler](#partly_sunny-wrangler).
 
 Detailed worker documentation can also be found [here](https://developers.cloudflare.com/workers/).
 
@@ -27,7 +27,7 @@ npm install @adonix.org/cloud-spark
 
 ## :rocket: Quickstart
 
-:computer: Use [Wrangler](#cowboy_hat_face-wrangler) to create a new project:
+:computer: Use [Wrangler](#partly_sunny-wrangler) to create a new project:
 
 ```bash
 wrangler init
@@ -723,7 +723,7 @@ ws://localhost:8787/chat/fencing?name=Inigo
 
 <br>
 
-## :cowboy_hat_face: Wrangler
+## :partly_sunny: Wrangler
 
 First, create a **FREE** [Cloudflare account](https://dash.cloudflare.com/sign-up).
 
@@ -746,3 +746,14 @@ wrangler init
 ```
 
 [Install](#package-install) Cloud Spark
+
+<br>
+
+## :link: Links
+
+- [Cloudflare Home](https://www.cloudflare.com)
+- [Workers](https://developers.cloudflare.com/workers/)
+- [Workers - SDK](https://github.com/cloudflare/workers-sdk)
+- [Postman](https://www.postman.com/downloads/)
+- [http-status-codes](https://www.npmjs.com/package/http-status-codes)
+- [path-to-regexp](https://github.com/pillarjs/path-to-regexp)
