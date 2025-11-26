@@ -548,6 +548,61 @@ export function poweredby(name?: string): Middleware {
 }
 ```
 
+### Ordering
+
+The order in which middleware is registered by a worker can matter depending on the implementation. It helps to visualize ordering as _top-down_ for requests and _bottom-up_ for responses.
+
+Here is a what a full `GET` request flow with middleware `A`, `B`, and `C` could look like:
+
+```typescript
+                  Full
+
+      Request               Response
+         ↓     this.use(A)     ↑
+         ↓     this.use(B)     ↑
+         ↓     this.use(C)     ↑
+           →      get()      →
+
+```
+
+Now imagine `B` middleware returns a response early and short-circuits the flow:
+
+```typescript
+            Short Circuit B
+
+      Request               Response
+         ↓     this.use(A)     ↑
+         ↓     this.use(B)   →
+               this.use(C)
+                  get()
+```
+
+In this scenario, neither middleware `C` nor the worker's `get()` method executes. This is exactly what you want, for example, when using [Cache](#cache) middleware. If a valid response is found in the cache, that response can and should be returned immediately.
+
+However, this illustrates that different behavior can occur depending on the order of middleware registration.
+
+We can use the built-in [Cache](#cache) and [CORS](#cors) middleware as a more concrete example:
+
+```typescript
+/**
+ * This version results in CORS response headers stored in
+ * the cache. On the first cacheable response, CORS middleware
+ * applies its response headers BEFORE caching.
+ */
+this.use(cache());
+this.use(cors());
+
+/**
+ * This version results in CORS response headers NOT stored
+ * in the cache, which is likely preferred. Fresh CORS headers
+ * are added to every response regardless of cache status.
+ */
+this.use(cors());
+this.use(cache());
+```
+
+The difference in behavior is clear when disabling the CORS middleware on the worker. In the first version, CORS headers remain on all cached responses until the cached version expires. In the second version, disabling CORS takes effect immediately—all responses, cached or not, will no longer include CORS headers.
+
 <br>
 
 ## :left_right_arrow: Web Sockets
@@ -786,5 +841,4 @@ wrangler init
 - [http-status-codes](https://github.com/prettymuchbryce/http-status-codes)
 - [path-to-regexp](https://github.com/pillarjs/path-to-regexp)
 
-## 
-
+##
