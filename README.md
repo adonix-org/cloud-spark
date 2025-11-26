@@ -17,6 +17,30 @@ Detailed worker documentation can also be found [here](https://developers.cloudf
 
 <br>
 
+## :books: Contents
+
+- [Install](#package-install)
+
+- [Quickstart](#rocket-quickstart)
+
+- [Basic Worker](#arrow_right-basic-worker)
+
+- [Route Worker](#twisted_rightwards_arrows-route-worker)
+
+- [Middleware](#gear-middleware)
+    - [CORS](#cors)
+    - [Cache](#cache)
+    - [WebSocket](#websocket)
+    - [Custom](#custom)
+
+- [WebSockets](#left_right_arrow-web-sockets)
+
+- [Wrangler](#partly_sunny-wrangler)
+
+- [Links](#link-links)
+
+<br>
+
 ## :package: Install
 
 ```bash
