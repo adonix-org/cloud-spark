@@ -775,11 +775,16 @@ wrangler init
 
 ## :link: Links
 
-- [Cloudflare Home](https://www.cloudflare.com)
+- [Cloudflare - Home](https://www.cloudflare.com)
+- [Cloudflare - Dashboard](https://dash.cloudflare.com)
 - [Wrangler](https://developers.cloudflare.com/workers/wrangler/)
 - [Workers](https://developers.cloudflare.com/workers/)
 - [Workers - SDK](https://github.com/cloudflare/workers-sdk)
-- [WebSockets](https://developers.cloudflare.com/workers/runtime-apis/websockets/)
+- [Hibernation WebSocket API](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#durable-objects-hibernation-websocket-api)
+- [Standard WebSocket API](https://developers.cloudflare.com/workers/runtime-apis/websockets/)
 - [Postman](https://www.postman.com/downloads/)
 - [http-status-codes](https://github.com/prettymuchbryce/http-status-codes)
 - [path-to-regexp](https://github.com/pillarjs/path-to-regexp)
+
+## 
+
