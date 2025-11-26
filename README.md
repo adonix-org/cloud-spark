@@ -683,7 +683,7 @@ class ChatWorker extends RouteWorker {
         this.use(websocket("/chat/:room"));
     }
 
-    private async upgrade(params: PathParams): Promise<Response> {
+    private upgrade(params: PathParams): Promise<Response> {
         /**
          * Get the Durable Object stub for the chat room
          * defined by the "room" path parameter.
@@ -702,7 +702,6 @@ class ChatWorker extends RouteWorker {
  * Connects ChatWorker to the Cloudflare runtime.
  */
 export default ChatWorker.ignite();
-
 ```
 
 <br>
