@@ -526,7 +526,7 @@ export function poweredby(name?: string): Middleware {
 
 ## :left_right_arrow: Web Sockets
 
-Simplify [WebSocket](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#_top) session management with CloudSpark.
+Simplify [WebSocket](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#_top) connection management with CloudSpark. Features include:
 
 - Type-safe session metadata
 - Support for [Hibernation WebSocket API](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#durable-objects-hibernation-websocket-api) (recommended)
@@ -534,7 +534,7 @@ Simplify [WebSocket](https://developers.cloudflare.com/durable-objects/best-prac
 - [Middleware](#websocket) for Upgrade request validation
 - WebSocketUpgrade response
 
-Hibernation example:
+The following is a simple chat with hibernation example:
 
 :page_facing_up: wrangler.jsonc
 
@@ -690,7 +690,7 @@ class ChatWorker extends RouteWorker {
     private upgrade(params: PathParams): Promise<Response> {
         /**
          * Get the Durable Object stub for the chat room
-         * defined by the "room" path parameter.
+         * given by the "room" path parameter.
          */
         const stub = this.env.CHAT_ROOM.getByName(params["room"]);
 
@@ -714,9 +714,7 @@ export default ChatWorker.ignite();
 wrangler dev
 ```
 
-:bulb: Apps like [Postman](https://www.postman.com/downloads/) can be used to create and join a local chat room:
-
-###
+:bulb: Apps like [Postman](https://www.postman.com/downloads/) can be used to create and join local chat rooms for testing:
 
 ```
 ws://localhost:8787/chat/fencing?name=Inigo
