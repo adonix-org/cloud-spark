@@ -1,4 +1,4 @@
-# Cloud⚡️Spark
+# Cloud:zap:Spark
 
 [![npm version](https://img.shields.io/npm/v/@adonix.org/cloud-spark.svg?color=blue)](https://www.npmjs.com/package/@adonix.org/cloud-spark)
 [![Apache 2.0 License](https://badges.adonix.org/License/Apache%202.0?color=blue)](https://github.com/adonix-org/cloud-spark/blob/main/LICENSE)
@@ -843,3 +843,5 @@ wrangler init
 - [path-to-regexp](https://github.com/pillarjs/path-to-regexp)
 
 ##
+
+### [:arrow_up:](#cloud-zap-spark)
