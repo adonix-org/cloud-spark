@@ -532,7 +532,7 @@ Simplify [WebSocket](https://developers.cloudflare.com/durable-objects/best-prac
 - Support for [Hibernation WebSocket API](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#durable-objects-hibernation-websocket-api) (recommended)
 - Support for [Standard WebSocket API](https://developers.cloudflare.com/workers/runtime-apis/websockets/)
 - [Middleware](#websocket) for Upgrade request validation
-- WebSocketUpgrade response
+- Standardized WebSocketUpgrade response
 
 The following is a simple chat with hibernation example:
 
