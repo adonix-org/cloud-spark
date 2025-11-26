@@ -426,14 +426,17 @@ class ChatWorker extends RouteWorker {
      * in wrangler.jsonc
      */
     protected upgrade(params: PathParams): Promise<Response> {
-        const room = params["room"];
-        const chat = this.env.CHAT;
+        /**
+         * Get the Durable Object stub for the chat room
+         * defined by the "room" path parameter.
+         */
+        const stub = this.env.CHAT_ROOM.getByName(params["room"]);
 
         /**
          * Request has already been validated by the
          * WebSocket middleware.
          */
-        return chat.get(chat.idFromName(room)).fetch(this.request);
+        return stub.fetch(this.request);
     }
 }
 
