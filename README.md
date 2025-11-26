@@ -523,6 +523,188 @@ export function poweredby(name?: string): Middleware {
 
 ## :left_right_arrow: Web Sockets
 
+Simplify [WebSocket](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#_top) session management with CloudSpark.
+
+- Type-safe attachments
+- Support for [Hibernation WebSocket API](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#durable-objects-hibernation-websocket-api) (recommended)
+- Support for [Standard WebSocket API](https://developers.cloudflare.com/workers/runtime-apis/websockets/)
+- [Middleware](#websocket) for Upgrade request validation
+- WebSocketUpgrade response
+
+Hibernation example:
+
+:page_facing_up: wrangler.jsonc
+
+```jsonc
+/**
+ * Remember to rerun 'wrangler types' after you change your
+ * wrangler.json file.
+ */
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "chat-room",
+    "main": "src/index.ts",
+    "compatibility_date": "2025-11-01",
+    "observability": {
+        "enabled": true,
+    },
+    "durable_objects": {
+        "bindings": [
+            {
+                "name": "CHAT_ROOM",
+                "class_name": "ChatRoom",
+            },
+        ],
+    },
+    "migrations": [
+        {
+            "tag": "v1",
+            "new_sqlite_classes": ["ChatRoom"],
+        },
+    ],
+}
+```
+
+:page_facing_up: index.ts
+
+```ts
+import {
+    GET,
+    PathParams,
+    RouteWorker,
+    websocket,
+    WebSocketSessions,
+    WebSocketUpgrade,
+} from "@adonix.org/cloud-spark";
+import { DurableObject } from "cloudflare:workers";
+
+/**
+ * Metadata attached to each session.
+ */
+interface Profile {
+    name: string;
+    lastActive: number;
+}
+
+export class ChatRoom extends DurableObject {
+    /**
+     * Manage all active connections for this room.
+     */
+    protected readonly sessions = new WebSocketSessions<Profile>();
+
+    constructor(ctx: DurableObjectState, env: Env) {
+        super(ctx, env);
+
+        /**
+         * Restore all active connections on wake from
+         * hibernation.
+         */
+        this.sessions.restoreAll(this.ctx.getWebSockets());
+    }
+
+    public override fetch(request: Request): Promise<Response> {
+        /**
+         * For demo purposes, get the user's name from the `name`
+         * query parameter.
+         */
+        const name = new URL(request.url).searchParams.get("name") ?? "Anonymous";
+
+        /**
+         * Create a new connection and initialize its `Profile`
+         * attachment.
+         */
+        const con = this.sessions.create({
+            name,
+            lastActive: Date.now(),
+        });
+
+        /**
+         * Accept the WebSocket with recommended hibernation enabled.
+         *
+         * To accept without hibernation, use `con.accept()` and
+         * con.addEventListener() methods instead.
+         */
+        const client = con.acceptWebSocket(this.ctx);
+
+        /**
+         * Return the upgrade response with the client WebSocket.
+         */
+        return new WebSocketUpgrade(client).response();
+    }
+
+    /**
+     * Send a message to all active sessions.
+     */
+    public broadcast(message: string): void {
+        for (const session of this.sessions) {
+            session.send(message);
+        }
+    }
+
+    public override webSocketMessage(ws: WebSocket, message: string): void {
+        /**
+         * Get the WebSocket connection wrapper from the active
+         * sessions.
+         */
+        const con = this.sessions.get(ws);
+        if (!con) return;
+
+        /**
+         * Update the `Profile` with current `lastActive` time.
+         */
+        con.attach({ lastActive: Date.now() });
+
+        /**
+         * Broadcast the message to all sessions, prefixed with the
+         * sender’s name.
+         */
+        this.broadcast(`${con.attachment.name}: ${message}`);
+    }
+
+    public override webSocketClose(ws: WebSocket, code: number, reason: string): void {
+        /**
+         * Closes and removes the WebSocket from active sessions.
+         */
+        this.sessions.close(ws, code, reason);
+    }
+}
+
+class ChatWorker extends RouteWorker {
+    protected override init(): void {
+        /**
+         * Define the WebSocket connection route.
+         */
+        this.route(GET, "/chat/:room", this.upgrade);
+
+        /**
+         * Register the middleware to validate WebSocket
+         * connection requests.
+         */
+        this.use(websocket("/chat/:room"));
+    }
+
+    private async upgrade(params: PathParams): Promise<Response> {
+        /**
+         * Get the Durable Object stub for the chat room
+         * defined by the "room" path parameter.
+         */
+        const stub = this.env.CHAT_ROOM.getByName(params["room"]);
+
+        /**
+         * Dispatch the WebSocket upgrade request to the
+         * Durable Object.
+         */
+        return stub.fetch(this.request);
+    }
+}
+
+/**
+ * Connects ChatWorker to the Cloudflare runtime.
+ */
+export default ChatWorker.ignite();
+
+```
+
 <br>
 
 ## :cowboy_hat_face: Wrangler
