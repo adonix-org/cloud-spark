@@ -32,6 +32,7 @@ Detailed worker documentation can also be found [here](https://developers.cloudf
     - [Cache](#cache)
     - [WebSocket](#websocket)
     - [Custom](#custom)
+    - [Ordering](#ordering)
 
 - [WebSockets](#left_right_arrow-web-sockets)
 
