@@ -525,7 +525,7 @@ export function poweredby(name?: string): Middleware {
 
 Simplify [WebSocket](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#_top) session management with CloudSpark.
 
-- Type-safe attachments
+- Type-safe session attachments
 - Support for [Hibernation WebSocket API](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#durable-objects-hibernation-websocket-api) (recommended)
 - Support for [Standard WebSocket API](https://developers.cloudflare.com/workers/runtime-apis/websockets/)
 - [Middleware](#websocket) for Upgrade request validation
@@ -704,7 +704,15 @@ class ChatWorker extends RouteWorker {
 export default ChatWorker.ignite();
 ```
 
-:bulb: Tools like [Postman](https://www.postman.com) may be used to create a local chat room:
+:computer: To run this chat example locally:
+
+```bash
+wrangler dev
+```
+
+:bulb: Tools like [Postman](https://www.postman.com) can then be used to create and join a local chat room:
+
+###
 
 ```
 ws://localhost:8787/chat/fencing?name=Inigo
