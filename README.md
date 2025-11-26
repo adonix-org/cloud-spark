@@ -571,6 +571,8 @@ Hibernation example:
 :page_facing_up: index.ts
 
 ```ts
+import { DurableObject } from "cloudflare:workers";
+
 import {
     GET,
     PathParams,
@@ -579,7 +581,6 @@ import {
     WebSocketSessions,
     WebSocketUpgrade,
 } from "@adonix.org/cloud-spark";
-import { DurableObject } from "cloudflare:workers";
 
 /**
  * Metadata attached to each session.
@@ -646,14 +647,14 @@ export class ChatRoom extends DurableObject {
 
     public override webSocketMessage(ws: WebSocket, message: string): void {
         /**
-         * Get the WebSocket connection wrapper from the active
+         * Get the sender's WebSocket connection from the active
          * sessions.
          */
         const con = this.sessions.get(ws);
         if (!con) return;
 
         /**
-         * Update the `Profile` with current `lastActive` time.
+         * Update the sender's `Profile` with current `lastActive` time.
          */
         con.attach({ lastActive: Date.now() });
 
