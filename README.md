@@ -578,7 +578,7 @@ Now imagine `B` middleware returns a response early and short-circuits the flow:
                   get()
 ```
 
-In this scenario, neither middleware `C` nor the worker's `get()` method executes. This is exactly what you want, for example, when using [Cache](#cache) middleware. If a valid response is found in the cache, that response can and should be returned immediately.
+In this scenario, neither middleware `C` nor the worker's `get()` method executes. This is exactly what you want, for example, when using the [Cache](#cache) middleware. If a valid response is found in the cache, that response can and should be returned immediately.
 
 However, this illustrates that different behavior can occur depending on the order of middleware registration.
 
@@ -602,7 +602,7 @@ this.use(cors());
 this.use(cache());
 ```
 
-The difference in behavior is clear when disabling the CORS middleware on the worker. In the first version, CORS headers remain on all cached responses until the cached version expires. In the second version, disabling CORS takes effect immediately—all responses, cached or not, will no longer include CORS headers.
+The difference in behavior becomes clear when disabling the CORS middleware on the worker. In the first version, CORS headers remain on all cached responses until the cached version expires. In the second version, disabling CORS takes effect immediately—all responses, cached or not, will no longer include CORS headers.
 
 <br>
 
