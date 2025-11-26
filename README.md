@@ -649,8 +649,7 @@ export class ChatRoom extends DurableObject {
 
     public override webSocketMessage(ws: WebSocket, message: string): void {
         /**
-         * Get the sender's WebSocket connection wrapper from the active
-         * sessions.
+         * Get the sender's WebSocket session from the active sessions.
          */
         const con = this.sessions.get(ws);
         if (!con) return;
