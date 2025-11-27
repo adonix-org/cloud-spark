@@ -708,7 +708,7 @@ export class ChatRoom extends DurableObject {
          * Accept the WebSocket with recommended hibernation enabled.
          *
          * To accept without hibernation, use `con.accept()` and
-         * con.addEventListener() methods instead.
+         * `con.addEventListener()` methods instead.
          */
         const client = con.acceptWebSocket(this.ctx);
 
