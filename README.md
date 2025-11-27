@@ -447,7 +447,7 @@ class ChatWorker extends RouteWorker {
     /**
      * Handles WebSocket upgrade requests.
      *
-     * Expects a DurableObject binding named CHAT
+     * Expects a DurableObject binding named CHAT_ROOM
      * in wrangler.jsonc
      */
     protected upgrade(params: PathParams): Promise<Response> {
@@ -602,7 +602,7 @@ this.use(cors());
 this.use(cache());
 ```
 
-The difference in behavior becomes clear when disabling the CORS middleware on the worker. In the first version, CORS headers remain on all cached responses until the cached version expires. In the second version, disabling CORS takes effect immediately—all responses, cached or not, will no longer include CORS headers.
+The difference in behavior becomes clear when disabling the CORS middleware on the worker. In the first version, CORS headers remain on all cached responses until the cached entry expires. In the second version, disabling CORS takes effect immediately; all responses, cached or not, will no longer include CORS headers.
 
 <br>
 
