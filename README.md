@@ -453,13 +453,14 @@ class ChatWorker extends RouteWorker {
     protected upgrade(params: PathParams): Promise<Response> {
         /**
          * Get the Durable Object stub for the chat room
-         * defined by the "room" path parameter.
+         * given by the "room" path parameter.
          */
         const stub = this.env.CHAT_ROOM.getByName(params["room"]);
 
         /**
-         * Request has already been validated by the
-         * WebSocket middleware.
+         * The request has already been validated by the
+         * WebSocket middleware, so dispatch the WebSocket 
+         * upgrade request to the Durable Object.
          */
         return stub.fetch(this.request);
     }
