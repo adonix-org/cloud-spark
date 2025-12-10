@@ -28,7 +28,8 @@ import {
     UpgradeRequired,
 } from "@src/errors";
 import { ErrorJson } from "@src/interfaces/error";
-import { getReasonPhrase, StatusCodes } from "http-status-codes";
+import { StatusCodes } from "http-status-codes/build/es/status-codes";
+import { getReasonPhrase } from "http-status-codes/build/es/utils-functions";
 import { describe, expect, it, vi } from "vitest";
 
 const worker = {

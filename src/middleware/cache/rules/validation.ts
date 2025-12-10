@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { StatusCodes } from "http-status-codes";
+import { StatusCodes } from "http-status-codes/build/es/status-codes";
 
 import { Worker } from "../../../interfaces";
 

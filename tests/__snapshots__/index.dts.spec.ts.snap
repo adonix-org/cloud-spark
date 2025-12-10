@@ -1,8 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`library dts test > matches the index.d.ts snapshot 1`] = `
-"import { StatusCodes } from 'http-status-codes';
-export { StatusCodes } from 'http-status-codes';
+"import { StatusCodes } from 'http-status-codes/build/es/status-codes';
+export { StatusCodes } from 'http-status-codes/build/es/status-codes';
 import CacheLib from 'cache-control-parser';
 import { MatchFunction } from 'path-to-regexp';
 

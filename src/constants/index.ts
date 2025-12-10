@@ -17,7 +17,7 @@
 /**
  * https://github.com/prettymuchbryce/http-status-codes
  */
-export { StatusCodes } from "http-status-codes";
+export { StatusCodes } from "http-status-codes/build/es/status-codes";
 
 export * from "./cache";
 export * from "./methods";

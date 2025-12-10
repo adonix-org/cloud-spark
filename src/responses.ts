@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { getReasonPhrase, StatusCodes } from "http-status-codes";
+import { StatusCodes } from "http-status-codes/build/es/status-codes";
+import { getReasonPhrase } from "http-status-codes/build/es/utils-functions";
 
 import { CacheControl } from "./constants/cache";
 import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "./constants/headers";
