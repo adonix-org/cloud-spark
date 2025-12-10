@@ -15,6 +15,7 @@ node_modules/
 
 # Local debug
 src/debug/
+.dev.vars
 
 # Local config
 wrangler.local.jsonc
