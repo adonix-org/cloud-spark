@@ -1,6 +1,6 @@
 {
     "name": "@adonix.org/cloud-spark",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
     "license": "Apache-2.0",
     "type": "module",
@@ -68,9 +68,9 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.39.1",
-        "@types/node": "^24.10.1",
-        "@typescript-eslint/eslint-plugin": "^8.48.1",
-        "@typescript-eslint/parser": "^8.48.1",
+        "@types/node": "^25.0.0",
+        "@typescript-eslint/eslint-plugin": "^8.49.0",
+        "@typescript-eslint/parser": "^8.49.0",
         "@vitest/coverage-v8": "^4.0.15",
         "eslint": "^9.39.1",
         "eslint-plugin-import": "^2.32.0",
@@ -79,9 +79,9 @@
         "prettier": "^3.7.4",
         "tsup": "^8.5.1",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.48.1",
+        "typescript-eslint": "^8.49.0",
         "vitest": "^4.0.15",
-        "wrangler": "^4.53.0"
+        "wrangler": "^4.54.0"
     },
     "dependencies": {
         "cache-control-parser": "^2.0.6",
