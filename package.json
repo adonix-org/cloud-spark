@@ -7,11 +7,26 @@
     "sideEffects": false,
     "types": "./dist/index.d.ts",
     "exports": {
-        ".": "./dist/index.js",
-        "./cache": "./dist/cache.js",
-        "./cors": "./dist/cors.js",
-        "./websocket": "./dist/websocket.js",
-        "./sessions": "./dist/sessions.js"
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./cache": {
+            "import": "./dist/cache.js",
+            "types": "./dist/cache.d.ts"
+        },
+        "./cors": {
+            "import": "./dist/cors.js",
+            "types": "./dist/cors.d.ts"
+        },
+        "./websocket": {
+            "import": "./dist/websocket.js",
+            "types": "./dist/websocket.d.ts"
+        },
+        "./sessions": {
+            "import": "./dist/sessions.js",
+            "types": "./dist/sessions.d.ts"
+        }
     },
     "files": [
         "dist"

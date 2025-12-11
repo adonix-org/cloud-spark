@@ -24,9 +24,7 @@ export default defineConfig({
         websocket: "src/middleware/websocket/index.ts",
         sessions: "src/websocket/index.ts",
     },
-    dts: {
-        entry: "src/index.ts",
-    },
+    dts: true,
     clean: true,
     format: ["esm"],
     outDir: "dist",
