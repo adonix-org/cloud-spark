@@ -13,19 +13,19 @@
         },
         "./cache": {
             "import": "./dist/cache.js",
-            "types": "./dist/cache.d.ts"
+            "types": "./dist/index.d.ts"
         },
         "./cors": {
             "import": "./dist/cors.js",
-            "types": "./dist/cors.d.ts"
+            "types": "./dist/index.d.ts"
         },
         "./websocket": {
             "import": "./dist/websocket.js",
-            "types": "./dist/websocket.d.ts"
+            "types": "./dist/index.d.ts"
         },
         "./sessions": {
             "import": "./dist/sessions.js",
-            "types": "./dist/sessions.d.ts"
+            "types": "./dist/index.d.ts"
         }
     },
     "files": [
