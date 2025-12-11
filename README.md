@@ -296,7 +296,8 @@ Register the built-in CORS middleware as follows:
 :page_facing_up: index.ts
 
 ```ts
-import { BasicWorker, cors } from "@adonix.org/cloud-spark";
+import { BasicWorker } from "@adonix.org/cloud-spark";
+import { cors } from "@adonix.org/cloud-spark/cors";
 
 class MyWorker extends BasicWorker {
     /**
@@ -346,7 +347,8 @@ Register the built-in cache middleware as follows:
 :page_facing_up: index.ts
 
 ```ts
-import { BasicWorker, cache, CacheControl, JsonResponse, Time } from "@adonix.org/cloud-spark";
+import { BasicWorker, CacheControl, JsonResponse, Time } from "@adonix.org/cloud-spark";
+import { cache } from "@adonix.org/cloud-spark/cache";
 
 class MyWorker extends BasicWorker {
     /**
@@ -425,7 +427,8 @@ Register the built-in websocket middleware as follows:
 :page_facing_up: index.ts
 
 ```ts
-import { GET, PathParams, RouteWorker, websocket } from "@adonix.org/cloud-spark";
+import { GET, PathParams, RouteWorker } from "@adonix.org/cloud-spark";
+import { websocket } from "@adonix.org/cloud-spark/websocket";
 
 class ChatWorker extends RouteWorker {
     /**
@@ -459,7 +462,7 @@ class ChatWorker extends RouteWorker {
 
         /**
          * The request has already been validated by the
-         * WebSocket middleware, so dispatch the WebSocket 
+         * WebSocket middleware, so dispatch the WebSocket
          * upgrade request to the Durable Object.
          */
         return stub.fetch(this.request);
@@ -654,16 +657,10 @@ The following is a simple chat with hibernation example:
 :page_facing_up: index.ts
 
 ```ts
+import { GET, PathParams, RouteWorker, WebSocketUpgrade } from "@adonix.org/cloud-spark";
+import { WebSocketSessions } from "@adonix.org/cloud-spark/sessions";
+import { websocket } from "@adonix.org/cloud-spark/websocket";
 import { DurableObject } from "cloudflare:workers";
-
-import {
-    GET,
-    PathParams,
-    RouteWorker,
-    websocket,
-    WebSocketSessions,
-    WebSocketUpgrade,
-} from "@adonix.org/cloud-spark";
 
 /**
  * Metadata attached to each session.
