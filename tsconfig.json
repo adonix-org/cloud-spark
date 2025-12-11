@@ -35,7 +35,8 @@
         "noUncheckedIndexedAccess": true,
         "forceConsistentCasingInFileNames": true,
         "declaration": true,
-        "skipLibCheck": true,
+        "skipLibCheck": true
     },
-    "include": ["src", "types"]
+    "include": ["src", "types"],
+    "exclude": ["src/debug"]
 }

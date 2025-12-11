@@ -1,6 +1,6 @@
 {
     "name": "@adonix.org/cloud-spark",
-    "version": "1.0.2",
+    "version": "2.0.0",
     "description": "Ignite your Cloudflare Workers with a type-safe library for rapid development.",
     "license": "Apache-2.0",
     "type": "module",
@@ -10,6 +10,22 @@
         ".": {
             "import": "./dist/index.js",
             "types": "./dist/index.d.ts"
+        },
+        "./cache": {
+            "import": "./dist/cache.js",
+            "types": "./dist/cache.d.ts"
+        },
+        "./cors": {
+            "import": "./dist/cors.js",
+            "types": "./dist/cors.d.ts"
+        },
+        "./websocket": {
+            "import": "./dist/websocket.js",
+            "types": "./dist/websocket.d.ts"
+        },
+        "./sessions": {
+            "import": "./dist/sessions.js",
+            "types": "./dist/sessions.d.ts"
         }
     },
     "files": [
@@ -41,8 +57,8 @@
     },
     "scripts": {
         "types": "wrangler types --config wrangler.jsonc ./types/cloudflare.d.ts",
-        "prebuild": "npm run lint && mkdir -p ./types",
-        "build": "npm run types && tsup",
+        "prebuild": "npm run lint && mkdir -p ./types && npm run types",
+        "build": "tsup",
         "dev-types": "wrangler types --config wrangler.local.jsonc ./types/cloudflare.d.ts",
         "dev": "npm run dev-types && wrangler dev --config wrangler.local.jsonc",
         "dev-debug": "npm run dev-types && wrangler dev --config wrangler.local.jsonc --log-level debug",

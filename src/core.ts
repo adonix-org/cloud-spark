@@ -14,26 +14,11 @@
  * limitations under the License.
  */
 
-import { defineConfig } from "tsup";
+// src/folder/index.ts
+export * from "./constants";
+//export * from "./interfaces";
+export * from "./workers";
 
-export default defineConfig({
-    entry: {
-        index: "src/core.ts",
-        cache: "src/middleware/cache/index.ts",
-        cors: "src/middleware/cors/index.ts",
-        websocket: "src/middleware/websocket/index.ts",
-        sessions: "src/websocket/index.ts",
-    },
-    dts: {
-        entry: "src/index.ts",
-    },
-    clean: true,
-    format: ["esm"],
-    outDir: "dist",
-    sourcemap: true,
-    target: "es2022",
-    minify: true,
-    splitting: false,
-    treeshake: true,
-    bundle: true,
-});
+// src/file.ts
+export * from "./errors";
+export * from "./responses";

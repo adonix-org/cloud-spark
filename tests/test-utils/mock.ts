@@ -26,6 +26,7 @@ export const ctx: ExecutionContext<unknown> & { flush: () => Promise<void> } = (
     const promises: Promise<any>[] = [];
 
     return {
+        exports: {},
         waitUntil: (p: Promise<any>) => {
             promises.push(p);
         },
