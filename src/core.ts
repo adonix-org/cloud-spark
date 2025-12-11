@@ -16,7 +16,6 @@
 
 // src/folder/index.ts
 export * from "./constants";
-//export * from "./interfaces";
 export * from "./workers";
 
 // src/file.ts
