@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { FetchHandler, GET, HEAD, Method, Worker, WorkerClass } from "../core";
+import { GET, HEAD, Method } from "../constants/methods";
 import { assertMethods, isMethod } from "../guards/methods";
+import { FetchHandler } from "../interfaces/fetch";
+import { Worker, WorkerClass } from "../interfaces/worker";
 
 /**
  * Provides the foundational structure for handling requests,

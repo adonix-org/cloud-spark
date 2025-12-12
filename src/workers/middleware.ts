@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { MethodNotAllowed, Middleware } from "../core";
+import { MethodNotAllowed } from "../errors";
 import { assertMiddleware } from "../guards/middleware";
+import { Middleware } from "../interfaces/middleware";
 
 import { BaseWorker } from "./base";
 

@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-import {
-    GET,
-    HEAD,
-    LoggedHttpError,
-    Method,
-    MethodNotAllowed,
-    MethodNotImplemented,
-    NotFound,
-    OPTIONS,
-} from "../core";
+import { GET, HEAD, Method, OPTIONS } from "../constants/methods";
+import { LoggedHttpError, MethodNotAllowed, MethodNotImplemented, NotFound } from "../errors";
 import { Head, Options } from "../responses";
 
 import { MiddlewareWorker } from "./middleware";
