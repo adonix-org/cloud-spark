@@ -15,7 +15,7 @@
  */
 
 import { HttpHeader } from "../../../constants/headers";
-import { Worker } from "../../../core";
+import { Worker } from "../../../interfaces";
 
 import { CacheRule } from "./interfaces";
 

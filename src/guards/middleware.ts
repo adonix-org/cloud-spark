@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Middleware } from "../core";
+import { Middleware } from "../interfaces/middleware";
 
 /**
  * Asserts at runtime that a value implements the `Middleware` interface.

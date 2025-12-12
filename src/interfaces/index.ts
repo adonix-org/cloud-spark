@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export * from "./cache";
 export * from "./error";
 export * from "./middleware";
 export * from "./response";

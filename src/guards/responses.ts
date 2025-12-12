@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OctetStreamInit } from "../core";
+import { OctetStreamInit } from "../interfaces";
 
 import { isNumber } from "./basic";
 

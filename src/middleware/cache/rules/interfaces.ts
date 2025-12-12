@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import { Worker } from "../../../core";
+import { Worker } from "../../../interfaces/worker";
 
 /**
  * Represents a byte range parsed from an HTTP `Range` header.

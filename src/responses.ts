@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+import { StatusCodes } from "http-status-codes/build/es/status-codes";
 import { getReasonPhrase } from "http-status-codes/build/es/utils-functions";
 
+import { CacheControl } from "./constants/cache";
 import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "./constants/headers";
 import { MediaType, UTF8_CHARSET } from "./constants/media";
-import { CacheControl, GET, HEAD, OctetStreamInit, StatusCodes, Worker } from "./core";
+import { GET, HEAD } from "./constants/methods";
 import { assertMethods } from "./guards/methods";
 import { assertOctetStreamInit } from "./guards/responses";
+import { Worker } from "./interfaces";
+import { OctetStreamInit } from "./interfaces/response";
 import { filterHeaders, mergeHeader, setHeader } from "./utils/headers";
 import { withCharset } from "./utils/media";
 

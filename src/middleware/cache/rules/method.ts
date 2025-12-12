@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { GET, Head, HEAD, Worker } from "../../../core";
+import { GET, HEAD } from "../../../constants";
+import { Worker } from "../../../interfaces";
+import { Head } from "../../../responses";
 
 import { CacheRule } from "./interfaces";
 

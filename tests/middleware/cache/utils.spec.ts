@@ -25,7 +25,7 @@ import {
     isCacheable,
     normalizeVaryValue,
 } from "@src/middleware/cache/utils";
-import { StatusCodes } from "@src/index";
+import { StatusCodes } from "http-status-codes/build/es/status-codes";
 import { describe, expect, it } from "vitest";
 
 describe("cache utils unit tests ", () => {

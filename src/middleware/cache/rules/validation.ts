@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { StatusCodes, Worker } from "../../../core";
+import { StatusCodes } from "http-status-codes/build/es/status-codes";
+
+import { Worker } from "../../../interfaces";
 
 import { CacheRule, CacheValidators } from "./interfaces";
 import { getCacheValidators } from "./utils";

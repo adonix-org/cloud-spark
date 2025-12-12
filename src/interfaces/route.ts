@@ -16,7 +16,9 @@
 
 import { MatchFunction } from "path-to-regexp";
 
-import { Method, WorkerClass } from "../core";
+import { Method } from "../constants/methods";
+
+import { WorkerClass } from "./worker";
 
 /**
  * Parameters extracted from a matched route.

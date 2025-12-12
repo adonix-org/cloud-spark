@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CacheInit } from "../middleware/cache/interfaces";
+import { CacheInit } from "../interfaces/cache";
 
 import { isString } from "./basic";
 
