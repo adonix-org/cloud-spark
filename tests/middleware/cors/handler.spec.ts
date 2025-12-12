@@ -24,7 +24,7 @@ import {
 } from "@common";
 import { StatusCodes } from "@src/constants";
 import { GET, HEAD, Method, OPTIONS } from "@src/constants/methods";
-import { CorsInit } from "@src/interfaces";
+import { CorsInit } from "@src/middleware/cors/interfaces";
 import { CorsHandler } from "@src/middleware/cors/handler";
 import { describe, it } from "vitest";
 

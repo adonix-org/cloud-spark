@@ -17,7 +17,8 @@
 import { StatusCodes } from "../../constants";
 import { HttpHeader } from "../../constants/headers";
 import { Time } from "../../constants/time";
-import { CorsConfig } from "../../interfaces/cors";
+
+import { CorsConfig } from "./interfaces";
 
 /**
  * A wildcard value used in the CORS `Access-Control-Allow-Origin` header

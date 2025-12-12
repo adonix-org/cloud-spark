@@ -24,7 +24,7 @@ import {
 import { StatusCodes } from "@src/constants";
 import { HttpHeader } from "@src/constants/headers";
 import { DELETE, GET, OPTIONS, POST, PUT } from "@src/constants/methods";
-import { CorsConfig } from "@src/interfaces";
+import { CorsConfig } from "@src/middleware/cors/interfaces";
 import { defaultCorsConfig } from "@src/middleware/cors/constants";
 import {
     apply,

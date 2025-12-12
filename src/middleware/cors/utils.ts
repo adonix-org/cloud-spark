@@ -16,12 +16,12 @@
 
 import { HttpHeader } from "../../constants/headers";
 import { assertMethods } from "../../guards/methods";
-import { CorsConfig } from "../../interfaces/cors";
 import { Worker } from "../../interfaces/worker";
 import { CopyResponse } from "../../responses";
 import { mergeHeader, setHeader } from "../../utils/headers";
 
 import { ALLOW_ALL_ORIGINS, SKIP_CORS_STATUSES } from "./constants";
+import { CorsConfig } from "./interfaces";
 
 /**
  * Handles a `CORS` preflight `OPTIONS` request.
@@ -44,11 +44,7 @@ import { ALLOW_ALL_ORIGINS, SKIP_CORS_STATUSES } from "./constants";
  * @param cors - The CORS configuration to apply.
  * @returns A Response object suitable for responding to the preflight request.
  */
-export function options(
-    response: Response,
-    worker: Worker,
-    cors: CorsConfig,
-): Promise<Response> {
+export function options(response: Response, worker: Worker, cors: CorsConfig): Promise<Response> {
     const copy = new CopyResponse(response);
     const origin = getOrigin(worker.request);
 
@@ -86,11 +82,7 @@ export function options(
  * @returns A Response object with CORS headers applied, suitable for returning
  *          to the client.
  */
-export function apply(
-    response: Response,
-    worker: Worker,
-    cors: CorsConfig,
-): Promise<Response> {
+export function apply(response: Response, worker: Worker, cors: CorsConfig): Promise<Response> {
     const copy = new CopyResponse(response);
     const origin = getOrigin(worker.request);
 

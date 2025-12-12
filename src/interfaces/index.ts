@@ -15,7 +15,6 @@
  */
 
 export * from "./cache";
-export * from "./cors";
 export * from "./error";
 export * from "./middleware";
 export * from "./response";
