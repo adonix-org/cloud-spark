@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-import { StatusCodes } from "http-status-codes/build/es/status-codes";
-
+import { StatusCodes } from "../../constants";
 import { CacheControl, GET } from "../../constants";
 import { HttpHeader } from "../../constants/headers";
 import { lexCompare } from "../../utils/compare";

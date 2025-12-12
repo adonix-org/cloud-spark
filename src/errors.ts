@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { StatusCodes } from "http-status-codes/build/es/status-codes";
 import { getReasonPhrase } from "http-status-codes/build/es/utils-functions";
 
+import { StatusCodes } from "./constants";
 import { CacheControl } from "./constants/cache";
 import { HttpHeader } from "./constants/headers";
 import { assertMethods } from "./guards/methods";

@@ -30,7 +30,7 @@ import {
     TextResponse,
     WebSocketUpgrade,
 } from "@src/responses";
-import { StatusCodes } from "http-status-codes/build/es/status-codes";
+import { StatusCodes } from "@src/constants";
 import { getReasonPhrase } from "http-status-codes/build/es/utils-functions";
 import { describe, expect, it, vi } from "vitest";
 
