@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method } from "../constants/methods";
+import { Method } from "../core";
 
 import { isString } from "./basic";
 

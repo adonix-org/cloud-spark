@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Method } from "../constants/methods";
+import { Method } from "../core";
 
 /**
  * Represents the constructor of a Worker subclass.

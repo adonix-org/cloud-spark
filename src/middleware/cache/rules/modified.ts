@@ -15,8 +15,7 @@
  */
 
 import { HttpHeader } from "../../../constants/headers";
-import { PreconditionFailed } from "../../../errors";
-import { NotModified } from "../../../responses";
+import { NotModified, PreconditionFailed } from "../../../core";
 
 import { CacheValidators } from "./interfaces";
 import { toDate } from "./utils";

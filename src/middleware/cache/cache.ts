@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Middleware } from "../../core";
 import { assertCacheInit } from "../../guards/cache";
-import { CacheInit } from "../../interfaces/cache";
-import { Middleware } from "../../interfaces/middleware";
 
 import { CacheHandler } from "./handler";
+import { CacheInit } from "./interfaces";
 
 /**
  * Creates a Vary-aware caching middleware for Workers.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Worker } from "../../interfaces/worker";
+import { Worker } from "../../core";
 
 import { CacheRule } from "./rules/interfaces";
 

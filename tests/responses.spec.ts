@@ -30,12 +30,11 @@ import {
     TextResponse,
     WebSocketUpgrade,
 } from "@src/responses";
-import { StatusCodes } from "http-status-codes/build/es/status-codes";
+import { StatusCodes } from "@src/index";
 import { getReasonPhrase } from "http-status-codes/build/es/utils-functions";
 import { describe, expect, it, vi } from "vitest";
 
 import { assertDefined, expectHeadersEqual, VALID_URL } from "./test-utils/common";
-
 
 const mockWorker = {
     request: new Request(VALID_URL),

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { CacheControl } from "../../constants";
 import { HttpHeader } from "../../constants/headers";
-import { WorkerResponse } from "../../responses";
+import { CacheControl, WorkerResponse } from "../../core";
 import { getHeaderValues } from "../../utils/headers";
 
 import { getCacheControl, getFilteredVary } from "./utils";
