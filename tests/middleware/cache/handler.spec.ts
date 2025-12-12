@@ -17,7 +17,7 @@
 import { expectHeadersEqual, GET_REQUEST, GET_REQUEST_WITH_ORIGIN } from "@common";
 import { ctx, defaultCache, namedCache } from "@mock";
 import { GET, POST } from "@src/constants/methods";
-import { CacheInit } from "@src/interfaces";
+import { CacheInit } from "@src/middleware/cache/interfaces";
 import { sortSearchParams } from "@src/middleware";
 import { CacheHandler } from "@src/middleware/cache/handler";
 import { getVaryKey } from "@src/middleware/cache/utils";

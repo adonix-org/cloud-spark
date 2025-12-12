@@ -4,8 +4,9 @@ exports[`library dts test > matches the index.d.ts snapshot 1`] = `
 "import { StatusCodes } from 'http-status-codes/build/es/status-codes';
 export { StatusCodes } from 'http-status-codes/build/es/status-codes';
 import CacheLib from 'cache-control-parser';
-import { W as Worker, M as Method, a as WorkerClass, b as Middleware } from './middleware-Duh--eKb.js';
-export { D as DELETE, G as GET, H as HEAD, O as OPTIONS, d as PATCH, c as POST, P as PUT } from './middleware-Duh--eKb.js';
+import { W as WorkerClass, M as Method, a as Worker, b as Middleware } from './middleware-CfKw8AlN.js';
+export { D as DELETE, G as GET, H as HEAD, O as OPTIONS, d as PATCH, c as POST, P as PUT } from './middleware-CfKw8AlN.js';
+import { MatchFunction } from 'path-to-regexp';
 
 /**
  * @see {@link https://github.com/etienne-martin/cache-control-parser | cache-control-parser}
@@ -37,6 +38,36 @@ declare const Time: {
 };
 
 /**
+ * Structure for JSON-formatted error responses.
+ *
+ * This interface defines the standard shape of error responses returned
+ * when an operation fails. It ensures consistent error reporting and easy
+ * parsing by clients.
+ */
+interface ErrorJson {
+    /**
+     * HTTP status code associated with the error.
+     *
+     * Example: \`404\` for Not Found, \`500\` for Internal Server Error.
+     */
+    status: number;
+    /**
+     * Standard HTTP reason phrase corresponding to the status code.
+     *
+     * Example: \`"Not Found"\` for 404, \`"Internal Server Error"\` for 500.
+     */
+    error: string;
+    /**
+     * Optional detailed message describing the error.
+     *
+     * This can include additional context, debugging hints, or
+     * information useful to the client. Will be an empty string
+     * if no details are provided.
+     */
+    details: string;
+}
+
+/**
  * A type-safe Cloudflare Worker handler with a guaranteed \`fetch\` method.
  */
 interface FetchHandler {
@@ -50,6 +81,94 @@ interface FetchHandler {
      */
     fetch: (request: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
 }
+
+/**
+ * Initialization options for an OctetStream response.
+ *
+ * @property size - Total size of the data (required).
+ * @property offset - Start of the byte range (optional, defaults to 0).
+ * @property length - Length of the byte range (optional, defaults to size).
+ */
+interface OctetStreamInit {
+    size: number;
+    offset?: number;
+    length?: number;
+}
+
+/**
+ * Parameters extracted from a matched route.
+ *
+ * The keys correspond to named parameters in the route's path pattern,
+ * and the values are the strings captured from the URL.
+ *
+ * @example
+ * // For a route defined as "/users/:userId/posts/:postId"
+ * // and a URL "/users/42/posts/7", the extracted PathParams would be:
+ * const params: PathParams = {
+ *   userId: "42",
+ *   postId: "7"
+ * };
+ */
+type PathParams = Record<string, string>;
+/**
+ * Type for a route callback function.
+ *
+ * Route callbacks are executed when a request matches a route.
+ *
+ * @param params - Named parameters extracted from the URL path.
+ * @returns A Response object or a Promise resolving to a Response.
+ */
+type RouteCallback = (params: PathParams) => Response | Promise<Response>;
+/**
+ * A handler for a route, which can be either:
+ *
+ * 1. \`RouteCallback\` function that receives the route
+ *    parameters and returns a \`Response\` or \`Promise<Response>\`.
+ * 2. \`WorkerClass\` (subclass of \`Worker\`) that will handle
+ *    the request by instantiating a new worker.
+ */
+type RouteHandler = RouteCallback | WorkerClass;
+/**
+ * Represents a single route.
+ *
+ * Contains all necessary information to match an incoming request and
+ * pass to the registered handler.
+ */
+interface Route {
+    /** HTTP method for the route (e.g., \`GET\`, \`POST\`, etc.) */
+    method: Method;
+    /** Path-to-regexp matcher function for this route */
+    matcher: MatchFunction<PathParams>;
+    /** Function or Worker to execute or instantiate when the route is matched */
+    handler: RouteHandler;
+}
+/**
+ * Result of a route match.
+ *
+ * Returned by routing logic when a request matches a route pattern.
+ */
+interface MatchedRoute {
+    /** The route that matched the request */
+    route: Route;
+    /** Parameters extracted from the URL path */
+    params: PathParams;
+}
+/**
+ * A route tuple. Each tuple consists of:
+ *
+ * 1. HTTP method (e.g., \`GET\`, \`POST\`)
+ * 2. Path string (supports parameters, e.g., "/users/:id")
+ * 3. Callback function or Worker class to handle matched requests
+ * */
+type RouteTuple = [Method, string, RouteHandler];
+/**
+ * Iterable of route tuples, used to populate a \`Routes\` object.
+ *
+ * Each item yields a {@link RouteTuple} representing a single route.
+ *
+ * @see {@link RouteTuple}
+ */
+type RouteTable = Iterable<RouteTuple>;
 
 /**
  * Provides the foundational structure for handling requests,
@@ -206,56 +325,6 @@ declare abstract class BasicWorker extends MiddlewareWorker {
 }
 
 /**
- * Parameters extracted from a matched route.
- *
- * The keys correspond to named parameters in the route's path pattern,
- * and the values are the strings captured from the URL.
- *
- * @example
- * // For a route defined as "/users/:userId/posts/:postId"
- * // and a URL "/users/42/posts/7", the extracted PathParams would be:
- * const params: PathParams = {
- *   userId: "42",
- *   postId: "7"
- * };
- */
-type PathParams = Record<string, string>;
-/**
- * Type for a route callback function.
- *
- * Route callbacks are executed when a request matches a route.
- *
- * @param params - Named parameters extracted from the URL path.
- * @returns A Response object or a Promise resolving to a Response.
- */
-type RouteCallback = (params: PathParams) => Response | Promise<Response>;
-/**
- * A handler for a route, which can be either:
- *
- * 1. \`RouteCallback\` function that receives the route
- *    parameters and returns a \`Response\` or \`Promise<Response>\`.
- * 2. \`WorkerClass\` (subclass of \`Worker\`) that will handle
- *    the request by instantiating a new worker.
- */
-type RouteHandler = RouteCallback | WorkerClass;
-/**
- * A route tuple. Each tuple consists of:
- *
- * 1. HTTP method (e.g., \`GET\`, \`POST\`)
- * 2. Path string (supports parameters, e.g., "/users/:id")
- * 3. Callback function or Worker class to handle matched requests
- * */
-type RouteTuple = [Method, string, RouteHandler];
-/**
- * Iterable of route tuples, used to populate a \`Routes\` object.
- *
- * Each item yields a {@link RouteTuple} representing a single route.
- *
- * @see {@link RouteTuple}
- */
-type RouteTable = Iterable<RouteTuple>;
-
-/**
  * Base worker supporting route-based request handling.
  *
  * Subclass \`RouteWorker\` to define a worker with multiple route handlers.
@@ -318,19 +387,6 @@ declare abstract class RouteWorker extends BasicWorker {
     protected post(): Promise<Response>;
     protected patch(): Promise<Response>;
     protected delete(): Promise<Response>;
-}
-
-/**
- * Initialization options for an OctetStream response.
- *
- * @property size - Total size of the data (required).
- * @property offset - Start of the byte range (optional, defaults to 0).
- * @property length - Length of the byte range (optional, defaults to size).
- */
-interface OctetStreamInit {
-    size: number;
-    offset?: number;
-    length?: number;
 }
 
 /**
@@ -597,6 +653,6 @@ declare class ServiceUnavailable extends HttpError {
     constructor(details?: string);
 }
 
-export { BadRequest, BasicWorker, CacheControl, CopyResponse, Forbidden, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, LoggedHttpError, Method, MethodNotAllowed, MethodNotImplemented, NotFound, NotImplemented, NotModified, OctetStream, Options, PreconditionFailed, R2ObjectStream, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketUpgrade, WorkerResponse };
+export { BadRequest, BasicWorker, CacheControl, CopyResponse, type ErrorJson, type FetchHandler, Forbidden, Head, HtmlResponse, HttpError, InternalServerError, JsonResponse, LoggedHttpError, type MatchedRoute, Method, MethodNotAllowed, MethodNotImplemented, Middleware, NotFound, NotImplemented, NotModified, OctetStream, type OctetStreamInit, Options, type PathParams, PreconditionFailed, R2ObjectStream, type Route, type RouteCallback, type RouteHandler, type RouteTable, type RouteTuple, RouteWorker, ServiceUnavailable, SuccessResponse, TextResponse, Time, Unauthorized, UpgradeRequired, WebSocketUpgrade, Worker, WorkerClass, WorkerResponse };
 "
 `;

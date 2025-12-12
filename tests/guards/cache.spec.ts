@@ -16,7 +16,7 @@
 
 import { VALID_URL } from "@common";
 import { assertCacheInit, assertCacheName, assertGetKey, assertKey } from "@src/guards/cache";
-import { CacheInit } from "@src/interfaces/cache";
+import { CacheInit } from "@src/middleware/cache/interfaces";
 import { describe, expect, it } from "vitest";
 
 describe("cache guard unit tests", () => {
