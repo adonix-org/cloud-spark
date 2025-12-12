@@ -16,8 +16,7 @@
 
 import { match } from "path-to-regexp";
 
-import { Method } from "./constants/methods";
-import { MatchedRoute, PathParams, Route, RouteTable } from "./interfaces/route";
+import { MatchedRoute, Method, PathParams, Route, RouteTable } from "./core";
 
 /**
  * Container for route definitions and matching logic.

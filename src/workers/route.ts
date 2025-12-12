@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { Method } from "../constants/methods";
-import { NotFound } from "../errors";
-import { RouteHandler, RouteTable } from "../interfaces/route";
-import { WorkerClass } from "../interfaces/worker";
+import { Method, NotFound, RouteHandler, RouteTable, WorkerClass } from "../core";
 import { Routes } from "../routes";
 
 import { BaseWorker } from "./base";
