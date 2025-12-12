@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { StatusCodes } from "../../constants";
 import { HttpHeader } from "../../constants/headers";
-import { StatusCodes, Time } from "../../core";
-
-import { CorsConfig } from "./interfaces";
+import { Time } from "../../constants/time";
+import { CorsConfig } from "../../interfaces/cors";
 
 /**
  * A wildcard value used in the CORS `Access-Control-Allow-Origin` header

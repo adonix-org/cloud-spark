@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Middleware } from "../../core";
 import { assertCorsInit } from "../../guards/cors";
+import { CorsInit } from "../../interfaces/cors";
+import { Middleware } from "../../interfaces/middleware";
 
 import { CorsHandler } from "./handler";
-import { CorsInit } from "./interfaces";
 
 /**
  * Returns a `CORS` middleware instance.

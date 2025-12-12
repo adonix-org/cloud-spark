@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Middleware, OPTIONS, Worker } from "../../core";
+import { OPTIONS } from "../../constants/methods";
+import { CorsConfig, CorsInit } from "../../interfaces/cors";
+import { Middleware } from "../../interfaces/middleware";
+import { Worker } from "../../interfaces/worker";
 
 import { defaultCorsConfig } from "./constants";
-import { CorsConfig, CorsInit } from "./interfaces";
 import { apply, options, skipCors } from "./utils";
 
 /**
