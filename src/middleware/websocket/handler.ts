@@ -16,7 +16,10 @@
 
 import { match } from "path-to-regexp";
 
-import { BadRequest, GET, Middleware, UpgradeRequired, Worker } from "../../core";
+import { GET } from "../../constants/methods";
+import { BadRequest, UpgradeRequired } from "../../errors";
+import { Middleware } from "../../interfaces/middleware";
+import { Worker } from "../../interfaces/worker";
 
 import { hasConnectionHeader, hasUpgradeHeader, hasWebSocketVersion } from "./utils";
 
