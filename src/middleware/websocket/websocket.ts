@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Middleware } from "../../interfaces/middleware";
+import { Middleware } from "../../core";
 
 import { WebSocketHandler } from "./handler";
 
