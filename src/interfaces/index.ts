@@ -16,6 +16,7 @@
 
 export * from "./cache";
 export * from "./error";
+export * from "./fetch";
 export * from "./middleware";
 export * from "./response";
 export * from "./route";
