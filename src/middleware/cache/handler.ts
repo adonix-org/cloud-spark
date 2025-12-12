@@ -15,10 +15,10 @@
  */
 
 import { assertKey } from "../../guards/cache";
-import { CacheInit } from "../../interfaces/cache";
 import { Middleware } from "../../interfaces/middleware";
 import { Worker } from "../../interfaces/worker";
 
+import { CacheInit } from "./interfaces";
 import { sortSearchParams } from "./keys";
 import { CachePolicy } from "./policy";
 import { CacheControlRule } from "./rules/control";
