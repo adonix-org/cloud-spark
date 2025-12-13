@@ -37,7 +37,7 @@ export class Routes implements Iterable<Route> {
      */
     public add(routes: RouteTable): void {
         for (const [method, path, handler] of routes) {
-            const matcher = match<PathParams>(path);
+            const matcher = match<PathParams>(path, { sensitive: true });
             this.routes.push({ method, matcher, handler });
         }
     }
