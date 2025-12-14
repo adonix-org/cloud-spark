@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { getReasonPhrase } from "http-status-codes/build/es/utils-functions";
-
 import { StatusCodes } from "./constants";
 import { CacheControl } from "./constants/cache";
 import { FORBIDDEN_204_HEADERS, FORBIDDEN_304_HEADERS, HttpHeader } from "./constants/headers";
@@ -27,6 +25,7 @@ import { Worker } from "./interfaces";
 import { OctetStreamInit } from "./interfaces/response";
 import { filterHeaders, mergeHeader, setHeader } from "./utils/headers";
 import { withCharset } from "./utils/media";
+import { getReasonPhrase } from "./utils/reasons";
 
 /**
  * Base class for building HTTP responses.
@@ -46,7 +45,7 @@ abstract class BaseResponse {
     public webSocket?: WebSocket | null;
 
     /** Default media type of the response body. */
-    public mediaType: string = withCharset(MediaType.PLAIN_TEXT, UTF8_CHARSET);
+    public mediaType: string = "text/plain; charset=utf-8";
 
     /** Converts current state to ResponseInit for constructing a Response. */
     protected get responseInit(): ResponseInit {

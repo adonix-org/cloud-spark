@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-/**
- * https://github.com/prettymuchbryce/http-status-codes
- */
+import { StatusCodes } from "../constants";
 
-export * from "./cache";
-export * from "./methods";
-export * from "./status";
-export * from "./time";
+/**
+ * Returns the standard HTTP reason phrase for a status code.
+ * Converts enum names (e.g. NOT_FOUND) into title-cased phrases.
+ */
+export function getReasonPhrase(status: StatusCodes): string {
+    return StatusCodes[status]
+        .toLowerCase()
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+}

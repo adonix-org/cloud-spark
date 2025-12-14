@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { getReasonPhrase } from "http-status-codes/build/es/utils-functions";
-
 import { StatusCodes } from "./constants";
 import { CacheControl } from "./constants/cache";
 import { HttpHeader } from "./constants/headers";
@@ -24,6 +22,7 @@ import { ErrorJson } from "./interfaces/error";
 import { Worker } from "./interfaces/worker";
 import { WS_VERSION } from "./middleware/websocket/constants";
 import { JsonResponse } from "./responses";
+import { getReasonPhrase } from "./utils/reasons";
 
 /**
  * Generic HTTP error response.

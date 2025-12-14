@@ -40,7 +40,7 @@ export const SKIP_CORS_STATUSES = [
     StatusCodes.PROCESSING,
     StatusCodes.EARLY_HINTS,
     StatusCodes.MOVED_PERMANENTLY,
-    StatusCodes.MOVED_TEMPORARILY,
+    StatusCodes.FOUND,
     StatusCodes.SEE_OTHER,
     StatusCodes.TEMPORARY_REDIRECT,
     StatusCodes.PERMANENT_REDIRECT,
