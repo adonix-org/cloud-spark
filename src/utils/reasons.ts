@@ -23,6 +23,6 @@ import { StatusCodes } from "../constants";
 export function getReasonPhrase(status: StatusCodes): string {
     return StatusCodes[status]
         .toLowerCase()
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase());
+        .replaceAll("_", " ")
+        .replaceAll(/\b\w/g, (c) => c.toUpperCase());
 }
