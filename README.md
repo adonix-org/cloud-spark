@@ -837,7 +837,6 @@ wrangler init
 - [Hibernation WebSocket API](https://developers.cloudflare.com/durable-objects/best-practices/websockets/#durable-objects-hibernation-websocket-api)
 - [Standard WebSocket API](https://developers.cloudflare.com/workers/runtime-apis/websockets/)
 - [Postman](https://www.postman.com/downloads/)
-- [http-status-codes](https://github.com/prettymuchbryce/http-status-codes)
 - [path-to-regexp](https://github.com/pillarjs/path-to-regexp)
 
 ##
