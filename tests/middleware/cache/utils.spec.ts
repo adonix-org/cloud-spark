@@ -250,8 +250,8 @@ describe("cache utils unit tests ", () => {
             const requestB = new Request(url, { headers: { Accept: "application/json" } });
 
             const vary = ["Accept"];
-            const keyA = getVaryKey(requestA, vary, url);
-            const keyB = getVaryKey(requestB, vary, url);
+            const keyA = getVaryKey(requestA, vary);
+            const keyB = getVaryKey(requestB, vary);
 
             const decodedA = decodeVaryKey(keyA);
             const decodedB = decodeVaryKey(keyB);
@@ -266,7 +266,7 @@ describe("cache utils unit tests ", () => {
             });
             const vary = ["Accept", HttpHeader.ACCEPT_ENCODING];
 
-            const key = getVaryKey(request, vary, url);
+            const key = getVaryKey(request, vary);
             const decoded = decodeVaryKey(key);
 
             const headersInKey = decoded.vary.map(([header]) => header);
@@ -281,8 +281,8 @@ describe("cache utils unit tests ", () => {
             const vary1 = ["X-Foo", "X-Bar"];
             const vary2 = ["X-Bar", "X-Foo"];
 
-            const key1 = getVaryKey(request, vary1, url);
-            const key2 = getVaryKey(request, vary2, url);
+            const key1 = getVaryKey(request, vary1);
+            const key2 = getVaryKey(request, vary2);
 
             expect(key1).toBe(key2);
 
@@ -296,8 +296,8 @@ describe("cache utils unit tests ", () => {
             const url = new URL("https://example.com/foo");
             const request = new Request(url);
 
-            const key1 = getVaryKey(request, [], url);
-            const key2 = getVaryKey(request, [], url);
+            const key1 = getVaryKey(request, []);
+            const key2 = getVaryKey(request, []);
 
             expect(key1).toBe(key2);
 
@@ -314,7 +314,7 @@ describe("cache utils unit tests ", () => {
             const request = new Request(url, { headers: { "X-Custom": "ñ" } });
             const vary = ["X-Custom"];
 
-            const key = getVaryKey(request, vary, url);
+            const key = getVaryKey(request, vary);
             const decoded = decodeVaryKey(key);
 
             expect(decoded.url).toBe("https://example.com/fo%C3%B6");
@@ -327,7 +327,7 @@ describe("cache utils unit tests ", () => {
             const request = new Request(url, { headers: { Accept: "text/html" } });
             const vary = ["Accept"];
 
-            const key = getVaryKey(request, vary, url);
+            const key = getVaryKey(request, vary);
             const decoded = decodeVaryKey(key);
 
             expect(decoded.search).toBe("");

@@ -37,6 +37,5 @@
         "declaration": true,
         "skipLibCheck": true
     },
-    "include": ["src", "types"],
-    "exclude": ["src/debug"]
+    "include": ["src", "types"]
 }

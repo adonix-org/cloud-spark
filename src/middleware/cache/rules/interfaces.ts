@@ -60,12 +60,6 @@ export interface CacheValidators {
     /** Entity tags that must **not** match for a response to be considered valid (`If-None-Match`). */
     ifNoneMatch: string[];
 
-    /** Entity tags that **must** match for a response to be considered valid (`If-Match`). */
-    ifMatch: string[];
-
     /** Timestamp after which the resource is considered modified (`If-Modified-Since`). */
     ifModifiedSince: string | null;
-
-    /** Timestamp before which the resource must remain unmodified (`If-Unmodified-Since`). */
-    ifUnmodifiedSince: string | null;
 }

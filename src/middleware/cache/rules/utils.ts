@@ -15,14 +15,11 @@
  */
 
 import { HttpHeader } from "../../../constants/headers";
-import { isNumber, isString } from "../../../guards/basic";
-import { getHeaderValues } from "../../../utils/headers";
+import { isNumber } from "../../../guards/basic";
 
-import { ByteRange, CacheValidators } from "./interfaces";
+import { ByteRange } from "./interfaces";
 
 const RANGE_REGEX = /^bytes=(\d{1,12})-(\d{0,12})$/;
-const ETAG_WEAK_PREFIX = "W/";
-const WILDCARD_ETAG = "*";
 
 /**
  * Parses the `Range` header from an HTTP request and returns a byte range object.
@@ -48,103 +45,6 @@ export function getRange(request: Request): ByteRange | undefined {
 }
 
 /**
- * Evaluates an `If-None-Match` precondition against the current ETag.
- *
- * Returns `true` when the resource has **not** been modified since the
- * validator was issued — i.e., when the normalized ETag matches one of
- * the `If-None-Match` values or the wildcard `"*"`.
- *
- * @param ifNoneMatch - Parsed `If-None-Match` header values.
- * @param etag - Current entity tag for the resource.
- * @returns `true` if the response should return **304 Not Modified**; otherwise `false`.
- */
-export function isNotModified(ifNoneMatch: string[], etag: string): boolean {
-    return found(ifNoneMatch, normalizeEtag(etag), WILDCARD_ETAG);
-}
-
-/**
- * Determines whether any of the given search values appear in the array.
- *
- * @param array - The array to search.
- * @param search - One or more values to look for.
- * @returns `true` if any search value is found in the array; otherwise `false`.
- */
-export function found(array: string[], ...search: string[]): boolean {
-    return array.some((value) => search.includes(value));
-}
-
-/**
- * Parses a date string into a timestamp (milliseconds since epoch).
- *
- * Returns `undefined` for invalid, null, or non-string values.
- *
- * @param value - The date string to parse.
- * @returns Parsed timestamp if valid; otherwise `undefined`.
- */
-export function toDate(value: string | null | undefined): number | undefined {
-    if (!isString(value)) return undefined;
-
-    const date = Date.parse(value);
-    return Number.isNaN(date) ? undefined : date;
-}
-
-/**
- * Normalizes an ETag for equality comparison.
- *
- * Weak ETags (`W/"etag"`) are converted to their strong form by removing
- * the leading `W/` prefix. Strong ETags are returned unchanged.
- *
- * @param etag - The entity tag to normalize.
- * @returns The normalized ETag string.
- */
-export function normalizeEtag(etag: string): string {
-    return etag.startsWith(ETAG_WEAK_PREFIX) ? etag.slice(2) : etag;
-}
-
-/**
- * Extracts cache validator headers from a request.
- *
- * Returns an object containing all standard conditional request headers:
- * - `If-Match` (weak validators removed)
- * - `If-None-Match` (normalized)
- * - `If-Modified-Since`
- * - `If-Unmodified-Since`
- *
- * @param headers - The headers object from which to extract validators.
- * @returns A `CacheValidators` structure containing parsed header values.
- */
-export function getCacheValidators(headers: Headers): CacheValidators {
-    return {
-        ifMatch: getHeaderValues(headers, HttpHeader.IF_MATCH).filter(
-            (value) => !value.startsWith(ETAG_WEAK_PREFIX),
-        ),
-        ifNoneMatch: getHeaderValues(headers, HttpHeader.IF_NONE_MATCH).map(normalizeEtag),
-        ifModifiedSince: headers.get(HttpHeader.IF_MODIFIED_SINCE),
-        ifUnmodifiedSince: headers.get(HttpHeader.IF_UNMODIFIED_SINCE),
-    };
-}
-
-/**
- * Returns true if any cache validator headers are present.
- *
- * Useful as a quick check for conditional requests where the
- * specific values are not important.
- *
- * @param headers - The request headers to inspect.
- * @returns `true` if any validator exists; otherwise `false`.
- */
-export function hasCacheValidator(headers: Headers): boolean {
-    const { ifNoneMatch, ifMatch, ifModifiedSince, ifUnmodifiedSince } =
-        getCacheValidators(headers);
-    return (
-        ifNoneMatch.length > 0 ||
-        ifMatch.length > 0 ||
-        ifModifiedSince !== null ||
-        ifUnmodifiedSince !== null
-    );
-}
-
-/**
  * Safely extracts the `Content-Length` header value.
  *
  * Returns the length as a number if present and valid. Returns `undefined`
@@ -162,4 +62,17 @@ export function getContentLength(headers: Headers): number | undefined {
     if (!isNumber(length)) return;
 
     return length;
+}
+
+/**
+ * Returns true if any cache validator headers are present.
+ *
+ * Useful as a quick check for conditional requests where the
+ * specific values are not important.
+ *
+ * @param headers - The request headers to inspect.
+ * @returns `true` if any validator exists; otherwise `false`.
+ */
+export function hasCacheValidator(headers: Headers): boolean {
+    return headers.has(HttpHeader.IF_NONE_MATCH) || headers.has(HttpHeader.IF_MODIFIED_SINCE);
 }
