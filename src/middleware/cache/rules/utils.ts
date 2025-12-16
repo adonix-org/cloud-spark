@@ -48,21 +48,6 @@ export function getRange(request: Request): ByteRange | undefined {
 }
 
 /**
- * Evaluates an `If-Match` precondition against the current ETag.
- *
- * Returns `true` when the precondition fails, meaning the resource’s
- * current ETag does **not** match any of the supplied `If-Match` values
- * and the request should return **412 Precondition Failed**.
- *
- * @param ifMatch - Parsed `If-Match` header values.
- * @param etag - Current entity tag for the resource.
- * @returns `true` if the precondition fails; otherwise `false`.
- */
-export function isPreconditionFailed(ifMatch: string[], etag: string): boolean {
-    return ifMatch.length > 0 && !found(ifMatch, etag, WILDCARD_ETAG);
-}
-
-/**
  * Evaluates an `If-None-Match` precondition against the current ETag.
  *
  * Returns `true` when the resource has **not** been modified since the

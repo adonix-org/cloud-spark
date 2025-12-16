@@ -22,7 +22,6 @@ import {
     getRange,
     hasCacheValidator,
     isNotModified,
-    isPreconditionFailed,
     normalizeEtag,
     toDate,
 } from "@src/middleware/cache/rules/utils";
@@ -144,24 +143,6 @@ describe("rules utils unit tests ", () => {
 
         it("returns true if any search term matches", () => {
             expect(found(["a", "b", "c"], "x", "b", "z")).toBe(true);
-        });
-    });
-
-    describe("is precondition failed function", () => {
-        it("returns false if 'if-match' is empty", () => {
-            expect(isPreconditionFailed([], '"abc"')).toBe(false);
-        });
-
-        it("returns false if etag matches one of the values", () => {
-            expect(isPreconditionFailed(['"abc"'], '"abc"')).toBe(false);
-        });
-
-        it("returns false if wildcard is present", () => {
-            expect(isPreconditionFailed(["*"], '"abc"')).toBe(false);
-        });
-
-        it("returns true if no match and no wildcard", () => {
-            expect(isPreconditionFailed(['"def"'], '"abc"')).toBe(true);
         });
     });
 

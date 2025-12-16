@@ -14,62 +14,15 @@
  * limitations under the License.
  */
 
-import { IfMatchRule, IfNoneMatchRule } from "@src/middleware/cache/rules/etag";
+import { IfNoneMatchRule } from "@src/middleware/cache/rules/etag";
 import * as utils from "@src/middleware/cache/rules/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
 
 describe("etag rule unit tests", () => {
     let response: Response;
 
     beforeEach(() => {
         response = new Response("ok", { status: 200, headers: { ETag: '"abc123"' } });
-    });
-
-    describe("if match rule unit tests", () => {
-        let rule: IfMatchRule;
-
-        beforeEach(() => {
-            rule = new IfMatchRule();
-        });
-
-        it("returns the original response if etag does not fail precondition", async () => {
-            vi.spyOn(utils, "isPreconditionFailed").mockReturnValue(false);
-
-            const result = await rule.apply(
-                { request: { headers: new Headers() } } as any,
-                async () => response,
-            );
-            expect(result).toBe(response);
-        });
-
-        it("returns 412 precondition failed response if etag fails precondition", async () => {
-            const fixedEtag = '"abc123"';
-            vi.spyOn(utils, "isPreconditionFailed").mockImplementation(
-                (_requestHeaders, responseEtag) => {
-                    return responseEtag === fixedEtag;
-                },
-            );
-
-            const result = await rule.apply(
-                {
-                    request: { headers: new Headers({ "If-Match": fixedEtag }) },
-                } as any,
-                async () => {
-                    const resp = new Response("ok");
-                    resp.headers.set("ETag", fixedEtag);
-                    return resp;
-                },
-            );
-
-            expect(result).toBeInstanceOf(Response);
-            expect(result?.status).toBe(412);
-            expect(await result?.json()).toStrictEqual({
-                status: 412,
-                error: "Precondition Failed",
-                details: 'ETag: "abc123"',
-            });
-        });
     });
 
     describe("if none match rule unit tests", () => {

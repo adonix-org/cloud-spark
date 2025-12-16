@@ -22,9 +22,9 @@ import { CacheInit } from "./interfaces";
 import { sortSearchParams } from "./keys";
 import { CachePolicy } from "./policy";
 import { CacheControlRule } from "./rules/control";
-import { IfMatchRule, IfNoneMatchRule } from "./rules/etag";
+import { IfNoneMatchRule } from "./rules/etag";
 import { MethodRule } from "./rules/method";
-import { ModifiedSinceRule, UnmodifiedSinceRule } from "./rules/modified";
+import { ModifiedSinceRule } from "./rules/modified";
 import { RangeRule } from "./rules/range";
 import { SecurityRule } from "./rules/security";
 import { UpgradeRule } from "./rules/upgrade";
@@ -74,9 +74,7 @@ export class CacheHandler implements Middleware {
             .use(new SecurityRule())
             .use(new RangeRule())
             .use(new ModifiedSinceRule())
-            .use(new IfNoneMatchRule())
-            .use(new UnmodifiedSinceRule())
-            .use(new IfMatchRule());
+            .use(new IfNoneMatchRule());
 
         const cacheResponse = await policy.execute(worker, () =>
             this.getCached(cache, worker.request),

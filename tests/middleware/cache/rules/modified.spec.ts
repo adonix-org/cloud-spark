@@ -15,7 +15,7 @@
  */
 
 import { StatusCodes } from "@src/constants";
-import { ModifiedSinceRule, UnmodifiedSinceRule } from "@src/middleware/cache/rules/modified";
+import { ModifiedSinceRule } from "@src/middleware/cache/rules/modified";
 import { beforeEach, describe, expect, it } from "vitest";
 
 describe("modifed rule unit tests", () => {
@@ -59,46 +59,6 @@ describe("modifed rule unit tests", () => {
 
             const result = await rule.apply(worker, async () => response);
             expect(result).toBeUndefined();
-        });
-    });
-
-    describe("UnmodifiedSinceRule", () => {
-        let rule: UnmodifiedSinceRule;
-
-        beforeEach(() => {
-            rule = new UnmodifiedSinceRule();
-        });
-
-        it("returns response if no if-unmodified-since header", async () => {
-            const worker = { request: new Request("https://x", { headers: {} }) } as any;
-            const result = await rule.apply(worker, async () => response);
-            expect(result).toBe(response);
-        });
-
-        it("returns 412 if response newer than if-unmodified-since", async () => {
-            const since = new Date("2025-10-05T12:40:17Z").toUTCString(); // earlier
-            const worker = {
-                request: new Request("https://x", { headers: { "If-Unmodified-Since": since } }),
-            } as any;
-
-            const result = await rule.apply(worker, async () => response);
-            expect(result?.status).toBe(StatusCodes.PRECONDITION_FAILED);
-            const json = await result!.json();
-            expect(json).toStrictEqual({
-                details: "Last-Modified: Sun, 05 Oct 2025 12:41:17 GMT",
-                error: "Precondition Failed",
-                status: 412,
-            });
-        });
-
-        it("returns response if response older than if-unmodified-since", async () => {
-            const since = new Date("2025-10-05T12:42:17Z").toUTCString();
-            const worker = {
-                request: new Request("https://x", { headers: { "If-Unmodified-Since": since } }),
-            } as any;
-
-            const result = await rule.apply(worker, async () => response);
-            expect(result).toBe(response);
         });
     });
 });
