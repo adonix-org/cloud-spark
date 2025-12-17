@@ -22,6 +22,7 @@ import { sortSearchParams } from "@src/middleware";
 import { CacheHandler } from "@src/middleware/cache/handler";
 import { getVaryKey } from "@src/middleware/cache/utils";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { StatusCodes } from "@src/constants";
 
 const init: CacheInit = { getKey: sortSearchParams };
 
@@ -30,12 +31,17 @@ class MockWorker {
     ctx = ctx;
 }
 
-function cacheableResponse(body: string, headers?: HeadersInit): Response {
+function cacheableResponse(
+    body: string,
+    headers?: HeadersInit,
+    status: number = StatusCodes.OK,
+): Response {
     return new Response(body, {
         headers: {
             "cache-control": "max-age=60",
             ...headers,
         },
+        status,
     });
 }
 
@@ -273,5 +279,58 @@ describe("cache middleware unit tests", () => {
             getVaryKey(req.headers, new URL(req.url), ["origin"]),
         );
         expect(await cachedVariant?.text()).toBe("variant");
+    });
+
+    it("returns non-variant response when range is present", async () => {
+        const handler = new CacheHandler(init);
+
+        const req = new Request("https://localhost/", {
+            headers: {
+                Range: "bytes=0-1",
+            },
+        });
+        const response = cacheableResponse("plain");
+
+        await handler.setCached(defaultCache, req, response);
+
+        const result = await handler.getCached(defaultCache, req);
+
+        expect(result).toBeDefined();
+        expect(await result!.text()).toBe("plain");
+        expect(defaultCache.size).toBe(1);
+    });
+
+    it("returns variant response when range is present", async () => {
+        const handler = new CacheHandler(init);
+
+        const req = new Request("https://localhost/", {
+            headers: {
+                Range: "bytes=0-1",
+            },
+        });
+        const response = cacheableResponse("plain", { Vary: "Origin" });
+
+        await handler.setCached(defaultCache, req, response);
+
+        const result = await handler.getCached(defaultCache, req);
+
+        expect(result).toBeDefined();
+        expect(await result!.text()).toBe("plain");
+        expect(defaultCache.size).toBe(2);
+    });
+
+    it("returns not-modified response for non-variants", async () => {
+        const handler = new CacheHandler(init);
+
+        const req = new Request("https://localhost/");
+        const response = new Response(null, { status: 304 });
+
+        defaultCache.put(req.url, response);
+
+        const result = await handler.getCached(defaultCache, req);
+
+        expect(result).toBeDefined();
+        expect(result?.status).toBe(304);
+        expect(defaultCache.size).toBe(1);
     });
 });
