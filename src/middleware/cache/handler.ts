@@ -113,9 +113,9 @@ export class CacheHandler implements Middleware {
             // Non-variant and no range?  Return directly.
             if (range === null) return response;
 
-            // The first lookup could not include the Range header because
-            // it might have been a variant response with no body.
-            // If there is a Range request for a non-variant response,
+            // The initial lookup could not include the range header because
+            // it might have been a variant metadata response with no body.
+            // If there is a range request for a non-variant response,
             // perform that lookup now.
             request.headers.set(HttpHeader.RANGE, range);
             return await cache.match(request);
@@ -128,8 +128,8 @@ export class CacheHandler implements Middleware {
         if (range !== null) {
             varyRequest.headers.set(HttpHeader.RANGE, range);
         }
-        // Perform the actual variant lookup with preconditionsand
-        // Range request headers.
+        // Perform the actual variant lookup with preconditions and
+        // range request headers.
         return await cache.match(varyRequest);
     }
 
