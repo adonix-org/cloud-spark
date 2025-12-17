@@ -20,6 +20,7 @@ import { GET, POST } from "@src/constants/methods";
 import {
     base64UrlEncode,
     getFilteredVary,
+    getRequestKey,
     getVaryHeader,
     getVaryKey,
     isCacheable,
@@ -161,6 +162,57 @@ describe("cache utils unit tests ", () => {
                 "Cache-Control": "public, max-age=3600, no-store",
             });
             expect(isCacheable(req, resp)).toBe(false);
+        });
+    });
+
+    describe("get cache key function", () => {
+        it("copies only the relevant headers", () => {
+            const headers = new Headers({
+                [HttpHeader.IF_NONE_MATCH]: "etag-123",
+                [HttpHeader.IF_MODIFIED_SINCE]: "Wed, 17 Dec 2025 10:00:00 GMT",
+                [HttpHeader.RANGE]: "bytes=0-499",
+                "content-type": "application/json",
+                "x-custom": "foo",
+            });
+
+            const url = new URL("https://example.com/test");
+
+            const req = getRequestKey(headers, url);
+
+            expect(req.url).toBe(url.toString());
+            expect(req.headers.get(HttpHeader.IF_NONE_MATCH)).toBe("etag-123");
+            expect(req.headers.get(HttpHeader.IF_MODIFIED_SINCE)).toBe(
+                "Wed, 17 Dec 2025 10:00:00 GMT",
+            );
+            expect(req.headers.get(HttpHeader.RANGE)).toBe("bytes=0-499");
+            expect(req.headers.has("content-type")).toBe(false);
+            expect(req.headers.has("x-custom")).toBe(false);
+        });
+
+        it("handles missing headers gracefully", () => {
+            const headers = new Headers({
+                "content-type": "text/html",
+            });
+
+            const url = new URL("https://example.com/empty");
+
+            const req = getRequestKey(headers, url);
+
+            expect(req.url).toBe(url.toString());
+            expect(req.headers.has(HttpHeader.IF_NONE_MATCH)).toBe(false);
+            expect(req.headers.has(HttpHeader.IF_MODIFIED_SINCE)).toBe(false);
+            expect(req.headers.has(HttpHeader.RANGE)).toBe(false);
+            expect(req.headers.has("content-type")).toBe(false);
+        });
+
+        it("works with an empty Headers object", () => {
+            const headers = new Headers();
+            const url = new URL("https://example.com/empty");
+
+            const req = getRequestKey(headers, url);
+
+            expect(req.url).toBe(url.toString());
+            expect(req.headers.keys().next().done).toBe(true);
         });
     });
 
