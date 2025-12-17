@@ -48,17 +48,11 @@ const VARY_WILDCARD = "*" as const;
  *   conditional GET requests. Enables 304 Not Modified responses.
  * - `If-Modified-Since`: Used to validate
  *   Last-Modified timestamps. Also enables 304 responses.
- * - `Range`: Requests a specific byte range of the
- *   response. Enables 206 Partial Content responses if supported.
  *
  * Only these headers are copied from the original request when generating a
  * derived `Request` key for cache lookups. All other headers are ignored.
  */
-const CACHE_REQUEST_KEY_HEADERS = [
-    HttpHeader.IF_NONE_MATCH,
-    HttpHeader.IF_MODIFIED_SINCE,
-    HttpHeader.RANGE,
-] as const;
+const CACHE_REQUEST_KEY_HEADERS = [HttpHeader.IF_NONE_MATCH, HttpHeader.IF_MODIFIED_SINCE] as const;
 
 /**
  * Determines whether a given Response is safe to cache.
@@ -133,7 +127,6 @@ export function getCacheControl(headers: Headers): CacheControl {
  * original request headers. These are the headers that affect Cloudflare caching:
  * - `If-None-Match`: conditional GET based on ETag (enables 304 Not Modified)
  * - `If-Modified-Since`: conditional GET based on Last-Modified (enables 304)
- * - `Range`: requests partial content (enables 206 Partial Content)
  *
  * All other headers are ignored and NOT copied to the request key.
  *

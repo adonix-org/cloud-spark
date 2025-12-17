@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { StatusCodes } from "../../constants";
+import { HttpHeader } from "../../constants/headers";
 import { assertKey } from "../../guards/cache";
 import { Middleware } from "../../interfaces/middleware";
 import { Worker } from "../../interfaces/worker";
@@ -98,14 +100,37 @@ export class CacheHandler implements Middleware {
     public async getCached(cache: Cache, original: Request): Promise<Response | undefined> {
         const key = this.getCacheKey(original);
         const request = getRequestKey(original.headers, key);
-
         const response = await cache.match(request);
-        if (!response) return undefined;
-        if (!VariantResponse.isVariantResponse(response)) return response;
 
+        // Not found in cache.
+        if (!response) return undefined;
+
+        // For non-variant 304 responses, or unexpected response status code.
+        if (response.status !== StatusCodes.OK) return response;
+
+        const range = original.headers.get(HttpHeader.RANGE);
+        if (!VariantResponse.isVariantResponse(response)) {
+            // Non-variant and no range?  Return directly.
+            if (range === null) return response;
+
+            // The first lookup could not include the Range header because
+            // it might have been a variant response with no body.
+            // If there is a Range request for a non-variant response,
+            // perform that lookup now.
+            request.headers.set(HttpHeader.RANGE, range);
+            return await cache.match(request);
+        }
+
+        // Variant response: compute the variant key.
         const vary = VariantResponse.restore(response).vary;
         const varyKey = getVaryKey(original.headers, key, vary);
-        return cache.match(getRequestKey(original.headers, varyKey));
+        const varyRequest = getRequestKey(original.headers, varyKey);
+        if (range !== null) {
+            varyRequest.headers.set(HttpHeader.RANGE, range);
+        }
+        // Perform the actual variant lookup with preconditionsand
+        // Range request headers.
+        return await cache.match(varyRequest);
     }
 
     /**
