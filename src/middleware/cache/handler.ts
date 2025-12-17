@@ -23,7 +23,6 @@ import { sortSearchParams } from "./keys";
 import { CachePolicy } from "./policy";
 import { CacheControlRule } from "./rules/control";
 import { MethodRule } from "./rules/method";
-import { RangeRule } from "./rules/range";
 import { SecurityRule } from "./rules/security";
 import { UpgradeRule } from "./rules/upgrade";
 import { getVaryHeader, getVaryKey, isCacheable } from "./utils";
@@ -70,7 +69,7 @@ export class CacheHandler implements Middleware {
             .use(new MethodRule())
             .use(new UpgradeRule())
             .use(new SecurityRule())
-            .use(new RangeRule());
+            //.use(new RangeRule());
 
         const cacheResponse = await policy.execute(worker, () =>
             this.getCached(cache, worker.request),
