@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { HttpHeader } from "../../../constants/headers";
 import { Worker } from "../../../interfaces";
 import { getCacheControl } from "../utils";
 
 import { CacheRule } from "./interfaces";
-import { hasCacheValidator } from "./utils";
 
 /**
  * Determines cache eligibility based on request `Cache-Control` headers.
@@ -46,9 +46,13 @@ export class CacheControlRule implements CacheRule {
             return undefined;
         }
 
+        const mustRevalidate = cache["no-cache"] || cache["max-age"] === 0;
         if (
-            (cache["no-cache"] || cache["max-age"] === 0) &&
-            !hasCacheValidator(worker.request.headers)
+            mustRevalidate &&
+            !(
+                worker.request.headers.has(HttpHeader.IF_NONE_MATCH) ||
+                worker.request.headers.has(HttpHeader.IF_MODIFIED_SINCE)
+            )
         ) {
             return undefined;
         }

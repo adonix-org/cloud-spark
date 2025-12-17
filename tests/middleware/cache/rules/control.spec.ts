@@ -15,7 +15,6 @@
  */
 
 import { CacheControlRule } from "@src/middleware/cache/rules/control";
-import * as ruleUtils from "@src/middleware/cache/rules/utils";
 import * as utils from "@src/middleware/cache/utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -49,7 +48,6 @@ describe("cache control rule unit tests", () => {
 
     it("returns undefined if max-age=0 and no validators", async () => {
         vi.spyOn(utils, "getCacheControl").mockReturnValue({ "max-age": 0 });
-        vi.spyOn(ruleUtils, "hasCacheValidator").mockReturnValue(false);
 
         const result = await rule.apply(worker, next);
         expect(result).toBeUndefined();
@@ -57,7 +55,6 @@ describe("cache control rule unit tests", () => {
 
     it("calls next and returns response if cache allows it", async () => {
         vi.spyOn(utils, "getCacheControl").mockReturnValue({ "max-age": 3600 });
-        vi.spyOn(ruleUtils, "hasCacheValidator").mockReturnValue(false);
 
         const result = await rule.apply(worker, next);
         expect(result).toBeInstanceOf(Response);
@@ -67,7 +64,6 @@ describe("cache control rule unit tests", () => {
     it("returns undefined if next returns undefined", async () => {
         next = vi.fn(async () => undefined);
         vi.spyOn(utils, "getCacheControl").mockReturnValue({ "max-age": 3600 });
-        vi.spyOn(ruleUtils, "hasCacheValidator").mockReturnValue(false);
 
         const result = await rule.apply(worker, next);
         expect(result).toBeUndefined();

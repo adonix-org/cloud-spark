@@ -68,8 +68,7 @@ export class CacheHandler implements Middleware {
             .use(new CacheControlRule())
             .use(new MethodRule())
             .use(new UpgradeRule())
-            .use(new SecurityRule())
-            //.use(new RangeRule());
+            .use(new SecurityRule());
 
         const cacheResponse = await policy.execute(worker, () =>
             this.getCached(cache, worker.request),
