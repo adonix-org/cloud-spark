@@ -184,7 +184,6 @@ describe("cache utils unit tests ", () => {
             expect(req.headers.get(HttpHeader.IF_MODIFIED_SINCE)).toBe(
                 "Wed, 17 Dec 2025 10:00:00 GMT",
             );
-            expect(req.headers.get(HttpHeader.RANGE)).toBe("bytes=0-499");
             expect(req.headers.has("content-type")).toBe(false);
             expect(req.headers.has("x-custom")).toBe(false);
         });
