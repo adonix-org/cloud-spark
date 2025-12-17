@@ -250,11 +250,11 @@ describe("cache utils unit tests ", () => {
             const requestB = new Request(url, { headers: { Accept: "application/json" } });
 
             const vary = ["Accept"];
-            const keyA = getVaryKey(requestA, vary);
-            const keyB = getVaryKey(requestB, vary);
+            const keyA = getVaryKey(requestA.headers, url, vary);
+            const keyB = getVaryKey(requestB.headers, url, vary);
 
-            const decodedA = decodeVaryKey(keyA);
-            const decodedB = decodeVaryKey(keyB);
+            const decodedA = decodeVaryKey(keyA.toString());
+            const decodedB = decodeVaryKey(keyB.toString());
 
             expect(decodedA.vary).not.toEqual(decodedB.vary);
         });
@@ -266,8 +266,8 @@ describe("cache utils unit tests ", () => {
             });
             const vary = ["Accept", HttpHeader.ACCEPT_ENCODING];
 
-            const key = getVaryKey(request, vary);
-            const decoded = decodeVaryKey(key);
+            const key = getVaryKey(request.headers, new URL(request.url), vary);
+            const decoded = decodeVaryKey(key.toString());
 
             const headersInKey = decoded.vary.map(([header]) => header);
             expect(headersInKey).toContain("accept");
@@ -281,13 +281,13 @@ describe("cache utils unit tests ", () => {
             const vary1 = ["X-Foo", "X-Bar"];
             const vary2 = ["X-Bar", "X-Foo"];
 
-            const key1 = getVaryKey(request, vary1);
-            const key2 = getVaryKey(request, vary2);
+            const key1 = getVaryKey(request.headers, new URL(request.url), vary1);
+            const key2 = getVaryKey(request.headers, new URL(request.url), vary2);
 
-            expect(key1).toBe(key2);
+            expect(key1.toString()).toBe(key2.toString());
 
-            const decoded1 = decodeVaryKey(key1);
-            const decoded2 = decodeVaryKey(key2);
+            const decoded1 = decodeVaryKey(key1.toString());
+            const decoded2 = decodeVaryKey(key2.toString());
 
             expect(decoded1.vary).toEqual(decoded2.vary);
         });
@@ -296,13 +296,13 @@ describe("cache utils unit tests ", () => {
             const url = new URL("https://example.com/foo");
             const request = new Request(url);
 
-            const key1 = getVaryKey(request, []);
-            const key2 = getVaryKey(request, []);
+            const key1 = getVaryKey(request.headers, new URL(request.url), []);
+            const key2 = getVaryKey(request.headers, new URL(request.url), []);
 
-            expect(key1).toBe(key2);
+            expect(key1.toString()).toBe(key2.toString());
 
-            const decoded1 = decodeVaryKey(key1);
-            const decoded2 = decodeVaryKey(key2);
+            const decoded1 = decodeVaryKey(key1.toString());
+            const decoded2 = decodeVaryKey(key2.toString());
 
             expect(decoded1.vary).toEqual([]);
             expect(decoded1.url).toBe(decoded2.url);
@@ -314,8 +314,8 @@ describe("cache utils unit tests ", () => {
             const request = new Request(url, { headers: { "X-Custom": "ñ" } });
             const vary = ["X-Custom"];
 
-            const key = getVaryKey(request, vary);
-            const decoded = decodeVaryKey(key);
+            const key = getVaryKey(request.headers, new URL(request.url), vary);
+            const decoded = decodeVaryKey(key.toString());
 
             expect(decoded.url).toBe("https://example.com/fo%C3%B6");
             expect(decoded.vary).toEqual([["x-custom", "ñ"]]);
@@ -327,8 +327,8 @@ describe("cache utils unit tests ", () => {
             const request = new Request(url, { headers: { Accept: "text/html" } });
             const vary = ["Accept"];
 
-            const key = getVaryKey(request, vary);
-            const decoded = decodeVaryKey(key);
+            const key = getVaryKey(request.headers, new URL(request.url), vary);
+            const decoded = decodeVaryKey(key.toString());
 
             expect(decoded.search).toBe("");
         });

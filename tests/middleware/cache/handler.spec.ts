@@ -252,7 +252,7 @@ describe("cache middleware unit tests", () => {
 
         expect(defaultCache.size).toBe(3);
         const cachedVariant = await defaultCache.match(
-            getVaryKey(req, ["origin"]),
+            getVaryKey(req.headers, new URL(req.url), ["origin"]),
         );
         expect(await cachedVariant?.text()).toBe("variant");
     });
@@ -270,7 +270,7 @@ describe("cache middleware unit tests", () => {
 
         expect(defaultCache.size).toBe(2);
         const cachedVariant = await defaultCache.match(
-            getVaryKey(req, ["origin"]),
+            getVaryKey(req.headers, new URL(req.url), ["origin"]),
         );
         expect(await cachedVariant?.text()).toBe("variant");
     });
