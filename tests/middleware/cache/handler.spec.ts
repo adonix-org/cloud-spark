@@ -256,7 +256,7 @@ describe("cache middleware unit tests", () => {
         const varyResponse = cacheableResponse("variant", { Vary: "Origin" });
         await handler.setCached(defaultCache, worker.request, varyResponse);
 
-        expect(defaultCache.size).toBe(3);
+        expect(defaultCache.size).toBe(2);
         const cachedVariant = await defaultCache.match(
             getVaryKey(req.headers, new URL(req.url), ["origin"]),
         );
