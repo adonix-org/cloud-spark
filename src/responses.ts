@@ -350,13 +350,22 @@ export class R2ObjectStream extends OctetStream {
     private static computeRange(size: number, range?: R2Range): OctetStreamInit {
         if (!range) return { size };
 
-        if ("suffix" in range) {
+        if ("offset" in range || "length" in range) {
+            return { size, offset: range.offset, length: range.length };
+        }
+
+        /**
+         * Cloudflare introduced a defect around 2025-12-18 where the runtime `R2Range`
+         * included a `suffix` property alongside `offset` and `length`, even though this
+         * is invalid per their TypeScript R2Range interface.
+         */
+        if ("suffix" in range && typeof range.suffix === "number") {
             const offset = Math.max(0, size - range.suffix);
             const length = size - offset;
             return { size, offset, length };
         }
 
-        return { size, ...range };
+        return { size };
     }
 }
 
