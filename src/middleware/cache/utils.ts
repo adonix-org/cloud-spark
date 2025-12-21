@@ -275,17 +275,29 @@ export function base64UrlDecode(str: string): string {
     return new TextDecoder().decode(Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)));
 }
 
+/**
+ * Adds debug headers to a Response for inspection of caching behavior.
+ *
+ * This utility clones the given response and appends headers that provide:
+ * - The full request URL (`CACHE_KEY`)
+ * - All request headers serialized (`CACHE_REQUEST_HEADERS`)
+ * - Optionally, the decoded cache key if the request is for the VARY_CACHE_URL (`CACHE_DECODED_KEY`)
+ *
+ * @param {Request} request - The request containing the formatted lookup key.
+ * @param {Response} response - The Response object on which to apply headers.
+ * @returns {Response} A copy of the response with debug headers.
+ */
 export function addDebugHeaders(request: Request, response: Response): Response {
     const headers = new Headers(response.headers);
     const url = new URL(request.url);
 
-    headers.set(HttpHeader.CACHE_KEY, url.toString());
-    headers.set(
+    headers.append(HttpHeader.CACHE_KEY, url.toString());
+    headers.append(
         HttpHeader.CACHE_REQUEST_HEADERS,
-        [...request.headers].map(([k, v]) => `${k}: ${v}`).join(", "),
+        [...request.headers].map(([k, v]) => `${k}: ${v}`).join(", ") || "none",
     );
     if (url.origin === VARY_CACHE_URL) {
-        headers.set(HttpHeader.CACHE_DECODED_KEY, base64UrlDecode(url.pathname.slice(1)));
+        headers.append(HttpHeader.CACHE_DECODED_KEY, base64UrlDecode(url.pathname.slice(1)));
     }
 
     return new Response(response.body, {
