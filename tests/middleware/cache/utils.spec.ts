@@ -18,6 +18,7 @@ import { decodeVaryKey, VALID_URL } from "@common";
 import { HttpHeader } from "@src/constants/headers";
 import { GET, POST } from "@src/constants/methods";
 import {
+    base64UrlDecode,
     base64UrlEncode,
     getFilteredVary,
     getRequestKey,
@@ -452,6 +453,43 @@ describe("cache utils unit tests ", () => {
 
         it("handles empty string", () => {
             expect(base64UrlEncode("")).toBe("");
+        });
+    });
+
+    describe("base64 url decode function", () => {
+        it("decodes ASCII strings correctly", () => {
+            expect(base64UrlDecode("aGVsbG8")).toBe("hello");
+            expect(base64UrlDecode("dGVzdDEyMw")).toBe("test123");
+        });
+
+        it("decodes strings with non-ASCII characters", () => {
+            expect(base64UrlDecode("8J-MjQ")).toBe("🌍");
+            expect(base64UrlDecode("44GT44KT44Gr44Gh44Gv")).toBe("こんにちは");
+        });
+
+        it("handles URL-safe characters - and _", () => {
+            const encoded = "++/_".replace(/\+/g, "-").replace(/\//g, "_");
+            // Even if input contains only special Base64 URL characters, decoding should produce binary string
+            // We'll just test that it decodes without throwing
+            expect(() => base64UrlDecode(encoded)).not.toThrow();
+        });
+
+        it("adds correct padding for missing = signs", () => {
+            const original = "any";
+            const encoded = "YW55"; // no padding
+            expect(base64UrlDecode(encoded)).toBe(original);
+
+            const original2 = "a";
+            const encoded2 = "YQ"; // short, no padding
+            expect(base64UrlDecode(encoded2)).toBe(original2);
+
+            const original3 = "ab";
+            const encoded3 = "YWI"; // short, no padding
+            expect(base64UrlDecode(encoded3)).toBe(original3);
+        });
+
+        it("handles empty string", () => {
+            expect(base64UrlDecode("")).toBe("");
         });
     });
 });

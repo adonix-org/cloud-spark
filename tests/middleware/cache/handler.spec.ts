@@ -23,6 +23,7 @@ import { CacheHandler } from "@src/middleware/cache/handler";
 import { getVaryKey } from "@src/middleware/cache/utils";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { StatusCodes } from "@src/constants";
+import { HttpHeader } from "@src/constants/headers";
 
 const init: CacheInit = { getKey: sortSearchParams };
 
@@ -185,7 +186,7 @@ describe("cache middleware unit tests", () => {
         const responses = defaultCache.matchAll();
         expectHeadersEqual(responses[0].headers, [
             ["cache-control", "s-maxage=60"],
-            ["internal-variant-set", "accept-language, origin"],
+            [HttpHeader.INTERNAL_VARIANT_SET, "accept-language, origin"],
         ]);
     });
 
@@ -203,7 +204,7 @@ describe("cache middleware unit tests", () => {
         const responses = defaultCache.matchAll();
         expectHeadersEqual(responses[0].headers, [
             ["cache-control", "s-maxage=60"],
-            ["internal-variant-set", "origin"],
+            [HttpHeader.INTERNAL_VARIANT_SET, "origin"],
         ]);
     });
 
@@ -221,7 +222,7 @@ describe("cache middleware unit tests", () => {
         const responses = defaultCache.matchAll();
         expectHeadersEqual(responses[0].headers, [
             ["cache-control", "s-maxage=60"],
-            ["internal-variant-set", "origin"],
+            [HttpHeader.INTERNAL_VARIANT_SET, "origin"],
         ]);
     });
 
@@ -239,7 +240,7 @@ describe("cache middleware unit tests", () => {
         const responses = defaultCache.matchAll();
         expectHeadersEqual(responses[0].headers, [
             ["cache-control", "s-maxage=60"],
-            ["internal-variant-set", "origin"],
+            [HttpHeader.INTERNAL_VARIANT_SET, "origin"],
         ]);
     });
 

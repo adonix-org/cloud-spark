@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { StatusCodes } from "../../constants";
 import { HttpHeader } from "../../constants/headers";
 import { assertKey } from "../../guards/cache";
 import { Middleware } from "../../interfaces/middleware";
@@ -27,21 +26,22 @@ import { CacheControlRule } from "./rules/control";
 import { MethodRule } from "./rules/method";
 import { SecurityRule } from "./rules/security";
 import { UpgradeRule } from "./rules/upgrade";
-import { getRequestKey, getVaryHeader, getVaryKey, isCacheable } from "./utils";
+import { addDebugHeaders, getRequestKey, getVaryHeader, getVaryKey, isCacheable } from "./utils";
 import { VariantResponse } from "./variant";
 
 /**
  * Cache Middleware Implementation
  */
 export class CacheHandler implements Middleware {
-    private readonly init: CacheInit;
+    private readonly init: Readonly<CacheInit>;
 
     constructor(init: CacheInit) {
-        const { name, getKey = sortSearchParams } = init;
+        const { name, getKey = sortSearchParams, debug = false } = init;
 
         this.init = {
             name: name?.trim() || undefined,
             getKey,
+            debug,
         };
     }
 
@@ -100,37 +100,55 @@ export class CacheHandler implements Middleware {
     public async getCached(cache: Cache, original: Request): Promise<Response | undefined> {
         const key = this.getCacheKey(original);
         const request = getRequestKey(original.headers, key);
-        const response = await cache.match(request);
+        const response = await this.match(cache, request);
 
         // Not found in cache.
         if (!response) return undefined;
 
-        // For non-variant 304 responses, or unexpected response status code.
-        if (response.status !== StatusCodes.OK) return response;
-
+        // The initial lookup cannot include any range header because
+        // it might be a variant metadata response with no body.
         const range = original.headers.get(HttpHeader.RANGE);
-        if (!VariantResponse.isVariantResponse(response)) {
-            // Non-variant and no range?  Return directly.
-            if (range === null) return response;
 
-            // The initial lookup could not include the range header because
-            // it might have been a variant metadata response with no body.
-            // If there is a range request for a non-variant response,
-            // perform that lookup now.
-            request.headers.set(HttpHeader.RANGE, range);
-            return await cache.match(request);
+        if (VariantResponse.isVariantResponse(response)) {
+            // Variant response: compute the variant key.
+            const vary = VariantResponse.restore(response).vary;
+            const varyKey = getVaryKey(original.headers, key, vary);
+            const varyRequest = getRequestKey(original.headers, varyKey);
+            if (range !== null) {
+                varyRequest.headers.set(HttpHeader.RANGE, range);
+            }
+            // Perform the actual variant lookup with preconditions and
+            // range request headers.
+            return await this.match(cache, varyRequest);
         }
 
-        // Variant response: compute the variant key.
-        const vary = VariantResponse.restore(response).vary;
-        const varyKey = getVaryKey(original.headers, key, vary);
-        const varyRequest = getRequestKey(original.headers, varyKey);
-        if (range !== null) {
-            varyRequest.headers.set(HttpHeader.RANGE, range);
-        }
-        // Perform the actual variant lookup with preconditions and
-        // range request headers.
-        return await cache.match(varyRequest);
+        // Non-variant and no range?  Return the response.
+        if (range === null) return response;
+
+        // There is a range request header for a non-variant response,
+        // perform that additional lookup now.
+        request.headers.set(HttpHeader.RANGE, range);
+        return await this.match(cache, request);
+    }
+
+    /**
+     * Attempts to match a request in the given cache.
+     *
+     * If a cached response is found, it is returned. If the `debug` flag
+     * is enabled, the response is augmented with debug headers
+     * (e.g., the cache key) before being returned.
+     *
+     * @param cache - The cache instance to query.
+     * @param request - The incoming request to match.
+     * @returns The cached `Response` if found, possibly with debug headers;
+     *          otherwise `undefined` if there is no cache hit.
+     */
+    public async match(cache: Cache, request: Request): Promise<Response | undefined> {
+        const response = await cache.match(request);
+        if (!response) return;
+        if (!this.init.debug) return response;
+
+        return addDebugHeaders(request, response);
     }
 
     /**

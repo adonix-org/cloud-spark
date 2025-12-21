@@ -16,12 +16,13 @@
 
 import { CacheInit } from "../middleware/cache/interfaces";
 
-import { isString } from "./basic";
+import { isBoolean, isString } from "./basic";
 
 /**
  * Asserts that a value is a valid {@link CacheInit} object.
  *
- * Ensures that if provided, `name` is a string and `getKey` is a function.
+ * Ensures that if provided, `name` is a string, debug is a boolean,
+ * and `getKey` is a function.
  *
  * @param value - The value to check.
  * @throws TypeError If the object shape is invalid.
@@ -31,10 +32,11 @@ export function assertCacheInit(value: unknown): asserts value is CacheInit {
         throw new TypeError("CacheInit must be an object.");
     }
 
-    const { name, getKey } = value as Partial<CacheInit>;
+    const { name, debug, getKey } = value as Partial<CacheInit>;
 
     assertCacheName(name);
     assertGetKey(getKey);
+    assertDebug(debug);
 }
 
 /**
@@ -82,5 +84,21 @@ export function assertGetKey(
 export function assertKey(value: unknown): asserts value is URL {
     if (!(value instanceof URL)) {
         throw new TypeError("getKey must return a URL.");
+    }
+}
+
+/**
+ * Asserts that debug is a boolean.
+ *
+ * If the value is `undefined`, this function does nothing.
+ * Otherwise, it throws a `TypeError` if the value is not a boolean.
+ *
+ * @param value - The value to check.
+ * @throws TypeError If the value is defined but not a boolean.
+ */
+export function assertDebug(value: unknown): asserts value is boolean | undefined {
+    if (value === undefined) return;
+    if (!isBoolean(value)) {
+        throw new TypeError("Cache debug must be a boolean.");
     }
 }

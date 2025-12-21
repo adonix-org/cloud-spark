@@ -55,7 +55,10 @@ export const HttpHeader = {
     UPGRADE: "upgrade",
 
     // Internal Headers
-    INTERNAL_VARIANT_SET: "internal-variant-set",
+    INTERNAL_VARIANT_SET: "cs-internal-variant-set",
+    CACHE_KEY: "cs-cache-key",
+    CACHE_DECODED_KEY: "cs-cache-decoded-key",
+    CACHE_REQUEST_HEADERS: "cs-cache-req-headers",
 } as const;
 
 /**

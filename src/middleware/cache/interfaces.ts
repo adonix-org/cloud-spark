@@ -29,4 +29,11 @@ export interface CacheInit {
      * to a cache key.
      */
     getKey: (request: Request) => URL;
+
+    /**
+     * Enables debug information in response headers.
+     * Currently adds the cache key header on cache hits.
+     * Default: FALSE
+     */
+    debug?: boolean;
 }

@@ -255,3 +255,42 @@ export function base64UrlEncode(str: string): string {
         .replaceAll("/", "_")
         .replace(/={1,2}$/, "");
 }
+
+/**
+ * Decodes a URL-safe Base64 string back to a UTF-8 string.
+ * - Converts `-` back to `+` and `_` back to `/`
+ * - Pads with `=` to make length a multiple of 4
+ * - Base64-decodes to binary
+ * - Converts binary to UTF-8 string
+ *
+ * @param str The URL-safe Base64 string to decode.
+ * @returns The decoded UTF-8 string.
+ */
+export function base64UrlDecode(str: string): string {
+    const base64 = str
+        .replace(/-/g, "+")
+        .replace(/_/g, "/")
+        .padEnd(Math.ceil(str.length / 4) * 4, "=");
+
+    return new TextDecoder().decode(Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)));
+}
+
+export function addDebugHeaders(request: Request, response: Response): Response {
+    const headers = new Headers(response.headers);
+    const url = new URL(request.url);
+
+    headers.set(HttpHeader.CACHE_KEY, url.toString());
+    headers.set(
+        HttpHeader.CACHE_REQUEST_HEADERS,
+        [...request.headers].map(([k, v]) => `${k}: ${v}`).join(", "),
+    );
+    if (url.origin === VARY_CACHE_URL) {
+        headers.set(HttpHeader.CACHE_DECODED_KEY, base64UrlDecode(url.pathname.slice(1)));
+    }
+
+    return new Response(response.body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
+    });
+}
