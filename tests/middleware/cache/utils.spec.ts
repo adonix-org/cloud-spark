@@ -469,23 +469,25 @@ describe("cache utils unit tests ", () => {
 
         it("handles URL-safe characters - and _", () => {
             const encoded = "++/_".replace(/\+/g, "-").replace(/\//g, "_");
-            // Even if input contains only special Base64 URL characters, decoding should produce binary string
-            // We'll just test that it decodes without throwing
             expect(() => base64UrlDecode(encoded)).not.toThrow();
         });
 
         it("adds correct padding for missing = signs", () => {
             const original = "any";
-            const encoded = "YW55"; // no padding
+            const encoded = "YW55";
             expect(base64UrlDecode(encoded)).toBe(original);
 
             const original2 = "a";
-            const encoded2 = "YQ"; // short, no padding
+            const encoded2 = "YQ";
             expect(base64UrlDecode(encoded2)).toBe(original2);
 
             const original3 = "ab";
-            const encoded3 = "YWI"; // short, no padding
+            const encoded3 = "YWI";
             expect(base64UrlDecode(encoded3)).toBe(original3);
+        });
+
+        it("throws on invalid base64 input", () => {
+            expect(() => base64UrlDecode("@")).toThrowError("Invalid character");
         });
 
         it("handles empty string", () => {

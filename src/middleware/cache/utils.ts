@@ -267,12 +267,17 @@ export function base64UrlEncode(str: string): string {
  * @returns The decoded UTF-8 string.
  */
 export function base64UrlDecode(str: string): string {
-    const base64 = str
-        .replace(/-/g, "+")
-        .replace(/_/g, "/")
-        .padEnd(Math.ceil(str.length / 4) * 4, "=");
-
-    return new TextDecoder().decode(Uint8Array.from(atob(base64), (c) => c.charCodeAt(0)));
+    const binary = atob(
+        str
+            .replaceAll("-", "+")
+            .replaceAll("_", "/")
+            .padEnd(Math.ceil(str.length / 4) * 4, "="),
+    );
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.codePointAt(i)!;
+    }
+    return new TextDecoder().decode(bytes);
 }
 
 /**
