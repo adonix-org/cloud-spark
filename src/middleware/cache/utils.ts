@@ -248,7 +248,8 @@ export function base64UrlEncode(str: string): string {
     const utf8 = new TextEncoder().encode(str);
     let binary = "";
     for (const byte of utf8) {
-        binary += String.fromCodePoint(byte);
+        // NOSONAR: safe because byte is always 0–255 from TextEncoder
+        binary += String.fromCharCode(byte);
     }
     return btoa(binary)
         .replaceAll("+", "-")
@@ -275,7 +276,8 @@ export function base64UrlDecode(str: string): string {
     );
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.codePointAt(i)!;
+        // NOSONAR: safe because this is a binary string from atob
+        bytes[i] = binary.charCodeAt(i);
     }
     return new TextDecoder().decode(bytes);
 }
