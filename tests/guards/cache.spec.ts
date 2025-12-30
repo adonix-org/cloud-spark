@@ -15,7 +15,7 @@
  */
 
 import { VALID_URL } from "@common";
-import { assertCacheInit, assertCacheName, assertGetKey, assertKey } from "@src/guards/cache";
+import { assertCacheInit, assertCacheName, assertDebug, assertGetKey, assertKey } from "@src/guards/cache";
 import { CacheInit } from "@src/middleware/cache/interfaces";
 import { describe, expect, it } from "vitest";
 
@@ -111,7 +111,7 @@ describe("cache guard unit tests", () => {
         });
     });
 
-    describe("assertURL", () => {
+    describe("assert url", () => {
         it("does not throw for a valid URL", () => {
             const url = new URL("https://example.com");
             expect(() => assertKey(url)).not.toThrow();
@@ -135,6 +135,30 @@ describe("cache guard unit tests", () => {
 
         it("throws TypeError for null", () => {
             expect(() => assertKey(null)).toThrow(TypeError);
+        });
+    });
+
+    describe("assert debug", () => {
+        it("does nothing when value is undefined", () => {
+            expect(() => assertDebug(undefined)).not.toThrow();
+        });
+
+        it("allows true and false", () => {
+            expect(() => assertDebug(true)).not.toThrow();
+            expect(() => assertDebug(false)).not.toThrow();
+        });
+
+        it("throws when value is not a boolean", () => {
+            expect(() => assertDebug(null)).toThrow(TypeError);
+            expect(() => assertDebug(0)).toThrow(TypeError);
+            expect(() => assertDebug(1)).toThrow(TypeError);
+            expect(() => assertDebug("true")).toThrow(TypeError);
+            expect(() => assertDebug({})).toThrow(TypeError);
+            expect(() => assertDebug([])).toThrow(TypeError);
+        });
+
+        it("throws with the correct message", () => {
+            expect(() => assertDebug("nope")).toThrowError("Cache debug must be a boolean.");
         });
     });
 });
