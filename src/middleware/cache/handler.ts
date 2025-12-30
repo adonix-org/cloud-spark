@@ -140,7 +140,7 @@ export class CacheHandler implements Middleware {
      *
      * @param cache - The cache instance to query.
      * @param request - The incoming request to match.
-     * @returns The cached `Response` if found, possibly with debug headers;
+     * @returns The cached `Response` if found, with debug headers if enabled;
      *          otherwise `undefined` if there is no cache hit.
      */
     public async match(cache: Cache, request: Request): Promise<Response | undefined> {

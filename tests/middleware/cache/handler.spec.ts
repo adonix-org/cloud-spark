@@ -132,6 +132,50 @@ describe("cache middleware unit tests", () => {
         expect(defaultCache.size).toBe(0);
     });
 
+    it("adds debug headers to the non-variant response when enabled", async () => {
+        const handler = new CacheHandler({ debug: true, ...init });
+        const worker = new MockWorker(GET_REQUEST);
+
+        const response = cacheableResponse("debug response", { range: "bytes=0-1" });
+        await handler.setCached(defaultCache, worker.request, response);
+
+        const cached = await handler.getCached(defaultCache, worker.request);
+        expect(await cached?.text()).toBe("debug response");
+        expectHeadersEqual(cached!.headers, [
+            ["cache-control", "max-age=60"],
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["cs-cache-key", "https://localhost/"],
+            ["cs-cache-req-headers", "none"],
+            ["range", "bytes=0-1"],
+        ]);
+    });
+
+    it("adds debug headers to the variant response when enabled", async () => {
+        const handler = new CacheHandler({ debug: true, ...init });
+        const worker = new MockWorker(GET_REQUEST_WITH_ORIGIN);
+
+        const response = cacheableResponse("debug response", {
+            Vary: "Origin",
+            "If-None-Match": '"abc123"',
+        });
+        await handler.setCached(defaultCache, worker.request, response);
+
+        const cached = await handler.getCached(defaultCache, worker.request);
+        expect(await cached?.text()).toBe("debug response");
+        expectHeadersEqual(cached!.headers, [
+            ["cache-control", "max-age=60"],
+            ["content-type", "text/plain;charset=UTF-8"],
+            ["cs-cache-decoded-key", '["https://localhost/",[["origin","https://localhost"]]]'],
+            [
+                "cs-cache-key",
+                "https://vary/WyJodHRwczovL2xvY2FsaG9zdC8iLFtbIm9yaWdpbiIsImh0dHBzOi8vbG9jYWxob3N0Il1dXQ",
+            ],
+            ["cs-cache-req-headers", "none"],
+            ["if-none-match", '"abc123"'],
+            ["vary", "Origin"],
+        ]);
+    });
+
     it("does not cache non-get responses", async () => {
         const handler = new CacheHandler(init);
         const req = new Request("https://localhost/", { method: POST });
