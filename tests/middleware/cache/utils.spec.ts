@@ -488,6 +488,7 @@ describe("cache utils unit tests ", () => {
 
         it("throws on invalid base64 input", () => {
             expect(() => base64UrlDecode("@")).toThrowError("Invalid character");
+            expect(() => base64UrlDecode("abcd%")).toThrowError("Invalid character");
         });
 
         it("handles empty string", () => {
