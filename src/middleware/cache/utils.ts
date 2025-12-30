@@ -297,10 +297,18 @@ export function addDebugHeaders(request: Request, response: Response): Response 
     const url = new URL(request.url);
 
     headers.append(HttpHeader.CACHE_KEY, url.toString());
-    headers.append(
-        HttpHeader.CACHE_REQUEST_HEADERS,
-        [...request.headers].map(([k, v]) => `${k}: ${v}`).join(", ") || "none",
-    );
+
+    const filtered = [...request.headers]
+        .filter(([key]) =>
+            new Set<string>([HttpHeader.RANGE, ...CACHE_REQUEST_KEY_HEADERS]).has(
+                key.toLowerCase(),
+            ),
+        )
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(", ");
+
+    headers.append(HttpHeader.CACHE_REQUEST_HEADERS, filtered || "none");
+
     if (url.origin === VARY_CACHE_URL) {
         headers.append(HttpHeader.CACHE_DECODED_KEY, base64UrlDecode(url.pathname.slice(1)));
     }

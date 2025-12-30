@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { decodeVaryKey, VALID_URL } from "@common";
+import { decodeVaryKey, expectHeadersEqual, VALID_URL } from "@common";
 import { HttpHeader } from "@src/constants/headers";
 import { GET, POST } from "@src/constants/methods";
 import {
+    addDebugHeaders,
     base64UrlDecode,
     base64UrlEncode,
     getFilteredVary,
@@ -493,6 +494,78 @@ describe("cache utils unit tests ", () => {
 
         it("handles empty string", () => {
             expect(base64UrlDecode("")).toBe("");
+        });
+    });
+
+    describe("add debug headers function", () => {
+        it("adds cache key header to non-variant response", async () => {
+            const request = new Request("https://example.com/test");
+            const response = new Response("body", { status: 200 });
+            const result = addDebugHeaders(request, response);
+            expectHeadersEqual(result.headers, [
+                ["content-type", "text/plain;charset=UTF-8"],
+                ["cs-cache-key", "https://example.com/test"],
+                ["cs-cache-req-headers", "none"],
+            ]);
+        });
+
+        it("adds cache key header to variant response", async () => {
+            const key = getVaryKey(new Headers(), new URL("https://example.com/variant"), []);
+            const request = new Request(key);
+            const response = new Response("body", { status: 200 });
+            const result = addDebugHeaders(request, response);
+            expectHeadersEqual(result.headers, [
+                ["content-type", "text/plain;charset=UTF-8"],
+                ["cs-cache-decoded-key", '["https://example.com/variant",[]]'],
+                ["cs-cache-key", "https://vary/WyJodHRwczovL2V4YW1wbGUuY29tL3ZhcmlhbnQiLFtdXQ"],
+                ["cs-cache-req-headers", "none"],
+            ]);
+        });
+
+        it("adds cache request headers as comma separated list", async () => {
+            const request = new Request("https://example.com/test", {
+                headers: {
+                    "if-none-match": "x",
+                    "if-modified-since": "0",
+                    range: "bytes=0-100",
+                },
+            });
+            const response = new Response("ok");
+            const result = addDebugHeaders(request, response);
+            expectHeadersEqual(result.headers, [
+                ["content-type", "text/plain;charset=UTF-8"],
+                ["cs-cache-key", "https://example.com/test"],
+                [
+                    "cs-cache-req-headers",
+                    "if-modified-since: 0, if-none-match: x, range: bytes=0-100",
+                ],
+            ]);
+        });
+
+        it("uses 'none' when the request has no headers", async () => {
+            const request = new Request("https://example.com/blank");
+            const response = new Response("ok");
+
+            const result = addDebugHeaders(request, response);
+            expectHeadersEqual(result.headers, [
+                ["content-type", "text/plain;charset=UTF-8"],
+                ["cs-cache-key", "https://example.com/blank"],
+                ["cs-cache-req-headers", "none"],
+            ]);
+        });
+
+        it("preserves original response status, body, and status text", async () => {
+            const request = new Request("https://example.com");
+            const response = new Response("hello world", {
+                status: 418,
+                statusText: "i am a teapot",
+            });
+
+            const result = addDebugHeaders(request, response);
+
+            expect(result.status).toBe(418);
+            expect(result.statusText).toBe("i am a teapot");
+            expect(await result.text()).toBe("hello world");
         });
     });
 });
