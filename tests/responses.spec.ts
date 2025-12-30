@@ -440,6 +440,37 @@ describe("response unit tests", () => {
             expect(r2stream.headers.get(HttpHeader.ETAG)).toBe("123");
         });
 
+        it("should default to entire range for undefined suffix range", () => {
+            const stream = createDummyStream();
+            const obj = {
+                body: stream,
+                size: 10,
+                range: { suffix: undefined },
+                httpEtag: "123",
+            } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.status).toBe(StatusCodes.OK);
+            expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("10");
+            expect(r2stream.headers.get(HttpHeader.ETAG)).toBe("123");
+        });
+
+        it("should ignore suffix if incorrectly provided", () => {
+            const stream = createDummyStream();
+            const obj = {
+                body: stream,
+                size: 10,
+                range: { length: 5, offset: 5, suffix: undefined },
+                httpEtag: "123",
+            } as any;
+            const r2stream = new R2ObjectStream(obj);
+
+            expect(r2stream.status).toBe(StatusCodes.PARTIAL_CONTENT);
+            expect(r2stream.headers.get(HttpHeader.CONTENT_LENGTH)).toBe("5");
+            expect(r2stream.headers.get(HttpHeader.CONTENT_RANGE)).toBe("bytes 5-9/10");
+            expect(r2stream.headers.get(HttpHeader.ETAG)).toBe("123");
+        });
+
         it("should set media type from object.httpMetadata if present", () => {
             const stream = createDummyStream();
             const obj = {
