@@ -162,6 +162,13 @@ export class WebSocketSessions<A extends WSAttachment = WSAttachment> {
         return this.unregister(ws);
     }
 
+    /**
+     * @returns the number of active WebSocket connections.
+     */
+    public get size(): number {
+        return this.map.size;
+    }
+
     /** Iterates over all active WebSocket connections. */
     public *[Symbol.iterator](): IterableIterator<WebSocketConnection<A>> {
         yield* this.values();

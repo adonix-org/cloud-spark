@@ -159,4 +159,14 @@ describe("websocket sessions unit tests", () => {
         expect(iterated).toContain(con2);
         expect(iterated).toEqual([...sessions.values()]);
     });
+
+    it("returns the correct size of active connections", () => {
+        const con1 = sessions.create();
+        const con2 = sessions.create();
+
+        con1.accept();
+        con2.accept();
+
+        expect(sessions.size).toBe(2);
+    });
 });
