@@ -19,4 +19,5 @@ export * from "./fetch";
 export * from "./middleware";
 export * from "./response";
 export * from "./route";
+export * from "./websocket";
 export * from "./worker";
