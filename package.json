@@ -67,8 +67,8 @@
         "lint": "eslint ./src"
     },
     "devDependencies": {
-        "@eslint/js": "^10.0.1",
-        "@types/node": "^25.2.1",
+        "@eslint/js": "^9.39.2",
+        "@types/node": "^25.2.3",
         "@typescript-eslint/eslint-plugin": "^8.54.0",
         "@typescript-eslint/parser": "^8.54.0",
         "@vitest/coverage-v8": "^4.0.18",
@@ -81,7 +81,7 @@
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.54.0",
         "vitest": "^4.0.18",
-        "wrangler": "^4.63.0"
+        "wrangler": "^4.65.0"
     },
     "dependencies": {
         "cache-control-parser": "^2.0.6",
